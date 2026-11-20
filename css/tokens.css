@@ -1,0 +1,14 @@
+/**
+ * @file   css/tokens.css
+ * @brief  Design tokens shared by every Seasonal game.
+ *
+ * Responsibility: the season colours, copied from the website, the single source of them.
+ * Source:         seasonal-entertainment client/src/styles/tokens.css lines 16-19 (master)
+ */
+
+:root {
+  --color-spring: #afb84e;
+  --color-summer: #e06e22;
+  --color-autumn: #f9a825;
+  --color-winter: #04aaf7;
+}

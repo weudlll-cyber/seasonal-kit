@@ -1,0 +1,44 @@
+{
+  "name": "@seasonal/kit",
+  "version": "0.0.1",
+  "description": "Shared shell, UI and platform parts of the Seasonal games.",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "repository": "github:weudlll-cyber/seasonal-kit",
+  "type": "module",
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./css/tokens.css"
+  },
+  "files": [
+    "css",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.5",
+    "eslint": "10.13.0",
+    "eslint-config-prettier": "10.1.8",
+    "jsdom": "30.1.3",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,7 @@
+# @file   .gitignore
+# @brief  Files git leaves out. dist/ is NOT ignored: it is committed at every tag, because games
+#         install the kit from git without running any build (docs/DELIVERY.md).
+node_modules/
+coverage/
+*.log
+.claude/settings.local.json

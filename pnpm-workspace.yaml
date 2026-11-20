@@ -1,0 +1,15 @@
+# @file   pnpm-workspace.yaml
+# @brief  pnpm's settings for the kit (one package, no workspace members).
+#
+# Responsibility: the same install rules as the games (Mini Games pnpm-workspace.yaml): refuse
+#                 a Node outside "engines", pin exact versions, run no dependency's install
+#                 script unless listed here.
+
+engineStrict: true
+# "pnpm add" pins exact versions; upgrades arrive as reviewed changes.
+saveExact: true
+
+# Dependency install scripts run only when listed here as true.
+allowBuilds:
+  # Vite's bundler ships its binary as a platform package; the postinstall is a fallback.
+  esbuild: false

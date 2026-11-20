@@ -1,0 +1,5 @@
+# Normalise line endings to LF so Windows, CI and every game see identical files (the
+# committed dist/ is compared byte for byte in CI).
+* text=auto eol=lf
+*.png binary
+*.woff2 binary

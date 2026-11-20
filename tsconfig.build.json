@@ -1,0 +1,22 @@
+/**
+ * @file   tsconfig.build.json
+ * @brief  Compiles src/ into dist/ (JavaScript plus .d.ts), committed at every tag.
+ *
+ * Responsibility: the build games consume; tests stay out of it. `pnpm build` runs it, and CI
+ *                 fails when the committed dist/ differs from a fresh build.
+ * Depends on:     ./tsconfig.json
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "newLine": "lf"
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts"]
+}

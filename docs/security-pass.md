@@ -30,3 +30,9 @@ The first full pass is due before v0.2.0 (docs/BACKLOG.md).
   **Fixed:** `scripts/gitleaks-staged.sh` mounts `git rev-parse --show-toplevel` and allows it as
   a git `safe.directory`. Run again on the same staged file, the hook found the leak and refused
   the commit (exit 1). The probe file was removed and never pushed.
+- **2026-11-20, osv-scanner on the first master push.** One finding: GHSA-g3hv-75wg-m249,
+  minimatch 10.2.6 (ReDoS in glob patterns, CVSS 6.9), pulled only by typescript-eslint 8.71.2.
+  It is not exploitable here: only the repository's own globs, and nothing a game receives. Mini
+  Games accepts the same advisory below CVSS 7. The kit fails on any finding, so instead of an
+  ignore entry it is **fixed**: an override to 11.0.9, the fixed line ESLint already uses. Lint
+  and the tests pass, and osv-scanner finds nothing.

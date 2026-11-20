@@ -1,0 +1,56 @@
+/**
+ * @file   css/call.css
+ * @brief  The reserved call-view slot: its sizes on a desktop, in a low window, collapsed and
+ *         on a phone.
+ *
+ * Responsibility: `.sk-call-slot` is the box at the right end of the game's docked chat strip
+ *                 (desktop) or directly above its chat bar (phone), in the layout and never over
+ *                 the content. The game sets `hidden` on it while no call is linked (the
+ *                 helper `callSlot` in src/callSlot.ts answers null then), and the slot then
+ *                 takes no room. The numbers are the website's contract, kept equal to
+ *                 `CALL_SLOT` in src/callSlot.ts by tests/call-css.test.ts. The low window's
+ *                 query is Mini Games' own (its strip, the reference layout); the modifier
+ *                 classes come after it so that they win.
+ * Source:         seasonal-mini-games apps/web/src/match/chatDock.css at 91b23bc (the strip's
+ *                 190 and 150 px, `max-height: 759px`)
+ * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Placement and sizes"
+ */
+
+/* Desktop, normal window: 338 × 190, the strip's height at 16:9. */
+.sk-call-slot {
+  box-sizing: border-box;
+  flex: none;
+  width: 338px;
+  height: 190px;
+}
+
+/* Desktop, a window under 760 px high: 267 × 150, the smallest picture. */
+@media (max-height: 759px) {
+  .sk-call-slot {
+    width: 267px;
+    height: 150px;
+  }
+}
+
+/* Collapsed on a desktop: the 48 px audio-only column at the strip's height. */
+.sk-call-slot--collapsed {
+  width: 48px;
+}
+
+/* Phone, collapsed: the 48 px audio strip, full width, above the chat bar. */
+.sk-call-slot--strip {
+  width: 100%;
+  height: 48px;
+}
+
+/* Phone, expanded: the picture at full width, 16:9. */
+.sk-call-slot--phone {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* No call linked: no room taken. */
+.sk-call-slot[hidden] {
+  display: none;
+}

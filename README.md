@@ -12,17 +12,21 @@ to a stricter standard than any single game ([docs/DECISIONS.md](docs/DECISIONS.
 | `@seasonal/kit/tokens.css` | the design tokens every game shares, light and dark. The season colours are copied from the website and checked against it in CI; every text token is checked for WCAG AA in both themes. |
 | `@seasonal/kit/fonts.css`  | the Luxora Grotesk faces (Book 400, Regular 500, Bold 700, Italic 400, Light Italic 300), served from the kit's `fonts/`; licence in [fonts/README.md](fonts/README.md)                   |
 | `@seasonal/kit/motion.css` | the win glow `sk-anim-win`, and every animation off under `prefers-reduced-motion`                                                                                                        |
+| `@seasonal/kit/call.css`   | the reserved call-view slot `sk-call-slot`: 338 × 190, 267 × 150 under 760 px high, the 48 px collapsed column and phone strip; `hidden` while no call is linked                          |
 | `@seasonal/kit`            | the theme logic, framework-free: `resolveTheme`, `storedTheme`, `storeTheme`, `systemTheme`, `applyTheme`, `onSystemThemeChange`, `shownTheme`, `onShownThemeChange`                      |
+| `@seasonal/kit`            | website sign-in: `websiteSignInHref`, `websiteLoginHref`, `signInAgain`, `signInAgainAfter`                                                                                               |
+| `@seasonal/kit`            | the website chat embed: `chatEmbedUrl`, `connectChat` (the checked `seasonal-chat` link), `createChatArrivals`, `chatBarText`                                                             |
+| `@seasonal/kit`            | the call-view slot: `callSlot`, `CALL_SLOT`, `connectCall` (the checked `seasonal-call` link); nothing is framed until the site's call page exists                                        |
 | `@seasonal/kit/vite`       | `themeInit()`: serves the early theme script as `<base>theme-init.js`, for `<script src="theme-init.js">` before the first paint                                                          |
 
-A game imports the kit's CSS (`fonts.css`, `tokens.css`, `motion.css`) before its own, and adds
-only its own arena tokens and animations.
+A game imports the kit's CSS (`fonts.css`, `tokens.css`, `motion.css`, and `call.css` where it
+reserves the call slot) before its own, and adds only its own arena tokens and animations.
 
 ## How a game pins it
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.2.0"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.3.0"
 }
 ```
 

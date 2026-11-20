@@ -17,8 +17,63 @@ delivery (docs/DELIVERY.md).
 | Code                         | CodeQL (javascript-typescript, CI)              | `.github/workflows/codeql.yml`; results in the repository's code scanning alerts   |
 | Install behaviour            | pnpm 12.14.0                                    | a scratch consumer installs the tag with scripts off and builds (docs/DELIVERY.md) |
 | Package contents             | `git ls-tree` of the tag against `package.json` | only the folders in `"files"`, `LICENSE` and `package.json` reach a game           |
+| Frame messages and redirects | review against the rules below, and the tests   | `src/*.test.ts` for the chat link, the call link and the sign-in helpers           |
+
+## The message layers (since v0.3.0)
+
+The chat embed (`src/chatEmbed.ts`) and the call view (`src/callView.ts`) talk to a website
+frame through one link (`src/frameMessages.ts`). These rules hold, and each one has a test that
+fails if it breaks:
+
+- **Origin checks, both ways.**
+  - A message is handed on only if four checks pass: `event.origin` is the frame's origin,
+    `event.source` is that frame's own window, the data is a plain object, and its `source` is
+    the frame's (`seasonal-chat` or `seasonal-call`).
+  - The page posts only to that frame, with the frame's origin as `targetOrigin`. It never uses
+    `'*'`.
+  - The origin is checked when the link is made: `'*'`, `'null'`, a path or a trailing slash
+    throws, so a typo cannot widen the check.
+  - The website's own frames are on the page's origin, which is the default.
+- **No secrets.**
+  - The page sends only flags (`visible`, `mute`, `collapse`) and a theme name.
+  - Each outgoing message is rebuilt from its own fields, so nothing else the caller put on the
+    object rides along. The `source` is set last and cannot be overridden.
+  - The kit reads no token, key or message text, and the website's frames send none.
+- **Unexpected messages are ignored, silently.** That covers:
+  - another origin or window, the other frame's `source`, data that is no object;
+  - an unknown `type`, including inherited names such as `toString`;
+  - a field of the wrong type or range (negative or fractional counts, an infinite size, a
+    status or reason outside the contract);
+  - an error code that is not a short lower-case word;
+  - a call view's `ready` for another call than the one linked.
+
+  Extra fields are dropped. Nothing is logged and nothing throws, so a hostile page or frame
+  learns nothing from a rejection.
+
+- **The worst a valid message can do** is set a badge count, a height, or the call view's
+  state. Every `ready` makes the page answer once, and only to its own frame.
+- **Nothing is framed by the kit.** It builds the chat's address (relative, on this site) but no
+  element. It builds no call address at all until the site's `/embed/call/<id>` page exists
+  (BACKLOG 8), and `connectCall` needs a valid call id.
+- **Sign-in redirects stay on this site.** `websiteSignInHref`, `websiteLoginHref` and
+  `signInAgain` throw for a route that is not a path on this site (`//host`, a backslash, a
+  scheme). `signInAgainAfter` ignores such a header value, so a response cannot send the page
+  elsewhere.
 
 ## Passes
+
+### 2026-11-20 — before v0.3.0 (branch `feat/website-integration`, PR #6)
+
+| Scan                         | Tool and command                                                                                   | Result                                                                                                                                                  |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                                | No leaks. 11 commits with a patch scanned (16 commits in all refs, merges included).                                                                    |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml`  | No issues in 237 packages. No dependency was added.                                                                                                     |
+| Code                         | CodeQL (javascript-typescript)                                                                     | `analyze` and the code-scanning check `CodeQL` green on PR #6. The repository's alert list (`gh api …/code-scanning/alerts`) is empty, open and closed. |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                          | Proven on the tag v0.3.0 itself, after it is cut; the result is in docs/DELIVERY.md.                                                                    |
+| Package contents             | the installed package                                                                              | Checked in the same consumer, after the tag; the result is in docs/DELIVERY.md.                                                                         |
+| Frame messages and redirects | the rules above, against `src/frameMessages.ts`, `chatEmbed.ts`, `callView.ts`, `websiteSignIn.ts` | Every rule holds. Each has a test, and coverage is 100 % of lines, branches and functions.                                                              |
+
+No finding, so nothing was fixed.
 
 ### 2026-11-20 — the first pass, before v0.2.0 (branch `feat/fonts`, PR #3)
 

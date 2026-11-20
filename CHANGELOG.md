@@ -10,6 +10,9 @@ applies it.
 ### Changed
 
 - `docs/DELIVERY.md` records the install and build of the tag v0.2.0 itself, after the branch.
+- `docs/DECISIONS.md` K9–K13: the owner's confirmations (the five font weights, the first
+  security pass, the licence, PR #4) and master's branch protection.
+- `.claude/settings.json`: the kit's Claude Code permissions, explained in `CONTRIBUTING.md`.
 
 ## [0.2.0] - 2026-11-20
 

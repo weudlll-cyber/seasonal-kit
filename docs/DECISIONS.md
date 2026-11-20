@@ -27,3 +27,17 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   (licence note: [fonts/README.md](../fonts/README.md)). This closes kit BACKLOG 7.
 - **K7 — The `sk-` prefix.** Shared CSS classes and keyframes use the prefix `sk-`. It replaces
   `sbr-` and `smg-` in shared parts only; a game's own parts keep its prefix.
+- **K9 — All five Luxora weights.** The owner confirmed that `css/fonts.css` declares all five
+  Luxora Grotesk faces: Book 400, Regular 500, Bold 700, Italic 400 and Light Italic 300.
+- **K10 — The first security pass.** The owner confirmed the security pass in PR #3
+  ([security-pass.md](security-pass.md)) as the one that closes BACKLOG 6.
+- **K11 — The licence stays.** The owner confirmed that `package.json` keeps the licence
+  `AGPL-3.0-or-later`. The font exception is stated in [fonts/README.md](../fonts/README.md),
+  [README.md](../README.md) and [SECURITY.md](../SECURITY.md).
+- **K12 — PR #4.** The owner confirmed PR #4 (the v0.2.0 delivery proof, docs only), which the
+  owner merged without a review, before master was protected.
+- **K13 — Master is protected.** Since 2026-11-20, `master` has branch protection. The required
+  checks are `verify`, `osv-scanner`, `gitleaks`, `docs` and `analyze` (CodeQL), each one reported
+  by GitHub Actions, and the branch must be up to date. Every change goes through a pull request,
+  with 0 required approvals: the owner approves and merges. Unresolved conversations block a
+  merge. The rules apply to admins too. Force pushes and deletion of the branch are not allowed.

@@ -36,8 +36,9 @@ Only the latest tag receives security fixes.
   automerged.
 - **Scans on every PR and on master:** CodeQL, osv-scanner (any finding fails), gitleaks over the
   full history; gitleaks also runs before every commit (lefthook.yml).
-- **Protected master:** every change goes through a PR with every check green; no force push,
-  no deletion. Third-party actions are pinned to full commit SHAs, workflow permissions are
+- **Protected master** (docs/DECISIONS.md K13): every change goes through a PR with every
+  required check green on an up-to-date branch. No force push, no deletion, and admins are held
+  to the same rules. Third-party actions are pinned to full commit SHAs, workflow permissions are
   read-only by default.
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
   public `tokens.css` over HTTPS and nothing else.

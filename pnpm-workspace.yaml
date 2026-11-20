@@ -13,3 +13,9 @@ saveExact: true
 # No lifecycle script of any package runs on install (docs/DELIVERY.md: the kit needs none, so
 # no game has to allow one). The git hook is installed by hand: CONTRIBUTING.md.
 ignoreScripts: true
+
+# Forced versions for transitive dependencies. Remove an entry once its parent ships the fix.
+overrides:
+  # typescript-eslint 8.71.2 pins minimatch 10.2.6 (GHSA-g3hv-75wg-m249, ReDoS in glob
+  # patterns; osv-scanner 2026-11-20); 11.0.9 is the fixed line ESLint itself already uses.
+  minimatch@10.2.6: 11.0.9

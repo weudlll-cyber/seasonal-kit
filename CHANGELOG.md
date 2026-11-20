@@ -13,6 +13,11 @@ applies it.
   security pass; the living docs; Renovate, osv-scanner and gitleaks; the CI and CodeQL
   workflows; the pre-commit hook (format, lint, gitleaks).
 
+### Security
+
+- minimatch 10.2.6 (GHSA-g3hv-75wg-m249, moderate, only in ESLint's tooling) forced to 11.0.9 in
+  `pnpm-workspace.yaml`; osv-scanner finds nothing.
+
 ## [0.0.1] - 2026-11-20
 
 ### Added

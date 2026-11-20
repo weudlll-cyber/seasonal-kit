@@ -23,7 +23,9 @@ function names(css: string): string[] {
 
 describe('the sk- prefix', () => {
   it('finds the CSS files', () => {
-    expect(files).toEqual(expect.arrayContaining(['tokens.css', 'motion.css', 'fonts.css']));
+    expect(files).toEqual(
+      expect.arrayContaining(['tokens.css', 'motion.css', 'fonts.css', 'call.css']),
+    );
   });
 
   it.each(files)('%s names every class and keyframe sk-…', (file) => {

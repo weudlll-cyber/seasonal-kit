@@ -22,11 +22,11 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   versions, plus whatever only the other has.
 - **K6 — A reserved call-view slot.** The layout reserves a slot for a later call view. Building
   it is a later step: the website is finalising the call view's placement and size now.
+- **K7 — The `sk-` prefix.** Shared CSS classes and keyframes use the prefix `sk-`. It replaces
+  `sbr-` and `smg-` in shared parts only; a game's own parts keep its prefix.
 - **K8 — The Luxora Grotesk font ships in the kit.** The Seasonal Tokens project bought the
   font. It may be used and shipped in the kit. It is not covered by the kit's AGPL licence
   (licence note: [fonts/README.md](../fonts/README.md)). This closes kit BACKLOG 7.
-- **K7 — The `sk-` prefix.** Shared CSS classes and keyframes use the prefix `sk-`. It replaces
-  `sbr-` and `smg-` in shared parts only; a game's own parts keep its prefix.
 - **K9 — All five Luxora weights.** The owner confirmed that `css/fonts.css` declares all five
   Luxora Grotesk faces: Book 400, Regular 500, Bold 700, Italic 400 and Light Italic 300.
 - **K10 — The first security pass.** The owner confirmed the security pass in PR #3

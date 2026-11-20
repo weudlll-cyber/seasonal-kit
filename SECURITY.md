@@ -40,6 +40,11 @@ Only the latest tag receives security fixes.
   required check green on an up-to-date branch. No force push, no deletion, and admins are held
   to the same rules. Third-party actions are pinned to full commit SHAs, workflow permissions are
   read-only by default.
+- **Checked frame messages.** The chat and call-view links accept a message only from the
+  frame's own window, at the frame's origin, with the frame's `source` and well-formed fields.
+  Anything else is ignored. They post only at that origin (never `'*'`), and only the fields the
+  website's contract names: no token, key or text. Sign-in redirects go only to paths on this
+  site (docs/security-pass.md).
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
   public `tokens.css` over HTTPS and nothing else.
 

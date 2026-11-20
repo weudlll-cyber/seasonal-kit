@@ -58,6 +58,10 @@ default base, and imports of `@seasonal/kit/fonts.css` and `tokens.css`.
 | The built CSS's `url()`s | All five point at an emitted file (`/assets/luxora-grotesk-*-<hash>.woff2`).                                                                                                            |
 | The emitted bytes        | Each emitted file has the sha256 recorded in `fonts/README.md`.                                                                                                                         |
 
+The same consumer then pinned the tag `#v0.2.0`, again with scripts off. The lockfile resolved it to
+the merge commit's tarball (`609e93c`). `vite build` emitted the same five assets with the same
+content hashes in their names, and every CSS `url()` resolved.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

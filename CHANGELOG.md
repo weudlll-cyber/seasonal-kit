@@ -7,6 +7,10 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/DELIVERY.md` records the install and build of the tag v0.2.0 itself, after the branch.
+
 ## [0.2.0] - 2026-11-20
 
 ### Added

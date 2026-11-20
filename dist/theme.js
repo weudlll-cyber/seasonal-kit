@@ -39,3 +39,34 @@ export const systemTheme = () => (window.matchMedia(QUERY).matches ? 'dark' : 'l
 export function resolveTheme() {
     return storedTheme() ?? systemTheme();
 }
+export function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+// Calls `changed` with the system's theme whenever the system setting changes while nothing is
+// stored (a stored choice wins, so the change is not followed then); returns the unsubscribe.
+export function onSystemThemeChange(changed) {
+    const media = window.matchMedia(QUERY);
+    const onChange = () => {
+        if (storedTheme() === null)
+            changed(systemTheme());
+    };
+    media.addEventListener('change', onChange);
+    return () => {
+        media.removeEventListener('change', onChange);
+    };
+}
+// The theme the page shows now, as <html data-theme> says (set by the early script and the
+// toggle); 'auto' before either has set it, which the website's chat resolves by the same rule.
+export function shownTheme() {
+    const value = document.documentElement.getAttribute('data-theme');
+    return value === 'light' || value === 'dark' ? value : 'auto';
+}
+// Calls `changed` whenever <html data-theme> changes (parts that must match the page, such as
+// the website's chat frame); returns the unsubscribe.
+export function onShownThemeChange(changed) {
+    const observer = new MutationObserver(changed);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => {
+        observer.disconnect();
+    };
+}

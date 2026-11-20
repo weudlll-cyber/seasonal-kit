@@ -33,12 +33,26 @@ Vite 8.3.4, Vitest 5.0.5 with jsdom 30.1.3, TypeScript 5.9.3.
 
 Install scripts, a `prepare` script or a build on install were **not needed**, so none exists.
 
+## The v0.1.0 entries (2026-11-20, branch `feat/design-basics` before its merge)
+
+The same consumer was installed from the branch with scripts off. It had `base: '/games/consumer/'`
+and `themeInit()` in its Vite plugins, `<script src="theme-init.js">` in its head, and imports of
+`tokens.css`, `motion.css` and the theme functions.
+
+| Step                        | Result                                                                                                                                                                                                                                                                                                                            |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vite build`                | Worked. `dist/theme-init.js` was written beside `index.html`, unhashed, and the tag kept its relative `src`, so it resolves under the base. Vite prints `<script src="theme-init.js"> … can't be bundled without type="module"`, which is expected: the script must stay classic and unbundled, and the plugin supplies the file. |
+| `tsc` over `src/`           | Worked against `dist/index.d.ts`.                                                                                                                                                                                                                                                                                                 |
+| `tsc` over `vite.config.ts` | Vite's own `.d.ts` needs `@types/node` and an ES2024+ `lib`, which the scratch consumer lacked. No error came from the kit's `dist/vite.d.ts`. A game types its Vite config in its Node-side tsconfig, which has both.                                                                                                            |
+| Vitest                      | Worked.                                                                                                                                                                                                                                                                                                                           |
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise
   (`.github/workflows/ci.yml`, job `verify`).
-- `package.json` `"files"` decides what a game receives. A new folder that a game needs goes in
-  there.
+- `package.json` `"files"` decides what a game receives: `browser/`, `css/` and `dist/` since
+  v0.1.0. A new folder that a game needs goes in there. `dist/vite.js` reads
+  `../browser/theme-init.js` from the installed package, so the two folders ship together.
 - `exports` names every entry. Types come first, so TypeScript finds the `.d.ts`.
 - A game's lockfile pins the commit, not just the tag. A tag moved after the fact would not reach
   a game unnoticed: the integrity hash would no longer match. Tags are never moved

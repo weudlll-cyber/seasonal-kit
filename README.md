@@ -7,16 +7,21 @@ to a stricter standard than any single game ([docs/DECISIONS.md](docs/DECISIONS.
 
 ## What is inside
 
-| Import                     | What it is                                                                              |
-| -------------------------- | --------------------------------------------------------------------------------------- |
-| `@seasonal/kit/tokens.css` | the season colours, copied from the website                                             |
-| `@seasonal/kit`            | the theme logic: `resolveTheme`, `storedTheme`, `storeTheme`, `systemTheme` and `Theme` |
+| Import                     | What it is                                                                                                                                                                                |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@seasonal/kit/tokens.css` | the design tokens every game shares, light and dark. The season colours are copied from the website and checked against it in CI; every text token is checked for WCAG AA in both themes. |
+| `@seasonal/kit/motion.css` | the win glow `sk-anim-win`, and every animation off under `prefers-reduced-motion`                                                                                                        |
+| `@seasonal/kit`            | the theme logic, framework-free: `resolveTheme`, `storedTheme`, `storeTheme`, `systemTheme`, `applyTheme`, `onSystemThemeChange`, `shownTheme`, `onShownThemeChange`                      |
+| `@seasonal/kit/vite`       | `themeInit()`: serves the early theme script as `<base>theme-init.js`, for `<script src="theme-init.js">` before the first paint                                                          |
+
+A game imports the kit's CSS before its own and adds only its own arena tokens and animations.
+Fonts stay in each game for now ([docs/BACKLOG.md](docs/BACKLOG.md) item 7).
 
 ## How a game pins it
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.0.1"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.1.0"
 }
 ```
 

@@ -14,7 +14,8 @@ pre-commit:
       stage_fixed: true
     lint:
       glob: '*.{ts,js,mjs}'
-      run: pnpm exec eslint --max-warnings 0 {staged_files}
+      # --no-warn-ignored: a staged dist/ file is ignored by the config, not a warning.
+      run: pnpm exec eslint --max-warnings 0 --no-warn-ignored {staged_files}
     gitleaks:
       # The image CI uses, pinned by digest, over the staged changes; Docker must be running.
       run: sh scripts/gitleaks-staged.sh

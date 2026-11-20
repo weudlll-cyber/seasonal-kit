@@ -1,12 +1,15 @@
 # @file   .github/workflows/ci.yml
-# @brief  CI: verify (format, lint, typecheck, tests with coverage gates, dist up to date),
-#         osv-scanner, gitleaks and the docs' links.
+# @brief  CI: verify (format, lint, typecheck, tests with coverage gates and the contrast check,
+#         dist up to date, season colours equal to the website's master), osv-scanner,
+#         gitleaks and the docs' links.
 #
 # Responsibility: seasonal-mini-games .github/workflows/ci.yml at 93ed780 cut to a library
 #                 (no e2e, no image), stricter: osv-scanner fails on any finding, the committed
-#                 dist/ must equal a fresh build. Every job here is a required check of master's
-#                 branch protection (docs/RELEASING.md); any red job blocks a merge.
-# Depends on:     .github/actions/setup, osv-scanner.toml
+#                 dist/ must equal a fresh build, the season colours are compared with the
+#                 website (DECISIONS K3), also daily, so a change on the site is noticed while
+#                 the kit sits still. Every job here is a required check of master's branch
+#                 protection (docs/RELEASING.md); any red job blocks a merge.
+# Depends on:     .github/actions/setup, osv-scanner.toml, scripts/season-check.mjs
 name: CI
 
 on:
@@ -14,6 +17,9 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  schedule:
+    # Daily 05:17 UTC: the season colour check against the website's master.
+    - cron: '17 5 * * *'
 
 # Read-only unless a job asks for more; none does.
 permissions:
@@ -44,10 +50,15 @@ jobs:
         run: |
           pnpm build
           if [ -n "$(git status --porcelain -- dist)" ]; then
+            # Shows which compiled file is stale or missing before failing.
             git status --porcelain -- dist
             echo "::error::dist/ differs from a fresh build; run pnpm build and commit dist/"
             exit 1
           fi
+      # The website is the single source of the season colours: any difference fails (exit 1),
+      # and so does a site that cannot be read (exit 2).
+      - name: Season colours equal the website's master
+        run: node scripts/season-check.mjs
 
   osv-scanner:
     runs-on: ubuntu-latest

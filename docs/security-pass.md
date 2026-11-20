@@ -20,4 +20,13 @@ delivery (docs/DELIVERY.md).
 
 ## Passes
 
-None yet; the first is due before v0.2.0 (docs/BACKLOG.md).
+The first full pass is due before v0.2.0 (docs/BACKLOG.md).
+
+## Checks of the tools themselves
+
+- **2026-11-20, the pre-commit secret scan.** A staged file with a fake AWS key and a fake GitHub
+  token went through the hook's first version: lefthook passed `{root}` on literally, Docker
+  mounted an empty volume, git in the container failed, and gitleaks reported "no leaks found".
+  **Fixed:** `scripts/gitleaks-staged.sh` mounts `git rev-parse --show-toplevel` and allows it as
+  a git `safe.directory`. Run again on the same staged file, the hook found the leak and refused
+  the commit (exit 1). The probe file was removed and never pushed.

@@ -19,15 +19,6 @@ it, and keeps its number. [OPEN.md](OPEN.md) is the short page over part one.
 5. **Adopt the kit in the games:** Mini Games first, then Bingo Royale, then Seasonal Party, each
    in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done when:
    each game pins a kit tag and has removed its own copies of the moved parts.
-6. **First security pass** ([security-pass.md](security-pass.md)). Done when: it is recorded
-   before v0.2.0.
-7. **Fonts: the owner's word on Luxora Grotesk.** Mini Games and Bingo Royale say the font belongs
-   to the Seasonal Tokens project and is not covered by their AGPL licence (`assets/README.md`
-   line 5 in each). No licence for redistributing it was found in the games or on the website. So
-   the kit names the family (`--font-family`) but ships no `fonts.css` and no font files; each game
-   keeps its own. Done when: the owner has confirmed that the Seasonal Tokens project allows
-   redistribution and provided that licence text, and the kit ships `fonts.css`, the five woff2
-   files and the licence. Or the owner has decided the fonts stay in the games.
 
 ## Part two — closed
 
@@ -41,3 +32,10 @@ it, and keeps its number. [OPEN.md](OPEN.md) is the short page over part one.
   from the website, the shared motion with `sk-`, and the theme logic with its early script and
   Vite plugin. Tests cover the tokens, the prefix, the season check, the contrast check and the
   theme behaviour; CI checks the season colours and the contrast. Closed by PR #2 and v0.1.0.
+- **6. First security pass** (2026-11-20). gitleaks over all refs, osv-scanner, CodeQL, install
+  behaviour, package contents and binary assets: no finding
+  ([security-pass.md](security-pass.md)). Closed by PR #3, before v0.2.0.
+- **7. Fonts** (2026-11-20, DECISIONS K8). The owner approved shipping Luxora Grotesk in the kit;
+  it is not under the AGPL. `css/fonts.css` and the five woff2 files, byte-identical to the Mini
+  Games, Bingo Royale and website copies, with the licence note in `fonts/README.md`. Closed by
+  PR #3 and v0.2.0.

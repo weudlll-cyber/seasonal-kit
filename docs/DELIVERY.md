@@ -6,7 +6,7 @@ How a game gets the kit, and what was proven on 2026-11-20 before anything else 
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.1.0"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.3.0"
 }
 ```
 
@@ -62,12 +62,31 @@ The same consumer then pinned the tag `#v0.2.0`, again with scripts off. The loc
 the merge commit's tarball (`609e93c`). `vite build` emitted the same five assets with the same
 content hashes in their names, and every CSS `url()` resolved.
 
+## The v0.3.0 website integration (2026-11-20, the tag itself)
+
+A new scratch consumer outside every repository pinned `#v0.3.0` with `.npmrc`
+`ignore-scripts=true` and `pnpm install --ignore-scripts`. Its toolchain was pnpm 12.14.0,
+Vite 8.3.4, Vitest 5.0.5 with jsdom 30.1.3, TypeScript 5.9.3 and @types/node 22.20.5. It was
+deleted afterwards.
+
+| Step                                                       | Result                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                                             | Worked, with no script. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/0862694…`, `gitHosted: true`, an `integrity` hash, `version: 0.3.0`).                                                                                                                                                                            |
+| What landed in `node_modules/@seasonal/kit`                | `package.json`, `LICENSE`, `README.md`, `browser/`, `css/` (now with `call.css`), `dist/` (with `websiteSignIn`, `chatEmbed`, `chatArrivals`, `callView`, `callSlot`, `frameMessages`) and `fonts/`. No source, test or config.                                                                                                                         |
+| `vite build`                                               | Worked. The page imported `@seasonal/kit/call.css` and used every new root export. The stylesheet holds every `sk-call-slot` rule, the low window's 267 × 150 included. The script holds the chat and call links (`seasonal-chat-host`, `seasonal-call-host`), the embed address, the login hop and the sign-in guard's key.                            |
+| `tsc --noEmit` (Bundler resolution, `skipLibCheck: false`) | Worked against `dist/*.d.ts`.                                                                                                                                                                                                                                                                                                                           |
+| A Vitest test (jsdom) importing the new exports            | Worked, 4 tests. They built the sign-in links, refused a header naming `//evil.example`, linked a chat frame (`visible` posted at the page's origin; an `unread` from another origin dropped, the same one from the frame's origin heard), linked a call, counted arrivals, sized the slot (null without a call id), and read the installed `call.css`. |
+
+An entry module's unused exports are dropped from a Vite app build. The first build kept only
+what the page called, so the consumer called every export before the bundle was read.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise
   (`.github/workflows/ci.yml`, job `verify`).
 - `package.json` `"files"` decides what a game receives: `browser/`, `css/` and `dist/` since
-  v0.1.0, and `fonts/` since v0.2.0. A new folder that a game needs goes in there.
+  v0.1.0, and `fonts/` since v0.2.0 (`css/call.css` since v0.3.0 is in `css/`). A new folder that
+  a game needs goes in there.
   Two pairs of folders must ship together: `css/fonts.css` points at `../fonts/`, and
   `dist/vite.js` reads `../browser/theme-init.js` from the installed package.
 - `exports` names every entry. Types come first, so TypeScript finds the `.d.ts`.

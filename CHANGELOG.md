@@ -7,6 +7,11 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/DELIVERY.md` records the install and build of the tag v0.3.0, and its pin example names
+  v0.3.0; `docs/security-pass.md` completes the v0.3.0 pass's install and package rows.
+
 ## [0.3.0] - 2026-11-20
 
 The game side of the website integration, framework-free (React wrappers: docs/BACKLOG.md 9).

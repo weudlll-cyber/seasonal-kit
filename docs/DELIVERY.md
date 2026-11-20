@@ -37,8 +37,9 @@ Install scripts, a `prepare` script or a build on install were **not needed**, s
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise
   (`.github/workflows/ci.yml`, job `verify`).
-- `package.json` `"files"` decides what a game receives. A new folder that a game needs goes in
-  there.
+- `package.json` `"files"` decides what a game receives: `browser/`, `css/` and `dist/` since
+  v0.1.0. A new folder that a game needs goes in there. `dist/vite.js` reads
+  `../browser/theme-init.js` from the installed package, so the two folders ship together.
 - `exports` names every entry. Types come first, so TypeScript finds the `.d.ts`.
 - A game's lockfile pins the commit, not just the tag. A tag moved after the fact would not reach
   a game unnoticed: the integrity hash would no longer match. Tags are never moved

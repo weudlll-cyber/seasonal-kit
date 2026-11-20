@@ -19,3 +19,7 @@ export declare function storedTheme(): Theme | null;
 export declare function storeTheme(theme: Theme): void;
 export declare const systemTheme: () => Theme;
 export declare function resolveTheme(): Theme;
+export declare function applyTheme(theme: Theme): void;
+export declare function onSystemThemeChange(changed: (theme: Theme) => void): () => void;
+export declare function shownTheme(): Theme | 'auto';
+export declare function onShownThemeChange(changed: () => void): () => void;

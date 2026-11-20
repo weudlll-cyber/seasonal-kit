@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -15,12 +15,26 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./tokens.css": "./css/tokens.css"
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
+    },
+    "./tokens.css": "./css/tokens.css",
+    "./motion.css": "./css/motion.css"
   },
   "files": [
+    "browser",
     "css",
     "dist"
   ],
+  "peerDependencies": {
+    "vite": "8.3.4"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint . --max-warnings 0",
@@ -41,6 +55,7 @@
     "prettier": "3.9.10",
     "typescript": "5.9.3",
     "typescript-eslint": "8.71.2",
+    "vite": "8.3.4",
     "vitest": "5.0.5"
   }
 }

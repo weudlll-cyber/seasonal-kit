@@ -43,8 +43,17 @@ export default defineConfig(
   {
     // The early theme script is plain ES5 for the browser, run before any module loads.
     files: ['browser/**/*.js'],
+    // ES5 has no optional catch binding, so a catch's unused error is allowed here.
     languageOptions: { globals: { window: 'readonly', document: 'readonly' } },
-    rules: { 'no-var': 'off' },
+    rules: {
+      'no-var': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { caughtErrors: 'none' }],
+    },
+  },
+  {
+    // The CI scripts run in Node, which provides these globals (tsc checks them via checkJs).
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { console: 'readonly', fetch: 'readonly' } },
   },
   {
     // Test files may run to 400 lines.

@@ -46,13 +46,26 @@ and `themeInit()` in its Vite plugins, `<script src="theme-init.js">` in its hea
 | `tsc` over `vite.config.ts` | Vite's own `.d.ts` needs `@types/node` and an ES2024+ `lib`, which the scratch consumer lacked. No error came from the kit's `dist/vite.d.ts`. A game types its Vite config in its Node-side tsconfig, which has both.                                                                                                            |
 | Vitest                      | Worked.                                                                                                                                                                                                                                                                                                                           |
 
+## The v0.2.0 fonts (2026-11-20, branch `feat/fonts` before its merge)
+
+A new scratch consumer installed the branch with `ignore-scripts=true`. It used Vite 8.3.4, the
+default base, and imports of `@seasonal/kit/fonts.css` and `tokens.css`.
+
+| Step                     | Result                                                                                                                                                                                  |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`           | Worked, with no script. `node_modules/@seasonal/kit/fonts/` holds the five woff2 files and the licence note.                                                                            |
+| `vite build`             | Worked. Vite resolved each `url('../fonts/….woff2')` from the installed package and emitted all five as hashed assets (`dist/assets/luxora-grotesk-*-<hash>.woff2`, 20.98 to 26.42 kB). |
+| The built CSS's `url()`s | All five point at an emitted file (`/assets/luxora-grotesk-*-<hash>.woff2`).                                                                                                            |
+| The emitted bytes        | Each emitted file has the sha256 recorded in `fonts/README.md`.                                                                                                                         |
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise
   (`.github/workflows/ci.yml`, job `verify`).
 - `package.json` `"files"` decides what a game receives: `browser/`, `css/` and `dist/` since
-  v0.1.0. A new folder that a game needs goes in there. `dist/vite.js` reads
-  `../browser/theme-init.js` from the installed package, so the two folders ship together.
+  v0.1.0, and `fonts/` since v0.2.0. A new folder that a game needs goes in there.
+  Two pairs of folders must ship together: `css/fonts.css` points at `../fonts/`, and
+  `dist/vite.js` reads `../browser/theme-init.js` from the installed package.
 - `exports` names every entry. Types come first, so TypeScript finds the `.d.ts`.
 - A game's lockfile pins the commit, not just the tag. A tag moved after the fact would not reach
   a game unnoticed: the integrity hash would no longer match. Tags are never moved

@@ -7,6 +7,29 @@ applies it.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-20
+
+### Added
+
+- `@seasonal/kit/fonts.css` and the five Luxora Grotesk woff2 files in `fonts/` (DECISIONS K8):
+  - Book 400 and Bold 700, the two faces the games use;
+  - Regular 500, Italic 400 and Light Italic 300, as the website declares them.
+
+  The files are byte-identical to the Mini Games, Bingo Royale and website copies; sha256 values
+  are in `fonts/README.md` and checked in the tests. They are not under the AGPL (licence note in
+  `fonts/README.md`).
+
+- The first security pass (`docs/security-pass.md`).
+
+### Migration, per game
+
+- **Mini Games and Bingo Royale:** once a game pins v0.2.0, it:
+  - imports `@seasonal/kit/fonts.css` in place of its own `packages/ui/src/fonts.css`;
+  - drops its own copy of the font files (`assets/fonts/luxora-grotesk-*.woff2`);
+  - keeps `assets/README.md`'s licence note for the files it still holds, if any.
+- **Seasonal Party:** takes the font for its frame from the kit (DECISIONS K4). Its round font
+  stays inside the play field.
+
 ## [0.1.0] - 2026-11-20
 
 ### Added
@@ -51,6 +74,7 @@ applies it.
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/weudlll-cyber/seasonal-kit/releases/tag/v0.0.1

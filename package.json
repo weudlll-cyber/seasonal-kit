@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -20,12 +20,14 @@
       "default": "./dist/vite.js"
     },
     "./tokens.css": "./css/tokens.css",
+    "./fonts.css": "./css/fonts.css",
     "./motion.css": "./css/motion.css"
   },
   "files": [
     "browser",
     "css",
-    "dist"
+    "dist",
+    "fonts"
   ],
   "peerDependencies": {
     "vite": "8.3.4"

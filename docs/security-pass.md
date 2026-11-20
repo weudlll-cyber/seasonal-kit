@@ -20,7 +20,18 @@ delivery (docs/DELIVERY.md).
 
 ## Passes
 
-The first full pass is due before v0.2.0 (docs/BACKLOG.md).
+### 2026-11-20 — the first pass, before v0.2.0 (branch `feat/fonts`, PR #3)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 6 commits with a patch scanned (8 commits in all refs, merges included).                                                                                                   |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 237 packages. The minimatch override still holds.                                                                                                                       |
+| Code                         | CodeQL (javascript-typescript)                                                                    | The `analyze` check and the code-scanning check green on PRs #1 and #2 and on master's merge commits. The alert list itself was not read: `gh api` is not permitted in this session. |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | The branch installs with no script. `vite build` emits the five woff2 files; every CSS `url()` resolves (docs/DELIVERY.md).                                                          |
+| Package contents             | the installed package                                                                             | `package.json`, `LICENSE`, `README.md`, `browser/`, `css/`, `dist/`, `fonts/` (with its licence note). No source, test or config.                                                    |
+| Binary assets                | sha256 of the five woff2 files, compared with the Mini Games, Bingo Royale and website copies     | Byte-identical everywhere (fonts/README.md). The kit's test keeps them so.                                                                                                           |
+
+No finding, so nothing was fixed.
 
 ## Checks of the tools themselves
 

@@ -10,18 +10,19 @@ to a stricter standard than any single game ([docs/DECISIONS.md](docs/DECISIONS.
 | Import                     | What it is                                                                                                                                                                                |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@seasonal/kit/tokens.css` | the design tokens every game shares, light and dark. The season colours are copied from the website and checked against it in CI; every text token is checked for WCAG AA in both themes. |
+| `@seasonal/kit/fonts.css`  | the Luxora Grotesk faces (Book 400, Regular 500, Bold 700, Italic 400, Light Italic 300), served from the kit's `fonts/`; licence in [fonts/README.md](fonts/README.md)                   |
 | `@seasonal/kit/motion.css` | the win glow `sk-anim-win`, and every animation off under `prefers-reduced-motion`                                                                                                        |
 | `@seasonal/kit`            | the theme logic, framework-free: `resolveTheme`, `storedTheme`, `storeTheme`, `systemTheme`, `applyTheme`, `onSystemThemeChange`, `shownTheme`, `onShownThemeChange`                      |
 | `@seasonal/kit/vite`       | `themeInit()`: serves the early theme script as `<base>theme-init.js`, for `<script src="theme-init.js">` before the first paint                                                          |
 
-A game imports the kit's CSS before its own and adds only its own arena tokens and animations.
-Fonts stay in each game for now ([docs/BACKLOG.md](docs/BACKLOG.md) item 7).
+A game imports the kit's CSS (`fonts.css`, `tokens.css`, `motion.css`) before its own, and adds
+only its own arena tokens and animations.
 
 ## How a game pins it
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.1.0"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.2.0"
 }
 ```
 
@@ -42,4 +43,7 @@ work is in [docs/OPEN.md](docs/OPEN.md) and [docs/BACKLOG.md](docs/BACKLOG.md); 
 
 ## License
 
-GNU Affero General Public License v3.0 or later ([LICENSE](LICENSE)), as Mini Games.
+GNU Affero General Public License v3.0 or later ([LICENSE](LICENSE)), as Mini Games. The one
+exception is the Luxora Grotesk font in `fonts/`. It belongs to the Seasonal Tokens project and is
+not under the AGPL; the owner approved shipping it here on 2026-11-20. See
+[fonts/README.md](fonts/README.md).

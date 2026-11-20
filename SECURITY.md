@@ -41,3 +41,11 @@ Only the latest tag receives security fixes.
   read-only by default.
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
   public `tokens.css` over HTTPS and nothing else.
+
+## Binary assets
+
+The only binary files are the five Luxora Grotesk woff2 files in `fonts/`. They are used exactly
+as delivered and are not under the AGPL; see the licence note in
+[fonts/README.md](fonts/README.md). Their sha256 values are recorded there.
+`tests/fonts.test.ts` fails if a file changes, if one is added that `css/fonts.css` does not use,
+or if `css/fonts.css` points at a file that is not shipped.

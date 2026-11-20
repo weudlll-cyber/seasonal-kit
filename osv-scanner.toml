@@ -1,0 +1,9 @@
+# @file   osv-scanner.toml
+# @brief  Accepted osv-scanner findings, each with a reason and an expiry date.
+#
+# Responsibility: let the CI job pass on a finding that is reviewed and not exploitable here;
+#                 every entry expires so it is reviewed again (seasonal-mini-games
+#                 osv-scanner.toml at 93ed780). The kit's CI fails on any finding, of any
+#                 severity, that has no entry here (Mini Games fails from CVSS 7).
+#
+# No entry now.

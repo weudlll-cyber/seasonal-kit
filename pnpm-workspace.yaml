@@ -1,15 +1,15 @@
 # @file   pnpm-workspace.yaml
 # @brief  pnpm's settings for the kit (one package, no workspace members).
 #
-# Responsibility: the same install rules as the games (Mini Games pnpm-workspace.yaml): refuse
-#                 a Node outside "engines", pin exact versions, run no dependency's install
-#                 script unless listed here.
+# Responsibility: the install rules of the games (seasonal-mini-games pnpm-workspace.yaml at
+#                 93ed780), stricter: no install script runs at all, the kit's own included
+#                 (Mini Games allows lefthook's). pnpm 11+ reads its settings here, not from
+#                 .npmrc.
 
+# Refuse installs on a Node version outside package.json "engines".
 engineStrict: true
-# "pnpm add" pins exact versions; upgrades arrive as reviewed changes.
+# "pnpm add" pins exact versions; upgrades arrive as Renovate PRs.
 saveExact: true
-
-# Dependency install scripts run only when listed here as true.
-allowBuilds:
-  # Vite's bundler ships its binary as a platform package; the postinstall is a fallback.
-  esbuild: false
+# No lifecycle script of any package runs on install (docs/DELIVERY.md: the kit needs none, so
+# no game has to allow one). The git hook is installed by hand: CONTRIBUTING.md.
+ignoreScripts: true

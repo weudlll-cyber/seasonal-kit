@@ -1,0 +1,78 @@
+# @file   .github/workflows/ci.yml
+# @brief  CI: verify (format, lint, typecheck, tests with coverage gates, dist up to date),
+#         osv-scanner, gitleaks and the docs' links.
+#
+# Responsibility: seasonal-mini-games .github/workflows/ci.yml at 93ed780 cut to a library
+#                 (no e2e, no image), stricter: osv-scanner fails on any finding, the committed
+#                 dist/ must equal a fresh build. Every job here is a required check of master's
+#                 branch protection (docs/RELEASING.md); any red job blocks a merge.
+# Depends on:     .github/actions/setup, osv-scanner.toml
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# Read-only unless a job asks for more; none does.
+permissions:
+  contents: read
+
+concurrency:
+  # One group per branch and event, so a push and its PR do not cancel each other.
+  group: ci-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  # Every merge commit on master must get its own finished run.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+# Scanner images pinned by digest, like the actions by commit SHA (the digests Mini Games uses).
+env:
+  OSV_SCANNER_IMAGE: ghcr.io/google/osv-scanner:v2.7.0@sha256:4f3b7e2c64b9d38a5febc5a7e4a3dfef1d1362f726dea7a2ef4762b46469fcd0
+  GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+  LYCHEE_IMAGE: lycheeverse/lychee:0.24.2@sha256:e2d19e57cf6ab037026f20b8e449a1f30d9d7f81eef4194763aab2eab20bd28d
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/setup
+      # The same script as locally: format check, lint, typecheck, tests with coverage gates.
+      - run: pnpm verify
+      # Games install dist/ as committed (docs/DELIVERY.md): it must be exactly a fresh build.
+      - name: dist/ matches the source
+        run: |
+          pnpm build
+          if [ -n "$(git status --porcelain -- dist)" ]; then
+            git status --porcelain -- dist
+            echo "::error::dist/ differs from a fresh build; run pnpm build and commit dist/"
+            exit 1
+          fi
+
+  osv-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Exit 0: nothing found; 1: findings (fail, whatever their severity); else a scanner error.
+      - run: |
+          docker run --rm -v "$PWD:/src" -w /src "$OSV_SCANNER_IMAGE" scan source \
+            --config=osv-scanner.toml --lockfile=pnpm-lock.yaml
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # gitleaks scans the full history, not just the last commit.
+          fetch-depth: 0
+      - run: docker run --rm -v "$PWD:/repo" "$GITLEAKS_IMAGE" git /repo --redact --no-banner --exit-code 1
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Links between the repository's own files (no network: external sites come and go).
+      - name: Markdown link check
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src "$LYCHEE_IMAGE" --offline --no-progress \
+            --exclude-path node_modules '**/*.md'

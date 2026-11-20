@@ -65,8 +65,7 @@
   --color-scrim: rgb(0 0 0 / 40%);
   color-scheme: light;
 
-  /* Typography: Bold for headings, Book for body. The faces are declared by each game (the font
-     files are not the kit's to redistribute, docs/DECISIONS.md). */
+  /* Typography: Bold for headings, Book for body (faces in ./fonts.css, DECISIONS K8) */
   --font-family: 'Luxora Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-weight-body: 400;
   --font-weight-strong: 700;

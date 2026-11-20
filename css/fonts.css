@@ -1,0 +1,58 @@
+/**
+ * @file   css/fonts.css
+ * @brief  The Luxora Grotesk faces every Seasonal game uses, served from the kit's fonts/.
+ *
+ * Responsibility: Book (400) for body text and Bold (700) for headings and strong text, the two
+ *                 faces Bingo Royale and Mini Games use. Also Regular (500), Italic (400) and
+ *                 Light Italic (300), as the website declares them, so all five shipped files are
+ *                 selectable; a browser downloads a face only when a style uses it. Each is woff2
+ *                 with swap, so text shows at once in the fallback font. ./tokens.css names the
+ *                 family in --font-family. The files are used as delivered; their licence is in
+ *                 ../fonts/README.md (not the kit's AGPL; DECISIONS K8).
+ * Source:         seasonal-mini-games packages/ui/src/fonts.css at 91b23bc (Book, Bold), plus
+ *                 seasonal-entertainment client/src/styles/fonts.css at e7b995c (Regular,
+ *                 Italic, Light Italic and their weights); the woff2 files are byte-identical in
+ *                 all three repositories (fonts/README.md).
+ */
+
+@font-face {
+  font-family: 'Luxora Grotesk';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('../fonts/luxora-grotesk-book.woff2') format('woff2');
+}
+
+/* Book and Regular both declare weight 400 inside the font files; Regular is mapped to 500, as
+   on the website, so both stay selectable. */
+@font-face {
+  font-family: 'Luxora Grotesk';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('../fonts/luxora-grotesk-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Luxora Grotesk';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('../fonts/luxora-grotesk-bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Luxora Grotesk';
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+  src: url('../fonts/luxora-grotesk-light-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Luxora Grotesk';
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url('../fonts/luxora-grotesk-italic.woff2') format('woff2');
+}

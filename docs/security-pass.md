@@ -62,6 +62,18 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-21 — before v0.4.0 (branch `feat/screen-blocks`, PR #8)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 15 commits with a patch scanned (22 commits in all refs, merges included).                                                                                                                                                                    |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 257 packages. New, all devDependencies pinned exactly as both games pin them: react and react-dom 19.3.1, @types/react and @types/react-dom 19.3.0, @testing-library/react 16.3.3, @testing-library/dom 10.4.2. React is an optional peer. |
+| Code                         | CodeQL (javascript-typescript)                                                                    | `analyze` and `CodeQL` green on PR #8; the alert list is read after the merge (docs/NIGHT-2026-11-21.md).                                                                                                                                               |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.4.0, after it is cut (docs/DELIVERY.md).                                                                                                                                                                                           |
+| Frame messages and redirects | the rules above                                                                                   | The React chat frame uses only `connectChat`: no listener or post of its own. It always sends `strict-origin`, builds its address only by `chatEmbedUrl` (a path on this site), and links nothing outside a dock. The back link is the fixed `/games`.  |
+
+No finding, so nothing was fixed.
+
 ### 2026-11-20 — before v0.3.0 (branch `feat/website-integration`, PR #6)
 
 | Scan                         | Tool and command                                                                                   | Result                                                                                                                                                  |

@@ -7,6 +7,15 @@ applies it.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-21
+
+### Fixed
+
+- `DockedScreen` on a phone no longer throws where the browser has no `window.visualViewport`
+  (undefined, as in jsdom, a game's tests): it then leaves the height to the layout. Found by
+  the v0.4.0 delivery proof (docs/DELIVERY.md). Nothing changes for a game that pinned v0.4.0
+  except that its phone tests no longer crash.
+
 ## [0.4.0] - 2026-11-21
 
 The screen building blocks: React over the kit's core, as `@seasonal/kit/react` (React 19.3.1
@@ -197,7 +206,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.1.0...v0.2.0

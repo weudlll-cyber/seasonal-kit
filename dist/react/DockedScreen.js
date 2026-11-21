@@ -21,8 +21,9 @@ import { useDockView } from './dockSight.js';
 // of it, the box shrinks with it, so the chat bar stays directly above the keyboard.
 function useVisibleHeight(box, phone) {
     useEffect(() => {
+        // Null or missing (undefined) in browsers and test DOMs without a visual viewport.
         const vv = window.visualViewport;
-        if (!phone || vv === null || box === null)
+        if (!phone || vv == null || box === null)
             return undefined;
         const follow = () => {
             box.style.height = `${String(Math.round(vv.height))}px`;

@@ -26,9 +26,12 @@ Only the latest tag receives security fixes.
 ## How the kit keeps its attack surface small
 
 - **No runtime dependencies.** `dependencies` is empty; everything in `devDependencies` is a
-  tool. There is one exception: an optional peer dependency on `vite`, used only for the types of
-  `@seasonal/kit/vite`. That plugin runs in a game's build, never in a browser, and the game
-  brings its own Vite.
+  tool. There are two exceptions, both optional peer dependencies pinned exactly, so the kit
+  never brings a copy of its own:
+  - `vite` 8.3.4, used only for the types of `@seasonal/kit/vite`. That plugin runs in a game's
+    build, never in a browser, and the game brings its own Vite.
+  - `react` 19.3.1 (since v0.4.0), the version both games pin, for `@seasonal/kit/react` only.
+    The game brings its own React; a game or page without React never loads that entry.
 - **No install scripts.** Games install the committed `dist/`; nothing is built or run on
   install (docs/DELIVERY.md). The kit's own installs run no script either
   (`pnpm-workspace.yaml` `ignoreScripts`, `.npmrc` `ignore-scripts`).
@@ -45,8 +48,20 @@ Only the latest tag receives security fixes.
   Anything else is ignored. They post only at that origin (never `'*'`), and only the fields the
   website's contract names: no token, key or text. Sign-in redirects go only to paths on this
   site (docs/security-pass.md).
+- **Server sign-in (`@seasonal/kit/server`, since v0.8.0).**
+  - Only the website's proxy may name a visitor: the TCP peer must be trusted (never a
+    forwarding header), and the game's proxy secret must match in constant time. An empty
+    secret refuses everyone.
+  - A guest is never a member. A malformed header grants nothing: no role comes from anything
+    but the role and can-host headers, and never `super_admin` or `security_admin`.
+  - Return paths stay under the game's base path.
+  - A TOTP step works once, and all candidates are compared in constant time. Recovery codes
+    come from the system's random source and are kept only as hashes.
+  - The kit stores nothing: secrets, sessions and accounts stay in each game's database.
+  - Independently reviewed before release (docs/security-pass.md).
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
-  public `tokens.css` over HTTPS and nothing else.
+  public `tokens.css` over HTTPS and nothing else. The server entry takes the game's secrets as
+  arguments and never logs or keeps them.
 
 ## Binary assets
 

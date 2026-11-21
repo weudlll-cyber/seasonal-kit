@@ -7,10 +7,279 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- `docs/ADOPTION.md`: per game, which of its files each kit export replaces (paths and lines),
+  what stays, the order of steps, the risks and the tests to run, and what needs the owner's
+  word.
+
+### Changed
+
+- `docs/DELIVERY.md` records the v0.8.0 proof.
+
+## [0.8.0] - 2026-11-21
+
+Server sign-in through the website and two-factor sign-in, for a game's server
+(`@seasonal/kit/server`, Node only): the checks and the codes. Accounts, sessions and every
+database statement stay in the games.
+
+### Added
+
+- The website sign-in's checks:
+  - `trustedPeers`, the TCP peer against the trusted addresses and ranges;
+  - `secretMatches`, the proxy secret in constant time. An empty secret refuses everyone;
+  - `websiteSignInCheck`, the route's whole decision: `untrusted`, `guest`, `invalid` or
+    `member` with the checked identity. The game answers each kind its own way;
+  - `identityFrom`, `isWebsiteGuest`, `IDENTITY_HEADERS`;
+  - the steps checked by the stricter rule of both games, with `steps: 'each' | 'all'` as the
+    game's choice;
+  - `mappedRoles` (admin → `game_admin`, may host → `organizer`, nothing else).
+- `safeNext` and `websiteLoginLocation`: the return path under the base path, and the login hop
+  with each nested parameter encoded on its own.
+- Two-factor sign-in:
+  - `newSecret`, `base32Encode`, `base32Decode`, `otpauthUri` with the game as issuer, `hotp`,
+    `stepAt`;
+  - `matchingStep`: one step of drift, a used step refused, all three candidates compared in
+    constant time;
+  - `newRecoveryCodes`, `recoveryHash`, `looksLikeRecoveryCode`, in each game's style
+    (`grouped` for Mini Games, `hex` for Bingo), so stored codes keep working.
+- `RateLimiter` (the rules stay each game's; at most `maxKeys` keys) and `SessionEnds` (one
+  failing listener, thrown or rejected, stops no other).
+
+### Security
+
+Before release, three independent reviews ran, each fresh, on the whole diff:
+
+- the first found 3 medium and 7 low findings;
+- the second found 1 medium and 6 low;
+- the third was clean, with 5 low findings and 2 noted.
+
+Every confirmed finding is fixed (docs/security-pass.md). What the fixes change for a game:
+
+- **The role header** must be exactly one of `member`, `organiser`, `admin`, as the contract
+  sends it. A list or an unknown role is no identity (`invalid`). Both games split a comma list
+  today; the website never sends one, and a joined repeat of the header could have added
+  `admin`.
+- **A guest header** that is present and not exactly `false` makes a guest.
+- **The user id** is a positive safe integer without leading zeros.
+- **A missing steps header** is marked `badSteps`, since the contract requires it.
+- **A trusted proxy entry** with a bad CIDR prefix throws at startup instead of trusting every
+  peer.
+- **A TOTP secret** under 16 bytes is refused.
+- **Dot segments** in `next` lead to the base path.
+- **`SessionEnds`** takes the game's `onError` (its log). `end` returns a promise that never
+  rejects; every listener's failure, thrown or rejected, goes to `onError`.
+- **A step's icon** must be exactly `/media/step-icons/<32 hex>.webp`, the contract's form.
+- **The rate limiter** scans a full map at most once a tenth of its window, and refuses a new key
+  without a scan in between. Games key it by account and by IPv6 /64.
+- **The otpauth link** encodes spaces as `%20`.
+- **`next`** with an encoded `/`, `\` or NUL in its path leads to the base path.
+- **TOTP** matches nothing at a time that is not finite or before the first step.
+- **A guest header** that is present and empty makes a guest.
+- **`SessionEnds.end`** is called without `await` in a route: one listener that never settles
+  would keep it pending. An async `onError` that rejects is caught.
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.8.0, it may:
+  - replace `trustedPeers`, `identityFrom`, `isWebsiteGuest`, `stepsFrom` and `mappedRoles` in
+    `apps/server/src/auth/websiteIdentity.ts`, and `safeNext`, `proxySecret` and `toLogin` in
+    `apps/server/src/http/routes/websiteSignIn.ts`, with `websiteSignInCheck` (`steps:
+'each'`) and `websiteLoginLocation`. It keeps answering `invalid` with 403
+    `NO_WEBSITE_USER` and `guest` with the login hop;
+  - replace `apps/server/src/auth/totp.ts`, and `recoveryCode` and `hashOf` in `twoFactor.ts`
+    (`'grouped'`). Its SQL stays;
+  - replace `RateLimiter` (its `RATE_RULES` stay) and `SessionEnds`.
+- **Bingo Royale:** the same with `steps: 'all'`, which logs `badSteps` once as today, and
+  `'hex'` recovery codes. It keeps answering both `guest` and `invalid` with its login hop.
+  `otpauthUri(secret, name, 'Seasonal Bingo Royale')` and `newSecret` keep their meaning; the
+  link now also names `algorithm=SHA1`, which authenticator apps already assume.
+
+## [0.7.0] - 2026-11-21
+
+The showcase and its accessibility check, and two fixes it found.
+
+### Added
+
+- The showcase (`showcase/`, never shipped): every component of `@seasonal/kit/react` with sample
+  content, in light and dark (docs/SHOWCASE.md). `pnpm showcase` serves it; `pnpm showcase:test`
+  screenshots it at 1280 × 720, 1536 × 768, 1920 × 1080, 375 × 667 and 390 × 844, in both themes,
+  with the start card and the result in the dock (20 screens), and runs axe on each: no serious
+  or critical violation. The screens land in `showcase/screens/`, git-ignored and emptied before
+  every run (DECISIONS K16).
+- CI job `showcase`: the same run on every PR and on master (Chromium).
+- Dev dependencies, pinned as Mini Games pins them: `@playwright/test` 1.64.1 and
+  `@axe-core/playwright` 4.13.0.
+
+### Fixed
+
+- `DockedScreen` on a phone no longer sets its own height to the visual viewport's. It
+  publishes `--sk-visible-height` on `<html>` instead, which the game's root takes, so the dock
+  can sit under other parts of a page without spilling over them.
+- A list game's result first part keeps its rows together at the top when the docked screen
+  gives it more height (`frames.css`).
+
+### Migration, per game
+
+- **Mini Games:** where it adopts `DockedScreen`, its root's height on a phone comes from
+  `height: var(--sk-visible-height, 100dvh)` on `#root`; it was set inline by `DockedMatch`
+  before. Nothing else changes.
+- **Bingo Royale:** nothing to do.
+
+## [0.6.0] - 2026-11-21
+
+The round's focus mode: the slim game bar in place of the app header, its panels, full screen
+and the phase strip.
+
+### Added
+
+- `GameBar` (`@seasonal/kit/react`, `@seasonal/kit/bar.css`):
+  - one row, at most 44 px on a desktop and 52 px on a phone;
+  - the game's lead part, facts (`desktopOnly` ones are read out on a phone) and the time with
+    " left";
+  - a button per panel with its icon (chat, players, host), words and an unread badge, plus
+    the full-screen toggle where the browser offers it;
+  - `buttonClassName` keeps a game's own button look.
+- `usePanels` (one panel at a time; the focus goes back to its button), `useFullscreen`, and
+  `useFocusMode`, which marks `<html data-sk-focus>` so the game's CSS hides its own header.
+- `PhaseStrip`: the parts in proportion to their lengths, the current one framed and filled,
+  with "· now" in words and `aria-current`; ended parts done; the game's line and status.
+- `clockText` (`@seasonal/kit`): "9:05", rounding down, never below 0:00.
+- `--sk-floor-badge` (`fit.css`, `FIT_FLOORS.badge`): Mini Games' 12 px unread badge, Bingo
+  14 px. The floor guard covers it.
+
+### Changed
+
+- `.sk-visually-hidden` moved from `dock.css` to `shell.css`, the shared basics, since the dock
+  and the bar both use it. A game that imports `dock.css` also imports `shell.css`.
+- `docs/DELIVERY.md` records the v0.5.0 proof.
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.6.0, it may:
+  - build `round/FocusBar.tsx` on `GameBar` with `buttonClassName="smg-btn"`. Its season pill,
+    mode fact and `barTime` stay its own, and `FocusIcons.tsx` goes away;
+  - replace `round/usePanels.ts` and `round/useFullscreen.ts` with the kit's
+    (`usePanels<PanelId>()`);
+  - set the focus mode with `useFocusMode()`. Its rule `#root:has(.focus-mode) .shell-bar` becomes
+    `html[data-sk-focus] .shell-bar`;
+  - build Mind Games' `PhaseStrip` on the kit's: its parts, line and announcement stay in the
+    game. `strip.css` goes away;
+  - take `clockText` from the kit in place of `@smg/game-sdk`'s.
+- **Bingo Royale:** keeps its header during a round, as today. The game bar is there if the owner
+  wants a focus mode for Bingo.
+
+## [0.5.0] - 2026-11-21
+
+The frames a game fills: "before the round" and "the result". The words, icons, placings and
+standings stay in the games.
+
+### Added
+
+- `StartCard` (`@seasonal/kit/react`):
+  - the card in the round's season colour (`season` null: a seasonless game);
+  - slots for the game's icon, badge, special and facts;
+  - "Opens in N s" as a quiet timer;
+  - fitted to the screen with the game's floors.
+- `ResultFrame` (`@seasonal/kit/react`):
+  - the first part one screen high: headline (two lines at most), lines, proof, the reveal
+    taking the free height, and the game's placings, beside the reveal on a desktop;
+  - `more` below it;
+  - `layout` board keeps the part's full height; `fitted` shrinks it where it has not the room
+    (off by default).
+- `@seasonal/kit/frames.css`: both frames, the season tints from the website's colours, and
+  both filling the height above the chat inside `DockedScreen`. `--sk-result-top` is the game's
+  bar height above the result.
+
+### Changed
+
+- `tests/fit-floors.test.ts` checks the scaled `font-size`s of every kit stylesheet (it read
+  every `max()` floor before, a box's size too).
+- `docs/DELIVERY.md` records the v0.4.1 proof.
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.5.0, it may:
+  - build `round/RoundIntro.tsx` on `StartCard`: its season icon, special, facts and halving
+    badge go in as slots, and its `roundIntro.css` goes away. Its `--font-size-ball` is the
+    card's `--sk-start-title`, the same value;
+  - build `round/ResultScreen.tsx`'s first part on `ResultFrame` (`fitted` where it has
+    "Closest to winning", as today), and drop those rules from `round/result.css`. Its placings
+    table, proof, team line and standings stay its own. It sets `--sk-result-top` from its
+    `--result-top`. Its own result (`ownResult`) stays its own.
+- **Bingo Royale:** once it pins v0.5.0, it may put its final placement in `ResultFrame`, with
+  its podium as `placings` and its rows as `more`. Its round has no season card, so `StartCard`
+  is for a later start screen, which needs the owner's word.
+
+## [0.4.1] - 2026-11-21
+
+### Fixed
+
+- `DockedScreen` on a phone no longer throws where the browser has no `window.visualViewport`
+  (undefined, as in jsdom, a game's tests): it then leaves the height to the layout. Found by
+  the v0.4.0 delivery proof (docs/DELIVERY.md). Nothing changes for a game that pinned v0.4.0
+  except that its phone tests no longer crash.
+
+## [0.4.0] - 2026-11-21
+
+The screen building blocks: React over the kit's core, as `@seasonal/kit/react` (React 19.3.1
+is an optional, exactly pinned peer dependency; SECURITY.md).
+
+### Added
+
+- Fitting to the screen (DECISIONS K14):
+  - `useFitScale(game, signature, self?)` (`@seasonal/kit/react`): Mini Games' O111 scale `--fit`
+    with the game's floor. Bingo's floor is 1, so its screens never shrink, as today.
+  - `@seasonal/kit/fit.css`: each game's floors (`data-sk-game`): Mini Games 13 px text, 24 px
+    display values, 22 px rows, 40 px phone targets; Bingo 14 px text, 44 px targets. With no
+    game named, the strictest of all. `tests/fit-floors.test.ts` is the floor guard.
+- The docked chat (`@seasonal/kit/react`, `@seasonal/kit/dock.css`):
+  - `DockedScreen`: the game's content on top, the dock under it, mounted once, so the chat
+    survives the round → result switch; on a phone the box follows the visible viewport.
+  - `ChatDock`: the 190 px strip (150 px under 760 px high) with the call slot at its right end;
+    on a phone the bar with the newest message and the unread count, its sheet, and the 48 px
+    call strip above it. The slot is hidden while no call id is set.
+  - `WebsiteChatFrame`: the website's chat frame on the checked link (`connectChat`).
+    `sandboxed` is the game's choice. `useDockArrivals` for a game's own chat room;
+    `useDockView`, the 900 px landscape rule.
+- The shell (`@seasonal/kit/react`, `@seasonal/kit/shell.css`): `BackLink` ("← Seasonal
+  Entertainment" to `/games`, website mode only), `ThemeToggle`, `useTheme`, `useShownTheme`,
+  `useDisclosure`.
+- `.claude/settings.json` allows `docker run --rm …` for the security pass (CONTRIBUTING.md).
+
 ### Changed
 
 - `docs/DELIVERY.md` records the install and build of the tag v0.3.0, and its pin example names
   v0.3.0; `docs/security-pass.md` completes the v0.3.0 pass's install and package rows.
+- `docs/DECISIONS.md`: K14 (the floors per game) and K15 (the unattended chain of 2026-11-21).
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.4.0, it may:
+  - delete `packages/ui/src/useDisclosure.ts`, `apps/web/src/shell/ThemeToggle.tsx` and the
+    hooks of `apps/web/src/shell/theme.ts`, for the kit's. Its bar's `order` rule moves from
+    `.theme-toggle` to `.sk-theme-toggle`;
+  - replace `useFitScale`, `nextScale`, `settle` and `FIT_FLOOR` in `apps/web/src/round/useFit.ts`
+    with `useFitScale('mini-games', signature, self)`. Its `useFit` (the "+N more" count) stays;
+  - put `data-sk-game="mini-games"` around its screens and write its floors as
+    `var(--sk-floor-…)`; the values stay the same;
+  - replace `match/DockedMatch.tsx`, `match/ChatDock.tsx`, `match/chatDock.css` and the dock's
+    rules in `match/docked.css` with `DockedScreen`. Its room reports through `useDockArrivals`
+    in place of `ChatArrivals`; its phone field is the `field` prop;
+  - replace `HostChat` (`chat/ChatPanel.tsx`) and `chat/useHostChatFrame.ts` with
+    `WebsiteChatFrame room="mini-games" sandboxed`;
+  - add `BackLink` at the top left (GAME-INTEGRATION §8).
+- **Bingo Royale:** once it pins v0.4.0, it may:
+  - delete `apps/web/src/shell/ThemeToggle.tsx` and its `.theme-toggle` rules, and the
+    `.shell-back` link and rules, for `ThemeToggle` and `BackLink`. Its bar's `order` rules move
+    to `.sk-theme-toggle` and `.sk-back-link`;
+  - use `WebsiteChatFrame room="bingo" sandboxed={false}` in its side panel
+    (`shell/ChatDock.tsx`). The frame now also sends `strict-origin`, as GAME-INTEGRATION §5
+    requires;
+  - keep its own `--gutter` and `--panel-padding` after the kit's tokens: they differ from Mini
+    Games' below 356 px of width (docs/ADOPTION.md);
+  - put `data-sk-game="bingo"` around its screens. Its docked layout would replace the side
+    panel, which needs the owner's word.
 
 ## [0.3.0] - 2026-11-20
 
@@ -141,7 +410,13 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...v0.5.0
+[0.4.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.0.1...v0.1.0

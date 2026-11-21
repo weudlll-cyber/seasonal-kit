@@ -62,6 +62,113 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-21 — before v0.8.0, the server entry (branch `feat/server-auth`, PR #13)
+
+| Scan                         | Tool and command                                                                                                                     | Result                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                                                                  | No leaks. 30 commits with a patch scanned (42 commits in all refs, merges included).  |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml`                                    | No issues. No dependency was added: the entry uses only `node:crypto` and `node:net`. |
+| Code                         | CodeQL (javascript-typescript)                                                                                                       | Read on PR #13 and after the merge (docs/NIGHT-2026-11-21.md).                        |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                                                            | Proven on the tag v0.8.0, after it is cut (docs/DELIVERY.md).                         |
+| Independent review           | three separate review agents that did not write the code, each given only the diff, GAME-INTEGRATION §2–§4 and the website's AUTH.md | See below: every confirmed finding fixed; the third verdict clean.                    |
+
+**Review 1** (on the first version): 3 medium and 7 low findings, all confirmed.
+
+| Finding (severity)                                                                                                               | Fix                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| A blank or bad CIDR prefix (`127.0.0.1/`) read as /0, trusting every peer (medium)                                               | the prefix must be 1–3 digits within 32 or 128, else the list throws                  |
+| Node joins a repeated header with ", ": an injected `Roles: admin` became `game_admin`, a doubled guest header a member (medium) | the role must be exactly one of member, organiser, admin; a guest header fails closed |
+| An empty base32 text decoded to a 0-byte TOTP key (medium)                                                                       | a secret under 16 bytes is refused by `base32Decode`, `hotp` and `matchingStep`       |
+| Dot segments (`..`, `%2e%2e`) in `next` left the base path (low)                                                                 | refused in `next` and in the base path                                                |
+| The limiter's map had no bound; `Infinity` broke the rule (low)                                                                  | `maxKeys`, strict rule checks, a clock going back drains nothing                      |
+| A missing steps header was not marked (low)                                                                                      | marked `bad`                                                                          |
+| A user id with leading zeros or beyond a safe integer (low)                                                                      | a positive safe integer without leading zeros                                         |
+| An async listener's rejection escaped `SessionEnds` (low)                                                                        | awaited and reported                                                                  |
+| Mixed-case header names never matched (low)                                                                                      | compared in lower case                                                                |
+| `mappedRoles` did not say it adds to `player` (info)                                                                             | said so                                                                               |
+
+**Review 2** (on the fixed version, a new agent): 1 medium and 6 low findings.
+
+| Finding (severity)                                                                 | Fix                                                                                                       |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| A full limiter scanned 100 000 keys for every new key (medium, from the first fix) | a full map is scanned at most once a tenth of the window; a newcomer is refused without a scan in between |
+| `SessionEnds.end` could reject unawaited and end the process (low)                 | it never rejects; failures go to the game's `onError`                                                     |
+| A step icon could name any route of the site (low)                                 | exactly `/media/step-icons/<32 hex>.webp`, the contract's form                                            |
+| The otpauth link wrote `+` for spaces (low)                                        | `%20`                                                                                                     |
+| Ten recovery codes were not guaranteed distinct (low)                              | drawn until ten differ                                                                                    |
+| A `NaN` clock poisoned a bucket (low)                                              | a time that is not finite touches no bucket                                                               |
+| The website name could be cut inside a surrogate pair (low)                        | never                                                                                                     |
+
+**Review 3** (a new agent): **VERDICT: CLEAN**. No finding of medium or higher; 5 low ones, fixed.
+
+| Finding (severity)                                      | Fix                                                                                    |
+| ------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `next` with `%2f`, `%5c` or `%00` in its path (low)     | refused                                                                                |
+| An async `onError` that rejects (low)                   | caught                                                                                 |
+| A listener that never settles keeps `end` pending (low) | documented: routes call `void ends.end(ids)`; every listener has heard the ids already |
+| TOTP threw at a `NaN` or pre-first-step time (low)      | matches nothing                                                                        |
+| An empty guest header was read as no guest (low)        | a guest                                                                                |
+
+Not changed, recorded:
+
+- **Recovery codes** are unsalted SHA-256 of about 40 bits, as AUTH.md specifies. A leaked
+  database could be brute-forced offline. An HMAC with a server key would be a change to the
+  contract, so it needs the owner's word.
+- **Names arrive as Node decodes header values, latin1.** If the website ever allows non-ASCII
+  usernames, the game decodes them first. That is a question for the website's owner.
+- **The account key is (website origin, user id)** per §3. The game adds the origin; the identity
+  carries only the id.
+
+### 2026-11-21 — before v0.7.0 (branch `feat/showcase`, PR #12)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 25 commits with a patch scanned (36 commits in all refs, merges included).                                                                                  |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues. New, both devDependencies pinned as Mini Games pins them: `@playwright/test` 1.64.1, `@axe-core/playwright` 4.13.0. Neither reaches a game.                |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on PR #12 and after the merge (docs/NIGHT-2026-11-21.md).                                                                                                        |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.7.0, after it is cut (docs/DELIVERY.md). Playwright's browser is installed by hand (`pnpm exec playwright install`), never by an install script. |
+| Package contents             | `"files"` against the new folders                                                                 | `showcase/` and `playwright.config.ts` are outside `"files"`. The screens are git-ignored and never uploaded by CI.                                                   |
+| Accessibility                | axe (WCAG 2.0–2.2 A, AA) in the showcase, 20 screens                                              | No serious or critical violation.                                                                                                                                     |
+
+No finding, so nothing was fixed. The two defects the showcase found (the dock's height on a
+phone, the result's rows) were layout, not security.
+
+### 2026-11-21 — before v0.6.0 (branch `feat/game-bar`, PR #11)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 22 commits with a patch scanned (32 commits in all refs, merges included).                                                                                                            |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues. No dependency was added.                                                                                                                                                             |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on PR #11 and after the merge (docs/NIGHT-2026-11-21.md).                                                                                                                                  |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.6.0, after it is cut (docs/DELIVERY.md).                                                                                                                                   |
+| The new parts                | review                                                                                            | Full screen only on a click, never inside another page's frame; a refusal is caught. The focus mark is a bare attribute on `<html>`, removed with the last screen. No message, storage or link. |
+
+No finding, so nothing was fixed.
+
+### 2026-11-21 — before v0.5.0 (branch `feat/frames`, PR #10)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                            |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 19 commits with a patch scanned (28 commits in all refs, merges included).                                              |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues. No dependency was added.                                                                                               |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on PR #10 and after the merge (docs/NIGHT-2026-11-21.md).                                                                    |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.5.0, after it is cut (docs/DELIVERY.md).                                                                     |
+| The new parts                | review                                                                                            | Both frames render only what the game passes, as React children: no HTML from strings, no link, no frame, no message, no storage. |
+
+No finding, so nothing was fixed.
+
+### 2026-11-21 — before v0.4.0 (branch `feat/screen-blocks`, PR #8)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 15 commits with a patch scanned (22 commits in all refs, merges included).                                                                                                                                                                    |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 257 packages. New, all devDependencies pinned exactly as both games pin them: react and react-dom 19.3.1, @types/react and @types/react-dom 19.3.0, @testing-library/react 16.3.3, @testing-library/dom 10.4.2. React is an optional peer. |
+| Code                         | CodeQL (javascript-typescript)                                                                    | `analyze` and `CodeQL` green on PR #8; the alert list is read after the merge (docs/NIGHT-2026-11-21.md).                                                                                                                                               |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.4.0, after it is cut (docs/DELIVERY.md).                                                                                                                                                                                           |
+| Frame messages and redirects | the rules above                                                                                   | The React chat frame uses only `connectChat`: no listener or post of its own. It always sends `strict-origin`, builds its address only by `chatEmbedUrl` (a path on this site), and links nothing outside a dock. The back link is the fixed `/games`.  |
+
+No finding, so nothing was fixed.
+
 ### 2026-11-20 — before v0.3.0 (branch `feat/website-integration`, PR #6)
 
 | Scan                         | Tool and command                                                                                   | Result                                                                                                                                                  |

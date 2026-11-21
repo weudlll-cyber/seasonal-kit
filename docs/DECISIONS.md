@@ -41,3 +41,15 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   by GitHub Actions, and the branch must be up to date. Every change goes through a pull request,
   with 0 required approvals: the owner approves and merges. Unresolved conversations block a
   merge. The rules apply to admins too. Force pushes and deletion of the branch are not allowed.
+
+## 2026-11-21
+
+- **K14 — The fit floor is per game.** Seasonal Mini Games keeps 13 px body text, with its O111
+  floors: 24 px display values, 22 px rows and 40 px phone touch targets. Seasonal Bingo
+  Royale keeps 14 px. The kit never lets a game's floor go below what that game has today, and a
+  test enforces it (`tests/fit-floors.test.ts`).
+- **K15 — The unattended chain of 2026-11-21 is approved as written.** That includes merging
+  each piece's PR once every required check is green, and cutting its tag. No game repository
+  is changed: adopting the kit in a game needs the owner.
+- **K16 — Screenshots are not committed and do not pile up.** The showcase's screens stay local
+  in a git-ignored folder, and each run deletes the previous run's ([SHOWCASE.md](SHOWCASE.md)).

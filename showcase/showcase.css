@@ -1,0 +1,68 @@
+/**
+ * @file   showcase/showcase.css
+ * @brief  The showcase page's own layout around the kit's parts; never shipped.
+ *
+ * Responsibility: the page on the kit's background with its font, sections one under the
+ *                 other, the docked screen in a box of a fixed height (as a game's screen
+ *                 would be), the reserved call slot outlined, and a sample pill. Colours only
+ *                 from ../css/tokens.css.
+ */
+body {
+  margin: 0;
+  background: var(--page-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+}
+
+.showcase-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--gutter);
+}
+
+.showcase-head h1 {
+  flex: 1;
+  margin: 0;
+  font-size: var(--font-size-title);
+}
+
+main {
+  display: grid;
+  gap: var(--space-3);
+  padding: 0 var(--gutter) var(--space-4);
+}
+
+.showcase-section {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.showcase-section > h2 {
+  margin: 0;
+  font-size: var(--font-size-lead);
+}
+
+/* A game's screen: a fixed height the docked screen shares out. */
+.showcase-box {
+  height: 640px;
+}
+
+/* The reserved call slot frames nothing yet (BACKLOG 8): outlined here so the space shows. */
+.showcase-docked .sk-call-slot:not([hidden]) {
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-card);
+}
+
+.showcase-pill {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-weight-strong);
+}
+
+.showcase-reveal {
+  margin: 0;
+  font-size: var(--font-size-title);
+}

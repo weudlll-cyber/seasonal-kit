@@ -4,7 +4,8 @@
  *
  * Responsibility: Mini Games' compiler checks (its tsconfig.base.json); NodeNext so the
  *                 compiled dist/ runs in Node (Vitest in a game) and in Vite alike; the DOM
- *                 library for the browser parts. Type-checks only; tsconfig.build.json emits.
+ *                 library for the browser parts; React's automatic JSX for src/react/ (the
+ *                 `@seasonal/kit/react` entry). Type-checks only; tsconfig.build.json emits.
  * Used by:        pnpm typecheck, ESLint's typed rules, tsconfig.build.json
  */
 {
@@ -26,7 +27,9 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
+    "jsx": "react-jsx",
     "types": ["node"]
   },
-  "include": ["src", "scripts", "tests", "browser", "*.config.js", "*.config.ts"]
+  "include": ["src", "scripts", "tests", "browser", "showcase", "*.config.js", "*.config.ts"],
+  "exclude": ["showcase/dist"]
 }

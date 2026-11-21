@@ -1,0 +1,201 @@
+/**
+ * @file   css/dock.css
+ * @brief  The docked screen and chat: the strip under the game on a desktop, the bar and its
+ *         sheet on a phone, the call slot beside or above it.
+ *
+ * Responsibility: `.sk-docked` is one box: the game's content on top (`.sk-docked-main`), the
+ *                 dock under it. Desktop: a strip 190 px high, 150 px in a window under 760 px
+ *                 high, as wide as the box. The chat is a card on the left; the call slot
+ *                 (./call.css) sits at the strip's right end at its full height. Phone: the
+ *                 content scrolls alone, and the bar (52 px with its padding) is the bottom part,
+ *                 in the layout, never over the page. Its line "Chat · <newest message>" gives
+ *                 way with an ellipsis, beside the unread count. The open chat is a sheet above
+ *                 the bar, opaque. The call's 48 px strip sits directly above the bar. Colours
+ *                 come only from ./tokens.css; "3 unread" is read out by ./shell.css
+ *                 `sk-visually-hidden`, which a game imports with this file.
+ * Source:         seasonal-mini-games apps/web/src/match/chatDock.css and docked.css at 866df03
+ *                 (the 190/150 px strip, the bar, the sheet; the 760 px query without its 900 px
+ *                 width, which `data-view` carries here)
+ * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Placement and sizes"
+ */
+
+.sk-docked {
+  --sk-dock-height: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  height: 100%;
+}
+
+/* A short desktop window (1280 × 720): 150 px, the least the owner allows. */
+@media (max-height: 759px) {
+  .sk-docked {
+    --sk-dock-height: 150px;
+  }
+}
+
+.sk-docked-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sk-chat-dock {
+  flex: none;
+  min-width: 0;
+}
+
+/* Desktop: the strip, chat on the left and the call slot at the right end. */
+.sk-chat-dock[data-view='desktop'] .sk-chat-dock-row {
+  display: flex;
+  gap: 12px;
+  height: var(--sk-dock-height);
+}
+
+.sk-chat-dock[data-view='desktop'] .sk-chat-dock-body {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+}
+
+.sk-chat-dock[data-view='desktop'] .sk-call-slot {
+  height: var(--sk-dock-height);
+}
+
+.sk-chat-dock-body {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sk-chat-dock-body[hidden] {
+  display: none;
+}
+
+.sk-chat-dock-body > * {
+  flex: 1;
+  min-height: 0;
+}
+
+.sk-chat-dock-body > .sk-chat-dock-head {
+  flex: none;
+}
+
+.sk-chat-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Phone: the content scrolls alone above the dock. */
+.sk-docked[data-view='phone'] {
+  gap: 0;
+}
+
+.sk-docked[data-view='phone'] > .sk-docked-main {
+  position: relative;
+  overflow-y: auto;
+}
+
+.sk-chat-dock[data-view='phone'] {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 10px 10px;
+}
+
+.sk-chat-dock[data-view='phone'] .sk-chat-dock-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+  box-shadow: 0 -8px 24px rgb(0 0 0 / 18%);
+}
+
+/* "Chat · <newest message>" and the unread count: one row; the message gives way. */
+.sk-chat-bar {
+  width: 100%;
+  min-height: var(--hit-target);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  font-size: max(var(--sk-floor-text), 14px);
+  text-align: start;
+  cursor: pointer;
+}
+
+.sk-chat-bar-newest {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sk-chat-bar-last {
+  color: var(--color-text-muted);
+}
+
+.sk-chat-bar-badge {
+  flex: none;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  /* The accent blue with Mini Games' dark text (8.4:1). */
+  background: var(--color-accent);
+  color: #0a1233;
+  font-size: var(--sk-floor-text);
+  font-weight: var(--font-weight-strong);
+}
+
+/* The open sheet: above the bar, never over it. */
+.sk-chat-dock[data-view='phone'] .sk-chat-dock-body {
+  position: absolute;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 8px);
+  height: min(60dvh, 30rem);
+  gap: var(--space-1);
+  padding: 0 var(--space-2) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.sk-chat-dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+}
+
+.sk-chat-dock-head h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.sk-chat-dock-close {
+  min-height: var(--hit-target);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-glass);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}

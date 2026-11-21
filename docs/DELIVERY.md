@@ -80,6 +80,96 @@ deleted afterwards.
 An entry module's unused exports are dropped from a Vite app build. The first build kept only
 what the page called, so the consumer called every export before the bundle was read.
 
+## The v0.4.0 screen building blocks (2026-11-21, the tag itself)
+
+A new scratch consumer outside every repository pinned `#v0.4.0` with `ignore-scripts=true`,
+with React 19.3.1 and the games' toolchain (Vite 8.3.4, Vitest 5.0.5 with jsdom 30.1.3,
+TypeScript 5.9.3, @testing-library/react 16.3.3). Its page rendered `BackLink`, `ThemeToggle`
+and `DockedScreen` with `WebsiteChatFrame` inside, and used every other `@seasonal/kit/react`
+export, under `data-sk-game="mini-games"`.
+
+| Step                                                       | Result                                                                                                                                         |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                                             | Worked, with no script. The lockfile resolved the tag to the merge commit's tarball (`a35bc1f`, `version: 0.4.0`).                             |
+| `vite build`                                               | Worked: `tokens.css`, `fit.css`, `dock.css`, `shell.css` and `call.css` in the stylesheet, the React parts in the script.                      |
+| `tsc --noEmit` (Bundler resolution, `skipLibCheck: false`) | Worked against `dist/react/*.d.ts`.                                                                                                            |
+| A Vitest test (jsdom) rendering the page at 390 × 844      | **Failed:** `DockedScreen` read `window.visualViewport.height`, which jsdom does not have. **Fixed in v0.4.1**, whose own proof follows below. |
+
+## The v0.4.1 fix (2026-11-21, the tag itself)
+
+The same consumer pinned `#v0.4.1`, with scripts off. The lockfile resolved it to the merge
+commit's tarball (`7791e8a`, `version: 0.4.1`). `vite build` and `tsc` worked, and the Vitest
+test passed at 390 × 844. It checked the back link (`/games`), the toggle's name, the frame's
+address with the page's theme, the hidden call slot, and the phone bar's "Chat · Ana: gg" with
+its count. The consumer was deleted afterwards.
+
+One rule showed itself on the way. A game's own chat room reports arrivals from **inside** the
+dock (the `chat` it passes), as Mini Games' room does. Content above the dock gets no arrivals
+from `useDockArrivals`.
+
+## The v0.5.0 frames (2026-11-21, the tag itself)
+
+A new scratch consumer pinned `#v0.5.0`, with scripts off and the same toolchain. The lockfile
+resolved it to the merge commit's tarball (`929c997`, `version: 0.5.0`). The page put
+`StartCard`, then `ResultFrame` (`fitted`), inside `DockedScreen`, and imported `frames.css`,
+`dock.css` and `fit.css`.
+
+- `vite build` worked, with both frames' rules in the stylesheet.
+- `tsc` worked.
+- The Vitest test at 390 × 844 passed. It checked the winter card, "Opens in 3 s", then the
+  result's headline at scale 1, and the same chat element through the switch.
+
+The consumer was deleted afterwards.
+
+## The v0.6.0 game bar (2026-11-21, the tag itself)
+
+A new scratch consumer pinned `#v0.6.0`, with scripts off and the same toolchain. The lockfile
+resolved it to the merge commit's tarball (`bd5df31`, `version: 0.6.0`). The page used
+`GameBar` with `usePanels`, `useFullscreen` and `useFocusMode`, `PhaseStrip`, and `clockText`
+from the package root, with `bar.css`, `shell.css` and `fit.css`.
+
+- `vite build` worked.
+- `tsc` worked.
+- The Vitest test passed. It checked the focus mark on `<html>`, "9:50 left", "Chat2 unread",
+  no full-screen toggle in jsdom, "Join · now until 0:30", and the chat panel opening.
+
+The consumer was deleted afterwards.
+
+## The showcase is no delivery
+
+`showcase/`, `playwright.config.ts` and the Playwright dev dependencies (v0.7.0) stay in the
+repository. `"files"` leaves them out, so a game receives none of them.
+
+## The v0.7.0 tag (2026-11-21, the tag itself)
+
+A new scratch consumer pinned `#v0.7.0`, with scripts off and the same toolchain. The lockfile
+resolved it to the merge commit's tarball (`6b0d9a7`, `version: 0.7.0`).
+
+- **Contents:** the installed package holds `package.json`, `LICENSE`, `README.md`, `browser/`,
+  `css/`, `dist/` and `fonts/`; no `showcase/` and no Playwright config.
+- **Build and types:** `vite build` and `tsc` worked.
+- **Test:** the Vitest test at 390 × 844 found `--sk-visible-height: 600px` on `<html>` and no
+  height on the dock's box.
+
+The consumer was deleted afterwards.
+
+## The v0.8.0 server entry (2026-11-21, the tag itself)
+
+A new Node-side scratch consumer pinned `#v0.8.0`, with scripts off, TypeScript 5.9.3 (NodeNext,
+`skipLibCheck: false`), Vitest 5.0.5 and @types/node 22.20.5, and no React or Vite. The lockfile
+resolved it to the merge commit's tarball (`30ce80a`, `version: 0.8.0`).
+
+- `tsc` worked against `dist/server/*.d.ts`.
+- The Vitest test passed (3 tests):
+  - a sign-in decided by peer, secret and headers, with a joined role header refused;
+  - `safeNext` refusing `..`, and the login hop's nesting;
+  - a TOTP code working once;
+  - a hex recovery code matching in upper case;
+  - the limiter refusing the second request;
+  - `SessionEnds` reporting a listener's error to `onError`.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

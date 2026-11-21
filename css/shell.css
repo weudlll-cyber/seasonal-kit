@@ -1,0 +1,64 @@
+/**
+ * @file   css/shell.css
+ * @brief  The shell's shared parts: the way back to the website and the light/dark toggle.
+ *
+ * Responsibility: `.sk-back-link` is "← Seasonal Entertainment": small and muted text, so it
+ *                 takes no play area, underlined on hover and focus, and on its own short first
+ *                 row at phone width. `.sk-theme-toggle` is the round glass button with a
+ *                 hairline, a 44 px target. Where each sits in a game's bar (`order`, rows) stays
+ *                 the game's. `.sk-visually-hidden` is read out, not shown, for every kit part
+ *                 that says more than it shows. Colours come only from ./tokens.css, so both work
+ *                 in light and dark.
+ * Source:         seasonal-bingo-royale apps/web/src/shell/shell.css (`.shell-back`,
+ *                 `.theme-toggle`) at a43209a; Mini Games' `.theme-toggle` (apps/web/src/shell/
+ *                 shell.css at 866df03) is the same
+ * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §8
+ */
+
+.sk-back-link {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sk-back-link:hover,
+.sk-back-link:focus-visible {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+/* A phone: its own short first row, still at the top left. */
+@media (max-width: 640px) {
+  .sk-back-link {
+    flex-basis: 100%;
+  }
+}
+
+.sk-theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--hit-target);
+  height: var(--hit-target);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-glass);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.sk-theme-toggle:hover {
+  background: var(--color-active-bg);
+}
+
+/* Read out, not shown ("3 unread"): the dock's and the game bar's words (./dock.css,
+   ./bar.css). */
+.sk-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

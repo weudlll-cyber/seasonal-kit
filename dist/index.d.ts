@@ -16,3 +16,4 @@ export { chatBarText, createChatArrivals, type ChatArrival, type ChatArrivals, t
 export { connectCall, type CallLinkOptions, type CallStatus, type FromCall, type ToCall, } from './callView.js';
 export { CALL_SLOT, callSlot, type CallSlot, type CallSlotForm, type CallSlotInput, } from './callSlot.js';
 export type { FrameLink } from './frameMessages.js';
+export { clockText } from './clock.js';

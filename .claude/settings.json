@@ -42,6 +42,7 @@
       "Bash(gh auth status*)",
       "Bash(gh api repos/weudlll-cyber/seasonal-kit/*)",
       "Bash(gh release *)",
+      "Bash(docker run --rm *)",
       "Bash(winget install --id GitHub.cli*)",
       "Bash(ls *)",
       "Bash(cat *)",

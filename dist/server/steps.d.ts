@@ -8,9 +8,9 @@
  *                 - exactly those three keys;
  *                 - a known ladder (holder, farmer, investor);
  *                 - a name of 1 to 40 characters after trimming;
- *                 - an icon that is null or a path on the website: one leading slash, then at
- *                   most 255 of letters, digits, "_", ".", "~", "/" and "-", never a scheme, a
- *                   host or a backslash.
+ *                 - an icon that is null or exactly the contract's public file,
+ *                   "/media/step-icons/<32 hex>.webp" (stricter than both games, after the
+ *                   second independent review: no other route of the site can be named).
  *                 A header over 2 KB, or that is no base64url of a JSON array, gives no steps.
  *                 `mode` is the game's: `each` keeps the steps that hold, at most three (Mini
  *                 Games), `all` gives none when one fails or there are more than three (Bingo).

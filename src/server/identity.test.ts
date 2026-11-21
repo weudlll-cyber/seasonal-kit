@@ -28,7 +28,10 @@ import { stepsFrom } from './steps.js';
 import { secretMatches, trustedPeers } from './trust.js';
 
 const encode = (value: unknown): string => Buffer.from(JSON.stringify(value)).toString('base64url');
-const step = (name: string, icon: string | null = '/media/step-icons/ab.webp') => ({
+const step = (
+  name: string,
+  icon: string | null = '/media/step-icons/0123456789abcdef0123456789abcdef.webp',
+) => ({
   ladder: 'holder',
   name,
   icon,
@@ -183,6 +186,9 @@ describe('the identity headers', () => {
     expect(
       identityFrom({ ...member, 'x-acting-user': 'x'.repeat(200) }, 'each')?.websiteName,
     ).toHaveLength(128);
+    // Second review, finding 7: the cut at 128 leaves no lone surrogate.
+    const kept = identityFrom({ ...member, 'x-acting-user': `${'x'.repeat(127)}𝒜` }, 'each');
+    expect(kept?.websiteName).toBe('x'.repeat(127));
   });
 });
 
@@ -226,6 +232,11 @@ describe('the steps header', () => {
       step('Relative', '//evil.example/x.webp'),
       step('Back', '/media\\x.webp'),
       step('Query', '/media/x.webp?track=1'),
+      // Second review, finding 3: only the contract's icon files, no other route of the site.
+      step('Route', '/media/../api/admin'),
+      step('Other', '/media/step-icons/x.webp'),
+      step('Upper', '/media/step-icons/0123456789ABCDEF0123456789ABCDEF.webp'),
+      step('Png', '/media/step-icons/0123456789abcdef0123456789abcdef.png'),
       { ladder: 'miner', name: 'X', icon: null },
       { ...step('Extra'), href: 'javascript:alert(1)' },
       step('   '),
@@ -236,12 +247,20 @@ describe('the steps header', () => {
       step('  Kept  '),
     ];
     expect(stepsFrom(encode(steps), 'each')).toEqual({
-      steps: [{ ladder: 'holder', name: 'Kept', icon: '/media/step-icons/ab.webp' }],
+      steps: [
+        {
+          ladder: 'holder',
+          name: 'Kept',
+          icon: '/media/step-icons/0123456789abcdef0123456789abcdef.webp',
+        },
+      ],
       bad: true,
     });
     expect(stepsFrom(encode(steps), 'all').steps).toEqual([]);
   });
+});
 
+describe('the steps header when it is broken', () => {
   it('gives no steps for bad base64url, bad JSON or UTF-8, a non-array or an oversized header', () => {
     expect(stepsFrom('%%%', 'each')).toEqual({ steps: [], bad: true });
     expect(stepsFrom(Buffer.from('{not json').toString('base64url'), 'each').steps).toEqual([]);

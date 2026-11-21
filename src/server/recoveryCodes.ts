@@ -31,10 +31,14 @@ function grouped(): string {
   return `${part()}-${part()}`;
 }
 
+// Ten distinct codes: drawn until ten differ, so a unique index on the hashes never trips
+// (second review, finding 5).
 export function newRecoveryCodes(style: RecoveryStyle): readonly string[] {
-  return Array.from({ length: COUNT }, () =>
-    style === 'grouped' ? grouped() : randomBytes(5).toString('hex'),
-  );
+  const codes = new Set<string>();
+  while (codes.size < COUNT) {
+    codes.add(style === 'grouped' ? grouped() : randomBytes(5).toString('hex'));
+  }
+  return [...codes];
 }
 
 // The form a code is hashed in: as typed (grouped), or cleaned (hex).

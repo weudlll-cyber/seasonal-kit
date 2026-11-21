@@ -63,7 +63,8 @@ const one = (value) => typeof value === 'string' ? value.trim() : undefined;
 const isTrue = (value) => one(value)?.toLowerCase() === 'true';
 // The contract's one role per member; nothing else is read as a role.
 const ROLES = ['member', 'organiser', 'admin'];
-// The roles header: absent or empty is none; one of the contract's values is that role;
+// The roles header: absent or empty is none (the contract always sends one; its absence grants
+// nothing, so it is no reason to refuse a member); one of the contract's values is that role;
 // anything else (a list, an unknown role, a joined repeat) is null: no identity at all.
 function rolesOf(value) {
     if (value === undefined)
@@ -116,7 +117,8 @@ export function identityFrom(headers, steps, names = IDENTITY_HEADERS) {
     const checked = stepsFrom(one(headers[n.steps]), steps);
     return {
         subject,
-        websiteName: websiteName.slice(0, 128),
+        // Never cut inside a surrogate pair (second review, finding 7).
+        websiteName: websiteName.slice(0, 128).replace(CUT_PAIR, ''),
         displayName: gameName(websiteName, subject),
         roles,
         emailVerified: isTrue(headers[n.emailVerified]),

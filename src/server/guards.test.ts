@@ -19,12 +19,20 @@
  * Depends on:     vitest
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §2, §4; docs/AUTH.md
  */
+import * as crypto from 'node:crypto';
+
 import { describe, expect, it, vi } from 'vitest';
 
 import { RateLimiter } from './rateLimit.js';
 import { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash } from './recoveryCodes.js';
 import { safeNext, websiteLoginLocation } from './returnPath.js';
 import { SessionEnds } from './sessionEnds.js';
+
+// The real functions, with randomBytes watchable so a test can force a repeated code.
+vi.mock('node:crypto', async (importOriginal) => {
+  const real = await importOriginal<typeof crypto>();
+  return { ...real, randomBytes: vi.fn(real.randomBytes) };
+});
 
 const BASE = '/games/bingo/';
 
@@ -194,9 +202,45 @@ describe('recovery codes', () => {
   });
 });
 
+describe('the rate limiter under a flood (second review)', () => {
+  it('scans a full map at most once a tenth of the window, and refuses newcomers in between', () => {
+    let now = 0;
+    const limiter = new RateLimiter({ limit: 2, windowMs: 1_000 }, () => now, 2);
+    limiter.take('a');
+    limiter.take('b');
+    const prune = vi.spyOn(limiter as unknown as { prune: (t: number) => void }, 'prune');
+    for (let i = 0; i < 50; i += 1) expect(limiter.take(`new-${String(i)}`).allowed).toBe(false);
+    expect(prune).toHaveBeenCalledTimes(1);
+    now = 100;
+    limiter.take('late');
+    expect(prune).toHaveBeenCalledTimes(2);
+  });
+
+  it('touches no bucket for a time that is not finite', () => {
+    let now = 0;
+    const limiter = new RateLimiter({ limit: 1, windowMs: 1_000 }, () => now);
+    now = Number.NaN;
+    expect(limiter.take('a')).toEqual({ allowed: false, retryAfterMs: 1_000 });
+    expect(limiter.size).toBe(0);
+    now = 0;
+    expect(limiter.take('a').allowed).toBe(true);
+  });
+
+  it('draws ten distinct codes even when the random source repeats itself', () => {
+    const same = Buffer.from('0102030405', 'hex');
+    vi.mocked(crypto.randomBytes)
+      .mockReturnValueOnce(same as never)
+      .mockReturnValueOnce(same as never);
+    const codes = newRecoveryCodes('hex');
+    expect(new Set(codes).size).toBe(10);
+    expect(codes.filter((c) => c === '0102030405')).toHaveLength(1);
+  });
+});
+
 describe('session revocation', () => {
   it('tells every listener at once which sessions ended, none for an empty list', async () => {
-    const ends = new SessionEnds();
+    const onError = vi.fn();
+    const ends = new SessionEnds(onError);
     const gateway = vi.fn();
     const audit = vi.fn();
     ends.onEnd(gateway);
@@ -208,44 +252,43 @@ describe('session revocation', () => {
     expect(gateway).toHaveBeenCalledWith(['s1', 's2']);
     expect(audit).toHaveBeenCalledWith(['s1', 's2']);
     await done;
+    expect(onError).not.toHaveBeenCalled();
   });
 
-  it('reaches every listener past one that throws, then rejects with its error', async () => {
-    const ends = new SessionEnds();
+  // Second review, finding 2: end never rejects; every failure goes to onError.
+  it('reaches every listener past ones that throw or reject, and reports each failure', async () => {
+    const onError = vi.fn();
+    const ends = new SessionEnds(onError);
     const after = vi.fn();
     ends.onEnd(() => {
       throw new Error('socket gone');
     });
-    ends.onEnd(() => {
-      throw new Error('second');
-    });
-    ends.onEnd(after);
-    await expect(ends.end(['s1'])).rejects.toThrow('socket gone');
-    expect(after).toHaveBeenCalledWith(['s1']);
-  });
-
-  // Review finding 8: an async listener's rejection no longer escapes unhandled.
-  it('awaits an async listener and reaches the others past its rejection', async () => {
-    const ends = new SessionEnds();
-    const after = vi.fn();
     ends.onEnd(() => Promise.reject(new Error('feed down')));
-    ends.onEnd(after);
-    await expect(ends.end(['s1'])).rejects.toThrow('feed down');
-    expect(after).toHaveBeenCalledWith(['s1']);
-  });
-
-  it('rejects with an Error even when a listener throws something else', async () => {
-    const ends = new SessionEnds();
     ends.onEnd(() => {
       // A listener's own mistake, which the kit must survive: it throws no Error object.
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw 'not an error';
     });
-    ends.onEnd(() => Promise.reject(new Error('later')));
-    await expect(ends.end(['s1'])).rejects.toThrow(new Error('not an error'));
-    const quiet = new SessionEnds();
     // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-    quiet.onEnd(() => Promise.reject('plain'));
-    await expect(quiet.end(['s1'])).rejects.toThrow(new Error('plain'));
+    ends.onEnd(() => Promise.reject('plain'));
+    ends.onEnd(after);
+    await expect(ends.end(['s1'])).resolves.toBeUndefined();
+    expect(after).toHaveBeenCalledWith(['s1']);
+    expect(onError.mock.calls.map(([e]) => (e as Error).message)).toEqual([
+      'socket gone',
+      'feed down',
+      'not an error',
+      'plain',
+    ]);
+  });
+
+  it('stays settled when the game’s own error report fails', async () => {
+    const ends = new SessionEnds(() => {
+      throw new Error('log down');
+    });
+    ends.onEnd(() => {
+      throw new Error('socket gone');
+    });
+    await expect(ends.end(['s1'])).resolves.toBeUndefined();
   });
 });

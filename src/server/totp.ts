@@ -112,12 +112,15 @@ export function base32Decode(text: string): Uint8Array | null {
 // Key URI format of the authenticator apps: label "issuer:account", SHA-1, 6 digits, 30 s.
 export function otpauthUri(secret: Uint8Array, account: string, issuer: string): string {
   const label = encodeURIComponent(`${issuer}:${account}`);
-  const query = new URLSearchParams({
-    secret: base32Encode(secret),
-    issuer,
-    algorithm: 'SHA1',
-    digits: '6',
-    period: '30',
-  });
-  return `otpauth://totp/${label}?${query.toString()}`;
+  // RFC 3986 encoding ("%20"): URLSearchParams would write "+", which some apps show as is
+  // (second review, finding 4).
+  const pairs: readonly (readonly [string, string])[] = [
+    ['secret', base32Encode(secret)],
+    ['issuer', issuer],
+    ['algorithm', 'SHA1'],
+    ['digits', '6'],
+    ['period', '30'],
+  ];
+  const query = pairs.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+  return `otpauth://totp/${label}?${query}`;
 }

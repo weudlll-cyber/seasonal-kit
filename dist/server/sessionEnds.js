@@ -7,18 +7,23 @@
  *                 two-factor reset. Every listener hears the ids at once, in the same turn, and
  *                 disconnects their sockets. An empty list tells nobody. A listener that throws,
  *                 or returns a promise that rejects, stops no other: every one hears every end.
- *                 `end` settles once all have finished, and rejects with the first failure (an
- *                 Error, a thrown non-Error wrapped), so no rejection goes unhandled when the
- *                 caller awaits it.
+ *                 Each failure, as an Error, goes to the game's `onError` (its log); `end` never
+ *                 rejects, so a route that does not await it cannot crash the process with an
+ *                 unhandled rejection. `end` settles once every listener has finished.
  * Source:         seasonal-mini-games apps/server/src/auth/sessionEnds.ts at 866df03, the same in
- *                 seasonal-bingo-royale at a43209a. Added: one listener's error, thrown or
- *                 rejected, stops no other (review finding 8).
+ *                 seasonal-bingo-royale at a43209a. Added after the independent reviews: one
+ *                 listener's error, thrown or rejected, stops no other and reaches `onError`.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §4 "Account changes and session
  *                 revocation"
  */
 const asError = (error) => error instanceof Error ? error : new Error(String(error));
 export class SessionEnds {
+    onError;
     listeners = [];
+    // `onError`: where a listener's failure goes, the game's log.
+    constructor(onError) {
+        this.onError = onError;
+    }
     onEnd(listener) {
         this.listeners.push(listener);
     }
@@ -34,9 +39,18 @@ export class SessionEnds {
                 return Promise.reject(asError(error));
             }
         });
-        const settled = await Promise.allSettled(pending);
-        const failed = settled.find((s) => s.status === 'rejected');
-        if (failed !== undefined)
-            throw asError(failed.reason);
+        for (const result of await Promise.allSettled(pending)) {
+            if (result.status === 'rejected')
+                this.report(asError(result.reason));
+        }
+    }
+    // A failing `onError` must not turn into a rejection either.
+    report(error) {
+        try {
+            this.onError(error);
+        }
+        catch {
+            // The game's log failed; the sessions have ended all the same.
+        }
     }
 }

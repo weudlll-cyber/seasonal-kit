@@ -130,6 +130,9 @@ describe('base32 (RFC 4648)', () => {
   it('builds the otpauth link with the game as issuer and the base32 secret', () => {
     const uri = otpauthUri(RFC_SECRET, 'dev-admin', 'Seasonal Bingo Royale');
     expect(uri.startsWith('otpauth://totp/Seasonal%20Bingo%20Royale%3Adev-admin?')).toBe(true);
+    // Second review, finding 4: "%20", never "+", in the query too.
+    expect(uri).toContain('&issuer=Seasonal%20Bingo%20Royale&');
+    expect(uri).not.toContain('+');
     const query = new URL(uri).searchParams;
     expect(query.get('secret')).toBe(base32Encode(RFC_SECRET));
     expect(query.get('issuer')).toBe('Seasonal Bingo Royale');

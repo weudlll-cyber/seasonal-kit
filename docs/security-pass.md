@@ -62,6 +62,20 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-21 — before v0.7.0 (branch `feat/showcase`, PR #12)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 25 commits with a patch scanned (36 commits in all refs, merges included).                                                                                  |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues. New, both devDependencies pinned as Mini Games pins them: `@playwright/test` 1.64.1, `@axe-core/playwright` 4.13.0. Neither reaches a game.                |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on PR #12 and after the merge (docs/NIGHT-2026-11-21.md).                                                                                                        |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.7.0, after it is cut (docs/DELIVERY.md). Playwright's browser is installed by hand (`pnpm exec playwright install`), never by an install script. |
+| Package contents             | `"files"` against the new folders                                                                 | `showcase/` and `playwright.config.ts` are outside `"files"`. The screens are git-ignored and never uploaded by CI.                                                   |
+| Accessibility                | axe (WCAG 2.0–2.2 A, AA) in the showcase, 20 screens                                              | No serious or critical violation.                                                                                                                                     |
+
+No finding, so nothing was fixed. The two defects the showcase found (the dock's height on a
+phone, the result's rows) were layout, not security.
+
 ### 2026-11-21 — before v0.6.0 (branch `feat/game-bar`, PR #11)
 
 | Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                                          |

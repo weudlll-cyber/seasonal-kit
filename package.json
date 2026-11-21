@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -58,10 +58,15 @@
     "format:check": "prettier . --check",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run --coverage",
+    "showcase": "vite --config showcase/vite.config.ts",
+    "showcase:build": "vite build --config showcase/vite.config.ts",
+    "showcase:test": "playwright test",
     "verify": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",
     "@types/node": "22.20.5",

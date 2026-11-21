@@ -12,7 +12,8 @@
  *                 page's theme, keeps `strict-origin`, is sandboxed only when asked, tells the
  *                 frame its visibility and hands its `unread` to the bar; outside a dock it posts
  *                 nothing. The docked screen keeps the same dock element when its content
- *                 changes and follows the visible viewport on a phone. Mini Games'
+ *                 changes, and on a phone publishes the visible viewport's height on <html>
+ *                 without taking it itself. Mini Games'
  *                 chatDock.test.tsx (apps/web/src/match at 866df03) for the dock's rules.
  * Depends on:     vitest, jsdom, @testing-library/react, ../../tests/frame
  */
@@ -235,17 +236,21 @@ describe('the docked screen on a phone', () => {
       window.dispatchEvent(new Event('resize'));
     });
     const box = screen.getByTestId('docked-screen');
+    const visible = () => document.documentElement.style.getPropertyValue('--sk-visible-height');
     expect(box.dataset['view']).toBe('phone');
-    expect(box.style.height).toBe('600px');
+    expect(visible()).toBe('600px');
+    // The box keeps its container's height: it may sit under other parts of the page.
+    expect(box.style.height).toBe('');
     vv.height = 400;
     act(() => {
       listeners.forEach((l) => {
         l();
       });
     });
-    expect(box.style.height).toBe('400px');
+    expect(visible()).toBe('400px');
     unmount();
     expect(vv.removeEventListener).toHaveBeenCalled();
+    expect(visible()).toBe('');
   });
 
   // jsdom has none at all (undefined); some browsers report null. Both must work (v0.4.1: the
@@ -262,6 +267,7 @@ describe('the docked screen on a phone', () => {
         <p>round</p>
       </DockedScreen>,
     );
-    expect(screen.getByTestId('docked-screen').style.height).toBe('');
+    expect(screen.getByTestId('docked-screen').dataset['view']).toBe('phone');
+    expect(document.documentElement.style.getPropertyValue('--sk-visible-height')).toBe('');
   });
 });

@@ -5,7 +5,7 @@
 #                 package.json "packageManager" and .nvmrc, never from the workflow
 #                 (seasonal-mini-games .github/actions/setup/action.yml at 93ed780; the install
 #                 here also refuses every install script, pnpm-workspace.yaml).
-# Used by:        .github/workflows/ci.yml (job verify)
+# Used by:        .github/workflows/ci.yml (jobs verify, showcase)
 name: Setup
 description: Install pnpm and Node, restore the pnpm store cache and install dependencies.
 runs:

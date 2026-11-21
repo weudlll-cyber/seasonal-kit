@@ -20,7 +20,16 @@ const NO_DEFAULT_EXPORT = [
 
 export default defineConfig(
   // The compiled output (checked against the source in CI instead) and install folders.
-  { ignores: ['**/node_modules/', 'dist/', 'coverage/'] },
+  {
+    ignores: [
+      '**/node_modules/',
+      'dist/',
+      'coverage/',
+      'showcase/dist/',
+      'test-results/',
+      'playwright-report/',
+    ],
+  },
   js.configs.recommended,
   tseslint.configs.strictTypeChecked,
   {
@@ -61,8 +70,8 @@ export default defineConfig(
     rules: { 'max-lines': ['error', { max: 400 }] },
   },
   {
-    // Tool config files must default-export their configuration.
-    files: ['*.config.js', '*.config.ts'],
+    // Tool config files must default-export their configuration (Playwright's global setup too).
+    files: ['*.config.js', '*.config.ts', 'showcase/*.config.ts', 'showcase/global-setup.ts'],
     rules: { 'no-restricted-syntax': 'off' },
   },
   prettier,

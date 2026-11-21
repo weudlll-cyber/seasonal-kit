@@ -5,3 +5,9 @@ node_modules/
 coverage/
 *.log
 .claude/settings.local.json
+# The showcase's build and its screens: local only, never committed (DECISIONS K16,
+# docs/SHOWCASE.md); Playwright's own output.
+showcase/dist/
+showcase/screens/
+test-results/
+playwright-report/

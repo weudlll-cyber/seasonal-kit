@@ -153,6 +153,8 @@
 .sk-result:not([data-layout='board']) .sk-result-first {
   height: auto;
   grid-template-rows: auto auto auto;
+  /* Given more height (in the docked screen), its rows stay together at the top. */
+  align-content: start;
 }
 
 .sk-result-head {

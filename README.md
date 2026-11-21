@@ -34,7 +34,7 @@ own, and adds only its own arena tokens and animations.
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.6.0"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.7.0"
 }
 ```
 
@@ -51,7 +51,8 @@ It is cut as a PR with every check green, merged with a merge commit, and then a
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), and [CLAUDE.md](CLAUDE.md) for the working rules. Open
 work is in [docs/OPEN.md](docs/OPEN.md) and [docs/BACKLOG.md](docs/BACKLOG.md); security is in
-[SECURITY.md](SECURITY.md).
+[SECURITY.md](SECURITY.md). Every component can be seen in the showcase
+([docs/SHOWCASE.md](docs/SHOWCASE.md)).
 
 ## License
 

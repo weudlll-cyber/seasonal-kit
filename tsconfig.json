@@ -30,5 +30,6 @@
     "jsx": "react-jsx",
     "types": ["node"]
   },
-  "include": ["src", "scripts", "tests", "browser", "*.config.js", "*.config.ts"]
+  "include": ["src", "scripts", "tests", "browser", "showcase", "*.config.js", "*.config.ts"],
+  "exclude": ["showcase/dist"]
 }

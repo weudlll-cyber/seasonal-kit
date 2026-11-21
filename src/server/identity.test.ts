@@ -17,7 +17,13 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck } from './identity.js';
+import {
+  IDENTITY_HEADERS,
+  identityFrom,
+  isWebsiteGuest,
+  mappedRoles,
+  websiteSignInCheck,
+} from './identity.js';
 import { stepsFrom } from './steps.js';
 import { secretMatches, trustedPeers } from './trust.js';
 
@@ -38,6 +44,18 @@ describe('trusted peers', () => {
     expect(trusted('10.0.0.9')).toBe(false);
     expect(trusted('not-an-address')).toBe(false);
     expect(trusted(undefined)).toBe(false);
+  });
+
+  // Review finding 1: "127.0.0.1/" read as /0 and trusted every IPv4 peer.
+  it.each([
+    '127.0.0.1/',
+    '172.18.0.0/ ',
+    '10.0.0.0/33',
+    '::1/129',
+    '10.0.0.0/0x10',
+    '10.0.0.0/8/1',
+  ])('refuses the range %j when the list is made', (entry) => {
+    expect(() => trustedPeers([entry])).toThrow(RangeError);
   });
 });
 
@@ -61,15 +79,15 @@ describe('the proxy secret', () => {
   });
 });
 
-describe('the sign-in decision', () => {
-  const decide = websiteSignInCheck({
-    trustedProxies: ['127.0.0.1'],
-    proxySecret: 'proxy-secret',
-    secretHeader: 'x-smg-proxy-secret',
-    steps: 'each',
-  });
-  const fromProxy = { 'x-smg-proxy-secret': 'proxy-secret' };
+const decide = websiteSignInCheck({
+  trustedProxies: ['127.0.0.1'],
+  proxySecret: 'proxy-secret',
+  secretHeader: 'x-smg-proxy-secret',
+  steps: 'each',
+});
+const fromProxy = { 'x-smg-proxy-secret': 'proxy-secret' };
 
+describe('the sign-in decision', () => {
   it('refuses an untrusted peer or a wrong secret, whatever the headers say', () => {
     expect(decide('10.0.0.9', { ...fromProxy, ...member })).toEqual({ kind: 'untrusted' });
     expect(decide('127.0.0.1', { 'x-smg-proxy-secret': 'nope', ...member })).toEqual({
@@ -91,10 +109,45 @@ describe('the sign-in decision', () => {
   });
 });
 
+describe('the sign-in decision against repeated headers and mixed-case names', () => {
+  // Review finding 2: Node joins a repeated header with ", "; it must never help a visitor.
+  it('never lets a joined repeat make a guest a member or add a role', () => {
+    const guestTwice = { ...fromProxy, ...member, 'x-acting-guest': 'true, true' };
+    expect(decide('127.0.0.1', guestTwice)).toEqual({ kind: 'guest' });
+    const injectedRole = { ...fromProxy, ...member, 'x-acting-user-roles': 'member, admin' };
+    expect(decide('127.0.0.1', injectedRole)).toEqual({ kind: 'invalid' });
+    const hostTwice = { ...fromProxy, ...member, 'x-acting-user-can-host': 'false, true' };
+    const who = decide('127.0.0.1', hostTwice);
+    expect(who.kind === 'member' && who.identity.canHost).toBe(false);
+  });
+
+  // Review finding 9: names as configured in mixed case still match Node's lower-case keys.
+  it('compares header names in lower case', () => {
+    const mixed = websiteSignInCheck({
+      trustedProxies: ['127.0.0.1'],
+      proxySecret: 'proxy-secret',
+      secretHeader: 'X-Smg-Proxy-Secret',
+      steps: 'each',
+      names: { ...IDENTITY_HEADERS, id: 'X-Acting-User-Id', guest: 'X-Acting-Guest' },
+    });
+    const who = mixed('127.0.0.1', { ...fromProxy, ...member });
+    expect(who.kind).toBe('member');
+    expect(mixed('127.0.0.1', { ...fromProxy, 'x-acting-guest': 'true' })).toEqual({
+      kind: 'guest',
+    });
+  });
+});
+
 describe('the identity headers', () => {
-  it('needs a numeric id of at most 20 digits and a name, each sent once', () => {
+  it('needs a positive safe integer id without leading zeros and a name, each sent once', () => {
     expect(identityFrom({ ...member, 'x-acting-user-id': 'u-1' }, 'each')).toBeNull();
-    expect(identityFrom({ ...member, 'x-acting-user-id': '1'.repeat(21) }, 'each')).toBeNull();
+    expect(identityFrom({ ...member, 'x-acting-user-id': '042' }, 'each')).toBeNull();
+    expect(identityFrom({ ...member, 'x-acting-user-id': '0' }, 'each')).toBeNull();
+    expect(identityFrom({ ...member, 'x-acting-user-id': '9007199254740993' }, 'each')).toBeNull();
+    expect(identityFrom({ ...member, 'x-acting-user-id': '42, 43' }, 'each')).toBeNull();
+    expect(
+      identityFrom({ ...member, 'x-acting-user-id': '9007199254740991' }, 'each')?.subject,
+    ).toBe('9007199254740991');
     expect(identityFrom({ 'x-acting-user-id': '42' }, 'each')).toBeNull();
     expect(identityFrom({ ...member, 'x-acting-user-id': ['42', '43'] }, 'each')).toBeNull();
     expect(identityFrom({ ...member, 'x-acting-user': ['a', 'b'] }, 'each')).toBeNull();
@@ -104,9 +157,10 @@ describe('the identity headers', () => {
     const who = identityFrom(
       {
         ...member,
-        'x-acting-user-roles': 'member, Admin',
+        'x-acting-user-roles': 'Admin',
         'x-acting-user-email-verified': 'true',
         'x-acting-user-can-host': 'TRUE',
+        'x-acting-user-steps': encode([]),
       },
       'each',
     );
@@ -114,7 +168,7 @@ describe('the identity headers', () => {
       subject: '42',
       websiteName: 'Walter W.',
       displayName: 'Walter_W.',
-      roles: ['member', 'admin'],
+      roles: ['admin'],
       emailVerified: true,
       canHost: true,
       steps: [],
@@ -130,10 +184,27 @@ describe('the identity headers', () => {
       identityFrom({ ...member, 'x-acting-user': 'x'.repeat(200) }, 'each')?.websiteName,
     ).toHaveLength(128);
   });
+});
 
-  it('tells a guest from a member', () => {
+describe('the role and guest headers', () => {
+  it('reads the role as exactly one of member, organiser, admin, or none', () => {
+    const roleOf = (roles: string | readonly string[] | undefined) =>
+      identityFrom({ ...member, 'x-acting-user-roles': roles }, 'each')?.roles ?? null;
+    expect(roleOf('member')).toEqual(['member']);
+    expect(roleOf(' Organiser ')).toEqual(['organiser']);
+    expect(roleOf(undefined)).toEqual([]);
+    expect(roleOf('')).toEqual([]);
+    expect(roleOf('super_admin')).toBeNull();
+    expect(roleOf('member,admin')).toBeNull();
+    expect(roleOf(['member', 'admin'])).toBeNull();
+  });
+
+  it('tells a guest from a member, failing closed on anything but "false"', () => {
     expect(isWebsiteGuest({ 'x-acting-guest': 'true' })).toBe(true);
+    expect(isWebsiteGuest({ 'x-acting-guest': 'yes' })).toBe(true);
+    expect(isWebsiteGuest({ 'x-acting-guest': ['true', 'true'] })).toBe(true);
     expect(isWebsiteGuest({ 'x-acting-guest': 'false' })).toBe(false);
+    expect(isWebsiteGuest({ 'x-acting-guest': ' ' })).toBe(false);
     expect(isWebsiteGuest(member)).toBe(false);
   });
 });
@@ -177,8 +248,10 @@ describe('the steps header', () => {
     expect(stepsFrom(Buffer.from([0xff, 0xfe]).toString('base64url'), 'each').steps).toEqual([]);
     expect(stepsFrom(encode({ ladder: 'holder' }), 'each').steps).toEqual([]);
     expect(stepsFrom('a'.repeat(5_000), 'each').steps).toEqual([]);
-    expect(stepsFrom(undefined, 'each')).toEqual({ steps: [], bad: false });
-    expect(stepsFrom('', 'all')).toEqual({ steps: [], bad: false });
+    // Review finding 6: the contract requires the header; missing or empty is marked bad.
+    expect(stepsFrom(undefined, 'each')).toEqual({ steps: [], bad: true });
+    expect(stepsFrom('', 'all')).toEqual({ steps: [], bad: true });
+    expect(stepsFrom(encode([]), 'all')).toEqual({ steps: [], bad: false });
   });
 
   it('marks a bad header in the identity, which still signs in', () => {

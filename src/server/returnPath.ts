@@ -5,8 +5,8 @@
  *
  * Responsibility: `safeNext` keeps `next` only when it is a string of at most 512 printable
  *                 ASCII characters (the page's hash percent-encoded) under the base path, with
- *                 no "//" and no backslash anywhere; anything else is the base path itself, the
- *                 lobby. `websiteLoginLocation` is where `<base>auth/website/login` sends a
+ *                 no "//" and no backslash anywhere, and no "." or ".." segment (also as "%2e")
+ *                 in its path; anything else is the base path itself, the lobby. `websiteLoginLocation` is where `<base>auth/website/login` sends a
  *                 visitor: the website's login with the game's sign-in route and the checked
  *                 page as its return path. Each nested parameter is encoded on its own, so the
  *                 page is a parameter of the sign-in route, which is the login's parameter.
@@ -18,9 +18,14 @@
 
 const MAX_NEXT = 512;
 
-// "/games/bingo/": one leading slash, a trailing one, no second slash in a row, no backslash.
+// A "." or ".." segment, written plainly or percent-encoded ("%2e"): a browser resolves it, so
+// "/games/bingo/../admin" would land outside the base path (review finding 4).
+const DOT_SEGMENT = /(?:^|\/)(?:\.|%2e){1,2}(?:\/|$|\?|#)/i;
+
+// "/games/bingo/": one leading slash, a trailing one, no second slash in a row, no backslash,
+// no dot segment; "/" alone is a game at the root.
 function checkedBase(basePath: string): string {
-  if (!/^\/(?:[\w.~-]+\/)*$/.test(basePath)) {
+  if (!/^\/(?:[\w.~-]+\/)*$/.test(basePath) || DOT_SEGMENT.test(basePath)) {
     throw new TypeError(`Not a base path: ${basePath}`);
   }
   return basePath;
@@ -29,7 +34,10 @@ function checkedBase(basePath: string): string {
 export function safeNext(next: unknown, basePath: string): string {
   const base = checkedBase(basePath);
   if (typeof next !== 'string' || next.length > MAX_NEXT || !next.startsWith(base)) return base;
-  return /^[\x21-\x7e]+$/.test(next) && !/\/\/|\\/.test(next) ? next : base;
+  // The path part only: a query or hash may hold anything printable.
+  const path = next.replace(/[?#][\s\S]*$/, '');
+  const plain = /^[\x21-\x7e]+$/.test(next) && !/\/\/|\\/.test(next);
+  return plain && !DOT_SEGMENT.test(path) ? next : base;
 }
 
 // "/login?next=%2Fgames%2Fbingo%2Fauth%2Fwebsite%3Fnext%3D%252Fgames%252Fbingo%252F": the

@@ -5,25 +5,32 @@
  *
  * Responsibility: `identityFrom` reads the identity headers (names configurable, the contract's
  *                 by default):
- *                 - the website's numeric user id (1 to 20 digits, never issued twice);
+ *                 - the website's user id: a positive safe integer without leading zeros (never
+ *                   issued twice, so one account has one key);
  *                 - the name: kept as sent (at most 128 characters) and as the game shows it
  *                   (letters, digits, "_", "." and "-", 3 to 24 characters, never cut inside a
  *                   surrogate pair; fewer than 3 usable ones gives "player-" and six hex
  *                   characters of the id's hash);
- *                 - the roles, whether the e-mail is verified and whether the member may host
- *                   this game;
+ *                 - the role: exactly one of member, organiser, admin, as the contract sends it;
+ *                   any other value is no identity;
+ *                 - whether the e-mail is verified and whether the member may host this game
+ *                   (exactly "true");
  *                 - the steps (./steps).
- *                 A repeated header counts as missing. `mappedRoles` maps them to game roles,
- *                 recomputed at every sign-in: a website admin is `game_admin`, a member who may
- *                 host is `organizer`, and nothing else; `super_admin` and `security_admin` never
- *                 come from the website. `decideWebsiteSignIn` is the sign-in route's whole
- *                 check, in this order:
+ *                 Node joins a repeated header into one string ("a, b"); a list (from
+ *                 `headersDistinct`) counts as missing. The exact-value rules above make a joined
+ *                 repeat fail closed: it never adds a role or a flag. `mappedRoles` gives the
+ *                 roles beyond the game's own `player`, recomputed at every sign-in: a website
+ *                 admin is `game_admin`, a member who may host is `organizer`, and nothing else;
+ *                 `super_admin` and `security_admin` never come from the website.
+ *                 `websiteSignInCheck` is the sign-in route's whole check, in this order:
  *                 1. the TCP peer must be trusted and the proxy secret right, else `untrusted`;
- *                 2. `X-Acting-Guest: true` is a `guest`, even when user headers come with it;
+ *                 2. a guest header that is present and not exactly "false" is a `guest`, even
+ *                    when user headers come with it;
  *                 3. no valid id and name is `invalid`;
  *                 4. else a `member` with the checked identity.
  *                 The game answers each kind its own way, so each keeps its behaviour today.
- *                 No I/O.
+ *                 Header names are compared in lower case, as Node gives them. No I/O. Hardened
+ *                 after the independent review of 2026-11-21 (docs/security-pass.md).
  * Source:         seasonal-mini-games apps/server/src/auth/websiteIdentity.ts and
  *                 apps/server/src/http/routes/websiteSignIn.ts at 866df03;
  *                 seasonal-bingo-royale apps/server/src/auth/websiteIdentity.ts and
@@ -45,42 +52,82 @@ export const IDENTITY_HEADERS = {
     steps: 'x-acting-user-steps',
     guest: 'x-acting-guest',
 };
-const SUBJECT = /^\d{1,20}$/;
+const SUBJECT = /^[1-9]\d{0,15}$/;
 const NAME_CHARS = /[^\p{L}\p{N}_.-]+/gu;
 // A high surrogate left alone at the end of a cut string.
 const CUT_PAIR = /[\uD800-\uDBFF]$/;
+// Node joins a repeated custom header into one string with ", " (only set-cookie stays a
+// list; `headersDistinct` gives lists): a list counts as missing, and the flag and role
+// headers below accept one exact value only, so a joined pair never passes (review finding 2).
 const one = (value) => typeof value === 'string' ? value.trim() : undefined;
 const isTrue = (value) => one(value)?.toLowerCase() === 'true';
+// The contract's one role per member; nothing else is read as a role.
+const ROLES = ['member', 'organiser', 'admin'];
+// The roles header: absent or empty is none; one of the contract's values is that role;
+// anything else (a list, an unknown role, a joined repeat) is null: no identity at all.
+function rolesOf(value) {
+    if (value === undefined)
+        return [];
+    const role = one(value)?.toLowerCase();
+    if (role === undefined)
+        return null;
+    if (role === '')
+        return [];
+    return ROLES.includes(role) ? [role] : null;
+}
+// The website's account id: a positive safe integer without leading zeros, so one account
+// has one key, and a game that reads it as a number reads it exactly (review finding 7).
+const isSubject = (subject) => SUBJECT.test(subject) && Number.isSafeInteger(Number(subject));
+// Header names as Node gives them: lower case (review finding 9).
+function lowerNames(names) {
+    return {
+        id: names.id.toLowerCase(),
+        name: names.name.toLowerCase(),
+        roles: names.roles.toLowerCase(),
+        emailVerified: names.emailVerified.toLowerCase(),
+        canHost: names.canHost.toLowerCase(),
+        steps: names.steps.toLowerCase(),
+        guest: names.guest.toLowerCase(),
+    };
+}
 function gameName(websiteName, subject) {
     const cleaned = websiteName.trim().replace(NAME_CHARS, '_').slice(0, 24).replace(CUT_PAIR, '');
     if (cleaned.replace(/_/g, '').length >= 3)
         return cleaned;
     return `player-${createHash('sha256').update(subject).digest('hex').slice(0, 6)}`;
 }
+// A guest unless the header is absent, empty or exactly "false": "true, true" (a joined
+// repeat) or any other value is a guest too. Failing closed keeps a guest from ever being
+// read as a member.
 export function isWebsiteGuest(headers, names = IDENTITY_HEADERS) {
-    return isTrue(headers[names.guest]);
+    const value = headers[names.guest.toLowerCase()];
+    if (value === undefined)
+        return false;
+    const text = one(value)?.toLowerCase();
+    return text !== '' && text !== 'false';
 }
 export function identityFrom(headers, steps, names = IDENTITY_HEADERS) {
-    const subject = one(headers[names.id]);
-    const websiteName = one(headers[names.name]);
-    if (subject === undefined || !SUBJECT.test(subject) || !websiteName)
+    const n = lowerNames(names);
+    const subject = one(headers[n.id]);
+    const websiteName = one(headers[n.name]);
+    const roles = rolesOf(headers[n.roles]);
+    if (subject === undefined || !isSubject(subject) || !websiteName || roles === null)
         return null;
-    const roles = (one(headers[names.roles]) ?? '')
-        .split(',')
-        .map((r) => r.trim().toLowerCase())
-        .filter((r) => r.length > 0);
-    const checked = stepsFrom(one(headers[names.steps]), steps);
+    const checked = stepsFrom(one(headers[n.steps]), steps);
     return {
         subject,
         websiteName: websiteName.slice(0, 128),
         displayName: gameName(websiteName, subject),
         roles,
-        emailVerified: isTrue(headers[names.emailVerified]),
-        canHost: isTrue(headers[names.canHost]),
+        emailVerified: isTrue(headers[n.emailVerified]),
+        canHost: isTrue(headers[n.canHost]),
         steps: checked.steps,
         badSteps: checked.bad,
     };
 }
+// The roles a member gets beyond the game's own `player`, which every member has: a website
+// admin is `game_admin`, a member who may host this game is `organizer`; nothing else, never
+// `super_admin` or `security_admin` (review finding 10: the comment now says so).
 export function mappedRoles(who) {
     return [
         ...(who.roles.includes('admin') ? ['game_admin'] : []),
@@ -91,11 +138,12 @@ export function mappedRoles(who) {
 export function websiteSignInCheck(check) {
     const trusted = trustedPeers(check.trustedProxies);
     const fromProxy = secretMatches(check.proxySecret);
-    const names = check.names ?? IDENTITY_HEADERS;
+    const names = lowerNames(check.names ?? IDENTITY_HEADERS);
+    const secretHeader = check.secretHeader.toLowerCase();
     return (peer, headers) => {
         // Both checks always run, so the answer's timing says nothing about which one failed.
         const peerOk = trusted(peer);
-        const secretOk = fromProxy(headers[check.secretHeader]);
+        const secretOk = fromProxy(headers[secretHeader]);
         if (!peerOk || !secretOk)
             return { kind: 'untrusted' };
         if (isWebsiteGuest(headers, names))

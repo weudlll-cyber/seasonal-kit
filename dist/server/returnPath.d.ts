@@ -5,8 +5,8 @@
  *
  * Responsibility: `safeNext` keeps `next` only when it is a string of at most 512 printable
  *                 ASCII characters (the page's hash percent-encoded) under the base path, with
- *                 no "//" and no backslash anywhere; anything else is the base path itself, the
- *                 lobby. `websiteLoginLocation` is where `<base>auth/website/login` sends a
+ *                 no "//" and no backslash anywhere, and no "." or ".." segment (also as "%2e")
+ *                 in its path; anything else is the base path itself, the lobby. `websiteLoginLocation` is where `<base>auth/website/login` sends a
  *                 visitor: the website's login with the game's sign-in route and the checked
  *                 page as its return path. Each nested parameter is encoded on its own, so the
  *                 page is a parameter of the sign-in route, which is the login's parameter.

@@ -3,7 +3,9 @@
  * @brief  Time-based one-time passwords (RFC 6238 over RFC 4226) and base32 (RFC 4648).
  *
  * Responsibility: what both games' authenticator sign-in needs, and nothing stored:
- *                 - `newSecret`: 20 random bytes;
+ *                 - `newSecret`: 20 random bytes; a secret under 16 bytes is refused everywhere
+ *                   (RFC 4226's 128 bits): `hotp` throws, `matchingStep` matches nothing,
+ *                   `base32Decode` gives null;
  *                 - `base32Encode`, `base32Decode`: the secret as the authenticator apps write it;
  *                 - `otpauthUri`: the link behind the QR code, with the game as issuer;
  *                 - `hotp`: the 6-digit code of a counter (HMAC-SHA-1, dynamic truncation), and
@@ -24,6 +26,15 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 const STEP_MS = 30_000;
 const DIGITS = 1_000_000;
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+// RFC 4226 §4 R6: at least 128 bits. A shorter key (an empty or damaged stored secret) gives
+// codes anyone can compute, so it is refused everywhere (review finding 3).
+const MIN_SECRET_BYTES = 16;
+
+function checkedSecret(secret: Uint8Array): Uint8Array {
+  if (secret.length < MIN_SECRET_BYTES)
+    throw new RangeError('A TOTP secret needs 16 bytes or more');
+  return secret;
+}
 
 export const newSecret = (): Uint8Array => new Uint8Array(randomBytes(20));
 
@@ -33,7 +44,7 @@ export const stepAt = (ms: number): number => Math.floor(ms / STEP_MS);
 export function hotp(secret: Uint8Array, counter: number): string {
   const message = Buffer.alloc(8);
   message.writeBigUInt64BE(BigInt(counter));
-  const mac = createHmac('sha1', secret).update(message).digest();
+  const mac = createHmac('sha1', checkedSecret(secret)).update(message).digest();
   // SHA-1 always gives 20 bytes: the last one picks the offset.
   const offset = mac.readUInt8(19) & 0xf;
   const value = (mac.readUInt32BE(offset) & 0x7fffffff) % DIGITS;
@@ -48,7 +59,8 @@ export function matchingStep(
   now: number,
   lastStep: number | null,
 ): number | null {
-  if (!/^\d{6}$/.test(code)) return null;
+  // A too-short secret matches nothing (hotp would throw): sign-in fails closed.
+  if (!/^\d{6}$/.test(code) || secret.length < MIN_SECRET_BYTES) return null;
   const sent = Buffer.from(code);
   const current = stepAt(now);
   let found: number | null = null;
@@ -77,7 +89,8 @@ export function base32Encode(bytes: Uint8Array): string {
   return out;
 }
 
-// Upper or lower case, with or without padding and spaces; null for another character.
+// Upper or lower case, with or without padding and spaces; null for another character, and
+// for a secret shorter than 16 bytes (an empty text no longer decodes "successfully").
 export function base32Decode(text: string): Uint8Array | null {
   const clean = text.toUpperCase().replace(/[\s=]/g, '');
   let bits = 0;
@@ -93,7 +106,7 @@ export function base32Decode(text: string): Uint8Array | null {
       bits -= 8;
     }
   }
-  return new Uint8Array(out);
+  return out.length < MIN_SECRET_BYTES ? null : new Uint8Array(out);
 }
 
 // Key URI format of the authenticator apps: label "issuer:account", SHA-1, 6 digits, 30 s.

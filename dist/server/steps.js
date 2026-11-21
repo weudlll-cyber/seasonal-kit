@@ -14,7 +14,8 @@
  *                 A header over 2 KB, or that is no base64url of a JSON array, gives no steps.
  *                 `mode` is the game's: `each` keeps the steps that hold, at most three (Mini
  *                 Games), `all` gives none when one fails or there are more than three (Bingo).
- *                 `bad` says that the header was there but not a valid list, for a log line.
+ *                 `bad` says that the header was missing, or there but not a valid list, for a
+ *                 log line: the contract requires it, `[]` for a member without steps.
  *                 Steps never grant rights; only the website's role headers do.
  * Source:         seasonal-mini-games apps/server/src/auth/websiteIdentity.ts (`stepsFrom`) and
  *                 packages/contracts/src/http/session.ts (`PlayerStep`) at 866df03;
@@ -63,8 +64,10 @@ function arrayIn(header) {
     }
 }
 export function stepsFrom(header, mode) {
+    // The contract requires the header ("[]" without steps): missing or empty is marked bad,
+    // for the game's log, and still gives no steps (review finding 6).
     if (header === undefined || header === '')
-        return { steps: [], bad: false };
+        return { steps: [], bad: true };
     const list = arrayIn(header);
     if (list === null)
         return { steps: [], bad: true };

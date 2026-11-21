@@ -32,6 +32,9 @@ describe('the return path', () => {
   it('keeps a page under the base path, its hash included', () => {
     expect(safeNext('/games/bingo/#/match/ABC123', BASE)).toBe('/games/bingo/#/match/ABC123');
     expect(safeNext('/games/bingo/?x=%2F', BASE)).toBe('/games/bingo/?x=%2F');
+    // Dots inside a name, or in the query or hash, are no segments.
+    expect(safeNext('/games/bingo/file.v2/#/../x', BASE)).toBe('/games/bingo/file.v2/#/../x');
+    expect(safeNext('/x', '/')).toBe('/x');
   });
 
   it.each([
@@ -39,6 +42,12 @@ describe('the return path', () => {
     '//evil.example/games/bingo/',
     '/games/bingo//evil.example',
     '/games/bingo/\\evil',
+    // Review finding 4: dot segments, plain or percent-encoded, leave the base path.
+    '/games/bingo/../../login',
+    '/games/bingo/%2e%2e/%2E%2E/admin',
+    '/games/bingo/./x',
+    '/games/bingo/..',
+    '/games/bingo/..?next=x',
     '/games/bingo/\n',
     '/games/bingo/ x',
     '/games/bingo-other/',
@@ -51,7 +60,15 @@ describe('the return path', () => {
   });
 
   it('refuses a base or login path that is no local path', () => {
-    for (const base of ['games/bingo/', '/games/bingo', '//evil/', '/a\\b/', 'https://x/']) {
+    for (const base of [
+      'games/bingo/',
+      '/games/bingo',
+      '//evil/',
+      '/a\\b/',
+      'https://x/',
+      '/games/../',
+      '/./',
+    ]) {
       expect(() => safeNext('/x', base)).toThrow(TypeError);
     }
     for (const login of ['https://evil.example/login?next=', '//evil/login?next=', '/a\\b']) {
@@ -99,11 +116,42 @@ describe('the rate limiter (brute force)', () => {
     limiter.take('new');
     expect(limiter.size).toBe(1);
   });
+});
 
+describe('the rate limiter (its rules and bounds)', () => {
   it('refuses a rule without tokens or time, and uses the real clock by default', () => {
     expect(() => new RateLimiter({ limit: 0, windowMs: 1_000 })).toThrow(RangeError);
     expect(() => new RateLimiter({ limit: 1, windowMs: 0 })).toThrow(RangeError);
+    // Review finding 5: Infinity made every answer NaN; a fraction or a bad key cap too.
+    expect(() => new RateLimiter({ limit: Infinity, windowMs: 1_000 })).toThrow(RangeError);
+    expect(() => new RateLimiter({ limit: 1.5, windowMs: 1_000 })).toThrow(RangeError);
+    expect(() => new RateLimiter({ limit: 1, windowMs: Infinity })).toThrow(RangeError);
+    expect(() => new RateLimiter({ limit: 1, windowMs: 1_000 }, Date.now, 0)).toThrow(RangeError);
     expect(new RateLimiter({ limit: 1, windowMs: 1_000 }).take('x').allowed).toBe(true);
+  });
+
+  it('holds at most its key cap: idle keys go first, new keys wait while all are active', () => {
+    let now = 0;
+    const limiter = new RateLimiter({ limit: 2, windowMs: 1_000 }, () => now, 3);
+    for (const key of ['a', 'b', 'c']) limiter.take(key);
+    expect(limiter.take('d')).toEqual({ allowed: false, retryAfterMs: 1_000 });
+    expect(limiter.size).toBe(3);
+    // A held key still gets its own answer.
+    expect(limiter.take('a').allowed).toBe(true);
+    now = 1_000;
+    expect(limiter.take('d').allowed).toBe(true);
+    expect(limiter.size).toBe(1);
+  });
+
+  it('drains nothing when the clock goes back', () => {
+    let now = 10_000;
+    const limiter = new RateLimiter({ limit: 2, windowMs: 1_000 }, () => now);
+    expect(limiter.take('a').allowed).toBe(true);
+    now = 0;
+    expect(limiter.take('a').allowed).toBe(true);
+    expect(limiter.take('a').allowed).toBe(false);
+    now = 10_500;
+    expect(limiter.take('a').allowed).toBe(true);
   });
 });
 
@@ -147,20 +195,22 @@ describe('recovery codes', () => {
 });
 
 describe('session revocation', () => {
-  it('tells every listener which sessions ended, none for an empty list', () => {
+  it('tells every listener at once which sessions ended, none for an empty list', async () => {
     const ends = new SessionEnds();
     const gateway = vi.fn();
     const audit = vi.fn();
     ends.onEnd(gateway);
     ends.onEnd(audit);
-    ends.end([]);
+    await ends.end([]);
     expect(gateway).not.toHaveBeenCalled();
-    ends.end(['s1', 's2']);
+    const done = ends.end(['s1', 's2']);
+    // Called in the same turn, before anything is awaited: the sockets close now.
     expect(gateway).toHaveBeenCalledWith(['s1', 's2']);
     expect(audit).toHaveBeenCalledWith(['s1', 's2']);
+    await done;
   });
 
-  it('reaches every listener past one that throws, then throws its error', () => {
+  it('reaches every listener past one that throws, then rejects with its error', async () => {
     const ends = new SessionEnds();
     const after = vi.fn();
     ends.onEnd(() => {
@@ -170,21 +220,32 @@ describe('session revocation', () => {
       throw new Error('second');
     });
     ends.onEnd(after);
-    expect(() => {
-      ends.end(['s1']);
-    }).toThrow('socket gone');
+    await expect(ends.end(['s1'])).rejects.toThrow('socket gone');
     expect(after).toHaveBeenCalledWith(['s1']);
   });
 
-  it('throws an Error even when a listener throws something else', () => {
+  // Review finding 8: an async listener's rejection no longer escapes unhandled.
+  it('awaits an async listener and reaches the others past its rejection', async () => {
+    const ends = new SessionEnds();
+    const after = vi.fn();
+    ends.onEnd(() => Promise.reject(new Error('feed down')));
+    ends.onEnd(after);
+    await expect(ends.end(['s1'])).rejects.toThrow('feed down');
+    expect(after).toHaveBeenCalledWith(['s1']);
+  });
+
+  it('rejects with an Error even when a listener throws something else', async () => {
     const ends = new SessionEnds();
     ends.onEnd(() => {
       // A listener's own mistake, which the kit must survive: it throws no Error object.
       // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw 'not an error';
     });
-    expect(() => {
-      ends.end(['s1']);
-    }).toThrow(new Error('not an error'));
+    ends.onEnd(() => Promise.reject(new Error('later')));
+    await expect(ends.end(['s1'])).rejects.toThrow(new Error('not an error'));
+    const quiet = new SessionEnds();
+    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+    quiet.onEnd(() => Promise.reject('plain'));
+    await expect(quiet.end(['s1'])).rejects.toThrow(new Error('plain'));
   });
 });

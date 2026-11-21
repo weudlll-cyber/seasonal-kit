@@ -105,19 +105,26 @@ describe('base32 (RFC 4648)', () => {
     ['foob', 'MZXW6YQ'],
     ['fooba', 'MZXW6YTB'],
     ['foobar', 'MZXW6YTBOI'],
-  ])('encodes %j as %s and back', (text, encoded) => {
-    const bytes = new TextEncoder().encode(text);
-    expect(base32Encode(bytes)).toBe(encoded);
-    expect(base32Decode(encoded)).toEqual(bytes);
+  ])('encodes %j as %s, and gives null for it as a secret (under 16 bytes)', (text, encoded) => {
+    expect(base32Encode(new TextEncoder().encode(text))).toBe(encoded);
+    // Review finding 3: an empty or short text is no secret ("" used to decode to 0 bytes).
+    expect(base32Decode(encoded)).toBeNull();
   });
 
   it('decodes lower case, padding and spaces, refuses other characters, round-trips a secret', () => {
-    expect(new TextDecoder().decode(base32Decode('mzxw 6ytb oi======') ?? undefined)).toBe(
-      'foobar',
-    );
-    expect(base32Decode('MZ1W')).toBeNull();
+    const text = 'foobarfoobarfoobar';
+    const spaced = `${base32Encode(new TextEncoder().encode(text)).toLowerCase()} ====`;
+    expect(new TextDecoder().decode(base32Decode(spaced) ?? undefined)).toBe(text);
+    expect(base32Decode('MZ1W'.repeat(8))).toBeNull();
     const secret = newSecret();
     expect(base32Decode(base32Encode(secret))).toEqual(secret);
+  });
+
+  it('refuses a secret under 16 bytes everywhere', () => {
+    const short = new Uint8Array(15);
+    expect(() => hotp(short, 1)).toThrow(RangeError);
+    expect(matchingStep(short, hotp(RFC_SECRET, stepAt(NOW)), NOW, null)).toBeNull();
+    expect(matchingStep(new Uint8Array(0), '000000', NOW, null)).toBeNull();
   });
 
   it('builds the otpauth link with the game as issuer and the base32 secret', () => {

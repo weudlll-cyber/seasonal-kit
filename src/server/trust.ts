@@ -6,7 +6,9 @@
  * Responsibility: `trustedPeers` tests the TCP peer (never a forwarding header) against the
  *                 trusted addresses and CIDR ranges, IPv4 and IPv6. An IPv4-mapped IPv6 peer
  *                 counts as its IPv4 address. Entries that are no address (Fastify's
- *                 "uniquelocal") trust nobody. `secretMatches` compares a sent value with the
+ *                 "uniquelocal") trust nobody; an address with a prefix that is not 0–32 (IPv4)
+ *                 or 0–128 (IPv6) digits throws, since a blank one would trust everyone.
+ *                 `secretMatches` compares a sent value with the
  *                 expected one in constant time: both are hashed to one length first, so neither
  *                 the content nor the length leaks. An empty expected secret, or a sent value
  *                 that is missing, empty or repeated, never matches: a misconfigured install
@@ -28,14 +30,26 @@ function familyOf(address: string): 'ipv4' | 'ipv6' | null {
   return isIPv6(address) ? 'ipv6' : null;
 }
 
+// A CIDR prefix: 1 to 3 digits, at most 32 (IPv4) or 128 (IPv6). "" or " " would read as 0 and
+// trust every peer, so anything else throws when the list is made (review finding 1).
+function prefixOf(bits: string, family: 'ipv4' | 'ipv6', entry: string): number {
+  const max = family === 'ipv4' ? 32 : 128;
+  if (!/^\d{1,3}$/.test(bits) || Number(bits) > max) {
+    throw new RangeError(`Not a trusted proxy range: ${entry}`);
+  }
+  return Number(bits);
+}
+
 export function trustedPeers(entries: readonly string[]): (peer: string | undefined) => boolean {
   const list = new BlockList();
   for (const entry of entries) {
-    const [address = '', bits] = entry.split('/');
+    const [address = '', bits, ...rest] = entry.split('/');
     const family = familyOf(address);
+    // A keyword such as Fastify's "uniquelocal" is no address: it trusts nobody here.
     if (family === null) continue;
+    if (rest.length > 0) throw new RangeError(`Not a trusted proxy range: ${entry}`);
     if (bits === undefined) list.addAddress(address, family);
-    else list.addSubnet(address, Number(bits), family);
+    else list.addSubnet(address, prefixOf(bits, family, entry), family);
   }
   return (peer) => {
     if (peer === undefined) return false;

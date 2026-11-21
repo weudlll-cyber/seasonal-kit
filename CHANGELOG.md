@@ -7,6 +7,84 @@ applies it.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-21
+
+Server sign-in through the website and two-factor sign-in, for a game's server
+(`@seasonal/kit/server`, Node only): the checks and the codes. Accounts, sessions and every
+database statement stay in the games.
+
+### Added
+
+- The website sign-in's checks:
+  - `trustedPeers`, the TCP peer against the trusted addresses and ranges;
+  - `secretMatches`, the proxy secret in constant time. An empty secret refuses everyone;
+  - `websiteSignInCheck`, the route's whole decision: `untrusted`, `guest`, `invalid` or
+    `member` with the checked identity. The game answers each kind its own way;
+  - `identityFrom`, `isWebsiteGuest`, `IDENTITY_HEADERS`;
+  - the steps checked by the stricter rule of both games, with `steps: 'each' | 'all'` as the
+    game's choice;
+  - `mappedRoles` (admin → `game_admin`, may host → `organizer`, nothing else).
+- `safeNext` and `websiteLoginLocation`: the return path under the base path, and the login hop
+  with each nested parameter encoded on its own.
+- Two-factor sign-in:
+  - `newSecret`, `base32Encode`, `base32Decode`, `otpauthUri` with the game as issuer, `hotp`,
+    `stepAt`;
+  - `matchingStep`: one step of drift, a used step refused, all three candidates compared in
+    constant time;
+  - `newRecoveryCodes`, `recoveryHash`, `looksLikeRecoveryCode`, in each game's style
+    (`grouped` for Mini Games, `hex` for Bingo), so stored codes keep working.
+- `RateLimiter` (the rules stay each game's; at most `maxKeys` keys) and `SessionEnds` (one
+  failing listener, thrown or rejected, stops no other).
+
+### Security
+
+Before release, three independent reviews ran, each fresh, on the whole diff:
+
+- the first found 3 medium and 7 low findings;
+- the second found 1 medium and 6 low;
+- the third was clean, with 5 low findings and 2 noted.
+
+Every confirmed finding is fixed (docs/security-pass.md). What the fixes change for a game:
+
+- **The role header** must be exactly one of `member`, `organiser`, `admin`, as the contract
+  sends it. A list or an unknown role is no identity (`invalid`). Both games split a comma list
+  today; the website never sends one, and a joined repeat of the header could have added
+  `admin`.
+- **A guest header** that is present and not exactly `false` makes a guest.
+- **The user id** is a positive safe integer without leading zeros.
+- **A missing steps header** is marked `badSteps`, since the contract requires it.
+- **A trusted proxy entry** with a bad CIDR prefix throws at startup instead of trusting every
+  peer.
+- **A TOTP secret** under 16 bytes is refused.
+- **Dot segments** in `next` lead to the base path.
+- **`SessionEnds`** takes the game's `onError` (its log). `end` returns a promise that never
+  rejects; every listener's failure, thrown or rejected, goes to `onError`.
+- **A step's icon** must be exactly `/media/step-icons/<32 hex>.webp`, the contract's form.
+- **The rate limiter** scans a full map at most once a tenth of its window, and refuses a new key
+  without a scan in between. Games key it by account and by IPv6 /64.
+- **The otpauth link** encodes spaces as `%20`.
+- **`next`** with an encoded `/`, `\` or NUL in its path leads to the base path.
+- **TOTP** matches nothing at a time that is not finite or before the first step.
+- **A guest header** that is present and empty makes a guest.
+- **`SessionEnds.end`** is called without `await` in a route: one listener that never settles
+  would keep it pending. An async `onError` that rejects is caught.
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.8.0, it may:
+  - replace `trustedPeers`, `identityFrom`, `isWebsiteGuest`, `stepsFrom` and `mappedRoles` in
+    `apps/server/src/auth/websiteIdentity.ts`, and `safeNext`, `proxySecret` and `toLogin` in
+    `apps/server/src/http/routes/websiteSignIn.ts`, with `websiteSignInCheck` (`steps:
+'each'`) and `websiteLoginLocation`. It keeps answering `invalid` with 403
+    `NO_WEBSITE_USER` and `guest` with the login hop;
+  - replace `apps/server/src/auth/totp.ts`, and `recoveryCode` and `hashOf` in `twoFactor.ts`
+    (`'grouped'`). Its SQL stays;
+  - replace `RateLimiter` (its `RATE_RULES` stay) and `SessionEnds`.
+- **Bingo Royale:** the same with `steps: 'all'`, which logs `badSteps` once as today, and
+  `'hex'` recovery codes. It keeps answering both `guest` and `invalid` with its login hop.
+  `otpauthUri(secret, name, 'Seasonal Bingo Royale')` and `newSecret` keep their meaning; the
+  link now also names `algorithm=SHA1`, which authenticator apps already assume.
+
 ## [0.7.0] - 2026-11-21
 
 The showcase and its accessibility check, and two fixes it found.
@@ -322,7 +400,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...v0.5.0

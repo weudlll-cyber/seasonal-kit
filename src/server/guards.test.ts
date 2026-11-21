@@ -56,6 +56,11 @@ describe('the return path', () => {
     '/games/bingo/./x',
     '/games/bingo/..',
     '/games/bingo/..?next=x',
+    // Third review, finding 1: an encoded separator a proxy would decode.
+    '/games/bingo/..%2fadmin',
+    '/games/bingo/%2e%2e%2F',
+    '/games/bingo/%5c..%5Cx',
+    '/games/bingo/x%00',
     '/games/bingo/\n',
     '/games/bingo/ x',
     '/games/bingo-other/',
@@ -66,7 +71,9 @@ describe('the return path', () => {
   ])('turns %j into the base path', (next) => {
     expect(safeNext(next, BASE)).toBe(BASE);
   });
+});
 
+describe('the base path and the login hop', () => {
   it('refuses a base or login path that is no local path', () => {
     for (const base of [
       'games/bingo/',
@@ -281,14 +288,27 @@ describe('session revocation', () => {
       'plain',
     ]);
   });
+});
 
-  it('stays settled when the game’s own error report fails', async () => {
-    const ends = new SessionEnds(() => {
-      throw new Error('log down');
-    });
-    ends.onEnd(() => {
-      throw new Error('socket gone');
-    });
-    await expect(ends.end(['s1'])).resolves.toBeUndefined();
+describe('session revocation when the game’s log fails', () => {
+  it('stays settled when the game’s own error report throws or rejects', async () => {
+    const unhandled = vi.fn();
+    process.on('unhandledRejection', unhandled);
+    for (const onError of [
+      () => {
+        throw new Error('log down');
+      },
+      // Third review, finding 2: an async log that rejects.
+      () => Promise.reject(new Error('log down')),
+    ]) {
+      const ends = new SessionEnds(onError);
+      ends.onEnd(() => {
+        throw new Error('socket gone');
+      });
+      await expect(ends.end(['s1'])).resolves.toBeUndefined();
+    }
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    process.off('unhandledRejection', unhandled);
+    expect(unhandled).not.toHaveBeenCalled();
   });
 });

@@ -48,8 +48,20 @@ Only the latest tag receives security fixes.
   Anything else is ignored. They post only at that origin (never `'*'`), and only the fields the
   website's contract names: no token, key or text. Sign-in redirects go only to paths on this
   site (docs/security-pass.md).
+- **Server sign-in (`@seasonal/kit/server`, since v0.8.0).**
+  - Only the website's proxy may name a visitor: the TCP peer must be trusted (never a
+    forwarding header), and the game's proxy secret must match in constant time. An empty
+    secret refuses everyone.
+  - A guest is never a member. A malformed header grants nothing: no role comes from anything
+    but the role and can-host headers, and never `super_admin` or `security_admin`.
+  - Return paths stay under the game's base path.
+  - A TOTP step works once, and all candidates are compared in constant time. Recovery codes
+    come from the system's random source and are kept only as hashes.
+  - The kit stores nothing: secrets, sessions and accounts stay in each game's database.
+  - Independently reviewed before release (docs/security-pass.md).
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
-  public `tokens.css` over HTTPS and nothing else.
+  public `tokens.css` over HTTPS and nothing else. The server entry takes the game's secrets as
+  arguments and never logs or keeps them.
 
 ## Binary assets
 

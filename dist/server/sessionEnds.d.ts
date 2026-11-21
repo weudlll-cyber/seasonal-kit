@@ -9,7 +9,10 @@
  *                 or returns a promise that rejects, stops no other: every one hears every end.
  *                 Each failure, as an Error, goes to the game's `onError` (its log); `end` never
  *                 rejects, so a route that does not await it cannot crash the process with an
- *                 unhandled rejection. `end` settles once every listener has finished.
+ *                 unhandled rejection. `end` settles once every listener has finished, so a
+ *                 listener that never settles keeps it pending: routes call `void ends.end(ids)`
+ *                 and never await it (third review, finding 3); the listeners have all heard
+ *                 the ids by the time `end` returns its promise.
  * Source:         seasonal-mini-games apps/server/src/auth/sessionEnds.ts at 866df03, the same in
  *                 seasonal-bingo-royale at a43209a. Added after the independent reviews: one
  *                 listener's error, thrown or rejected, stops no other and reaches `onError`.
@@ -20,7 +23,7 @@ export type SessionEndsListener = (sessionIds: readonly string[]) => void | Prom
 export declare class SessionEnds {
     private readonly onError;
     private readonly listeners;
-    constructor(onError: (error: Error) => void);
+    constructor(onError: (error: Error) => void | Promise<void>);
     onEnd(listener: SessionEndsListener): void;
     end(sessionIds: readonly string[]): Promise<void>;
     private report;

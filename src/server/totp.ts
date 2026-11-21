@@ -61,8 +61,11 @@ export function matchingStep(
 ): number | null {
   // A too-short secret matches nothing (hotp would throw): sign-in fails closed.
   if (!/^\d{6}$/.test(code) || secret.length < MIN_SECRET_BYTES) return null;
-  const sent = Buffer.from(code);
   const current = stepAt(now);
+  // A time that is not finite, or before the first step, matches nothing instead of throwing
+  // (third review, finding 4).
+  if (!Number.isSafeInteger(current) || current < 1) return null;
+  const sent = Buffer.from(code);
   let found: number | null = null;
   for (const step of [current - 1, current, current + 1]) {
     const same = timingSafeEqual(Buffer.from(hotp(secret, step)), sent);

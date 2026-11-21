@@ -140,6 +140,19 @@ The consumer was deleted afterwards.
 `showcase/`, `playwright.config.ts` and the Playwright dev dependencies (v0.7.0) stay in the
 repository. `"files"` leaves them out, so a game receives none of them.
 
+## The v0.7.0 tag (2026-11-21, the tag itself)
+
+A new scratch consumer pinned `#v0.7.0`, with scripts off and the same toolchain. The lockfile
+resolved it to the merge commit's tarball (`6b0d9a7`, `version: 0.7.0`).
+
+- **Contents:** the installed package holds `package.json`, `LICENSE`, `README.md`, `browser/`,
+  `css/`, `dist/` and `fonts/`; no `showcase/` and no Playwright config.
+- **Build and types:** `vite build` and `tsc` worked.
+- **Test:** the Vitest test at 390 × 844 found `--sk-visible-height: 600px` on `<html>` and no
+  height on the dock's box.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

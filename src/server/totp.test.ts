@@ -120,6 +120,14 @@ describe('base32 (RFC 4648)', () => {
     expect(base32Decode(base32Encode(secret))).toEqual(secret);
   });
 
+  // Third review, finding 4: an odd clock matches nothing instead of throwing.
+  it.each([Number.NaN, Number.POSITIVE_INFINITY, 0, 29_999, -60_000])(
+    'matches nothing at the time %s',
+    (now) => {
+      expect(matchingStep(RFC_SECRET, '287082', now, null)).toBeNull();
+    },
+  );
+
   it('refuses a secret under 16 bytes everywhere', () => {
     const short = new Uint8Array(15);
     expect(() => hotp(short, 1)).toThrow(RangeError);

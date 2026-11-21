@@ -210,7 +210,10 @@ describe('the role and guest headers', () => {
     expect(isWebsiteGuest({ 'x-acting-guest': 'yes' })).toBe(true);
     expect(isWebsiteGuest({ 'x-acting-guest': ['true', 'true'] })).toBe(true);
     expect(isWebsiteGuest({ 'x-acting-guest': 'false' })).toBe(false);
-    expect(isWebsiteGuest({ 'x-acting-guest': ' ' })).toBe(false);
+    // Third review, finding 5: present but blank is a guest too (fail closed).
+    expect(isWebsiteGuest({ 'x-acting-guest': ' ' })).toBe(true);
+    expect(isWebsiteGuest({ 'x-acting-guest': '' })).toBe(true);
+    expect(isWebsiteGuest({ 'x-acting-guest': ' FALSE ' })).toBe(false);
     expect(isWebsiteGuest(member)).toBe(false);
   });
 });

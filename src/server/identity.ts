@@ -131,14 +131,13 @@ function gameName(websiteName: string, subject: string): string {
   return `player-${createHash('sha256').update(subject).digest('hex').slice(0, 6)}`;
 }
 
-// A guest unless the header is absent, empty or exactly "false": "true, true" (a joined
-// repeat) or any other value is a guest too. Failing closed keeps a guest from ever being
-// read as a member.
+// A guest unless the header is absent or exactly "false": "true, true" (a joined repeat), an
+// empty value or any other value is a guest too. Failing closed keeps a guest from ever being
+// read as a member (third review, finding 5).
 export function isWebsiteGuest(headers: Headers, names = IDENTITY_HEADERS): boolean {
   const value = headers[names.guest.toLowerCase()];
   if (value === undefined) return false;
-  const text = one(value)?.toLowerCase();
-  return text !== '' && text !== 'false';
+  return one(value)?.toLowerCase() !== 'false';
 }
 
 export function identityFrom(

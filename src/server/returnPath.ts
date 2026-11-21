@@ -6,7 +6,7 @@
  * Responsibility: `safeNext` keeps `next` only when it is a string of at most 512 printable
  *                 ASCII characters (the page's hash percent-encoded) under the base path, with
  *                 no "//" and no backslash anywhere, and no "." or ".." segment (also as "%2e")
- *                 in its path; anything else is the base path itself, the lobby. `websiteLoginLocation` is where `<base>auth/website/login` sends a
+ *                 and no encoded "/", "\" or NUL ("%2f", "%5c", "%00") in its path; anything else is the base path itself, the lobby. `websiteLoginLocation` is where `<base>auth/website/login` sends a
  *                 visitor: the website's login with the game's sign-in route and the checked
  *                 page as its return path. Each nested parameter is encoded on its own, so the
  *                 page is a parameter of the sign-in route, which is the login's parameter.
@@ -37,7 +37,10 @@ export function safeNext(next: unknown, basePath: string): string {
   // The path part only: a query or hash may hold anything printable.
   const path = next.replace(/[?#][\s\S]*$/, '');
   const plain = /^[\x21-\x7e]+$/.test(next) && !/\/\/|\\/.test(next);
-  return plain && !DOT_SEGMENT.test(path) ? next : base;
+  // An encoded slash, backslash or NUL in the path: a proxy that decodes it could route the
+  // request outside the base path (third review, finding 1).
+  const encodedSeparator = /%(?:2f|5c|00)/i.test(path);
+  return plain && !encodedSeparator && !DOT_SEGMENT.test(path) ? next : base;
 }
 
 // "/login?next=%2Fgames%2Fbingo%2Fauth%2Fwebsite%3Fnext%3D%252Fgames%252Fbingo%252F": the

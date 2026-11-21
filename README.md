@@ -25,6 +25,7 @@ to a stricter standard than any single game ([docs/DECISIONS.md](docs/DECISIONS.
 | `@seasonal/kit/bar.css`    | the slim game bar of a round in focus mode (44 px, 52 px on a phone) and the phase strip with "· now"                                                                                                                                                                                                         |
 | `@seasonal/kit/react`      | React (19.3.1, an optional peer): `useTheme`, `useShownTheme`, `ThemeToggle`, `useDisclosure`, `useFitScale`, `BackLink`, `DockedScreen`, `ChatDock`, `WebsiteChatFrame`, `useDockArrivals`, `useDockView`, `StartCard`, `ResultFrame`, `GameBar`, `usePanels`, `useFullscreen`, `useFocusMode`, `PhaseStrip` |
 | `@seasonal/kit`            | `clockText`: "9:05" for a length of time                                                                                                                                                                                                                                                                      |
+| `@seasonal/kit/server`     | a game server's website sign-in checks and two-factor sign-in, Node only: `websiteSignInCheck`, `identityFrom`, `mappedRoles`, `trustedPeers`, `secretMatches`, `safeNext`, `websiteLoginLocation`, TOTP (`matchingStep`, `otpauthUri`, …), recovery codes, `RateLimiter`, `SessionEnds`                      |
 
 A game imports the kit's CSS (`fonts.css`, `tokens.css`, `motion.css`, `shell.css`, and
 `fit.css`, `dock.css`, `frames.css`, `bar.css` and `call.css` for the parts it uses) before its
@@ -34,7 +35,7 @@ own, and adds only its own arena tokens and animations.
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.7.0"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.8.0"
 }
 ```
 

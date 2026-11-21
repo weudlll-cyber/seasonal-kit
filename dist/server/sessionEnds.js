@@ -9,7 +9,10 @@
  *                 or returns a promise that rejects, stops no other: every one hears every end.
  *                 Each failure, as an Error, goes to the game's `onError` (its log); `end` never
  *                 rejects, so a route that does not await it cannot crash the process with an
- *                 unhandled rejection. `end` settles once every listener has finished.
+ *                 unhandled rejection. `end` settles once every listener has finished, so a
+ *                 listener that never settles keeps it pending: routes call `void ends.end(ids)`
+ *                 and never await it (third review, finding 3); the listeners have all heard
+ *                 the ids by the time `end` returns its promise.
  * Source:         seasonal-mini-games apps/server/src/auth/sessionEnds.ts at 866df03, the same in
  *                 seasonal-bingo-royale at a43209a. Added after the independent reviews: one
  *                 listener's error, thrown or rejected, stops no other and reaches `onError`.
@@ -20,7 +23,7 @@ const asError = (error) => error instanceof Error ? error : new Error(String(err
 export class SessionEnds {
     onError;
     listeners = [];
-    // `onError`: where a listener's failure goes, the game's log.
+    // `onError`: where a listener's failure goes, the game's log; it may be async.
     constructor(onError) {
         this.onError = onError;
     }
@@ -44,13 +47,13 @@ export class SessionEnds {
                 this.report(asError(result.reason));
         }
     }
-    // A failing `onError` must not turn into a rejection either.
+    // A failing `onError`, thrown or rejected (an async log), must not turn into an unhandled
+    // rejection either (third review, finding 2).
     report(error) {
-        try {
-            this.onError(error);
-        }
-        catch {
+        void Promise.resolve()
+            .then(() => this.onError(error))
+            .catch(() => {
             // The game's log failed; the sessions have ended all the same.
-        }
+        });
     }
 }

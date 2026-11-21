@@ -44,9 +44,12 @@ again. The file is a copy of the `seasonal-spirits` project's settings, with the
   like the other source repositories. `gh api` on this repository only
   (`repos/weudlll-cyber/seasonal-kit/*`), to read check runs and to set and read master's branch
   protection. `gh release`, for the release notes of a tag.
-- **No longer allowed:** `docker` and the PowerShell commands that find, stop and start
-  processes. The kit runs no servers. The pre-commit hook's gitleaks container is started by
-  lefthook, not by a Claude command.
+- **Allowed since 2026-11-21:** `docker run --rm …`, a container that is removed when it ends.
+  The security pass runs gitleaks and osv-scanner that way, with the images CI pins
+  ([docs/security-pass.md](docs/security-pass.md)).
+- **No longer allowed:** other `docker` commands and the PowerShell commands that find, stop
+  and start processes. The kit runs no servers. The pre-commit hook's gitleaks container is
+  started by lefthook, not by a Claude command.
 - **Denied:** the blanket `gh api` deny is replaced by narrower ones. Denied are GraphQL
   (`gh api graphql`), every `DELETE` (`-X DELETE`, `-XDELETE`, `--method DELETE`,
   `--method=DELETE`) and any call that puts an option before the path (`gh api -…`). The path

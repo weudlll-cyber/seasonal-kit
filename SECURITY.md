@@ -26,9 +26,12 @@ Only the latest tag receives security fixes.
 ## How the kit keeps its attack surface small
 
 - **No runtime dependencies.** `dependencies` is empty; everything in `devDependencies` is a
-  tool. There is one exception: an optional peer dependency on `vite`, used only for the types of
-  `@seasonal/kit/vite`. That plugin runs in a game's build, never in a browser, and the game
-  brings its own Vite.
+  tool. There are two exceptions, both optional peer dependencies pinned exactly, so the kit
+  never brings a copy of its own:
+  - `vite` 8.3.4, used only for the types of `@seasonal/kit/vite`. That plugin runs in a game's
+    build, never in a browser, and the game brings its own Vite.
+  - `react` 19.3.1 (since v0.4.0), the version both games pin, for `@seasonal/kit/react` only.
+    The game brings its own React; a game or page without React never loads that entry.
 - **No install scripts.** Games install the committed `dist/`; nothing is built or run on
   install (docs/DELIVERY.md). The kit's own installs run no script either
   (`pnpm-workspace.yaml` `ignoreScripts`, `.npmrc` `ignore-scripts`).

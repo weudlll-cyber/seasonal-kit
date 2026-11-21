@@ -7,10 +7,66 @@ applies it.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-21
+
+The screen building blocks: React over the kit's core, as `@seasonal/kit/react` (React 19.3.1
+is an optional, exactly pinned peer dependency; SECURITY.md).
+
+### Added
+
+- Fitting to the screen (DECISIONS K14):
+  - `useFitScale(game, signature, self?)` (`@seasonal/kit/react`): Mini Games' O111 scale `--fit`
+    with the game's floor. Bingo's floor is 1, so its screens never shrink, as today.
+  - `@seasonal/kit/fit.css`: each game's floors (`data-sk-game`): Mini Games 13 px text, 24 px
+    display values, 22 px rows, 40 px phone targets; Bingo 14 px text, 44 px targets. With no
+    game named, the strictest of all. `tests/fit-floors.test.ts` is the floor guard.
+- The docked chat (`@seasonal/kit/react`, `@seasonal/kit/dock.css`):
+  - `DockedScreen`: the game's content on top, the dock under it, mounted once, so the chat
+    survives the round → result switch; on a phone the box follows the visible viewport.
+  - `ChatDock`: the 190 px strip (150 px under 760 px high) with the call slot at its right end;
+    on a phone the bar with the newest message and the unread count, its sheet, and the 48 px
+    call strip above it. The slot is hidden while no call id is set.
+  - `WebsiteChatFrame`: the website's chat frame on the checked link (`connectChat`).
+    `sandboxed` is the game's choice. `useDockArrivals` for a game's own chat room;
+    `useDockView`, the 900 px landscape rule.
+- The shell (`@seasonal/kit/react`, `@seasonal/kit/shell.css`): `BackLink` ("← Seasonal
+  Entertainment" to `/games`, website mode only), `ThemeToggle`, `useTheme`, `useShownTheme`,
+  `useDisclosure`.
+- `.claude/settings.json` allows `docker run --rm …` for the security pass (CONTRIBUTING.md).
+
 ### Changed
 
 - `docs/DELIVERY.md` records the install and build of the tag v0.3.0, and its pin example names
   v0.3.0; `docs/security-pass.md` completes the v0.3.0 pass's install and package rows.
+- `docs/DECISIONS.md`: K14 (the floors per game) and K15 (the unattended chain of 2026-11-21).
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.4.0, it may:
+  - delete `packages/ui/src/useDisclosure.ts`, `apps/web/src/shell/ThemeToggle.tsx` and the
+    hooks of `apps/web/src/shell/theme.ts`, for the kit's. Its bar's `order` rule moves from
+    `.theme-toggle` to `.sk-theme-toggle`;
+  - replace `useFitScale`, `nextScale`, `settle` and `FIT_FLOOR` in `apps/web/src/round/useFit.ts`
+    with `useFitScale('mini-games', signature, self)`. Its `useFit` (the "+N more" count) stays;
+  - put `data-sk-game="mini-games"` around its screens and write its floors as
+    `var(--sk-floor-…)`; the values stay the same;
+  - replace `match/DockedMatch.tsx`, `match/ChatDock.tsx`, `match/chatDock.css` and the dock's
+    rules in `match/docked.css` with `DockedScreen`. Its room reports through `useDockArrivals`
+    in place of `ChatArrivals`; its phone field is the `field` prop;
+  - replace `HostChat` (`chat/ChatPanel.tsx`) and `chat/useHostChatFrame.ts` with
+    `WebsiteChatFrame room="mini-games" sandboxed`;
+  - add `BackLink` at the top left (GAME-INTEGRATION §8).
+- **Bingo Royale:** once it pins v0.4.0, it may:
+  - delete `apps/web/src/shell/ThemeToggle.tsx` and its `.theme-toggle` rules, and the
+    `.shell-back` link and rules, for `ThemeToggle` and `BackLink`. Its bar's `order` rules move
+    to `.sk-theme-toggle` and `.sk-back-link`;
+  - use `WebsiteChatFrame room="bingo" sandboxed={false}` in its side panel
+    (`shell/ChatDock.tsx`). The frame now also sends `strict-origin`, as GAME-INTEGRATION §5
+    requires;
+  - keep its own `--gutter` and `--panel-padding` after the kit's tokens: they differ from Mini
+    Games' below 356 px of width (docs/ADOPTION.md);
+  - put `data-sk-game="bingo"` around its screens. Its docked layout would replace the side
+    panel, which needs the owner's word.
 
 ## [0.3.0] - 2026-11-20
 
@@ -141,7 +197,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.0.1...v0.1.0

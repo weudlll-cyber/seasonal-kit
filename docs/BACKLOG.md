@@ -30,7 +30,9 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **9. React wrappers.** The hooks and components the games build on the kit's framework-free
   parts: the chat frame's link and its arrivals (Mini Games' `useHostChatFrame`, `ChatArrivals`,
   `HostChatSight`), and the call slot. Left for a later step by the owner's brief for v0.3.0.
-  Done when: they are in the kit with tests, and a game uses them.
+  Done when: they are in the kit with tests, and a game uses them. The kit's part is in v0.4.0
+  (`WebsiteChatFrame`, `ChatDock`, `DockedScreen`, `useDockArrivals`); open until a game uses
+  them (item 5).
 
 ## Part two — closed
 

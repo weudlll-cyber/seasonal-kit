@@ -23,7 +23,7 @@ Before 1.0.0, minor versions may break. Each break is still named in the CHANGEL
    - update `docs/BACKLOG.md` and `docs/OPEN.md`.
 2. Before a minor or major version, a security pass ([security-pass.md](security-pass.md)).
 3. Open the PR. Every required check must be green: `verify`, `osv-scanner`, `gitleaks`, `docs`,
-   `analyze` (CodeQL).
+   `analyze` (CodeQL), `showcase` (DECISIONS K19).
 4. With the owner's approval, merge with a merge commit (`gh pr merge --merge --delete-branch`),
    so the tag sits on a commit of `master`. Then delete the local branch too; only `master` stays
    on origin.
@@ -36,6 +36,13 @@ Before 1.0.0, minor versions may break. Each break is still named in the CHANGEL
    ```
 
 6. Check CI and CodeQL on the merge commit (`gh run list -R weudlll-cyber/seasonal-kit --branch
-master`). Check that `git ls-remote origin` lists only `master` and the tags.
+master`). Check that `git ls-remote origin` lists only `master` and the tags (and, during an
+   unattended night, its sheet branch until the sheet's PR merges).
+7. Prove the delivery on the tag: a scratch consumer outside every repository, with
+   `ignore-scripts=true`, installs `#vX.Y.Z`, typechecks and tests what the version added, and is
+   deleted afterwards. Record it in [DELIVERY.md](DELIVERY.md).
+
+The one tag not on a merge commit is v0.0.1, the delivery probe on the root commit (07a8484),
+cut before master was protected.
 
 A game then moves to the version in its own PR, with the owner's approval (DECISIONS K1).

@@ -6,6 +6,7 @@
  *                 other, the docked screen in a box of a fixed height (as a game's screen
  *                 would be), the reserved call slot outlined, and a sample pill. Colours only
  *                 from ../css/tokens.css.
+ * Source:         new in the kit.
  */
 body {
   margin: 0;

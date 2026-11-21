@@ -7,6 +7,7 @@
  *                 serves the build on a fixed port (../playwright.config.ts). The stub lives at
  *                 /embed/chat/, where `WebsiteChatFrame` frames the website's chat on a game's
  *                 own origin, so the showcase frames a page of its own and never a 404.
+ * Source:         new in the kit.
  */
 import { fileURLToPath } from 'node:url';
 

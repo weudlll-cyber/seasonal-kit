@@ -1,7 +1,7 @@
 /**
  * @file   src/server/guards.test.ts
- * @brief  The return path, the login hop, brute force (the rate limiter), recovery codes and
- *         session revocation.
+ * @brief  The return path, the login hop, brute force (the rate limiter) and session
+ *         revocation.
  *
  * Responsibility:
  *                 - `next` stays under the base path or becomes it: never another site, a
@@ -11,28 +11,17 @@
  *                 - The limiter lets the limit pass, refuses with the delay, refills evenly,
  *                   keeps keys apart, forgets idle keys, and refuses a rule without tokens. A
  *                   two-factor brute force stops at the game's limit.
- *                 - Recovery codes in both games' styles: ten, unique, in their form, hashed so
- *                   that only the right code matches, the hex style forgiving of case, spaces and
- *                   dashes.
  *                 - Ended sessions reach every listener, even past one that throws.
- *                 Mini Games' rateLimit.test.ts (866df03), plus the rest.
+ *                 Mini Games' rateLimit.test.ts (866df03), plus the rest. Recovery codes are
+ *                 ./recoveryCodes.test.ts.
  * Depends on:     vitest
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §2, §4; docs/AUTH.md
  */
-import * as crypto from 'node:crypto';
-
 import { describe, expect, it, vi } from 'vitest';
 
 import { RateLimiter } from './rateLimit.js';
-import { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash } from './recoveryCodes.js';
 import { safeNext, websiteLoginLocation } from './returnPath.js';
 import { SessionEnds } from './sessionEnds.js';
-
-// The real functions, with randomBytes watchable so a test can force a repeated code.
-vi.mock('node:crypto', async (importOriginal) => {
-  const real = await importOriginal<typeof crypto>();
-  return { ...real, randomBytes: vi.fn(real.randomBytes) };
-});
 
 const BASE = '/games/bingo/';
 
@@ -50,13 +39,14 @@ describe('the return path', () => {
     '//evil.example/games/bingo/',
     '/games/bingo//evil.example',
     '/games/bingo/\\evil',
-    // Review finding 4: dot segments, plain or percent-encoded, leave the base path.
+    // V0.8.0 pass, review 1, finding 4: dot segments, plain or percent-encoded, leave the base
+    // path.
     '/games/bingo/../../login',
     '/games/bingo/%2e%2e/%2E%2E/admin',
     '/games/bingo/./x',
     '/games/bingo/..',
     '/games/bingo/..?next=x',
-    // Third review, finding 1: an encoded separator a proxy would decode.
+    // V0.8.0 pass, review 3, finding 1: an encoded separator a proxy would decode.
     '/games/bingo/..%2fadmin',
     '/games/bingo/%2e%2e%2F',
     '/games/bingo/%5c..%5Cx',
@@ -86,7 +76,13 @@ describe('the base path and the login hop', () => {
     ]) {
       expect(() => safeNext('/x', base)).toThrow(TypeError);
     }
-    for (const login of ['https://evil.example/login?next=', '//evil/login?next=', '/a\\b']) {
+    for (const login of [
+      'https://evil.example/login?next=',
+      '//evil/login?next=',
+      '/a\\b',
+      '/\t/evil/login?next=',
+      '/\n/evil/login?next=',
+    ]) {
       expect(() => websiteLoginLocation(login, BASE, BASE)).toThrow(TypeError);
     }
   });
@@ -137,7 +133,8 @@ describe('the rate limiter (its rules and bounds)', () => {
   it('refuses a rule without tokens or time, and uses the real clock by default', () => {
     expect(() => new RateLimiter({ limit: 0, windowMs: 1_000 })).toThrow(RangeError);
     expect(() => new RateLimiter({ limit: 1, windowMs: 0 })).toThrow(RangeError);
-    // Review finding 5: Infinity made every answer NaN; a fraction or a bad key cap too.
+    // V0.8.0 pass, review 1, finding 5: Infinity made every answer NaN; a fraction or a bad key cap
+    // too.
     expect(() => new RateLimiter({ limit: Infinity, windowMs: 1_000 })).toThrow(RangeError);
     expect(() => new RateLimiter({ limit: 1.5, windowMs: 1_000 })).toThrow(RangeError);
     expect(() => new RateLimiter({ limit: 1, windowMs: Infinity })).toThrow(RangeError);
@@ -170,46 +167,7 @@ describe('the rate limiter (its rules and bounds)', () => {
   });
 });
 
-describe('recovery codes', () => {
-  it('draws ten unique "xxxx-xxxx" codes without look-alikes (Mini Games)', () => {
-    const codes = newRecoveryCodes('grouped');
-    expect(codes).toHaveLength(10);
-    expect(new Set(codes).size).toBe(10);
-    for (const code of codes) expect(code).toMatch(/^[a-hjkmnp-z2-9]{4}-[a-hjkmnp-z2-9]{4}$/);
-  });
-
-  it('draws ten unique 10-character hex codes (Bingo)', () => {
-    const codes = newRecoveryCodes('hex');
-    expect(new Set(codes).size).toBe(10);
-    for (const code of codes) expect(code).toMatch(/^[0-9a-f]{10}$/);
-  });
-
-  it('hashes so only the right code matches, as each game stores them', () => {
-    const [code = ''] = newRecoveryCodes('hex');
-    const stored = recoveryHash(code, 'hex');
-    expect(recoveryHash(` ${code.slice(0, 5).toUpperCase()}-${code.slice(5)} `, 'hex')).toEqual(
-      stored,
-    );
-    expect(
-      recoveryHash(
-        code.replace(/.$/, (c) => (c === '0' ? '1' : '0')),
-        'hex',
-      ),
-    ).not.toEqual(stored);
-    // Mini Games' hashes were stored as typed, dash and case included.
-    expect(recoveryHash('abcd-efgh', 'grouped')).not.toEqual(recoveryHash('abcdefgh', 'grouped'));
-    expect(recoveryHash('abcd-efgh', 'grouped')).toHaveLength(32);
-  });
-
-  it('tells a recovery code from a TOTP code', () => {
-    expect(looksLikeRecoveryCode('123456')).toBe(false);
-    expect(looksLikeRecoveryCode(' 123456 ')).toBe(false);
-    expect(looksLikeRecoveryCode('abcd-efgh')).toBe(true);
-    expect(looksLikeRecoveryCode('0a1b2c3d4e')).toBe(true);
-  });
-});
-
-describe('the rate limiter under a flood (second review)', () => {
+describe('the rate limiter under a flood (v0.8.0 pass, review 2)', () => {
   it('scans a full map at most once a tenth of the window, and refuses newcomers in between', () => {
     let now = 0;
     const limiter = new RateLimiter({ limit: 2, windowMs: 1_000 }, () => now, 2);
@@ -232,16 +190,6 @@ describe('the rate limiter under a flood (second review)', () => {
     now = 0;
     expect(limiter.take('a').allowed).toBe(true);
   });
-
-  it('draws ten distinct codes even when the random source repeats itself', () => {
-    const same = Buffer.from('0102030405', 'hex');
-    vi.mocked(crypto.randomBytes)
-      .mockReturnValueOnce(same as never)
-      .mockReturnValueOnce(same as never);
-    const codes = newRecoveryCodes('hex');
-    expect(new Set(codes).size).toBe(10);
-    expect(codes.filter((c) => c === '0102030405')).toHaveLength(1);
-  });
 });
 
 describe('session revocation', () => {
@@ -262,7 +210,7 @@ describe('session revocation', () => {
     expect(onError).not.toHaveBeenCalled();
   });
 
-  // Second review, finding 2: end never rejects; every failure goes to onError.
+  // V0.8.0 pass, review 2, finding 2: end never rejects; every failure goes to onError.
   it('reaches every listener past ones that throw or reject, and reports each failure', async () => {
     const onError = vi.fn();
     const ends = new SessionEnds(onError);
@@ -298,7 +246,7 @@ describe('session revocation when the game’s log fails', () => {
       () => {
         throw new Error('log down');
       },
-      // Third review, finding 2: an async log that rejects.
+      // V0.8.0 pass, review 3, finding 2: an async log that rejects.
       () => Promise.reject(new Error('log down')),
     ]) {
       const ends = new SessionEnds(onError);

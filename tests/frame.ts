@@ -8,6 +8,7 @@
  *                 the page's window with `data`, `origin` and `source`. The frame's
  *                 `postMessage` is replaced by a recorder, so a test reads what the page sent
  *                 and to which origin.
+ * Source:         new in the kit.
  */
 import { vi } from 'vitest';
 

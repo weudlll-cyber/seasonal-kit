@@ -9,7 +9,7 @@
  *                 while the sheet was closed, and opening the sheet clears it; Escape and Close
  *                 shut it. The field shows only in the bar's form `field`. The slot is hidden
  *                 with no call id and shows its form with one. The frame loads the room with the
- *                 page's theme, keeps `strict-origin`, is sandboxed only when asked, tells the
+ *                 page's theme, keeps `strict-origin`, is always sandboxed, tells the
  *                 frame its visibility and hands its `unread` to the bar; outside a dock it posts
  *                 nothing. The docked screen keeps the same dock element when its content
  *                 changes, and on a phone publishes the visible viewport's height on <html>
@@ -124,31 +124,23 @@ function frameOf(): { frame: HTMLIFrameElement; post: ReturnType<typeof vi.fn> }
 }
 
 describe('the website chat frame', () => {
-  it('loads the room with the page theme, keeps strict-origin, sandboxed only when asked', () => {
-    const { rerender } = render(<WebsiteChatFrame room="bingo" sandboxed={false} />);
+  it('loads the room with the page theme, keeps strict-origin, and is always sandboxed (K17)', () => {
+    const { rerender } = render(<WebsiteChatFrame room="bingo" />);
     const frame = screen.getByTestId('chat-frame');
     expect(frame.getAttribute('src')).toBe('/embed/chat?room=bingo&theme=auto');
     expect(frame.getAttribute('referrerpolicy')).toBe('strict-origin');
-    expect(frame.hasAttribute('sandbox')).toBe(false);
-    expect(frame.getAttribute('title')).toBe('Chat');
-    rerender(<WebsiteChatFrame room="mini-games" sandboxed path="/x/embed/chat" />);
     expect(frame.getAttribute('sandbox')).toBe(
       'allow-scripts allow-same-origin allow-forms allow-popups',
     );
+    expect(frame.getAttribute('title')).toBe('Chat');
+    rerender(<WebsiteChatFrame room="mini-games" path="/x/embed/chat" />);
     expect(frame.getAttribute('src')).toBe('/x/embed/chat?room=mini-games&theme=auto');
   });
 });
 
 describe('the website chat frame in a dock', () => {
   it('in a phone dock, tells the frame whether it is in sight and hands its unread to the bar', () => {
-    render(
-      <ChatDock
-        chat={<WebsiteChatFrame room="bingo" sandboxed={false} />}
-        phone
-        bar="line"
-        callId={null}
-      />,
-    );
+    render(<ChatDock chat={<WebsiteChatFrame room="bingo" />} phone bar="line" callId={null} />);
     // The recorder is in place before the next connection: opening and closing the sheet.
     const { frame, post } = frameOf();
     const bar = screen.getByTestId('chat-bar');
@@ -182,7 +174,7 @@ describe('the website chat frame in a dock', () => {
   it('posts and counts nothing outside a dock, and takes a class of the game’s', () => {
     render(
       <>
-        <WebsiteChatFrame room="bingo" sandboxed={false} className="game-frame" />
+        <WebsiteChatFrame room="bingo" className="game-frame" />
         <Room author="Ana" text="gg" />
       </>,
     );

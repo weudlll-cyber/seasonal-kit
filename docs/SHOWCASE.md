@@ -9,6 +9,10 @@ check that runs on every pull request. It lives in `showcase/`
 ## What it shows
 
 - **The shell:** the back link and the theme toggle.
+- **The app header** three times ([`showcase/Headers.tsx`](../showcase/Headers.tsx)): signed out
+  and standalone (Sign in, Register); signed in, in website mode (the back link, "Walter (host)");
+  and signed in with the development tools (a Quick Test link and the Dev sign-in menu). Below
+  960 px each folds into one Menu.
 - **The game bar:** the season pill, "Shared", "9:50 left", Chat with 3 unread, Players and Host,
   and the phase strip with "Play · now".
 - **The docked screen,** in a box 640 px high: the start card (or, with `?screen=result`, the
@@ -41,19 +45,23 @@ The first `pnpm showcase:test` on a machine needs Playwright's Chromium:
   `phone-375x667` and `phone-390x844`;
 - the themes: `light` and `dark`.
 
-That makes 20 screens a run. Before every run the folder is emptied
+On each phone viewport and theme one more screen, `header-menu-<viewport>-<theme>.png`, shows
+the third header's menu and its dev menu opened. That makes 24 screens a run. Before every run the folder is emptied
 ([`showcase/global-setup.ts`](../showcase/global-setup.ts)), so only the last run's screens are
 there. The folder is git-ignored: screens are never committed and never pile up (DECISIONS K16).
 CI takes the same screenshots on its runner and keeps none.
 
 ## What the run checks
 
-For each of the 20, the spec ([`showcase/showcase.spec.ts`](../showcase/showcase.spec.ts)) checks
+For each of the 20 docked screens, the spec ([`showcase/showcase.spec.ts`](../showcase/showcase.spec.ts)) checks
 three things:
 
 - the page has the theme asked for;
 - the dock is in the layout the viewport gets (desktop at 900 px and wider in landscape, else
   phone);
 - axe, with the WCAG 2.0, 2.1 and 2.2 A and AA rules, finds no serious or critical violation.
+
+For each of the 4 header screens it opens the first header's Menu (axe again), then the third
+header's Menu and its Dev sign-in panel (axe again). Moderate axe findings do not fail the run.
 
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

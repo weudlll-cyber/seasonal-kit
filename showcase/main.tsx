@@ -6,6 +6,7 @@
  *                 <html> before the first render (without it the early script's rule applies,
  *                 through the toggle), and renders ./Showcase, the result instead of the start
  *                 card with `?screen=result`.
+ * Source:         new in the kit.
  */
 import '../css/tokens.css';
 import '../css/fonts.css';
@@ -16,6 +17,7 @@ import '../css/dock.css';
 import '../css/frames.css';
 import '../css/bar.css';
 import '../css/call.css';
+import '../css/header.css';
 import './showcase.css';
 
 import { createRoot } from 'react-dom/client';

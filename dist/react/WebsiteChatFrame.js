@@ -11,8 +11,8 @@ import { jsx as _jsx } from "react/jsx-runtime";
  *                 required). Inside a dock (./dockSight) it tells the frame whether it is in
  *                 sight, again on each `ready` (../chatEmbed), and hands the frame's `unread`
  *                 count to the dock's arrivals. Outside a dock it posts and listens to nothing.
- *                 `sandboxed` is the game's own choice (needs the owner's word): Mini Games
- *                 sandboxes its frame, Bingo does not; neither changes what a player sees today.
+ *                 The frame is always sandboxed with Mini Games' attributes (DECISIONS K17: every
+ *                 game sandboxes it): scripts, the site's own cookie, forms and the login popup.
  * Source:         seasonal-mini-games apps/web/src/chat/ChatPanel.tsx (`HostChat`) and
  *                 useHostChatFrame.ts at 866df03; seasonal-bingo-royale
  *                 apps/web/src/shell/ChatDock.tsx (its frame) at a43209a. Built on ../chatEmbed
@@ -46,5 +46,5 @@ export function WebsiteChatFrame(p) {
         });
         return link.close;
     }, [src, visible, arrivals]);
-    return (_jsx("iframe", { ref: frame, className: p.className ?? 'sk-chat-frame', title: "Chat", src: src, sandbox: p.sandboxed ? SANDBOX : undefined, referrerPolicy: "strict-origin", "data-testid": "chat-frame" }));
+    return (_jsx("iframe", { ref: frame, className: p.className ?? 'sk-chat-frame', title: "Chat", src: src, sandbox: SANDBOX, referrerPolicy: "strict-origin", "data-testid": "chat-frame" }));
 }

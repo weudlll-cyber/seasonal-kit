@@ -7,6 +7,7 @@
  *                 ball's two, which only Bingo uses) in the light theme; the dark theme only
  *                 replaces names the light one defines; every `var(--x)` names a token defined
  *                 here; no arena token, player mark or own tint of a single game moved in.
+ * Source:         new in the kit.
  */
 import { readFileSync } from 'node:fs';
 

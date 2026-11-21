@@ -6,6 +6,7 @@
  *                 text and muted text on the page, surfaces and card, the solid pill's text —
  *                 light and dark. The check itself is pinned to known ratios and to a sabotaged
  *                 colour, so a broken check cannot pass silently.
+ * Source:         new in the kit.
  */
 import { readFileSync } from 'node:fs';
 

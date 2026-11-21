@@ -10,14 +10,14 @@ delivery (docs/DELIVERY.md).
 
 ## What a pass covers
 
-| Scan                         | Tool                                            | Command                                                                            |
-| ---------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Secrets in the whole history | gitleaks 8.30.1 (the image CI uses)             | `gitleaks git /repo --log-opts="--all" --redact`                                   |
-| Dependencies                 | osv-scanner 2.7.0 (the image CI uses)           | `osv-scanner scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml`      |
-| Code                         | CodeQL (javascript-typescript, CI)              | `.github/workflows/codeql.yml`; results in the repository's code scanning alerts   |
-| Install behaviour            | pnpm 12.14.0                                    | a scratch consumer installs the tag with scripts off and builds (docs/DELIVERY.md) |
-| Package contents             | `git ls-tree` of the tag against `package.json` | only the folders in `"files"`, `LICENSE` and `package.json` reach a game           |
-| Frame messages and redirects | review against the rules below, and the tests   | `src/*.test.ts` for the chat link, the call link and the sign-in helpers           |
+| Scan                         | Tool                                            | Command                                                                               |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (the image CI uses)             | `gitleaks git /repo --log-opts="--all" --redact`                                      |
+| Dependencies                 | osv-scanner 2.7.0 (the image CI uses)           | `osv-scanner scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml`         |
+| Code                         | CodeQL (javascript-typescript, CI)              | `.github/workflows/codeql.yml`; results in the repository's code scanning alerts      |
+| Install behaviour            | pnpm 12.14.0                                    | a scratch consumer installs the tag with scripts off and builds (docs/DELIVERY.md)    |
+| Package contents             | `git ls-tree` of the tag against `package.json` | only the folders in `"files"`, `LICENSE`, `README.md` and `package.json` reach a game |
+| Frame messages and redirects | review against the rules below, and the tests   | `src/*.test.ts` for the chat link, the call link and the sign-in helpers              |
 
 ## The message layers (since v0.3.0)
 
@@ -57,10 +57,62 @@ fails if it breaks:
   (BACKLOG 8), and `connectCall` needs a valid call id.
 - **Sign-in redirects stay on this site.** `websiteSignInHref`, `websiteLoginHref` and
   `signInAgain` throw for a route that is not a path on this site (`//host`, a backslash, a
-  scheme). `signInAgainAfter` ignores such a header value, so a response cannot send the page
+  scheme, and since v0.9.1 any space, tab or newline, which the URL parser drops: audit
+  2026-11-22). `signInAgainAfter` ignores such a header value, so a response cannot send the page
   elsewhere.
 
 ## Passes
+
+### 2026-11-21 — before v0.9.0, the header, dev tools and recovery key (branch `feat/v0.9.0`, PR #16)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                      |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 35 commits scanned.                                                                               |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 262 packages. No dependency was added.                                                         |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on PR #16 and after the merge (docs/NIGHT-2026-11-22.md).                                              |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.9.0, after it is cut (docs/DELIVERY.md).                                               |
+| The dev tools and the codes  | an independent review (a fresh agent given only the diff, AUTH.md and GAME-INTEGRATION §2–§4)     | No high finding; 5 medium, 7 low. Each was checked against the code; the list below says what became of it. |
+
+The review's findings:
+
+1. **Medium:** the header claimed AUTH.md's rule for the separate key, but AUTH.md keeps plain
+   SHA-256. **Fixed:** the header names K20 as a departure from AUTH.md. The text the website's
+   AUTH.md would need is in PR #16.
+2. **Medium:** legacy SHA-256 codes stay brute-forceable from a leak, and plantable by whoever
+   can write the table, until used or replaced. **Kept by D4**, documented in the header, the
+   CHANGELOG and ADOPTION's "Needs the owner's word" (an end date per game).
+3. **Low:** weak keys accepted. **Fixed:** the key must be bytes, not one byte repeated.
+4. **Low:** a wrong-length stored hash hid a bad key. **Fixed:** the key is checked first.
+5. **Medium:** `devStubPlugin` saw relative imports only. **Fixed** for absolute imports. Package
+   names, `paths` aliases and `#imports` are documented as not seen; both games import their
+   dev modules relatively, and the bundle scan is the backstop.
+6. **Medium:** no kit marker for a server bundle. **Fixed:** `DEV_SIGN_IN_MARKER` is in
+   `KIT_DEV_MARKERS`.
+7. **Low:** a g or y regex matches every other time. **Fixed:** both functions throw on one.
+8. **Low:** an unanchored load pattern let any text through. **Fixed:** the whole name must
+   match, at most 64 characters.
+9. **Low:** `Dirent.parentPath` needs Node 20.12. **Not a defect:** `engines` is Node ≥ 22.
+10. **Low:** a rejected dev sign-in was an unhandled rejection. **Fixed:** it shows an alert.
+
+The review's other points were "no defect" (timing and encoding, prototype keys, the contract)
+or test gaps, now filled by the fixes' tests.
+
+A second fresh review ran on the fixed diff, given the same material. It found no high
+finding, 1 medium and 5 low. Each was checked:
+
+1. **Medium:** nothing tied `KIT_DEV_MARKERS` to what `DevSignIn` renders. **Fixed:** a test
+   renders the open menu and expects every client marker in it.
+2. **Medium-low:** the plugin's comment said "resolved file", but it tests the import's path as
+   written. **Fixed:** the header says so, and that the pattern must match how the game writes
+   the import (with `.js`, as NodeNext requires and both games do).
+3. **Low:** the body's `as` could be inherited. **Fixed:** only an own `as` counts.
+4. **Low:** the kit does not refuse to run the dev sign-in in production itself.
+   **Not changed:** the game's dev switch and the stub are the contract, as in both games
+   today. A `NODE_ENV` guard could break a game's dev or e2e setups; noted for the audit.
+5. **Low:** the stored-hash check counted elements, not bytes. **Fixed:** `byteLength`.
+6. **Low:** `parentPath` again. **Not a defect** (Node ≥ 22).
+
+With these fixes nothing confirmed is open: A2 and A5 are clean.
 
 ### 2026-11-21 — before v0.8.0, the server entry (branch `feat/server-auth`, PR #13)
 

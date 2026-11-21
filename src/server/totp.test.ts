@@ -107,7 +107,8 @@ describe('base32 (RFC 4648)', () => {
     ['foobar', 'MZXW6YTBOI'],
   ])('encodes %j as %s, and gives null for it as a secret (under 16 bytes)', (text, encoded) => {
     expect(base32Encode(new TextEncoder().encode(text))).toBe(encoded);
-    // Review finding 3: an empty or short text is no secret ("" used to decode to 0 bytes).
+    // V0.8.0 pass, review 1, finding 3: an empty or short text is no secret ("" used to decode to 0
+    // bytes).
     expect(base32Decode(encoded)).toBeNull();
   });
 
@@ -120,7 +121,7 @@ describe('base32 (RFC 4648)', () => {
     expect(base32Decode(base32Encode(secret))).toEqual(secret);
   });
 
-  // Third review, finding 4: an odd clock matches nothing instead of throwing.
+  // V0.8.0 pass, review 3, finding 4: an odd clock matches nothing instead of throwing.
   it.each([Number.NaN, Number.POSITIVE_INFINITY, 0, 29_999, -60_000])(
     'matches nothing at the time %s',
     (now) => {
@@ -138,7 +139,7 @@ describe('base32 (RFC 4648)', () => {
   it('builds the otpauth link with the game as issuer and the base32 secret', () => {
     const uri = otpauthUri(RFC_SECRET, 'dev-admin', 'Seasonal Bingo Royale');
     expect(uri.startsWith('otpauth://totp/Seasonal%20Bingo%20Royale%3Adev-admin?')).toBe(true);
-    // Second review, finding 4: "%20", never "+", in the query too.
+    // V0.8.0 pass, review 2, finding 4: "%20", never "+", in the query too.
     expect(uri).toContain('&issuer=Seasonal%20Bingo%20Royale&');
     expect(uri).not.toContain('+');
     const query = new URL(uri).searchParams;

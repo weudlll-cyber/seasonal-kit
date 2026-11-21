@@ -107,6 +107,7 @@ describe('the back link', () => {
     const link = screen.getByTestId('back-link');
     expect(link.getAttribute('href')).toBe('/games');
     expect(link.textContent).toBe('← Seasonal Entertainment');
+    expect(screen.getByRole('link', { name: 'Seasonal Entertainment' })).toBe(link);
     expect(link.className).toBe('sk-back-link');
     rerender(<BackLink websiteMode={false} />);
     expect(screen.queryByTestId('back-link')).toBeNull();

@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.8.0",
+  "version": "0.9.1",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -23,6 +23,14 @@
       "types": "./dist/react/index.d.ts",
       "default": "./dist/react/index.js"
     },
+    "./react/dev": {
+      "types": "./dist/react/dev/index.d.ts",
+      "default": "./dist/react/dev/index.js"
+    },
+    "./devtools": {
+      "types": "./dist/devtools/index.d.ts",
+      "default": "./dist/devtools/index.js"
+    },
     "./vite": {
       "types": "./dist/vite.d.ts",
       "default": "./dist/vite.js"
@@ -35,7 +43,8 @@
     "./dock.css": "./css/dock.css",
     "./shell.css": "./css/shell.css",
     "./frames.css": "./css/frames.css",
-    "./bar.css": "./css/bar.css"
+    "./bar.css": "./css/bar.css",
+    "./header.css": "./css/header.css"
   },
   "files": [
     "browser",

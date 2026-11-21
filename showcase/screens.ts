@@ -5,6 +5,7 @@
  * Responsibility: one list for the spec and the setup: the five viewports of the owner's
  *                 brief (three desktops, two phones), both themes, and showcase/screens/, which
  *                 is git-ignored and emptied before every run.
+ * Source:         new in the kit.
  */
 import { fileURLToPath } from 'node:url';
 

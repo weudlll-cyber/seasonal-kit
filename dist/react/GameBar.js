@@ -1,4 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { barButtonClass } from './barButtonClass.js';
 // Each icon's strokes on a 24 × 24 grid.
 const PATHS = {
     chat: 'M4 5h16v10H9l-4 4v-4H4z',
@@ -23,6 +24,6 @@ function FullscreenButton(p) {
     return (_jsxs("button", { type: "button", className: p.className, "aria-pressed": on, "data-testid": "bar-fullscreen", onClick: toggle, children: [_jsx(BarIcon, { name: on ? 'shrink' : 'expand' }), _jsx("span", { className: "sk-bar-label", children: on ? 'Leave full screen' : 'Full screen' })] }));
 }
 export function GameBar(p) {
-    const className = `sk-bar-button${p.buttonClassName === undefined ? '' : ` ${p.buttonClassName}`}`;
+    const className = barButtonClass(p.buttonClassName);
     return (_jsxs("header", { className: "sk-game-bar", "data-testid": "game-bar", children: [p.lead, (p.facts ?? []).map((fact, i) => (_jsx("span", { className: fact.desktopOnly === true ? 'sk-bar-fact sk-bar-desktop' : 'sk-bar-fact', children: fact.text }, String(i)))), p.time == null ? null : (_jsxs("span", { className: "sk-bar-fact", "data-testid": "bar-time", children: [p.time.text, p.time.left ? _jsx("span", { className: "sk-bar-desktop", children: " left" }) : null] })), _jsxs("span", { className: "sk-bar-actions", children: [p.actions.map((action) => (_jsx(BarButton, { action: action, panels: p.panels, className: className }, action.id))), p.fullscreen?.supported === true ? (_jsx(FullscreenButton, { fullscreen: p.fullscreen, className: className })) : null] })] }));
 }

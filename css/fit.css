@@ -20,20 +20,24 @@
   --sk-floor-display: 24px;
   --sk-floor-row: 22px;
   --sk-floor-target: 44px;
+  --sk-floor-badge: 14px;
 }
 
-/* Seasonal Mini Games, O111: 13 px text, 24 px display values, 22 px rows, 40 px targets. */
+/* Seasonal Mini Games, O111: 13 px text, 24 px display values, 22 px rows, 40 px targets;
+   its round bar's unread badge is 12 px. */
 [data-sk-game='mini-games'] {
   --sk-floor-text: 13px;
   --sk-floor-display: 24px;
   --sk-floor-row: 22px;
   --sk-floor-target: 40px;
+  --sk-floor-badge: 12px;
 }
 
-/* Seasonal Bingo Royale: 14 px text (its fit audit); targets stay 44 px. */
+/* Seasonal Bingo Royale: 14 px text (its fit audit), a badge too; targets stay 44 px. */
 [data-sk-game='bingo'] {
   --sk-floor-text: 14px;
   --sk-floor-display: 24px;
   --sk-floor-row: 22px;
   --sk-floor-target: 44px;
+  --sk-floor-badge: 14px;
 }

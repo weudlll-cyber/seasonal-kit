@@ -15,3 +15,4 @@ export { chatEmbedUrl, connectChat, } from './chatEmbed.js';
 export { chatBarText, createChatArrivals, } from './chatArrivals.js';
 export { connectCall, } from './callView.js';
 export { CALL_SLOT, callSlot, } from './callSlot.js';
+export { clockText } from './clock.js';

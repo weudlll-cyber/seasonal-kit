@@ -62,6 +62,18 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-21 — before v0.6.0 (branch `feat/game-bar`, PR #11)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 22 commits with a patch scanned (32 commits in all refs, merges included).                                                                                                            |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues. No dependency was added.                                                                                                                                                             |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on PR #11 and after the merge (docs/NIGHT-2026-11-21.md).                                                                                                                                  |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.6.0, after it is cut (docs/DELIVERY.md).                                                                                                                                   |
+| The new parts                | review                                                                                            | Full screen only on a click, never inside another page's frame; a refusal is caught. The focus mark is a bare attribute on `<html>`, removed with the last screen. No message, storage or link. |
+
+No finding, so nothing was fixed.
+
 ### 2026-11-21 — before v0.5.0 (branch `feat/frames`, PR #10)
 
 | Scan                         | Tool and command                                                                                  | Result                                                                                                                            |

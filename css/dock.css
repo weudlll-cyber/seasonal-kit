@@ -11,7 +11,8 @@
  *                 in the layout, never over the page. Its line "Chat · <newest message>" gives
  *                 way with an ellipsis, beside the unread count. The open chat is a sheet above
  *                 the bar, opaque. The call's 48 px strip sits directly above the bar. Colours
- *                 come only from ./tokens.css.
+ *                 come only from ./tokens.css; "3 unread" is read out by ./shell.css
+ *                 `sk-visually-hidden`, which a game imports with this file.
  * Source:         seasonal-mini-games apps/web/src/match/chatDock.css and docked.css at 866df03
  *                 (the 190/150 px strip, the bar, the sheet; the 760 px query without its 900 px
  *                 width, which `data-view` carries here)
@@ -197,14 +198,4 @@
   color: var(--color-text);
   font: inherit;
   cursor: pointer;
-}
-
-/* Read out, not shown ("3 unread"). */
-.sk-visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
 }

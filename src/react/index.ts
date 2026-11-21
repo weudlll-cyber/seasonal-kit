@@ -6,13 +6,25 @@
  * Responsibility: name everything a game's React code may import: the theme hooks and toggle,
  *                 the disclosure hook, the fit hook, the back link, the docked chat with the
  *                 website's chat frame, the hook a game's own chat room reports arrivals with,
- *                 and the frames a game fills: the start card and the result. React is an optional peer dependency, so games without React never load
+ *                 the frames a game fills (the start card and the result), and the round's
+ *                 focus mode: the game bar, its panels, full screen and the phase strip. React is an optional peer dependency, so games without React never load
  *                 this entry (SECURITY.md).
  */
 export { BackLink } from './BackLink.js';
 export { ChatDock, type ChatDockProps } from './ChatDock.js';
 export { DockedScreen, type DockedScreenProps } from './DockedScreen.js';
 export { useDockArrivals, useDockView, type DockView } from './dockSight.js';
+export {
+  GameBar,
+  type BarAction,
+  type BarFact,
+  type BarIconName,
+  type GameBarProps,
+} from './GameBar.js';
+export { PhaseStrip, type PhasePart, type PhaseStripProps } from './PhaseStrip.js';
+export { useFocusMode } from './useFocusMode.js';
+export { useFullscreen, type Fullscreen } from './useFullscreen.js';
+export { usePanels, type Panels } from './usePanels.js';
 export { ResultFrame, type ResultFrameProps } from './ResultFrame.js';
 export { StartCard, type Season, type StartCardProps } from './StartCard.js';
 export { ThemeToggle, useShownTheme, useTheme } from './theme.js';

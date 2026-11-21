@@ -26,6 +26,7 @@ export interface FitFloors {
     readonly display: number;
     readonly row: number;
     readonly target: number;
+    readonly badge: number;
 }
 export declare const FIT_FLOORS: Readonly<Record<FitGame, FitFloors>>;
 export declare function nextScale(current: number, used: number, room: number, floor: number): number;

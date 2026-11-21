@@ -107,6 +107,20 @@ One rule showed itself on the way. A game's own chat room reports arrivals from 
 dock (the `chat` it passes), as Mini Games' room does. Content above the dock gets no arrivals
 from `useDockArrivals`.
 
+## The v0.5.0 frames (2026-11-21, the tag itself)
+
+A new scratch consumer pinned `#v0.5.0`, with scripts off and the same toolchain. The lockfile
+resolved it to the merge commit's tarball (`929c997`, `version: 0.5.0`). The page put
+`StartCard`, then `ResultFrame` (`fitted`), inside `DockedScreen`, and imported `frames.css`,
+`dock.css` and `fit.css`.
+
+- `vite build` worked, with both frames' rules in the stylesheet.
+- `tsc` worked.
+- The Vitest test at 390 × 844 passed. It checked the winter card, "Opens in 3 s", then the
+  result's headline at scale 1, and the same chat element through the switch.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

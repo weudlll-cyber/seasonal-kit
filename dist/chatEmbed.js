@@ -20,7 +20,7 @@
  *                 docs/GAME-INTEGRATION.md §5 (at e7b995c)
  */
 import { isCount, isFlag, isSize, linkFrame, } from './frameMessages.js';
-import { isLocalPath } from './websiteSignIn.js';
+import { isLocalPath } from './localPath.js';
 const EMBED_PATH = '/embed/chat';
 // "/embed/chat?room=mini-games&theme=dark"; `path` is the game's configured embed path.
 export function chatEmbedUrl(room, theme, path = EMBED_PATH) {

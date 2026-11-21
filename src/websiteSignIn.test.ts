@@ -46,13 +46,21 @@ describe('the sign-in and login links', () => {
     );
   });
 
-  it.each(['https://evil.example/auth', '//evil.example/auth', '/\\evil', '/a\\b', 'auth/website'])(
-    'refuse %s as the route',
-    (route) => {
-      expect(() => websiteSignInHref(route)).toThrow(TypeError);
-      expect(() => websiteLoginHref(route)).toThrow(TypeError);
-    },
-  );
+  it.each([
+    'https://evil.example/auth',
+    '//evil.example/auth',
+    '/\\evil',
+    '/a\\b',
+    'auth/website',
+    // The URL parser drops a tab or newline, so these would become "//evil.example" (audit B1).
+    '/\t/evil.example',
+    '/\n/evil.example',
+    '/\r\n/evil.example',
+    '/a b',
+  ])('refuse %s as the route', (route) => {
+    expect(() => websiteSignInHref(route)).toThrow(TypeError);
+    expect(() => websiteLoginHref(route)).toThrow(TypeError);
+  });
 });
 
 describe('signing in again', () => {
@@ -116,7 +124,7 @@ describe('signing in again after an answer', () => {
     expect(go).not.toHaveBeenCalled();
   });
 
-  it.each(['https://evil.example/auth', '//evil.example', '/\\evil.example'])(
+  it.each(['https://evil.example/auth', '//evil.example', '/\\evil.example', '/\t/evil.example'])(
     'never follows a header that names %s',
     (route) => {
       const go = vi.fn();

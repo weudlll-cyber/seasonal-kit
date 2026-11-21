@@ -5,6 +5,7 @@
 # Responsibility: run by lefthook.yml before every commit; fails the commit on any finding.
 #                 Docker must be running. Proven against a staged fake secret on 2026-11-20
 #                 (docs/security-pass.md).
+# Source:         new in the kit.
 set -eu
 
 ROOT=$(git rev-parse --show-toplevel)

@@ -6,6 +6,7 @@
  *                 <html> before the first render (without it the early script's rule applies,
  *                 through the toggle), and renders ./Showcase, the result instead of the start
  *                 card with `?screen=result`.
+ * Source:         new in the kit.
  */
 import '../css/tokens.css';
 import '../css/fonts.css';

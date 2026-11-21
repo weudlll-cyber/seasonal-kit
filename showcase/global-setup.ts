@@ -4,6 +4,7 @@
  *
  * Responsibility: screenshots are not committed and do not pile up (DECISIONS K16): each run
  *                 starts from an empty showcase/screens/ (git-ignored) and leaves only its own.
+ * Source:         new in the kit.
  */
 import { mkdirSync, rmSync } from 'node:fs';
 

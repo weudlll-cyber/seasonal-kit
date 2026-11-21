@@ -51,12 +51,15 @@ describe('chatEmbedUrl', () => {
     );
   });
 
-  it.each(['https://evil.example/embed/chat', '//evil.example/embed/chat', '/\\evil', 'embed'])(
-    'refuses %s as the path',
-    (path) => {
-      expect(() => chatEmbedUrl('bingo', 'light', path)).toThrow(TypeError);
-    },
-  );
+  it.each([
+    'https://evil.example/embed/chat',
+    '//evil.example/embed/chat',
+    '/\\evil',
+    'embed',
+    '/\t/evil.example/embed/chat',
+  ])('refuses %s as the path', (path) => {
+    expect(() => chatEmbedUrl('bingo', 'light', path)).toThrow(TypeError);
+  });
 });
 
 describe('the chat link: what it hears', () => {
@@ -80,6 +83,14 @@ describe('the chat link: what it hears', () => {
     deliver(null, good);
     deliver(win, { ...good, source: 'seasonal-call' });
     deliver(win, { ...good, source: undefined });
+    expect(heard).toEqual([]);
+  });
+
+  it('ignores a message with no window once the frame is gone (audit B2)', () => {
+    const { frame, heard } = link();
+    frame.remove();
+    // A detached frame has no window: a null source must not count as its own.
+    deliver(null, { source: 'seasonal-chat', type: 'unread', room: 'bingo', count: 1 });
     expect(heard).toEqual([]);
   });
 

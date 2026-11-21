@@ -88,7 +88,8 @@ const CUT_PAIR = /[\uD800-\uDBFF]$/;
 
 // Node joins a repeated custom header into one string with ", " (only set-cookie stays a
 // list; `headersDistinct` gives lists): a list counts as missing, and the flag and role
-// headers below accept one exact value only, so a joined pair never passes (review finding 2).
+// headers below accept one exact value only, so a joined pair never passes (v0.8.0 pass, review 1,
+// finding 2).
 const one = (value: HeaderValue): string | undefined =>
   typeof value === 'string' ? value.trim() : undefined;
 
@@ -100,14 +101,18 @@ const isTrue = (value: HeaderValue): boolean => one(value)?.toLowerCase() === 't
 // server/src/games/embeddedRoutes.js:53), which this leaves exactly as it is. A name sent as
 // UTF-8 bytes ("Jürgen", an emoji) is decoded from them; bytes that are no UTF-8 (a lone
 // latin1 "ü", 0xFC) and characters past one byte, which no header carries, make the name null:
-// no identity, never a garbled name.
+// no identity, never a garbled name. So does a decoded name with a control character, a line
+// or paragraph separator, or a bidi control (U+200E/F, U+202A–E, U+2066–9, U+061C): it could
+// split a log line or show another name than it is (audit 2026-11-22, B1 finding 2).
 const UTF8 = new TextDecoder('utf-8', { fatal: true });
+const UNSAFE_IN_NAME = /[\p{Cc}\u2028\u2029\u200e\u200f\u202a-\u202e\u2066-\u2069\u061c]/u;
 
 function decodedName(value: string): string | null {
   // A character past one byte (a surrogate half of an emoji included) came from no header.
-  if (/[Ā-￿]/.test(value)) return null;
+  if (/[\u0100-\uffff]/.test(value)) return null;
   try {
-    return UTF8.decode(Buffer.from(value, 'latin1'));
+    const name = UTF8.decode(Buffer.from(value, 'latin1'));
+    return UNSAFE_IN_NAME.test(name) ? null : name;
   } catch {
     return null;
   }
@@ -128,11 +133,12 @@ function rolesOf(value: HeaderValue): readonly string[] | null {
 }
 
 // The website's account id: a positive safe integer without leading zeros, so one account
-// has one key, and a game that reads it as a number reads it exactly (review finding 7).
+// has one key, and a game that reads it as a number reads it exactly (v0.8.0 pass, review 1,
+// finding 7).
 const isSubject = (subject: string): boolean =>
   SUBJECT.test(subject) && Number.isSafeInteger(Number(subject));
 
-// Header names as Node gives them: lower case (review finding 9).
+// Header names as Node gives them: lower case (v0.8.0 pass, review 1, finding 9).
 function lowerNames(names: IdentityHeaders): IdentityHeaders {
   return {
     id: names.id.toLowerCase(),
@@ -153,7 +159,7 @@ function gameName(websiteName: string, subject: string): string {
 
 // A guest unless the header is absent or exactly "false": "true, true" (a joined repeat), an
 // empty value or any other value is a guest too. Failing closed keeps a guest from ever being
-// read as a member (third review, finding 5).
+// read as a member (v0.8.0 pass, review 3, finding 5).
 export function isWebsiteGuest(headers: Headers, names = IDENTITY_HEADERS): boolean {
   const value = headers[names.guest.toLowerCase()];
   if (value === undefined) return false;
@@ -174,7 +180,7 @@ export function identityFrom(
   const checked = stepsFrom(one(headers[n.steps]), steps);
   return {
     subject,
-    // Never cut inside a surrogate pair (second review, finding 7).
+    // Never cut inside a surrogate pair (v0.8.0 pass, review 2, finding 7).
     websiteName: websiteName.slice(0, 128).replace(CUT_PAIR, ''),
     displayName: gameName(websiteName, subject),
     roles,
@@ -187,7 +193,7 @@ export function identityFrom(
 
 // The roles a member gets beyond the game's own `player`, which every member has: a website
 // admin is `game_admin`, a member who may host this game is `organizer`; nothing else, never
-// `super_admin` or `security_admin` (review finding 10: the comment now says so).
+// `super_admin` or `security_admin`.
 export function mappedRoles(who: Pick<WebsiteIdentity, 'roles' | 'canHost'>): readonly string[] {
   return [
     ...(who.roles.includes('admin') ? ['game_admin'] : []),
@@ -211,6 +217,8 @@ export type SignInDecision =
   | { readonly kind: 'member'; readonly identity: WebsiteIdentity };
 
 // Built once per route: the trust list and the hashed secret are made here, not per request.
+// `peer` is the TCP peer, `req.socket.remoteAddress`, never a framework's `req.ip`: with a
+// trusted-proxy setting that reads a forwarding header anyone can send (audit 2026-11-22, B1).
 export function websiteSignInCheck(
   check: SignInCheck,
 ): (peer: string | undefined, headers: Headers) => SignInDecision {

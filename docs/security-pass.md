@@ -10,14 +10,14 @@ delivery (docs/DELIVERY.md).
 
 ## What a pass covers
 
-| Scan                         | Tool                                            | Command                                                                            |
-| ---------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Secrets in the whole history | gitleaks 8.30.1 (the image CI uses)             | `gitleaks git /repo --log-opts="--all" --redact`                                   |
-| Dependencies                 | osv-scanner 2.7.0 (the image CI uses)           | `osv-scanner scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml`      |
-| Code                         | CodeQL (javascript-typescript, CI)              | `.github/workflows/codeql.yml`; results in the repository's code scanning alerts   |
-| Install behaviour            | pnpm 12.14.0                                    | a scratch consumer installs the tag with scripts off and builds (docs/DELIVERY.md) |
-| Package contents             | `git ls-tree` of the tag against `package.json` | only the folders in `"files"`, `LICENSE` and `package.json` reach a game           |
-| Frame messages and redirects | review against the rules below, and the tests   | `src/*.test.ts` for the chat link, the call link and the sign-in helpers           |
+| Scan                         | Tool                                            | Command                                                                               |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (the image CI uses)             | `gitleaks git /repo --log-opts="--all" --redact`                                      |
+| Dependencies                 | osv-scanner 2.7.0 (the image CI uses)           | `osv-scanner scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml`         |
+| Code                         | CodeQL (javascript-typescript, CI)              | `.github/workflows/codeql.yml`; results in the repository's code scanning alerts      |
+| Install behaviour            | pnpm 12.14.0                                    | a scratch consumer installs the tag with scripts off and builds (docs/DELIVERY.md)    |
+| Package contents             | `git ls-tree` of the tag against `package.json` | only the folders in `"files"`, `LICENSE`, `README.md` and `package.json` reach a game |
+| Frame messages and redirects | review against the rules below, and the tests   | `src/*.test.ts` for the chat link, the call link and the sign-in helpers              |
 
 ## The message layers (since v0.3.0)
 
@@ -57,7 +57,8 @@ fails if it breaks:
   (BACKLOG 8), and `connectCall` needs a valid call id.
 - **Sign-in redirects stay on this site.** `websiteSignInHref`, `websiteLoginHref` and
   `signInAgain` throw for a route that is not a path on this site (`//host`, a backslash, a
-  scheme). `signInAgainAfter` ignores such a header value, so a response cannot send the page
+  scheme, and since v0.9.1 any space, tab or newline, which the URL parser drops: audit
+  2026-11-22). `signInAgainAfter` ignores such a header value, so a response cannot send the page
   elsewhere.
 
 ## Passes

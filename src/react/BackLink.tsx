@@ -18,7 +18,8 @@ export function BackLink(p: { readonly websiteMode: boolean }): ReactElement | n
   if (!p.websiteMode) return null;
   return (
     <a className="sk-back-link" href="/games" data-testid="back-link">
-      ← Seasonal Entertainment
+      {/* The arrow is drawn, not read: the link is named "Seasonal Entertainment" (audit B7). */}
+      <span aria-hidden="true">←</span> Seasonal Entertainment
     </a>
   );
 }

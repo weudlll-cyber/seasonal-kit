@@ -8,6 +8,7 @@
  *                 the dev tools slot with the kit's `DevSignIn` and a Quick Test link. At phone
  *                 widths each folds into its menu; the Playwright run opens the first one
  *                 (./showcase.spec.ts). Never shipped.
+ * Source:         new in the kit.
  */
 import type { ReactElement } from 'react';
 

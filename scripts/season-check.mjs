@@ -16,7 +16,7 @@ import { pathToFileURL } from 'node:url';
 
 import { readTokens } from './css-tokens.mjs';
 
-export const SITE_TOKENS =
+const SITE_TOKENS =
   'https://raw.githubusercontent.com/weudlll-cyber/seasonal-entertainment/master/client/src/styles/tokens.css';
 
 // The site's lines 16-19 and the text on them (its line 25); none of them changes in dark.

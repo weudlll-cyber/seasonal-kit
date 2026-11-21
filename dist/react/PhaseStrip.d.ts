@@ -12,7 +12,7 @@
  *                 line, and a status a screen reader announces once when the phase changes.
  *                 Without timing (`at` null) nothing is "now" or done.
  * Source:         seasonal-mini-games games/mind-games/web/PhaseStrip.tsx and strip.css at
- *                 866df03 (its parts, line and announcements stay in the game, ./phases).
+ *                 866df03 (its parts, line and announcements stay in the game's own phases.ts).
  *                 Built on ../clock (clockText).
  * Spec:           Mini Games DECISIONS O92, O97, T351, T386
  */

@@ -7,9 +7,9 @@
 #                 (no e2e, no image), stricter: osv-scanner fails on any finding, the committed
 #                 dist/ must equal a fresh build, the season colours are compared with the
 #                 website (DECISIONS K3), also daily, so a change on the site is noticed while
-#                 the kit sits still. Every job but `showcase` is a required check of master's
-#                 branch protection (docs/RELEASING.md); making `showcase` required too waits for
-#                 the owner (docs/NIGHT-2026-11-21.md). Any red job is a reason not to merge.
+#                 the kit sits still. Every job is a required check of master's branch
+#                 protection, `showcase` since 2026-11-21 (DECISIONS K19, docs/RELEASING.md).
+#                 Any red job is a reason not to merge.
 # Depends on:     .github/actions/setup, osv-scanner.toml, scripts/season-check.mjs,
 #                 playwright.config.ts, showcase/
 name: CI
@@ -44,12 +44,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The job token stays off the disk: no step pushes (audit 2026-11-22).
+          persist-credentials: false
       - uses: ./.github/actions/setup
       # The same script as locally: format check, lint, typecheck, tests with coverage gates.
       - run: pnpm verify
       # Games install dist/ as committed (docs/DELIVERY.md): it must be exactly a fresh build.
       - name: dist/ matches the source
+        # dist/ is emptied first: tsc never deletes, so a file whose source is gone would stay
+        # and ship unseen (audit 2026-11-22).
         run: |
+          rm -rf dist
           pnpm build
           if [ -n "$(git status --porcelain -- dist)" ]; then
             # Shows which compiled file is stale or missing before failing.
@@ -66,6 +72,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The job token stays off the disk: no step pushes (audit 2026-11-22).
+          persist-credentials: false
       # Exit 0: nothing found; 1: findings (fail, whatever their severity); else a scanner error.
       - run: |
           docker run --rm -v "$PWD:/src" -w /src "$OSV_SCANNER_IMAGE" scan source \
@@ -76,6 +85,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # The job token stays off the disk: no step pushes (audit 2026-11-22).
+          persist-credentials: false
           # gitleaks scans the full history, not just the last commit.
           fetch-depth: 0
       - run: docker run --rm -v "$PWD:/repo" "$GITLEAKS_IMAGE" git /repo --redact --no-banner --exit-code 1
@@ -84,6 +95,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The job token stays off the disk: no step pushes (audit 2026-11-22).
+          persist-credentials: false
       # Links between the repository's own files (no network: external sites come and go).
       - name: Markdown link check
         run: |
@@ -97,6 +111,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The job token stays off the disk: no step pushes (audit 2026-11-22).
+          persist-credentials: false
       - uses: ./.github/actions/setup
       - name: Playwright browser (Chromium)
         run: pnpm exec playwright install --with-deps chromium

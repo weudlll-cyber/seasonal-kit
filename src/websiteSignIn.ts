@@ -21,16 +21,11 @@
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §2, docs/AUTH.md "Embedded
  *                 games" (at e7b995c)
  */
+import { isLocalPath } from './localPath.js';
 
 // The key's prefix; the sign-in route follows it, so each game keeps its own guard.
 const LAST_KEY = 'sk.signInAgainAt:';
 const AT_MOST_EVERY_MS = 60_000;
-
-// A path on this site: one leading slash, then no second one, and no backslash anywhere
-// (browsers read both as the start of another host).
-export function isLocalPath(path: string): boolean {
-  return /^\/(?!\/)/.test(path) && !path.includes('\\');
-}
 
 function localPath(path: string): string {
   if (!isLocalPath(path)) throw new TypeError(`Not a path on this site: ${path}`);

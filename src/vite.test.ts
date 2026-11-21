@@ -6,6 +6,7 @@
  * Responsibility: `themeInit()` driven through the hooks Vite calls: configResolved (the base),
  *                 configureServer (development: the file under the base, everything else passed
  *                 on) and generateBundle (a build: one unhashed asset `theme-init.js`).
+ * Source:         new in the kit.
  */
 import { readFileSync } from 'node:fs';
 

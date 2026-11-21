@@ -6,11 +6,11 @@ How a game gets the kit, and what was proven on 2026-11-20 before anything else 
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.3.0"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#vX.Y.Z"
 }
 ```
 
-- The tag is the version. A game moves only when its own `package.json` names a new tag, with
+- `vX.Y.Z` is a tag, the newest in the [CHANGELOG](../CHANGELOG.md). The tag is the version. A game moves only when its own `package.json` names a new tag, with
   the owner's approval (docs/DECISIONS.md K1).
 - The repository is public, so no token is needed: not on the PC, not in CI.
 - What a game receives is **compiled JavaScript and `.d.ts` files in `dist/`**, plus the CSS
@@ -160,13 +160,35 @@ A new Node-side scratch consumer pinned `#v0.8.0`, with scripts off, TypeScript 
 resolved it to the merge commit's tarball (`30ce80a`, `version: 0.8.0`).
 
 - `tsc` worked against `dist/server/*.d.ts`.
-- The Vitest test passed (3 tests):
+- The Vitest file passed: 3 tests, covering these checks:
   - a sign-in decided by peer, secret and headers, with a joined role header refused;
   - `safeNext` refusing `..`, and the login hop's nesting;
   - a TOTP code working once;
   - a hex recovery code matching in upper case;
   - the limiter refusing the second request;
   - `SessionEnds` reporting a listener's error to `onError`.
+
+The consumer was deleted afterwards.
+
+## The v0.9.0 header, dev tools and recovery key (2026-11-22, the tag itself)
+
+A new scratch consumer pinned `#v0.9.0`, with scripts off: React and React DOM 19.3.1,
+TypeScript 5.9.3 (NodeNext, `skipLibCheck: false`), Vitest 5.0.5 with jsdom 30.1.3, and
+@types/node 22.20.5. The lockfile resolved the tag to the merge commit's tarball (`087e5b0`,
+`version: 0.9.0`).
+
+- `tsc` worked against `dist/react`, `dist/react/dev`, `dist/devtools` and `dist/server`.
+- Three tests passed:
+  - `AppHeader` with an account and `DevSignIn` in its slot rendered "Ana (host)" and the first
+    dev marker (jsdom);
+  - in Node, `devSignInAccount` named the host, and a hex recovery code keyed with
+    `recoveryHash` matched in upper case with spaces and a dash;
+  - `@seasonal/kit/header.css` resolved to a shipped file.
+- Two things it found, both fixed in v0.9.1 or recorded (docs/AUDIT-2026-11-22.md):
+  - in a jsdom test, `recoveryHash` refused a Node `Buffer` as the key, because
+    `instanceof Uint8Array` fails across realms. Fixed in v0.9.1 (`types.isUint8Array`);
+  - `ThemeToggle`, and so the header, cannot be rendered on a server (`window`). Both games
+    render on the client only; recorded.
 
 The consumer was deleted afterwards.
 

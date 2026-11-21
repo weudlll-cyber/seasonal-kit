@@ -21,7 +21,7 @@
  *                 gives both hashes for the game's single lookup, and `recoveryMatches` checks a
  *                 stored hash in constant time against both. Until every legacy code is used or
  *                 replaced, those rows can be brute-forced from a leak, and whoever can write
- *                 the table can plant one (independent review of v0.9.0, finding 2). The game
+ *                 the table can plant one (v0.9.0 pass, review 1, finding 2). The game
  *                 marks a code used in the same statement that finds it, and never stores or
  *                 logs a code itself. `looksLikeRecoveryCode` tells a recovery code from a
  *                 6-digit TOTP code.
@@ -32,6 +32,7 @@
  * Spec:           Seasonal Entertainment docs/AUTH.md "Two-factor authentication"; DECISIONS K20
  */
 import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from 'node:crypto';
+import { types } from 'node:util';
 
 export type RecoveryStyle = 'grouped' | 'hex';
 
@@ -47,7 +48,7 @@ function grouped(): string {
 }
 
 // Ten distinct codes: drawn until ten differ, so a unique index on the hashes never trips
-// (second review, finding 5).
+// (v0.8.0 pass, review 2, finding 5).
 export function newRecoveryCodes(style: RecoveryStyle): readonly string[] {
   const codes = new Set<string>();
   while (codes.size < COUNT) {
@@ -63,7 +64,9 @@ const formOf = (code: string, style: RecoveryStyle): string =>
 // The game's key, checked: bytes (a JavaScript caller's string would carry less than it
 // seems), at least 32 of them, not all the same (a zero-filled buffer is no secret).
 function checkedKey(key: Uint8Array): Uint8Array {
-  if (!(key instanceof Uint8Array)) throw new TypeError('A recovery key is a byte array');
+  // types.isUint8Array holds across realms: a Buffer made in a test's jsdom window or a vm
+  // context fails `instanceof Uint8Array` there (audit 2026-11-22, the v0.9.0 delivery proof).
+  if (!types.isUint8Array(key)) throw new TypeError('A recovery key is a byte array');
   if (key.length < MIN_KEY_BYTES) throw new RangeError('A recovery key needs 32 bytes or more');
   if (key.every((byte) => byte === key[0])) {
     throw new RangeError('A recovery key cannot be one byte repeated');
@@ -106,7 +109,7 @@ export function recoveryMatches(
   return keyedOk || legacyOk;
 }
 
-// A recovery code has letters or a dash; a TOTP code is six digits.
+// A TOTP code is exactly six digits; anything else typed is taken as a recovery code.
 export function looksLikeRecoveryCode(code: string): boolean {
   return !/^\d{6}$/.test(code.trim());
 }

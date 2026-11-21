@@ -26,7 +26,7 @@
  *                 in seasonal-mini-games at 8de30b2.
  * Spec:           kit docs/ADOPTION.md "Dev tools"
  */
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { DEV_SIGN_IN_MARKER } from './signIn.js';
 // The strings the kit's DevSignIn and its test ids put into a client bundle, and the dev
@@ -55,9 +55,14 @@ export function devStubPlugin(devModule, stub) {
 export function devMarkersIn(dir, markers) {
     const found = [];
     for (const entry of readdirSync(dir, { recursive: true, withFileTypes: true })) {
-        if (!entry.isFile() || entry.name.endsWith('.map'))
+        if (entry.name.endsWith('.map'))
             continue;
         const file = path.join(entry.parentPath, entry.name);
+        // A symlinked file is scanned through its target, so a dev file linked into the output
+        // cannot hide (audit 2026-11-22, B1 finding 6).
+        const isFile = entry.isFile() || (entry.isSymbolicLink() && statSync(file).isFile());
+        if (!isFile)
+            continue;
         // latin1 reads any bytes; the markers are ASCII.
         const text = readFileSync(file, 'latin1');
         for (const marker of markers) {

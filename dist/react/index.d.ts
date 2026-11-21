@@ -9,8 +9,10 @@
  *                 the frames a game fills (the start card and the result), and the round's
  *                 focus mode: the game bar, its panels, full screen and the phase strip; and the
  *                 shared app header (K21). The development sign-in is its own entry
- *                 (`@seasonal/kit/react/dev`, ./dev), so a production bundle never holds it. React is an optional peer dependency, so games without React never load
+ *                 (`@seasonal/kit/react/dev`, ./dev), so a production bundle never holds it. React
+ *                 is an optional peer dependency, so games without React never load
  *                 this entry (SECURITY.md).
+ * Source:         new in the kit.
  */
 export { AppHeader, type AppHeaderProps, type HeaderAccount, type HeaderLink, } from './AppHeader.js';
 export { BackLink } from './BackLink.js';

@@ -42,7 +42,8 @@ Only the latest tag receives security fixes.
 - **Protected master** (docs/DECISIONS.md K13): every change goes through a PR with every
   required check green on an up-to-date branch. No force push, no deletion, and admins are held
   to the same rules. Third-party actions are pinned to full commit SHAs, workflow permissions are
-  read-only by default.
+  read-only except the CodeQL job's `security-events: write`, and no checkout keeps the job's
+  token on disk.
 - **Checked frame messages.** The chat and call-view links accept a message only from the
   frame's own window, at the frame's origin, with the frame's `source` and well-formed fields.
   Anything else is ignored. They post only at that origin (never `'*'`), and only the fields the
@@ -60,7 +61,7 @@ Only the latest tag receives security fixes.
     game's recovery key (since v0.9.0, K20), so a leaked table cannot be searched without the
     key. A legacy SHA-256 hash still verifies; both are compared in constant time.
   - The username header is decoded as the website encodes it (K22); bytes that are not UTF-8
-    give no identity.
+    give no identity, and so does a name with a control, line-separator or bidi character.
   - The kit stores nothing: secrets, sessions and accounts stay in each game's database.
   - Independently reviewed before release (docs/security-pass.md).
 - **Development tools (`@seasonal/kit/devtools`, `@seasonal/kit/react/dev`, since v0.9.0).**
@@ -68,7 +69,9 @@ Only the latest tag receives security fixes.
   behind the game's dev switch, its module is replaced by a stub in the production bundle
   (`devStubPlugin`), and the game's bundle test fails on any dev marker (`devMarkersIn`).
 - **The website chat frame is sandboxed** in every game (K17): scripts, its own origin, forms
-  and popups, nothing else.
+  and popups, nothing else. That limits what the frame may do (no top navigation, no downloads,
+  no modals). It is not a wall: the website's own page, on the same origin with scripts, could
+  lift it, so the sandbox guards against mistakes, not against the site itself.
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
   public `tokens.css` over HTTPS and nothing else. The server entry takes the game's secrets as
   arguments and never logs or keeps them.

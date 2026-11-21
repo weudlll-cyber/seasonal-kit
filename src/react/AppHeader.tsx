@@ -29,6 +29,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { BackLink } from './BackLink.js';
 import { MenuFold } from './MenuFold.js';
 import { ThemeToggle } from './theme.js';
+import { barButtonClass } from './barButtonClass.js';
 
 export interface HeaderLink {
   readonly href: string;
@@ -80,7 +81,7 @@ function Nav(p: Pick<AppHeaderProps, 'links' | 'navExtra'>): ReactElement {
 }
 
 function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'closeKey'>) {
-  const button = `sk-bar-button${p.buttonClassName === undefined ? '' : ` ${p.buttonClassName}`}`;
+  const button = barButtonClass(p.buttonClassName);
   const { account, signIn } = p;
   return (
     <div className="sk-header-account" data-testid="account">

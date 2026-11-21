@@ -27,7 +27,7 @@ const STEP_MS = 30_000;
 const DIGITS = 1_000_000;
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 // RFC 4226 §4 R6: at least 128 bits. A shorter key (an empty or damaged stored secret) gives
-// codes anyone can compute, so it is refused everywhere (review finding 3).
+// codes anyone can compute, so it is refused everywhere (v0.8.0 pass, review 1, finding 3).
 const MIN_SECRET_BYTES = 16;
 
 function checkedSecret(secret: Uint8Array): Uint8Array {
@@ -63,7 +63,7 @@ export function matchingStep(
   if (!/^\d{6}$/.test(code) || secret.length < MIN_SECRET_BYTES) return null;
   const current = stepAt(now);
   // A time that is not finite, or before the first step, matches nothing instead of throwing
-  // (third review, finding 4).
+  // (v0.8.0 pass, review 3, finding 4).
   if (!Number.isSafeInteger(current) || current < 1) return null;
   const sent = Buffer.from(code);
   let found: number | null = null;
@@ -116,7 +116,7 @@ export function base32Decode(text: string): Uint8Array | null {
 export function otpauthUri(secret: Uint8Array, account: string, issuer: string): string {
   const label = encodeURIComponent(`${issuer}:${account}`);
   // RFC 3986 encoding ("%20"): URLSearchParams would write "+", which some apps show as is
-  // (second review, finding 4).
+  // (v0.8.0 pass, review 2, finding 4).
   const pairs: readonly (readonly [string, string])[] = [
     ['secret', base32Encode(secret)],
     ['issuer', issuer],

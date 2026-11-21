@@ -8,7 +8,8 @@
  *                 with the browser's own controls or Escape updates the toggle), and a toggle
  *                 that requests or leaves it. A refusal leaves the screen as it was. Nothing
  *                 enters full screen by itself.
- * Source:         seasonal-mini-games apps/web/src/round/useFullscreen.ts at 866df03, unchanged.
+ * Source:         seasonal-mini-games apps/web/src/round/useFullscreen.ts at 866df03, the behaviour
+ *                 unchanged (`=== null` for its truthiness check, two comments reworded).
  */
 import { useEffect, useState } from 'react';
 function supportedHere() {

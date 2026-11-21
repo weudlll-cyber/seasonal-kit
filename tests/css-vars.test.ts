@@ -7,6 +7,7 @@
  *                 same in every game that imports css/tokens.css. Each `--sk-` property read is
  *                 also defined somewhere in css/.
  * Depends on:     vitest, node:fs, ../scripts/css-tokens.mjs
+ * Source:         new in the kit.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 

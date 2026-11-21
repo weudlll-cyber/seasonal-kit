@@ -7,6 +7,16 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- `docs/ADOPTION.md`: per game, which of its files each kit export replaces (paths and lines),
+  what stays, the order of steps, the risks and the tests to run, and what needs the owner's
+  word.
+
+### Changed
+
+- `docs/DELIVERY.md` records the v0.8.0 proof.
+
 ## [0.8.0] - 2026-11-21
 
 Server sign-in through the website and two-factor sign-in, for a game's server

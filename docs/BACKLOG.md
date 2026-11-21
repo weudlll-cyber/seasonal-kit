@@ -16,7 +16,8 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   stays open until a game uses them (item 5).
 - **5. Adopt the kit in the games:** Mini Games first, then Bingo Royale, then Seasonal Party,
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
-  when: each game pins a kit tag and has removed its own copies of the moved parts.
+  when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
+  game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21).
 - **8. The call view in the slot** (DECISIONS K6). Frame the website's `/embed/call/<id>` page
   in the slot (`allow="autoplay; fullscreen"`, nothing more) once a game passes a call id. It
   waits for the site: GAME-INTEGRATION §9 says the page is not built yet and that a game frames

@@ -153,6 +153,23 @@ resolved it to the merge commit's tarball (`6b0d9a7`, `version: 0.7.0`).
 
 The consumer was deleted afterwards.
 
+## The v0.8.0 server entry (2026-11-21, the tag itself)
+
+A new Node-side scratch consumer pinned `#v0.8.0`, with scripts off, TypeScript 5.9.3 (NodeNext,
+`skipLibCheck: false`), Vitest 5.0.5 and @types/node 22.20.5, and no React or Vite. The lockfile
+resolved it to the merge commit's tarball (`30ce80a`, `version: 0.8.0`).
+
+- `tsc` worked against `dist/server/*.d.ts`.
+- The Vitest test passed (3 tests):
+  - a sign-in decided by peer, secret and headers, with a joined role header refused;
+  - `safeNext` refusing `..`, and the login hop's nesting;
+  - a TOTP code working once;
+  - a hex recovery code matching in upper case;
+  - the limiter refusing the second request;
+  - `SessionEnds` reporting a listener's error to `onError`.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

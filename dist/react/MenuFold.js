@@ -16,6 +16,7 @@ import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-run
  *                 headers on a page never share one).
  */
 import { useCallback, useEffect, useId, useRef, useState, } from 'react';
+import { barButtonClass } from './barButtonClass.js';
 // While open: the focus moves to the panel's first item; a press outside panel and button
 // closes it.
 function useOpenedPanel(open, panel, button, close) {
@@ -47,7 +48,7 @@ export function MenuFold(p) {
     // A new screen or another sign-in: the menu closes.
     useEffect(close, [p.closeKey, close]);
     useOpenedPanel(open, panel, button, close);
-    const className = `sk-bar-button sk-menu-button${p.buttonClassName === undefined ? '' : ` ${p.buttonClassName}`}`;
+    const className = barButtonClass(p.buttonClassName, 'sk-menu-button');
     return (_jsxs(_Fragment, { children: [_jsx("button", { ref: button, type: "button", className: className, "aria-expanded": open, "aria-controls": panelId, "data-testid": "menu-button", onClick: () => {
                     setOpen(!open);
                 }, children: "Menu" }), _jsx("div", { ref: panel, id: panelId, className: "sk-menu", "data-open": open, onKeyDown: (e) => {

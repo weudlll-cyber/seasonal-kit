@@ -9,7 +9,7 @@
  *                 game's own pattern, named `dev-<as>`; the pattern must match the whole name, and
  *                 a name has at most 64 characters). Anything else is null, and the route
  *                 answers 400. A load pattern with the g or y flag is refused (it would match
- *                 every other time); its error message is a dev marker (../devtools/bundle.ts
+ *                 every other time); its error message is a dev marker (./bundle.ts
  *                 `KIT_DEV_MARKERS`), so the code is found if it ever reaches a production
  *                 bundle. The route itself stays the game's: it is registered only with the
  *                 game's dev switch, and its module is replaced by a stub in the production

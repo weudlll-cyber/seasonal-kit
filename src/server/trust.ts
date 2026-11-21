@@ -31,7 +31,8 @@ function familyOf(address: string): 'ipv4' | 'ipv6' | null {
 }
 
 // A CIDR prefix: 1 to 3 digits, at most 32 (IPv4) or 128 (IPv6). "" or " " would read as 0 and
-// trust every peer, so anything else throws when the list is made (review finding 1).
+// trust every peer, so anything else throws when the list is made (v0.8.0 pass, review 1, finding
+// 1).
 function prefixOf(bits: string, family: 'ipv4' | 'ipv6', entry: string): number {
   const max = family === 'ipv4' ? 32 : 128;
   if (!/^\d{1,3}$/.test(bits) || Number(bits) > max) {

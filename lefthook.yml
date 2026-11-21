@@ -13,7 +13,7 @@ pre-commit:
       # Re-stage the files Prettier rewrote so the commit contains the formatted version.
       stage_fixed: true
     lint:
-      glob: '*.{ts,js,mjs}'
+      glob: '*.{ts,tsx,js,mjs}'
       # --no-warn-ignored: a staged dist/ file is ignored by the config, not a warning.
       run: pnpm exec eslint --max-warnings 0 --no-warn-ignored {staged_files}
     gitleaks:

@@ -7,6 +7,7 @@
  *                 each `url()` resolves to a file inside a folder package.json ships ("files"),
  *                 no woff2 sits unused in fonts/, the @font-face family is the first family of
  *                 `--font-family`, and the files are the ones the owner approved (fonts/README.md).
+ * Source:         new in the kit.
  */
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';

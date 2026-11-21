@@ -9,6 +9,7 @@
  *                 modifiers must come after that query so that they win over it, and `hidden`
  *                 must take the slot out of the layout.
  * Depends on:     vitest, node:fs
+ * Source:         new in the kit.
  */
 import { readFileSync } from 'node:fs';
 

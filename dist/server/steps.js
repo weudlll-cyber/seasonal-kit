@@ -26,7 +26,8 @@
 const LADDERS = ['holder', 'farmer', 'investor'];
 const MAX_STEPS = 3;
 const MAX_HEADER = 2_048;
-// The contract's icon, exactly: "/media/step-icons/<32 hex>.webp" (second review, finding 3).
+// The contract's icon, exactly: "/media/step-icons/<32 hex>.webp" (v0.8.0 pass, review 2, finding
+// 3).
 const ICON = /^\/media\/step-icons\/[0-9a-f]{32}\.webp$/;
 const KEYS = ['icon', 'ladder', 'name'];
 // The step's name trimmed, 1 to 40 characters, or null.
@@ -65,7 +66,7 @@ function arrayIn(header) {
 }
 export function stepsFrom(header, mode) {
     // The contract requires the header ("[]" without steps): missing or empty is marked bad,
-    // for the game's log, and still gives no steps (review finding 6).
+    // for the game's log, and still gives no steps (v0.8.0 pass, review 1, finding 6).
     if (header === undefined || header === '')
         return { steps: [], bad: true };
     const list = arrayIn(header);

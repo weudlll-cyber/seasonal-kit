@@ -72,6 +72,9 @@ Each step pins the newest tag; a step never mixes two tags.
 - **The server's stricter role header:** a comma list is no longer read. The website never sends
   one, but re-run `websiteSignIn.integration.test.ts`. Its fixtures with `'member, Admin'` must
   send `admin` instead.
+- **The peer:** `websiteSignInCheck` takes the TCP peer, `req.socket.remoteAddress`. Never pass
+  Fastify's `req.ip`: with `trustProxy` it comes from a forwarding header anyone can send. The
+  same holds for Bingo.
 - **Two-factor:** stored recovery-code hashes keep working with `'grouped'`. New codes are
   stored as HMAC-SHA-256 with the game's recovery key (K20); the lookup asks for both hashes
   (`code_hash = ANY($2)` with `recoveryLookups`). Run `adminTwoFactor.integration.test.ts`, once

@@ -11,7 +11,8 @@
  *                 rejects, so a route that does not await it cannot crash the process with an
  *                 unhandled rejection. `end` settles once every listener has finished, so a
  *                 listener that never settles keeps it pending: routes call `void ends.end(ids)`
- *                 and never await it (third review, finding 3); the listeners have all heard
+ *                 and never await it (v0.8.0 pass, review 3, finding 3); the listeners have all
+ *                 heard
  *                 the ids by the time `end` returns its promise.
  * Source:         seasonal-mini-games apps/server/src/auth/sessionEnds.ts at 866df03, the same in
  *                 seasonal-bingo-royale at a43209a. Added after the independent reviews: one
@@ -48,7 +49,7 @@ export class SessionEnds {
         }
     }
     // A failing `onError`, thrown or rejected (an async log), must not turn into an unhandled
-    // rejection either (third review, finding 2).
+    // rejection either (v0.8.0 pass, review 3, finding 2).
     report(error) {
         void Promise.resolve()
             .then(() => this.onError(error))

@@ -28,7 +28,7 @@ import {
   type FrameLink,
 } from './frameMessages.js';
 import type { Theme } from './theme.js';
-import { isLocalPath } from './websiteSignIn.js';
+import { isLocalPath } from './localPath.js';
 
 // The embed's `theme`: a theme, or `auto` for the site's own rule (as ./theme `shownTheme`).
 export type EmbedTheme = Theme | 'auto';

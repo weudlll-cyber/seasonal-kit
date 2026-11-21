@@ -61,7 +61,7 @@ for (const viewport of VIEWPORTS) {
       await menus.first().click();
       await menus.nth(2).click();
       await page.getByTestId('dev-menu').click();
-      await expect(page.getByRole('menu')).toBeVisible();
+      await expect(page.getByTestId('dev-menu-panel').first()).toBeVisible();
       await page.screenshot({
         path: `${SCREENS}header-menu-${viewport.name}-${theme}.png`,
         fullPage: true,

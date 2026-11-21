@@ -143,13 +143,15 @@ describe('the dev sign-in menu', () => {
     expect(button.textContent).toBe('Dev sign-in');
     expect(button.className).toBe('sk-bar-button');
     fireEvent.click(button);
-    expect(screen.getByRole('menu').textContent).toContain('One window holds one sign-in');
+    expect(screen.getByTestId('dev-menu-panel').textContent).toContain(
+      'One window holds one sign-in',
+    );
     await act(async () => {
       fireEvent.click(screen.getByTestId('dev-sign-in-admin'));
       await Promise.resolve();
     });
     expect(onSignIn).toHaveBeenCalledWith('admin');
-    expect(screen.queryByRole('menu')).toBeNull();
+    expect(screen.queryByTestId('dev-menu-panel')).toBeNull();
   });
 
   it('shows a failed sign-in as an alert until the next try, never an unhandled rejection', async () => {
@@ -179,7 +181,7 @@ describe('the dev sign-in menu', () => {
   });
 });
 
-describe('the dev markers (second independent review of v0.9.0)', () => {
+describe('the dev markers (v0.9.0 pass, review 2)', () => {
   it('renders every client marker the bundle scan looks for, so the two cannot drift', () => {
     const { container } = render(
       <DevSignIn identities={[{ as: 'host', label: 'Sign in as host' }]} onSignIn={vi.fn()} />,

@@ -11,3 +11,11 @@ showcase/dist/
 showcase/screens/
 test-results/
 playwright-report/
+# Secrets never enter the repository, whoever runs `git add` (audit 2026-11-22).
+.env
+.env.*
+# Worktrees an agent session makes inside the checkout.
+.claude/worktrees/
+# Operating-system files.
+.DS_Store
+Thumbs.db

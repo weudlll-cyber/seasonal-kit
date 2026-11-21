@@ -13,6 +13,7 @@
  *                   website's chat frame (a stub page here) and the call slot with a call id;
  *                 - the result frame as it stands alone.
  *                 Everything shows what a game would pass, with sample words.
+ * Source:         new in the kit.
  */
 import type { ReactElement } from 'react';
 

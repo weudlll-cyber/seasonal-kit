@@ -4,6 +4,7 @@
  *
  * Responsibility: a shared name never collides with a game's own `sbr-`/`smg-` names; the rule
  *                 holds for every file in css/, present and future.
+ * Source:         new in the kit.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 

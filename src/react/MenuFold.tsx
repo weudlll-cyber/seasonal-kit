@@ -24,6 +24,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
+import { barButtonClass } from './barButtonClass.js';
 
 export interface MenuFoldProps {
   // Changes whenever the menu has done its job: a new route, another account.
@@ -70,7 +71,7 @@ export function MenuFold(p: MenuFoldProps): ReactElement {
   useEffect(close, [p.closeKey, close]);
   useOpenedPanel(open, panel, button, close);
 
-  const className = `sk-bar-button sk-menu-button${p.buttonClassName === undefined ? '' : ` ${p.buttonClassName}`}`;
+  const className = barButtonClass(p.buttonClassName, 'sk-menu-button');
   return (
     <>
       <button

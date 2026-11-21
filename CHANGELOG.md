@@ -7,6 +7,54 @@ applies it.
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-22
+
+The fixes of the audit of 2026-11-22 ([docs/AUDIT-2026-11-22.md](docs/AUDIT-2026-11-22.md)) that
+change nothing a game relies on. Nothing for a game to migrate.
+
+### Security
+
+- **A route, a session-ended header, a chat path or a website login path** with a space, tab or
+  newline is no longer a path on this site. The URL parser drops a tab or newline, so
+  `/\t/evil.example` led off the site. One check now serves all of them (`src/localPath.ts`).
+- **A website name with a control, line-separator or bidi character** gives no identity, so it
+  cannot split a log line or show another name. Emoji joined by U+200D still pass.
+- **`devMarkersIn`** scans a symlinked file through its target.
+- **CI:** no checkout keeps the job's token on disk; CodeQL's write permission is on its job
+  only; `dist/` is emptied before the rebuild check.
+
+### Fixed
+
+- **The recovery key** is checked realm-safely: a `Buffer` from a jsdom test or a vm context
+  is a byte array too (found by the v0.9.0 delivery proof).
+- **`DevSignIn`** is a plain disclosure (the button's `aria-expanded`), not an ARIA menu
+  without arrow keys. Its panel's test id is `dev-menu-panel`.
+- **The back link's arrow** is hidden from screen readers: the link is named "Seasonal
+  Entertainment". It looks the same.
+
+### Added
+
+- The `FitGame` type, which `StartCard`, `ResultFrame` and `useFitScale` take.
+
+### Changed
+
+- Inside the kit, with no change for a game:
+  - one `barButtonClass` helper;
+  - the recovery-code tests in their own file;
+  - new tests for the steps header's size cap, every ladder and a detached frame;
+  - review references that name their pass;
+  - missing `Source:` lines;
+  - a dead regex branch removed.
+- Docs:
+  - SHOWCASE.md (the headers, 24 screens);
+  - DELIVERY.md (the v0.9.0 proof);
+  - RELEASING.md (step 7, the delivery proof);
+  - SECURITY.md;
+  - security-pass.md;
+  - ADOPTION.md (pass `req.socket.remoteAddress` as the peer);
+  - corrections in NIGHT-2026-11-21.md.
+- `.gitignore` takes `.env`, agent worktrees and OS files; lefthook lints staged `.tsx`.
+
 ## [0.9.0] - 2026-11-21
 
 The shared app header and the development tools, and the owner's decisions D1–D6 of
@@ -479,7 +527,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...v0.7.0

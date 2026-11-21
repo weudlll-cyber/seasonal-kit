@@ -9,11 +9,11 @@
  *                 name, and replaces exactly those that resolve to a development module; a g or
  *                 y pattern throws. The scan finds every marker in every shipped file, skips
  *                 source maps, and finds the kit's own dev UI strings and the server marker
- *                 (independent review of v0.9.0, findings 7–10). Bingo's and Mini Games' devSignIn and
+ *                 (v0.9.0 pass, review 1, findings 5–8). Bingo's and Mini Games' devSignIn and
  *                 productionBundle tests (a43209a, 8de30b2) for the rules.
  * Depends on:     vitest, node:fs, node:os
  */
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -141,4 +141,34 @@ describe('the production-bundle scan', () => {
       ].sort(),
     );
   });
+});
+
+// Windows refuses symlinks without a privilege; CI's Linux runs this test.
+function canSymlink(dir: string): boolean {
+  try {
+    symlinkSync(path.join(dir, 'none'), path.join(dir, 'probe'));
+    rmSync(path.join(dir, 'probe'));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+describe('the production-bundle scan through symlinks (audit B1)', () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'kit-links-'));
+  const outside = mkdtempSync(path.join(tmpdir(), 'kit-dev-'));
+  afterAll(() => {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(outside, { recursive: true, force: true });
+  });
+
+  it.runIf(canSymlink(dir))(
+    'scans a linked file through its target; a linked folder breaks nothing',
+    () => {
+      writeFileSync(path.join(outside, 'dev.js'), '"Dev sign-in"');
+      symlinkSync(path.join(outside, 'dev.js'), path.join(dir, 'linked.js'));
+      symlinkSync(outside, path.join(dir, 'folder'), 'dir');
+      expect(devMarkersIn(dir, KIT_DEV_MARKERS)).toContain('linked.js: Dev sign-in');
+    },
+  );
 });

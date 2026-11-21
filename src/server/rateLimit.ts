@@ -38,7 +38,7 @@ interface Bucket {
 }
 
 // How many keys a limiter holds at most by default; past it, idle keys go first, and a new key
-// is refused while every held key is still active (review finding 5).
+// is refused while every held key is still active (v0.8.0 pass, review 1, finding 5).
 const MAX_KEYS = 100_000;
 
 const validRule = (rule: RateRule, maxKeys: number): boolean =>
@@ -53,7 +53,8 @@ export class RateLimiter {
   private readonly buckets = new Map<string, Bucket>();
   private takes = 0;
   // When a full map was last scanned for idle keys: at most once a tenth of the window, so a
-  // flood of new keys against a full map costs nothing per request (second review, finding 1).
+  // flood of new keys against a full map costs nothing per request (v0.8.0 pass, review 2, finding
+  // 1).
   private fullPrunedAt = Number.NEGATIVE_INFINITY;
 
   constructor(
@@ -80,7 +81,7 @@ export class RateLimiter {
 
   take(key: string): RateDecision {
     const t = this.now();
-    // A clock that gives no finite time touches no bucket (second review, finding 6).
+    // A clock that gives no finite time touches no bucket (v0.8.0 pass, review 2, finding 6).
     if (!Number.isFinite(t)) return { allowed: false, retryAfterMs: this.rule.windowMs };
     // Every 1000 requests, forget keys idle for a whole window (their bucket is full again).
     if ((this.takes += 1) % 1000 === 0) this.prune(t);

@@ -18,8 +18,8 @@
  *                 16:9 gives it. The CSS applies the same numbers (the low window by a media
  *                 query); tests/call-css.test.ts keeps the two equal.
  * Source:         new for the kit; the numbers are the website's contract, which takes them from
- *                 seasonal-mini-games apps/web/src/match/chatDock.css (its strip, the reference
- *                 layout).
+ *                 seasonal-mini-games apps/web/src/match/chatDock.css at 866df03 (its strip, the
+ *                 reference layout).
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Placement and sizes",
  *                 "What a game may do today" (at e7b995c)
  */

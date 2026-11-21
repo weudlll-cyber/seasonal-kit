@@ -5,6 +5,7 @@
  * Responsibility: scripts/season-check.mjs's `seasonDiff` against a copy of the website's
  *                 declarations (its tokens.css lines 16-19 and 25 on master, 2026-11-20). CI runs
  *                 the same comparison against the live site.
+ * Source:         new in the kit.
  */
 import { readFileSync } from 'node:fs';
 

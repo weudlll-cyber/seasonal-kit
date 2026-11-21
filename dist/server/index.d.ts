@@ -8,6 +8,7 @@
  *                 recovery codes, the rate limiter and the session-end notifier. Node only
  *                 (node:crypto, node:net); never imported by browser code. Accounts, sessions and
  *                 every database statement stay in the games.
+ * Source:         new in the kit.
  */
 export { IDENTITY_HEADERS, identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck, type Headers, type IdentityHeaders, type SignInCheck, type SignInDecision, type WebsiteIdentity, } from './identity.js';
 export { RateLimiter, type RateDecision, type RateRule } from './rateLimit.js';

@@ -22,6 +22,7 @@ import type { ReactElement, ReactNode } from 'react';
 
 import type { Fullscreen } from './useFullscreen.js';
 import type { Panels } from './usePanels.js';
+import { barButtonClass } from './barButtonClass.js';
 
 // Each icon's strokes on a 24 × 24 grid.
 const PATHS = {
@@ -132,7 +133,7 @@ function FullscreenButton(p: { readonly fullscreen: Fullscreen; readonly classNa
 }
 
 export function GameBar<Id extends string>(p: GameBarProps<Id>): ReactElement {
-  const className = `sk-bar-button${p.buttonClassName === undefined ? '' : ` ${p.buttonClassName}`}`;
+  const className = barButtonClass(p.buttonClassName);
   return (
     <header className="sk-game-bar" data-testid="game-bar">
       {p.lead}
@@ -147,7 +148,7 @@ export function GameBar<Id extends string>(p: GameBarProps<Id>): ReactElement {
       {p.time == null ? null : (
         <span className="sk-bar-fact" data-testid="bar-time">
           {p.time.text}
-          {/* A phone shows "9:40" and reads the word out: the bar keeps one row. */}
+          {/* A phone shows "9:50" and reads the word out: the bar keeps one row. */}
           {p.time.left ? <span className="sk-bar-desktop"> left</span> : null}
         </span>
       )}

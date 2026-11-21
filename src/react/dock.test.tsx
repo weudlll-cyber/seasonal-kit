@@ -248,10 +248,15 @@ describe('the docked screen on a phone', () => {
     expect(vv.removeEventListener).toHaveBeenCalled();
   });
 
-  it('leaves the height alone without a visual viewport', () => {
+  // jsdom has none at all (undefined); some browsers report null. Both must work (v0.4.1: the
+  // v0.4.0 delivery proof crashed on the missing one).
+  it.each([
+    ['missing', undefined],
+    ['null', null],
+  ])('leaves the height alone with the visual viewport %s', (_what, vv) => {
     vi.stubGlobal('innerWidth', 390);
     vi.stubGlobal('innerHeight', 844);
-    vi.stubGlobal('visualViewport', null);
+    vi.stubGlobal('visualViewport', vv);
     render(
       <DockedScreen chat={<p>chat</p>} bar="line" callId={null}>
         <p>round</p>

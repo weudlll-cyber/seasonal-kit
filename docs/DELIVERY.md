@@ -80,6 +80,21 @@ deleted afterwards.
 An entry module's unused exports are dropped from a Vite app build. The first build kept only
 what the page called, so the consumer called every export before the bundle was read.
 
+## The v0.4.0 screen building blocks (2026-11-21, the tag itself)
+
+A new scratch consumer outside every repository pinned `#v0.4.0` with `ignore-scripts=true`,
+with React 19.3.1 and the games' toolchain (Vite 8.3.4, Vitest 5.0.5 with jsdom 30.1.3,
+TypeScript 5.9.3, @testing-library/react 16.3.3). Its page rendered `BackLink`, `ThemeToggle`
+and `DockedScreen` with `WebsiteChatFrame` inside, and used every other `@seasonal/kit/react`
+export, under `data-sk-game="mini-games"`.
+
+| Step                                                       | Result                                                                                                                                         |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                                             | Worked, with no script. The lockfile resolved the tag to the merge commit's tarball (`a35bc1f`, `version: 0.4.0`).                             |
+| `vite build`                                               | Worked: `tokens.css`, `fit.css`, `dock.css`, `shell.css` and `call.css` in the stylesheet, the React parts in the script.                      |
+| `tsc --noEmit` (Bundler resolution, `skipLibCheck: false`) | Worked against `dist/react/*.d.ts`.                                                                                                            |
+| A Vitest test (jsdom) rendering the page at 390 × 844      | **Failed:** `DockedScreen` read `window.visualViewport.height`, which jsdom does not have. **Fixed in v0.4.1**, whose own proof follows below. |
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

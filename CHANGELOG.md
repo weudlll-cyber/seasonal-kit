@@ -7,6 +7,48 @@ applies it.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-21
+
+The frames a game fills: "before the round" and "the result". The words, icons, placings and
+standings stay in the games.
+
+### Added
+
+- `StartCard` (`@seasonal/kit/react`):
+  - the card in the round's season colour (`season` null: a seasonless game);
+  - slots for the game's icon, badge, special and facts;
+  - "Opens in N s" as a quiet timer;
+  - fitted to the screen with the game's floors.
+- `ResultFrame` (`@seasonal/kit/react`):
+  - the first part one screen high: headline (two lines at most), lines, proof, the reveal
+    taking the free height, and the game's placings, beside the reveal on a desktop;
+  - `more` below it;
+  - `layout` board keeps the part's full height; `fitted` shrinks it where it has not the room
+    (off by default).
+- `@seasonal/kit/frames.css`: both frames, the season tints from the website's colours, and
+  both filling the height above the chat inside `DockedScreen`. `--sk-result-top` is the game's
+  bar height above the result.
+
+### Changed
+
+- `tests/fit-floors.test.ts` checks the scaled `font-size`s of every kit stylesheet (it read
+  every `max()` floor before, a box's size too).
+- `docs/DELIVERY.md` records the v0.4.1 proof.
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.5.0, it may:
+  - build `round/RoundIntro.tsx` on `StartCard`: its season icon, special, facts and halving
+    badge go in as slots, and its `roundIntro.css` goes away. Its `--font-size-ball` is the
+    card's `--sk-start-title`, the same value;
+  - build `round/ResultScreen.tsx`'s first part on `ResultFrame` (`fitted` where it has
+    "Closest to winning", as today), and drop those rules from `round/result.css`. Its placings
+    table, proof, team line and standings stay its own. It sets `--sk-result-top` from its
+    `--result-top`. Its own result (`ownResult`) stays its own.
+- **Bingo Royale:** once it pins v0.5.0, it may put its final placement in `ResultFrame`, with
+  its podium as `placings` and its rows as `more`. Its round has no season card, so `StartCard`
+  is for a later start screen, which needs the owner's word.
+
 ## [0.4.1] - 2026-11-21
 
 ### Fixed
@@ -206,7 +248,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.2.0...v0.3.0

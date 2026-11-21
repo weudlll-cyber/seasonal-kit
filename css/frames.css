@@ -1,0 +1,256 @@
+/**
+ * @file   css/frames.css
+ * @brief  The frames a game fills: the start card "before the round" and the result's first
+ *         part.
+ *
+ * Responsibility: `.sk-start-card` fills its space under the game's bar and never scrolls the
+ *                 page: a card framed and tinted in the season's colour (`data-season`, the
+ *                 website's colours from ./tokens.css), everything centred, the title in the
+ *                 largest type, the special, the facts and the seconds left, sizes following the
+ *                 viewport's smaller side. `.sk-result` is the result: its first part one screen
+ *                 high under the game's bar (`--sk-result-top`, the bar's height and gaps, the
+ *                 game's), the headline at most two lines, the reveal taking the free height,
+ *                 the placings beside it on a desktop and under it on a phone; a list game's
+ *                 first part as tall as its content. Inside the docked screen (./dock.css) both
+ *                 fill the height above the chat. Every size that shrinks with the screen's
+ *                 scale (`--fit`) keeps the game's floor (./fit.css). Colours only from
+ *                 ./tokens.css, so light and dark both work.
+ * Source:         seasonal-mini-games apps/web/src/round/roundIntro.css and result.css at
+ *                 866df03 (Mini Games' 900 px desktop query; its `--font-size-ball` becomes
+ *                 `--sk-start-title`, the same value)
+ */
+
+/* The game's bar and gaps above the result, which the game sets on its own root: Mini Games
+   computes it (`--result-top`), the default is its fallback. */
+:root {
+  --sk-result-top: 4.5rem;
+}
+
+/* The start card. */
+.sk-start-card {
+  --sk-start-title: clamp(3rem, 2rem + 6vw, 5.5rem);
+  --sk-season: var(--color-border-strong);
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--fit, 1) * clamp(0.5rem, 2.5vmin, 1.5rem));
+  padding: calc(var(--fit, 1) * var(--space-3)) var(--space-3);
+  border: 3px solid var(--sk-season);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--sk-season) 16%, var(--color-surface));
+  text-align: center;
+}
+
+.sk-start-card[data-season='spring'] {
+  --sk-season: var(--color-spring);
+}
+
+.sk-start-card[data-season='summer'] {
+  --sk-season: var(--color-summer);
+}
+
+.sk-start-card[data-season='autumn'] {
+  --sk-season: var(--color-autumn);
+}
+
+.sk-start-card[data-season='winter'] {
+  --sk-season: var(--color-winter);
+}
+
+/* A game whose rounds show no season: the card on the surface, with a hairline. */
+.sk-start-card:not([data-season]) {
+  border-width: 1px;
+  background: var(--color-surface);
+}
+
+.sk-start-head {
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--fit, 1) * var(--space-1));
+}
+
+/* The season's icon on a disc of the page colour. */
+.sk-start-icon {
+  display: grid;
+  place-items: center;
+  width: max(2.5rem, calc(var(--fit, 1) * clamp(4rem, 14vmin, 7.5rem)));
+  height: max(2.5rem, calc(var(--fit, 1) * clamp(4rem, 14vmin, 7.5rem)));
+  padding: calc(var(--fit, 1) * 0.6rem);
+  border: 3px solid var(--sk-season);
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+
+.sk-start-head h1 {
+  margin: 0;
+  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--sk-start-title)));
+  line-height: 1;
+}
+
+.sk-start-special {
+  max-width: 34rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sk-start-special h2 {
+  margin: 0;
+  font-size: max(16px, calc(var(--fit, 1) * var(--font-size-title)));
+}
+
+.sk-start-special p {
+  margin: 0;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--font-size-lead)));
+}
+
+.sk-start-facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * 1rem));
+  font-weight: var(--font-weight-strong);
+}
+
+.sk-start-count {
+  margin: 0;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--font-size-lead)));
+}
+
+.sk-start-count strong {
+  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--font-size-title)));
+  font-variant-numeric: tabular-nums;
+}
+
+/* The result. */
+.sk-result {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The first part: one screen under the game's bar. */
+.sk-result-first {
+  display: grid;
+  gap: var(--space-2);
+  height: calc(100dvh - var(--sk-result-top));
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'head' 'reveal' 'places';
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+}
+
+/* A list game's first part is as tall as its content; a board game's grid keeps the height. */
+.sk-result:not([data-layout='board']) .sk-result-first {
+  height: auto;
+  grid-template-rows: auto auto auto;
+}
+
+.sk-result-head {
+  grid-area: head;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sk-result-head p {
+  margin: 0;
+}
+
+/* The headline at about half the page title's size, at most two lines (balanced). */
+.sk-result-head h1 {
+  margin: 0;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * clamp(1.25rem, 1rem + 0.6vw, 1.5rem)));
+  text-wrap: balance;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sk-result-reveal {
+  grid-area: reveal;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.sk-result-reveal > * {
+  flex: 1;
+  min-height: 0;
+}
+
+.sk-result-places {
+  grid-area: places;
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+}
+
+.sk-result-more {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+}
+
+/* A desktop: the reveal on the left at the part's full height, the placings on its right, the
+   proof beside the headline. */
+@media (min-width: 900px) {
+  .sk-result-first {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 28rem);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'head head'
+      'reveal places';
+  }
+
+  .sk-result:not([data-layout='board']) .sk-result-first {
+    grid-template-rows: auto auto;
+  }
+
+  .sk-result-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .sk-result-head > :not(.sk-result-proof) {
+    grid-column: 1;
+  }
+
+  .sk-result-head > .sk-result-proof {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    max-width: 24rem;
+  }
+}
+
+/* Inside the docked screen: both frames fill the height above the chat. */
+.sk-docked-main > .sk-start-card,
+.sk-docked-main > .sk-result {
+  flex: 1;
+  min-height: 0;
+}
+
+/* The first part takes the height; what follows scrolls inside, never behind the chat. */
+.sk-docked-main > .sk-result {
+  grid-template-rows: minmax(0, 1fr);
+  overflow-y: auto;
+}
+
+.sk-docked-main > .sk-result > .sk-result-first {
+  height: auto;
+}

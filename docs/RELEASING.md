@@ -46,3 +46,20 @@ The one tag not on a merge commit is v0.0.1, the delivery probe on the root comm
 cut before master was protected.
 
 A game then moves to the version in its own PR, with the owner's approval (DECISIONS K1).
+
+## Repository settings (DECISIONS K24)
+
+Set on 2026-11-22 through `gh api repos/weudlll-cyber/seasonal-kit/...` and read back the same
+day:
+
+| Setting                         | Read back                                                                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Merge methods                   | `allow_merge_commit: true`, `allow_squash_merge: false`, `allow_rebase_merge: false`: every merge leaves the merge commit a tag sits on     |
+| Delete the branch after a merge | `delete_branch_on_merge: true`                                                                                                              |
+| Release tags                    | ruleset "Release tags" (id 27815939), `target: tag`, `refs/tags/v*`, rules `update` and `deletion`, `enforcement: active`, no bypass actors |
+| Vulnerability alerts            | on (`GET …/vulnerability-alerts` answers 204)                                                                                               |
+| Wiki and Projects               | `has_wiki: false`, `has_projects: false`: the docs live in this repository                                                                  |
+| Actions pinned to commit SHAs   | `sha_pinning_required: true`; every `uses:` in `.github/` was already a full SHA                                                            |
+
+Master's branch protection is DECISIONS K13 and K19. Renovate (`renovate.json`) needs its GitHub
+app, which the owner installs: no Renovate PR or dependency dashboard has appeared yet.

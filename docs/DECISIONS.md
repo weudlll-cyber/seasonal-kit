@@ -75,3 +75,11 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
 - **K23 — A full audit after v0.9.0 (D7).** A full audit of the kit follows v0.9.0, with one
   independent reviewer per area. The night chain of 2026-11-21/22 that runs it is approved as
   written, merges and tags included.
+
+## 2026-11-22
+
+- **K24 — The repository's GitHub settings.** The settings proposed by the audit of 2026-11-22
+  are applied: merge commits only, the branch deleted after a merge, `v*` tags that can be
+  neither moved nor deleted, vulnerability alerts on, no wiki and no Projects, actions pinned to
+  commit SHAs. There is no CODEOWNERS file. The settings as read back are in
+  [RELEASING.md](RELEASING.md).

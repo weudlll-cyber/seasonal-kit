@@ -7,6 +7,12 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- The repository's GitHub settings (DECISIONS K24): merge commits only, the branch deleted
+  after a merge, a ruleset that keeps `v*` tags from being moved or deleted, vulnerability alerts
+  on, no wiki or Projects, actions pinned to commit SHAs. Read back in docs/RELEASING.md.
+
 ## [0.9.1] - 2026-11-22
 
 The fixes of the audit of 2026-11-22 ([docs/AUDIT-2026-11-22.md](docs/AUDIT-2026-11-22.md)) that

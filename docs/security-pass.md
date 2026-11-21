@@ -96,6 +96,23 @@ The review's findings:
 The review's other points were "no defect" (timing and encoding, prototype keys, the contract)
 or test gaps, now filled by the fixes' tests.
 
+A second fresh review ran on the fixed diff, given the same material. It found no high
+finding, 1 medium and 5 low. Each was checked:
+
+1. **Medium:** nothing tied `KIT_DEV_MARKERS` to what `DevSignIn` renders. **Fixed:** a test
+   renders the open menu and expects every client marker in it.
+2. **Medium-low:** the plugin's comment said "resolved file", but it tests the import's path as
+   written. **Fixed:** the header says so, and that the pattern must match how the game writes
+   the import (with `.js`, as NodeNext requires and both games do).
+3. **Low:** the body's `as` could be inherited. **Fixed:** only an own `as` counts.
+4. **Low:** the kit does not refuse to run the dev sign-in in production itself.
+   **Not changed:** the game's dev switch and the stub are the contract, as in both games
+   today. A `NODE_ENV` guard could break a game's dev or e2e setups; noted for the audit.
+5. **Low:** the stored-hash check counted elements, not bytes. **Fixed:** `byteLength`.
+6. **Low:** `parentPath` again. **Not a defect** (Node ≥ 22).
+
+With these fixes nothing confirmed is open: A2 and A5 are clean.
+
 ### 2026-11-21 — before v0.8.0, the server entry (branch `feat/server-auth`, PR #13)
 
 | Scan                         | Tool and command                                                                                                                     | Result                                                                                |

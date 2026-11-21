@@ -3,9 +3,12 @@
  * @brief  Keeping development code out of a game's production bundles, and proving it.
  *
  * Responsibility: `devStubPlugin` is an esbuild plugin for the game's server build. Every
- *                 relative or absolute import that resolves to one of the game's development
- *                 modules (`devModule`: the Quick Test, the dev sign-in, a time-travel route) is
- *                 replaced by the game's stub file, whose exports throw when called. The app calls
+ *                 relative or absolute import whose path, as written and joined to its folder
+ *                 (not esbuild's resolved file), matches one of the game's development modules
+ *                 (`devModule`: the Quick Test, the dev sign-in, a time-travel route) is
+ *                 replaced by the game's stub file, whose exports throw when called. So the
+ *                 pattern must match how the game writes those imports: with the `.js`
+ *                 extension that NodeNext requires, as both games do. The app calls
  *                 them only with its dev switch, which a production install never sets. An import
  *                 through a package name, a `paths` alias or `#imports` is not seen: the games
  *                 import their dev modules relatively, and the bundle scan is the backstop that
@@ -35,7 +38,8 @@ export const KIT_DEV_MARKERS = [
 ];
 // A relative or absolute path (POSIX, or a Windows drive); a package name is never a dev module.
 const LOCAL_IMPORT = /^(?:\.|\/|[A-Za-z]:[\\/])/;
-// `devModule` tests a resolved file path; `stub` is the stub file's absolute path.
+// `devModule` tests the import's path as written, joined to the importing folder; `stub` is
+// the stub file's absolute path.
 export function devStubPlugin(devModule, stub) {
     if (devModule.global || devModule.sticky) {
         throw new TypeError('devStubPlugin: the dev-module pattern has the g or y flag');

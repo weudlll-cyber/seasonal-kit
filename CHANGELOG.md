@@ -63,6 +63,10 @@ no high-severity defect, 5 medium and 7 low findings. Fixed (docs/security-pass.
   backstop).
 - **`DevSignIn`** shows a failed sign-in as an alert instead of leaving an unhandled rejection.
 
+A second fresh review of the fixed diff found 1 medium and 5 low. Fixed: a test ties the
+markers to what `DevSignIn` renders; `devSignInAccount` reads only the body's own `as`; the
+stored hash is measured in bytes; the plugin's header says it tests the import as written.
+
 Not changed, and recorded: legacy SHA-256 codes keep verifying (D4) until each is used or
 replaced, so those rows stay as weak as before against a leaked or writable table. The
 departure from the website's AUTH.md (plain SHA-256 there) is the owner's D4.

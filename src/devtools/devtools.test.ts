@@ -47,6 +47,7 @@ describe('the dev sign-in request', () => {
     ['a number', { as: 7 }],
     ['no `as`', {}],
     ['an array', ['host']],
+    ['an inherited `as`', Object.create({ as: 'host' }) as unknown],
     ['null', null],
     ['a string', 'host'],
   ])('refuses %s', (_what, body) => {

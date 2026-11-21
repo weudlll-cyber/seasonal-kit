@@ -17,6 +17,8 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { KIT_DEV_MARKERS } from '../devtools/bundle.js';
+import { DEV_SIGN_IN_MARKER } from '../devtools/signIn.js';
 import { AppHeader, type AppHeaderProps } from './AppHeader.js';
 import { DevSignIn } from './dev/DevSignIn.js';
 
@@ -174,5 +176,17 @@ describe('the dev sign-in menu', () => {
   it('takes the game’s button class', () => {
     render(<DevSignIn identities={[]} onSignIn={vi.fn()} buttonClassName="sbr-btn" />);
     expect(screen.getByTestId('dev-menu').className).toBe('sk-bar-button sbr-btn');
+  });
+});
+
+describe('the dev markers (second independent review of v0.9.0)', () => {
+  it('renders every client marker the bundle scan looks for, so the two cannot drift', () => {
+    const { container } = render(
+      <DevSignIn identities={[{ as: 'host', label: 'Sign in as host' }]} onSignIn={vi.fn()} />,
+    );
+    fireEvent.click(screen.getByTestId('dev-menu'));
+    const clientMarkers = KIT_DEV_MARKERS.filter((m) => m !== DEV_SIGN_IN_MARKER);
+    expect(clientMarkers.length).toBeGreaterThan(0);
+    for (const marker of clientMarkers) expect(container.innerHTML).toContain(marker);
   });
 });

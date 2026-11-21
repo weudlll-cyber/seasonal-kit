@@ -239,6 +239,9 @@ describe('recovery codes under a server key (D4)', () => {
     expect(recoveryMatches('abcd-efgk', 'grouped', stored, KEY)).toBe(false);
     expect(recoveryMatches('abcd-efgh', 'grouped', stored.subarray(0, 31), KEY)).toBe(false);
     expect(recoveryMatches('abcd-efgh', 'grouped', Buffer.alloc(0), KEY)).toBe(false);
+    // 32 elements but 64 bytes: no match, and no throw from timingSafeEqual.
+    const wide = new Uint16Array(32) as unknown as Uint8Array;
+    expect(recoveryMatches('abcd-efgh', 'grouped', wide, KEY)).toBe(false);
   });
 
   it('compares both hashes in constant time, whichever matches', () => {

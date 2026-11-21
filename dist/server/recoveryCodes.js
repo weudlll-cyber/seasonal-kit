@@ -78,7 +78,8 @@ export function recoveryLookups(code, style, key) {
 export function recoveryMatches(code, style, stored, key) {
     // The key is checked first, so a bad key fails loudly whatever is stored.
     const [keyed, legacy] = recoveryLookups(code, style, key);
-    if (stored.length !== 32)
+    // Bytes, not elements: a 32-element Uint16Array is 64 bytes and matches nothing.
+    if (stored.byteLength !== 32)
         return false;
     const keyedOk = timingSafeEqual(keyed, stored);
     const legacyOk = timingSafeEqual(legacy, stored);

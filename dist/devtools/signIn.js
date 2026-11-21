@@ -24,9 +24,12 @@
 const MAX_AS = 64;
 // This message is also the server bundle's dev marker (KIT_DEV_MARKERS): keep the two equal.
 export const DEV_SIGN_IN_MARKER = 'devSignInAccount: the load pattern has the g or y flag';
-// The body's `as`, when the body is an object with a string `as` of at most MAX_AS characters.
+// The body's own `as` (never one inherited from a prototype), when the body is an object with
+// a string `as` of at most MAX_AS characters.
 function requestedName(body) {
     if (typeof body !== 'object' || body === null || Array.isArray(body))
+        return null;
+    if (!Object.hasOwn(body, 'as'))
         return null;
     const as = body['as'];
     return typeof as === 'string' && as.length <= MAX_AS ? as : null;

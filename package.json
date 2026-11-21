@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -29,7 +29,8 @@
     "./call.css": "./css/call.css",
     "./fit.css": "./css/fit.css",
     "./dock.css": "./css/dock.css",
-    "./shell.css": "./css/shell.css"
+    "./shell.css": "./css/shell.css",
+    "./frames.css": "./css/frames.css"
   },
   "files": [
     "browser",

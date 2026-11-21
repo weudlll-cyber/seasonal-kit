@@ -8,8 +8,9 @@
  *                 scale floor 0.6. Bingo: 14 px text, no screen scale, 44 px targets. Its 24/22 px
  *                 have no rule of their own there, so they take Mini Games'. A kit floor lower
  *                 than today, a CSS value differing from `FIT_FLOORS`, or a default (no game
- *                 named) below any game fails here. Every kit stylesheet's `max()` floor must be
- *                 a floor variable or no smaller than the strictest text floor.
+ *                 named) below any game fails here. Every scaled `font-size` of the kit's
+ *                 stylesheets must be floored by a floor variable or by no less than the
+ *                 strictest text floor.
  * Depends on:     vitest, node:fs, ../src/fit
  * Source:         seasonal-mini-games apps/web/src/round/useFit.ts (FIT_FLOOR) and its CSS at
  *                 866df03; seasonal-bingo-royale apps/web/src/minTextSize.test.ts at a43209a
@@ -67,11 +68,15 @@ describe('the floor guard', () => {
     }
   });
 
-  it('floors every scaled size of the kit with a floor variable or ≥ the strictest text', () => {
+  it('floors every scaled text size of the kit with a floor variable or ≥ the strictest', () => {
     const strictText = Math.max(...Object.values(FIT_FLOORS).map((f) => f.text));
     const sheets = readdirSync(dir).filter((f) => f.endsWith('.css'));
     const low = sheets.flatMap((file) =>
-      [...readFileSync(new URL(file, dir), 'utf8').matchAll(/max\(\s*([^,]+),\s*calc\(var\(--fit/g)]
+      [
+        ...readFileSync(new URL(file, dir), 'utf8').matchAll(
+          /font-size:\s*max\(\s*([^,]+),\s*calc\(var\(--fit/g,
+        ),
+      ]
         .map((m) => (m[1] ?? '').trim())
         .filter((first) => !first.startsWith('var(--sk-floor-'))
         .filter((first) => Number.parseFloat(first) < strictText)

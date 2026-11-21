@@ -95,6 +95,18 @@ export, under `data-sk-game="mini-games"`.
 | `tsc --noEmit` (Bundler resolution, `skipLibCheck: false`) | Worked against `dist/react/*.d.ts`.                                                                                                            |
 | A Vitest test (jsdom) rendering the page at 390 × 844      | **Failed:** `DockedScreen` read `window.visualViewport.height`, which jsdom does not have. **Fixed in v0.4.1**, whose own proof follows below. |
 
+## The v0.4.1 fix (2026-11-21, the tag itself)
+
+The same consumer pinned `#v0.4.1`, with scripts off. The lockfile resolved it to the merge
+commit's tarball (`7791e8a`, `version: 0.4.1`). `vite build` and `tsc` worked, and the Vitest
+test passed at 390 × 844. It checked the back link (`/games`), the toggle's name, the frame's
+address with the page's theme, the hidden call slot, and the phone bar's "Chat · Ana: gg" with
+its count. The consumer was deleted afterwards.
+
+One rule showed itself on the way. A game's own chat room reports arrivals from **inside** the
+dock (the `chat` it passes), as Mini Games' room does. Content above the dock gets no arrivals
+from `useDockArrivals`.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

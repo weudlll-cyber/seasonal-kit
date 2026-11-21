@@ -20,10 +20,11 @@
  * Spec:           Mini Games DECISIONS O111; Bingo docs/concepts/fit-audit.md; kit DECISIONS K14
  */
 export const FIT_FLOORS = {
-    // O111: 13 px body text, 24 px display values, 22 px rows, 40 px phone touch targets.
-    'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40 },
+    // O111: 13 px body text, 24 px display values, 22 px rows, 40 px phone touch targets; its
+    // round bar's unread badge is 12 px (focus.css).
+    'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40, badge: 12 },
     // No screen scale today (its screens fit by layout, fit audit), 14 px text, 44 px targets.
-    bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44 },
+    bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44, badge: 14 },
 };
 // The passes of one fitting after the first measurement: each halves the gap left.
 const PASSES = 7;

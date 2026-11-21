@@ -21,12 +21,13 @@ import { describe, expect, it } from 'vitest';
 
 import { FIT_FLOORS, type FitFloors, type FitGame } from '../src/fit.js';
 
+// Mini Games' badge: its round bar's unread count, 0.75rem (apps/web/src/round/focus.css).
 const TODAY: Readonly<Record<FitGame, FitFloors>> = {
-  'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40 },
-  bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44 },
+  'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40, badge: 12 },
+  bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44, badge: 14 },
 };
 
-const KINDS = ['text', 'display', 'row', 'target'] as const;
+const KINDS = ['text', 'display', 'row', 'target', 'badge'] as const;
 const dir = new URL('../css/', import.meta.url);
 const css = readFileSync(new URL('fit.css', dir), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
 
@@ -57,6 +58,7 @@ describe('the floor guard', () => {
       display: floors.display,
       row: floors.row,
       target: floors.target,
+      badge: floors.badge,
     });
   });
 

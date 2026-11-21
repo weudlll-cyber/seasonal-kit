@@ -56,3 +56,4 @@ export {
   type CallSlotInput,
 } from './callSlot.js';
 export type { FrameLink } from './frameMessages.js';
+export { clockText } from './clock.js';

@@ -7,6 +7,49 @@ applies it.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-21
+
+The round's focus mode: the slim game bar in place of the app header, its panels, full screen
+and the phase strip.
+
+### Added
+
+- `GameBar` (`@seasonal/kit/react`, `@seasonal/kit/bar.css`):
+  - one row, at most 44 px on a desktop and 52 px on a phone;
+  - the game's lead part, facts (`desktopOnly` ones are read out on a phone) and the time with
+    " left";
+  - a button per panel with its icon (chat, players, host), words and an unread badge, plus
+    the full-screen toggle where the browser offers it;
+  - `buttonClassName` keeps a game's own button look.
+- `usePanels` (one panel at a time; the focus goes back to its button), `useFullscreen`, and
+  `useFocusMode`, which marks `<html data-sk-focus>` so the game's CSS hides its own header.
+- `PhaseStrip`: the parts in proportion to their lengths, the current one framed and filled,
+  with "· now" in words and `aria-current`; ended parts done; the game's line and status.
+- `clockText` (`@seasonal/kit`): "9:05", rounding down, never below 0:00.
+- `--sk-floor-badge` (`fit.css`, `FIT_FLOORS.badge`): Mini Games' 12 px unread badge, Bingo
+  14 px. The floor guard covers it.
+
+### Changed
+
+- `.sk-visually-hidden` moved from `dock.css` to `shell.css`, the shared basics, since the dock
+  and the bar both use it. A game that imports `dock.css` also imports `shell.css`.
+- `docs/DELIVERY.md` records the v0.5.0 proof.
+
+### Migration, per game
+
+- **Mini Games:** once it pins v0.6.0, it may:
+  - build `round/FocusBar.tsx` on `GameBar` with `buttonClassName="smg-btn"`. Its season pill,
+    mode fact and `barTime` stay its own, and `FocusIcons.tsx` goes away;
+  - replace `round/usePanels.ts` and `round/useFullscreen.ts` with the kit's
+    (`usePanels<PanelId>()`);
+  - set the focus mode with `useFocusMode()`. Its rule `#root:has(.focus-mode) .shell-bar` becomes
+    `html[data-sk-focus] .shell-bar`;
+  - build Mind Games' `PhaseStrip` on the kit's: its parts, line and announcement stay in the
+    game. `strip.css` goes away;
+  - take `clockText` from the kit in place of `@smg/game-sdk`'s.
+- **Bingo Royale:** keeps its header during a round, as today. The game bar is there if the owner
+  wants a focus mode for Bingo.
+
 ## [0.5.0] - 2026-11-21
 
 The frames a game fills: "before the round" and "the result". The words, icons, placings and
@@ -248,7 +291,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.3.0...v0.4.0

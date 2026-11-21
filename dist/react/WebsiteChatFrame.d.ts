@@ -10,8 +10,9 @@
  *                 required). Inside a dock (./dockSight) it tells the frame whether it is in
  *                 sight, again on each `ready` (../chatEmbed), and hands the frame's `unread`
  *                 count to the dock's arrivals. Outside a dock it posts and listens to nothing.
- *                 `sandboxed` is the game's own choice (needs the owner's word): Mini Games
- *                 sandboxes its frame, Bingo does not; neither changes what a player sees today.
+ *                 The frame is always sandboxed with Mini Games' attributes (DECISIONS K17: every
+ *                 game sandboxes it): scripts, the site's own cookie, forms and the login popup.
+ *                 Since v0.9.0 there is no `sandboxed` prop; an option no game sets would be dead.
  * Source:         seasonal-mini-games apps/web/src/chat/ChatPanel.tsx (`HostChat`) and
  *                 useHostChatFrame.ts at 866df03; seasonal-bingo-royale
  *                 apps/web/src/shell/ChatDock.tsx (its frame) at a43209a. Built on ../chatEmbed
@@ -21,7 +22,6 @@
 import { type ReactElement } from 'react';
 export interface WebsiteChatFrameProps {
     readonly room: string;
-    readonly sandboxed: boolean;
     readonly path?: string;
     readonly className?: string;
 }

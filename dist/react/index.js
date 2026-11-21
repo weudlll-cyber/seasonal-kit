@@ -7,9 +7,12 @@
  *                 the disclosure hook, the fit hook, the back link, the docked chat with the
  *                 website's chat frame, the hook a game's own chat room reports arrivals with,
  *                 the frames a game fills (the start card and the result), and the round's
- *                 focus mode: the game bar, its panels, full screen and the phase strip. React is an optional peer dependency, so games without React never load
+ *                 focus mode: the game bar, its panels, full screen and the phase strip; and the
+ *                 shared app header (K21). The development sign-in is its own entry
+ *                 (`@seasonal/kit/react/dev`, ./dev), so a production bundle never holds it. React is an optional peer dependency, so games without React never load
  *                 this entry (SECURITY.md).
  */
+export { AppHeader, } from './AppHeader.js';
 export { BackLink } from './BackLink.js';
 export { ChatDock } from './ChatDock.js';
 export { DockedScreen } from './DockedScreen.js';

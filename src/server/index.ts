@@ -26,6 +26,8 @@ export {
   looksLikeRecoveryCode,
   newRecoveryCodes,
   recoveryHash,
+  recoveryLookups,
+  recoveryMatches,
   type RecoveryStyle,
 } from './recoveryCodes.js';
 export { safeNext, websiteLoginLocation } from './returnPath.js';

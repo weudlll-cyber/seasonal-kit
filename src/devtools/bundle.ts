@@ -1,0 +1,70 @@
+/**
+ * @file   src/devtools/bundle.ts
+ * @brief  Keeping development code out of a game's production bundles, and proving it.
+ *
+ * Responsibility: `devStubPlugin` is an esbuild plugin for the game's server build. Every
+ *                 relative import that resolves to one of the game's development modules
+ *                 (`devModule`: the Quick Test, the dev sign-in, a time-travel route) is replaced
+ *                 by the game's stub file, whose exports throw when called. The app calls them
+ *                 only with its dev switch, which a production install never sets.
+ *                 `devMarkersIn` is the production-bundle test's scan: every shipped file below
+ *                 a folder (source maps aside, which quote the sources) that holds one of the
+ *                 markers, as "file: marker". The game's test builds its server and client into a
+ *                 temporary folder and expects none. `KIT_DEV_MARKERS` are the strings of the
+ *                 kit's own development UI (../react/dev), which the client scan must not find
+ *                 either. Typed without esbuild (no dependency): the plugin is the object
+ *                 esbuild's `plugins` takes.
+ * Source:         seasonal-bingo-royale apps/server/build.mjs (`devStub`), devStub.mjs and
+ *                 apps/server/test/productionBundle.test.ts (`devMarkersIn`) at a43209a; the same
+ *                 in seasonal-mini-games at 8de30b2.
+ * Spec:           kit docs/ADOPTION.md "Dev tools"
+ */
+import { readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
+
+// The strings the kit's DevSignIn and its test ids put into a bundle.
+export const KIT_DEV_MARKERS: readonly string[] = ['Dev sign-in', 'dev-sign-in-'];
+
+interface ResolveArgs {
+  readonly path: string;
+  readonly resolveDir: string;
+}
+
+interface PluginBuild {
+  onResolve(
+    options: { readonly filter: RegExp },
+    callback: (args: ResolveArgs) => { readonly path: string } | undefined,
+  ): void;
+}
+
+export interface DevStubPlugin {
+  readonly name: string;
+  readonly setup: (build: PluginBuild) => void;
+}
+
+// `devModule` tests a resolved file path; `stub` is the stub file's absolute path.
+export function devStubPlugin(devModule: RegExp, stub: string): DevStubPlugin {
+  return {
+    name: 'seasonal-dev-stub',
+    setup(build) {
+      build.onResolve({ filter: /^\./ }, (args) =>
+        devModule.test(path.resolve(args.resolveDir, args.path)) ? { path: stub } : undefined,
+      );
+    },
+  };
+}
+
+// "file: marker" for every shipped file below `dir` that holds a marker.
+export function devMarkersIn(dir: string, markers: readonly string[]): string[] {
+  const found: string[] = [];
+  for (const entry of readdirSync(dir, { recursive: true, withFileTypes: true })) {
+    if (!entry.isFile() || entry.name.endsWith('.map')) continue;
+    const file = path.join(entry.parentPath, entry.name);
+    // latin1 reads any bytes; the markers are ASCII.
+    const text = readFileSync(file, 'latin1');
+    for (const marker of markers) {
+      if (text.includes(marker)) found.push(`${path.relative(dir, file)}: ${marker}`);
+    }
+  }
+  return found;
+}

@@ -7,7 +7,8 @@
  *                 by default):
  *                 - the website's user id: a positive safe integer without leading zeros (never
  *                   issued twice, so one account has one key);
- *                 - the name: kept as sent (at most 128 characters) and as the game shows it
+ *                 - the name, read from its bytes as UTF-8 (D6; malformed bytes are no
+ *                   identity): kept as sent (at most 128 characters) and as the game shows it
  *                   (letters, digits, "_", "." and "-", 3 to 24 characters, never cut inside a
  *                   surrogate pair; fewer than 3 usable ones gives "player-" and six hex
  *                   characters of the id's hash);
@@ -93,6 +94,25 @@ const one = (value: HeaderValue): string | undefined =>
 
 const isTrue = (value: HeaderValue): boolean => one(value)?.toLowerCase() === 'true';
 
+// The name header as text (D6). Node reads a header's bytes as latin1, one character per byte,
+// and the website's Node writes a string the same way. The website's usernames are ASCII today
+// (seasonal-entertainment shared/accountRules.js:14, sent raw by
+// server/src/games/embeddedRoutes.js:53), which this leaves exactly as it is. A name sent as
+// UTF-8 bytes ("Jürgen", an emoji) is decoded from them; bytes that are no UTF-8 (a lone
+// latin1 "ü", 0xFC) and characters past one byte, which no header carries, make the name null:
+// no identity, never a garbled name.
+const UTF8 = new TextDecoder('utf-8', { fatal: true });
+
+function decodedName(value: string): string | null {
+  // A character past one byte (a surrogate half of an emoji included) came from no header.
+  if (/[Ā-￿]/.test(value)) return null;
+  try {
+    return UTF8.decode(Buffer.from(value, 'latin1'));
+  } catch {
+    return null;
+  }
+}
+
 // The contract's one role per member; nothing else is read as a role.
 const ROLES: readonly string[] = ['member', 'organiser', 'admin'];
 
@@ -147,7 +167,8 @@ export function identityFrom(
 ): WebsiteIdentity | null {
   const n = lowerNames(names);
   const subject = one(headers[n.id]);
-  const websiteName = one(headers[n.name]);
+  const sentName = one(headers[n.name]);
+  const websiteName = sentName === undefined ? null : decodedName(sentName);
   const roles = rolesOf(headers[n.roles]);
   if (subject === undefined || !isSubject(subject) || !websiteName || roles === null) return null;
   const checked = stepsFrom(one(headers[n.steps]), steps);

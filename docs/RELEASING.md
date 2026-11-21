@@ -23,7 +23,7 @@ Before 1.0.0, minor versions may break. Each break is still named in the CHANGEL
    - update `docs/BACKLOG.md` and `docs/OPEN.md`.
 2. Before a minor or major version, a security pass ([security-pass.md](security-pass.md)).
 3. Open the PR. Every required check must be green: `verify`, `osv-scanner`, `gitleaks`, `docs`,
-   `analyze` (CodeQL).
+   `analyze` (CodeQL), `showcase` (DECISIONS K19).
 4. With the owner's approval, merge with a merge commit (`gh pr merge --merge --delete-branch`),
    so the tag sits on a commit of `master`. Then delete the local branch too; only `master` stays
    on origin.

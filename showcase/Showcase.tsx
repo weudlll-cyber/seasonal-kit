@@ -7,6 +7,7 @@
  *                 from the kit's source, never shipped (`"files"` leaves showcase/ out). Its
  *                 sections:
  *                 - the shell: back link, theme toggle;
+ *                 - the app header: signed out, website mode, dev tools (./Headers);
  *                 - the game bar: with the phase strip;
  *                 - the docked screen: the start card or the result (`?screen=result`), the
  *                   website's chat frame (a stub page here) and the call slot with a call id;
@@ -26,6 +27,7 @@ import {
   usePanels,
   WebsiteChatFrame,
 } from '../src/react/index.js';
+import { Headers } from './Headers.js';
 
 const PARTS = [
   { id: 'join', name: 'Join', from: 0, to: 30_000 },
@@ -93,7 +95,7 @@ function Docked(p: { readonly result: boolean }): ReactElement {
       <div className="showcase-box">
         <DockedScreen
           // The stub's folder with its slash, so Vite's preview serves its index.html.
-          chat={<WebsiteChatFrame room="mini-games" sandboxed path="/embed/chat/" />}
+          chat={<WebsiteChatFrame room="mini-games" path="/embed/chat/" />}
           bar="line"
           callId={7}
         >
@@ -131,6 +133,7 @@ export function Showcase(p: { readonly result: boolean }): ReactElement {
         <ThemeToggle />
       </header>
       <main>
+        <Headers />
         <Bar />
         <Docked result={p.result} />
         <section aria-labelledby="result-title" className="showcase-section">

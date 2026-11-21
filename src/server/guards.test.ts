@@ -24,14 +24,24 @@ import * as crypto from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 
 import { RateLimiter } from './rateLimit.js';
-import { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash } from './recoveryCodes.js';
+import {
+  looksLikeRecoveryCode,
+  newRecoveryCodes,
+  recoveryHash,
+  recoveryLookups,
+  recoveryMatches,
+} from './recoveryCodes.js';
 import { safeNext, websiteLoginLocation } from './returnPath.js';
 import { SessionEnds } from './sessionEnds.js';
 
 // The real functions, with randomBytes watchable so a test can force a repeated code.
 vi.mock('node:crypto', async (importOriginal) => {
   const real = await importOriginal<typeof crypto>();
-  return { ...real, randomBytes: vi.fn(real.randomBytes) };
+  return {
+    ...real,
+    randomBytes: vi.fn(real.randomBytes),
+    timingSafeEqual: vi.fn(real.timingSafeEqual),
+  };
 });
 
 const BASE = '/games/bingo/';
@@ -186,19 +196,69 @@ describe('recovery codes', () => {
 
   it('hashes so only the right code matches, as each game stores them', () => {
     const [code = ''] = newRecoveryCodes('hex');
-    const stored = recoveryHash(code, 'hex');
-    expect(recoveryHash(` ${code.slice(0, 5).toUpperCase()}-${code.slice(5)} `, 'hex')).toEqual(
-      stored,
-    );
+    const stored = recoveryHash(code, 'hex', KEY);
     expect(
-      recoveryHash(
-        code.replace(/.$/, (c) => (c === '0' ? '1' : '0')),
-        'hex',
-      ),
-    ).not.toEqual(stored);
+      recoveryHash(` ${code.slice(0, 5).toUpperCase()}-${code.slice(5)} `, 'hex', KEY),
+    ).toEqual(stored);
+    const other = code.replace(/.$/, (c) => (c === '0' ? '1' : '0'));
+    expect(recoveryHash(other, 'hex', KEY)).not.toEqual(stored);
     // Mini Games' hashes were stored as typed, dash and case included.
-    expect(recoveryHash('abcd-efgh', 'grouped')).not.toEqual(recoveryHash('abcdefgh', 'grouped'));
-    expect(recoveryHash('abcd-efgh', 'grouped')).toHaveLength(32);
+    expect(recoveryHash('abcd-efgh', 'grouped', KEY)).not.toEqual(
+      recoveryHash('abcdefgh', 'grouped', KEY),
+    );
+    expect(recoveryHash('abcd-efgh', 'grouped', KEY)).toHaveLength(32);
+  });
+});
+
+// The game's server key (DECISIONS K20): a test value, never a real one.
+const KEY = Buffer.alloc(32, 7);
+const OTHER_KEY = Buffer.alloc(32, 8);
+// What v0.8.0 and the games stored: plain SHA-256 of the code's form.
+const legacy = (form: string): Buffer => crypto.createHash('sha256').update(form).digest();
+
+describe('recovery codes under a server key (D4)', () => {
+  it('stores a new code as HMAC-SHA-256 under the key, not as plain SHA-256', () => {
+    const stored = recoveryHash('abcd-efgh', 'grouped', KEY);
+    expect(stored).toEqual(crypto.createHmac('sha256', KEY).update('abcd-efgh').digest());
+    expect(stored).not.toEqual(legacy('abcd-efgh'));
+    expect(recoveryMatches('abcd-efgh', 'grouped', stored, KEY)).toBe(true);
+  });
+
+  it('still verifies a legacy SHA-256 hash, in both styles', () => {
+    expect(recoveryMatches('abcd-efgh', 'grouped', legacy('abcd-efgh'), KEY)).toBe(true);
+    expect(recoveryMatches('AB12 cd-34ef', 'hex', legacy('ab12cd34ef'), KEY)).toBe(true);
+    expect(recoveryLookups('abcd-efgh', 'grouped', KEY)).toEqual([
+      recoveryHash('abcd-efgh', 'grouped', KEY),
+      legacy('abcd-efgh'),
+    ]);
+  });
+
+  it('refuses a keyed hash under another key, a wrong code, and a hash of the wrong length', () => {
+    const stored = recoveryHash('abcd-efgh', 'grouped', KEY);
+    expect(recoveryMatches('abcd-efgh', 'grouped', stored, OTHER_KEY)).toBe(false);
+    expect(recoveryMatches('abcd-efgk', 'grouped', stored, KEY)).toBe(false);
+    expect(recoveryMatches('abcd-efgh', 'grouped', stored.subarray(0, 31), KEY)).toBe(false);
+    expect(recoveryMatches('abcd-efgh', 'grouped', Buffer.alloc(0), KEY)).toBe(false);
+  });
+
+  it('compares both hashes in constant time, whichever matches', () => {
+    const spy = vi.mocked(crypto.timingSafeEqual);
+    for (const stored of [
+      recoveryHash('abcd-efgh', 'grouped', KEY),
+      legacy('abcd-efgh'),
+      Buffer.alloc(32),
+    ]) {
+      spy.mockClear();
+      recoveryMatches('abcd-efgh', 'grouped', stored, KEY);
+      expect(spy).toHaveBeenCalledTimes(2);
+    }
+  });
+
+  it('refuses a key under 32 bytes', () => {
+    expect(() => recoveryHash('abcd-efgh', 'grouped', Buffer.alloc(31))).toThrow(RangeError);
+    expect(() => recoveryMatches('abcd-efgh', 'grouped', legacy('x'), Buffer.alloc(16))).toThrow(
+      RangeError,
+    );
   });
 
   it('tells a recovery code from a TOTP code', () => {

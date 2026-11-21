@@ -37,6 +37,37 @@ const step = (
   icon,
 });
 const member = { 'x-acting-user-id': '42', 'x-acting-user': 'Walter W.' };
+// A name as Node's req.headers gives it when the proxy sent UTF-8 bytes: one latin1 character
+// per byte (D6).
+const wire = (name: string): string => Buffer.from(name, 'utf8').toString('latin1');
+
+describe('non-ASCII names (D6)', () => {
+  it('decodes a UTF-8 name: umlauts and an emoji', () => {
+    expect(
+      identityFrom({ ...member, 'x-acting-user': wire('Jürgen Größe') }, 'each'),
+    ).toMatchObject({
+      websiteName: 'Jürgen Größe',
+      displayName: 'Jürgen_Größe',
+    });
+    const emoji = identityFrom({ ...member, 'x-acting-user': wire('Ana 🎉') }, 'each');
+    expect(emoji?.websiteName).toBe('Ana 🎉');
+    // The emoji is no letter: the game's name keeps the letters only.
+    expect(emoji?.displayName).toBe('Ana_');
+  });
+
+  it('leaves an ASCII name exactly as it is, as the website sends every name today', () => {
+    expect(identityFrom(member, 'each')?.websiteName).toBe('Walter W.');
+  });
+
+  it('rejects malformed bytes and characters no header can carry', () => {
+    // A lone latin1 "ü" (0xFC) is no UTF-8; a truncated sequence neither.
+    expect(identityFrom({ ...member, 'x-acting-user': 'Jürgen' }, 'each')).toBeNull();
+    expect(
+      identityFrom({ ...member, 'x-acting-user': wire('Jü').slice(0, -1) }, 'each'),
+    ).toBeNull();
+    expect(identityFrom({ ...member, 'x-acting-user': 'Ana 🎉' }, 'each')).toBeNull();
+  });
+});
 
 describe('trusted peers', () => {
   it('trusts the listed addresses and ranges only', () => {
@@ -181,13 +212,13 @@ describe('the identity headers', () => {
       /^player-[0-9a-f]{6}$/,
     );
     // "𝒜" is a letter of two UTF-16 units: the cut at 24 would split it, so it goes.
-    const long = identityFrom({ ...member, 'x-acting-user': `${'a'.repeat(23)}𝒜b` }, 'each');
+    const long = identityFrom({ ...member, 'x-acting-user': wire(`${'a'.repeat(23)}𝒜b`) }, 'each');
     expect(long?.displayName).toBe('a'.repeat(23));
     expect(
       identityFrom({ ...member, 'x-acting-user': 'x'.repeat(200) }, 'each')?.websiteName,
     ).toHaveLength(128);
     // Second review, finding 7: the cut at 128 leaves no lone surrogate.
-    const kept = identityFrom({ ...member, 'x-acting-user': `${'x'.repeat(127)}𝒜` }, 'each');
+    const kept = identityFrom({ ...member, 'x-acting-user': wire(`${'x'.repeat(127)}𝒜`) }, 'each');
     expect(kept?.websiteName).toBe('x'.repeat(127));
   });
 });

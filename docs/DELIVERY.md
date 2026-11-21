@@ -121,6 +121,25 @@ resolved it to the merge commit's tarball (`929c997`, `version: 0.5.0`). The pag
 
 The consumer was deleted afterwards.
 
+## The v0.6.0 game bar (2026-11-21, the tag itself)
+
+A new scratch consumer pinned `#v0.6.0`, with scripts off and the same toolchain. The lockfile
+resolved it to the merge commit's tarball (`bd5df31`, `version: 0.6.0`). The page used
+`GameBar` with `usePanels`, `useFullscreen` and `useFocusMode`, `PhaseStrip`, and `clockText`
+from the package root, with `bar.css`, `shell.css` and `fit.css`.
+
+- `vite build` worked.
+- `tsc` worked.
+- The Vitest test passed. It checked the focus mark on `<html>`, "9:50 left", "Chat2 unread",
+  no full-screen toggle in jsdom, "Join · now until 0:30", and the chat panel opening.
+
+The consumer was deleted afterwards.
+
+## The showcase is no delivery
+
+`showcase/`, `playwright.config.ts` and the Playwright dev dependencies (v0.7.0) stay in the
+repository. `"files"` leaves them out, so a game receives none of them.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

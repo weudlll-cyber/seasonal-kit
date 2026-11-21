@@ -7,6 +7,37 @@ applies it.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-21
+
+The showcase and its accessibility check, and two fixes it found.
+
+### Added
+
+- The showcase (`showcase/`, never shipped): every component of `@seasonal/kit/react` with sample
+  content, in light and dark (docs/SHOWCASE.md). `pnpm showcase` serves it; `pnpm showcase:test`
+  screenshots it at 1280 × 720, 1536 × 768, 1920 × 1080, 375 × 667 and 390 × 844, in both themes,
+  with the start card and the result in the dock (20 screens), and runs axe on each: no serious
+  or critical violation. The screens land in `showcase/screens/`, git-ignored and emptied before
+  every run (DECISIONS K16).
+- CI job `showcase`: the same run on every PR and on master (Chromium).
+- Dev dependencies, pinned as Mini Games pins them: `@playwright/test` 1.64.1 and
+  `@axe-core/playwright` 4.13.0.
+
+### Fixed
+
+- `DockedScreen` on a phone no longer sets its own height to the visual viewport's. It
+  publishes `--sk-visible-height` on `<html>` instead, which the game's root takes, so the dock
+  can sit under other parts of a page without spilling over them.
+- A list game's result first part keeps its rows together at the top when the docked screen
+  gives it more height (`frames.css`).
+
+### Migration, per game
+
+- **Mini Games:** where it adopts `DockedScreen`, its root's height on a phone comes from
+  `height: var(--sk-visible-height, 100dvh)` on `#root`; it was set inline by `DockedMatch`
+  before. Nothing else changes.
+- **Bingo Royale:** nothing to do.
+
 ## [0.6.0] - 2026-11-21
 
 The round's focus mode: the slim game bar in place of the app header, its panels, full screen
@@ -291,7 +322,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.4.0...v0.4.1

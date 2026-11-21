@@ -13,6 +13,7 @@ pnpm install                 # runs no install script (pnpm-workspace.yaml ignor
 pnpm exec lefthook install   # the git hooks, by hand for that reason
 pnpm verify                  # format check, lint, typecheck, tests with coverage gates
 pnpm build                   # compiles src/ into dist/, which is committed
+pnpm showcase:test           # every component in 5 viewports × 2 themes, with axe (docs/SHOWCASE.md)
 ```
 
 ## Branching

@@ -192,6 +192,18 @@ TypeScript 5.9.3 (NodeNext, `skipLibCheck: false`), Vitest 5.0.5 with jsdom 30.1
 
 The consumer was deleted afterwards.
 
+## The v0.9.1 patch (2026-11-22, the tag itself)
+
+A scratch consumer pinned `#v0.9.1`, with scripts off: TypeScript 5.9.3 (NodeNext,
+`skipLibCheck: false`) and Vitest 5.0.5 with jsdom 30.1.3. The lockfile resolved it to the merge
+commit's tarball (`4d57a7e`, `version: 0.9.1`).
+
+- `tsc` worked with the new `FitGame` type.
+- One jsdom test passed: a sign-in route with a tab throws, and a Node `Buffer` key works in
+  `recoveryHash` inside jsdom (the realm fix).
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

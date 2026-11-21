@@ -6,8 +6,12 @@
  * Responsibility: `devSignInAccount` reads a POST body `{ as }` and answers the game's account
  *                 for it: one of the game's named accounts (Bingo: host and three players; Mini
  *                 Games: those and admin), or a numbered load-check player (`load-001` …, the
- *                 game's own pattern, named `dev-<as>`). Anything else is null, and the route
- *                 answers 400. The route itself stays the game's: it is registered only with the
+ *                 game's own pattern, named `dev-<as>`; the pattern must match the whole name, and
+ *                 a name has at most 64 characters). Anything else is null, and the route
+ *                 answers 400. A load pattern with the g or y flag is refused (it would match
+ *                 every other time); its error message is a dev marker (../devtools/bundle.ts
+ *                 `KIT_DEV_MARKERS`), so the code is found if it ever reaches a production
+ *                 bundle. The route itself stays the game's: it is registered only with the
  *                 game's dev switch, and its module is replaced by a stub in the production
  *                 bundle (./bundle, `devStubPlugin`), which the bundle test proves
  *                 (`devMarkersIn`). Framework-agnostic: no Fastify, no zod.
@@ -16,17 +20,30 @@
  *                 admin account, 3–4 digit load names).
  * Spec:           kit docs/ADOPTION.md "Dev tools"
  */
-export function devSignInAccount(body, rules) {
+// The longest `as` a dev button sends; anything longer names no account.
+const MAX_AS = 64;
+// This message is also the server bundle's dev marker (KIT_DEV_MARKERS): keep the two equal.
+export const DEV_SIGN_IN_MARKER = 'devSignInAccount: the load pattern has the g or y flag';
+// The body's `as`, when the body is an object with a string `as` of at most MAX_AS characters.
+function requestedName(body) {
     if (typeof body !== 'object' || body === null || Array.isArray(body))
         return null;
     const as = body['as'];
-    if (typeof as !== 'string')
+    return typeof as === 'string' && as.length <= MAX_AS ? as : null;
+}
+export function devSignInAccount(body, rules) {
+    if (rules.load !== undefined && (rules.load.global || rules.load.sticky)) {
+        throw new TypeError(DEV_SIGN_IN_MARKER);
+    }
+    const as = requestedName(body);
+    if (as === null)
         return null;
     // Own keys only: "toString" or "__proto__" never name an account.
     const named = Object.hasOwn(rules.accounts, as) ? rules.accounts[as] : undefined;
     if (named !== undefined)
         return named;
-    if (rules.load?.test(as) === true)
+    // The whole name must match: an unanchored pattern lets no other text through.
+    if (rules.load?.exec(as)?.[0] === as)
         return { displayName: `dev-${as}`, roles: [] };
     return null;
 }

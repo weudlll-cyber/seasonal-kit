@@ -10,14 +10,18 @@
  *                 - `hex` (Bingo): 10 hex characters, hashed after spaces and dashes are taken
  *                   out and the letters lowered, so "AB12 cd-34ef" matches "ab12cd34ef".
  *                 `recoveryHash` is HMAC-SHA-256 of the code in its style's form, keyed with the
- *                 game's server key (DECISIONS K20). The key is the game's secret: passed in,
- *                 never in a repository, at least 32 bytes, and its own key, never the one that
- *                 encrypts TOTP secrets, so losing that one leaves the recovery codes working
- *                 (the website's AUTH.md rule). A leaked database alone then gives
- *                 nothing to brute-force: the codes carry about 40 bits, but the key does not
- *                 leak with them. Codes stored before as plain SHA-256 still verify:
- *                 `recoveryLookups` gives both hashes for the game's single lookup, and
- *                 `recoveryMatches` checks a stored hash in constant time against both. The game
+ *                 game's server key (DECISIONS K20, which departs from the website's AUTH.md:
+ *                 there the codes stay plain SHA-256 and work whatever the TOTP key). The key is
+ *                 the game's secret: passed in, never in a repository, a byte array of at least
+ *                 32 bytes that are not all the same. It is its own key, never the one that
+ *                 encrypts TOTP secrets, so losing that one leaves the codes the way back in;
+ *                 losing the recovery key voids the codes stored with it. A leaked database
+ *                 alone gives nothing to brute-force for the keyed codes (about 40 bits each).
+ *                 Codes stored before as plain SHA-256 still verify (D4): `recoveryLookups`
+ *                 gives both hashes for the game's single lookup, and `recoveryMatches` checks a
+ *                 stored hash in constant time against both. Until every legacy code is used or
+ *                 replaced, those rows can be brute-forced from a leak, and whoever can write
+ *                 the table can plant one (independent review of v0.9.0, finding 2). The game
  *                 marks a code used in the same statement that finds it, and never stores or
  *                 logs a code itself. `looksLikeRecoveryCode` tells a recovery code from a
  *                 6-digit TOTP code.
@@ -47,9 +51,16 @@ export function newRecoveryCodes(style) {
 }
 // The form a code is hashed in: as typed (grouped), or cleaned (hex).
 const formOf = (code, style) => style === 'grouped' ? code : code.replace(/[\s-]/g, '').toLowerCase();
+// The game's key, checked: bytes (a JavaScript caller's string would carry less than it
+// seems), at least 32 of them, not all the same (a zero-filled buffer is no secret).
 function checkedKey(key) {
+    if (!(key instanceof Uint8Array))
+        throw new TypeError('A recovery key is a byte array');
     if (key.length < MIN_KEY_BYTES)
         throw new RangeError('A recovery key needs 32 bytes or more');
+    if (key.every((byte) => byte === key[0])) {
+        throw new RangeError('A recovery key cannot be one byte repeated');
+    }
     return key;
 }
 // What a new code is stored as: HMAC-SHA-256 under the game's server key.
@@ -65,9 +76,10 @@ export function recoveryLookups(code, style, key) {
 }
 // Whether `stored` is this code's keyed or legacy hash; both compared, in constant time.
 export function recoveryMatches(code, style, stored, key) {
+    // The key is checked first, so a bad key fails loudly whatever is stored.
+    const [keyed, legacy] = recoveryLookups(code, style, key);
     if (stored.length !== 32)
         return false;
-    const [keyed, legacy] = recoveryLookups(code, style, key);
     const keyedOk = timingSafeEqual(keyed, stored);
     const legacyOk = timingSafeEqual(legacy, stored);
     return keyedOk || legacyOk;

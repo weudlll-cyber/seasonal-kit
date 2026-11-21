@@ -150,6 +150,27 @@ describe('the dev sign-in menu', () => {
     expect(screen.queryByRole('menu')).toBeNull();
   });
 
+  it('shows a failed sign-in as an alert until the next try, never an unhandled rejection', async () => {
+    const onSignIn = vi
+      .fn<(as: string) => Promise<void>>()
+      .mockRejectedValueOnce(new Error('400'))
+      .mockResolvedValueOnce(undefined);
+    render(
+      <DevSignIn identities={[{ as: 'host', label: 'Sign in as host' }]} onSignIn={onSignIn} />,
+    );
+    const pick = async (): Promise<void> => {
+      fireEvent.click(screen.getByTestId('dev-menu'));
+      await act(async () => {
+        fireEvent.click(screen.getByTestId('dev-sign-in-host'));
+        await Promise.resolve();
+      });
+    };
+    await pick();
+    expect(screen.getByRole('alert').textContent).toBe('Dev sign-in as host failed.');
+    await pick();
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
   it('takes the game’s button class', () => {
     render(<DevSignIn identities={[]} onSignIn={vi.fn()} buttonClassName="sbr-btn" />);
     expect(screen.getByTestId('dev-menu').className).toBe('sk-bar-button sbr-btn');

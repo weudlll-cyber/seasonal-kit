@@ -205,5 +205,10 @@ as a required check (K19).
 
 - **Seasonal Party**, the frame's colours turning into the website's at its first step (asked by
   K4, but visible).
-- **Every game**, the recovery key: each game's operator creates one (32 bytes or more) and keeps
-  it with the server's other secrets before the step that adopts v0.9.0's recovery codes.
+- **Every game**, the recovery key: each game's operator creates one (32 random bytes or more)
+  and keeps it with the server's other secrets before the step that adopts v0.9.0's recovery
+  codes.
+- **Every game**, whether legacy SHA-256 recovery codes get an end date (independent review of
+  v0.9.0, finding 2). Until a member's legacy codes are used or replaced, they are as weak as
+  before against a leaked or writable table. A game could ask members with 2FA to make new
+  codes, then stop accepting the legacy hash.

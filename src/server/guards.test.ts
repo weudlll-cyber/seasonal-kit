@@ -211,8 +211,8 @@ describe('recovery codes', () => {
 });
 
 // The game's server key (DECISIONS K20): a test value, never a real one.
-const KEY = Buffer.alloc(32, 7);
-const OTHER_KEY = Buffer.alloc(32, 8);
+const KEY = Buffer.from(Array.from({ length: 32 }, (_, i) => i));
+const OTHER_KEY = Buffer.from(Array.from({ length: 32 }, (_, i) => i + 1));
 // What v0.8.0 and the games stored: plain SHA-256 of the code's form.
 const legacy = (form: string): Buffer => crypto.createHash('sha256').update(form).digest();
 
@@ -253,12 +253,28 @@ describe('recovery codes under a server key (D4)', () => {
       expect(spy).toHaveBeenCalledTimes(2);
     }
   });
+});
 
-  it('refuses a key under 32 bytes', () => {
-    expect(() => recoveryHash('abcd-efgh', 'grouped', Buffer.alloc(31))).toThrow(RangeError);
-    expect(() => recoveryMatches('abcd-efgh', 'grouped', legacy('x'), Buffer.alloc(16))).toThrow(
+describe('the recovery key (D4, independent review of v0.9.0)', () => {
+  it('refuses a key under 32 bytes, one byte repeated, or not bytes at all', () => {
+    expect(() => recoveryHash('abcd-efgh', 'grouped', KEY.subarray(0, 31))).toThrow(RangeError);
+    expect(() => recoveryLookups('abcd-efgh', 'grouped', KEY.subarray(0, 16))).toThrow(RangeError);
+    expect(() => recoveryHash('abcd-efgh', 'grouped', Buffer.alloc(32))).toThrow(RangeError);
+    expect(() => recoveryHash('abcd-efgh', 'grouped', Buffer.alloc(64, 7))).toThrow(RangeError);
+    // A JavaScript caller's text key of the right length.
+    const text = 'k'.repeat(16) + 'e'.repeat(16);
+    expect(() => recoveryHash('abcd-efgh', 'grouped', text as unknown as Uint8Array)).toThrow(
+      TypeError,
+    );
+  });
+
+  it('refuses a bad key before it looks at the stored hash (review finding 4)', () => {
+    expect(() => recoveryMatches('abcd-efgh', 'grouped', legacy('x'), KEY.subarray(0, 16))).toThrow(
       RangeError,
     );
+    expect(() =>
+      recoveryMatches('abcd-efgh', 'grouped', Buffer.alloc(0), KEY.subarray(0, 16)),
+    ).toThrow(RangeError);
   });
 
   it('tells a recovery code from a TOTP code', () => {

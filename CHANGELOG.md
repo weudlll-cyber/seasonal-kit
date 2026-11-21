@@ -48,6 +48,25 @@ The shared app header and the development tools, and the owner's decisions D1–
 - `showcase` is a required check of master (K19). CONTRIBUTING lists the six.
 - `docs/DELIVERY.md` records the v0.8.0 proof.
 
+### Security
+
+An independent review of the dev tools and the recovery codes ran before the release. It found
+no high-severity defect, 5 medium and 7 low findings. Fixed (docs/security-pass.md):
+
+- **The recovery key** must be a byte array of 32 bytes or more that are not one byte repeated;
+  `recoveryMatches` checks it before it looks at the stored hash.
+- **`devSignInAccount`:** a load name must match the game's pattern as a whole and have at most
+  64 characters. A pattern with the g or y flag throws. That error's message is a server
+  marker in `KIT_DEV_MARKERS`, so a leaked dev sign-in is found in a server bundle too.
+- **`devStubPlugin`** also sees absolute imports and refuses a g or y pattern. An import through
+  a package name, a `paths` alias or `#imports` is still not seen (the bundle scan is the
+  backstop).
+- **`DevSignIn`** shows a failed sign-in as an alert instead of leaving an unhandled rejection.
+
+Not changed, and recorded: legacy SHA-256 codes keep verifying (D4) until each is used or
+replaced, so those rows stay as weak as before against a leaked or writable table. The
+departure from the website's AUTH.md (plain SHA-256 there) is the owner's D4.
+
 ### Migration, per game
 
 - **Both games:**

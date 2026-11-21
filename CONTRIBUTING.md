@@ -21,7 +21,7 @@ pnpm showcase:test           # every component in 5 viewports × 2 themes, with 
 - `master` is protected (DECISIONS K13): no direct push, no force push, no deletion, for admins
   too. Every change is a branch (`feat/<topic>`, `fix/<topic>`, `docs/<topic>`, `chore/<topic>`)
   and a pull request; it is merged once every required check (`verify`, `osv-scanner`,
-  `gitleaks`, `docs`, `analyze`) is green on a branch up to date with `master`, every
+  `gitleaks`, `docs`, `analyze`, `showcase`; K19) is green on a branch up to date with `master`, every
   conversation is resolved and the owner has approved it, then deleted.
 - Push after every commit, so the work is never only on one machine.
 - Never force-push and never rewrite published history.

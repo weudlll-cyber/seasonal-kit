@@ -1,0 +1,57 @@
+/**
+ * @file   src/react/AppHeader.tsx
+ * @brief  The shared app header of every game (DECISIONS K21): back link, brand, navigation,
+ *         theme toggle, account, and the development tools where the game passes them.
+ *
+ * Responsibility: one bar, in this order:
+ *                 1. in website mode "← Seasonal Entertainment" (./BackLink);
+ *                 2. the brand: the game's emblem, its name and the "Seasonal Entertainment"
+ *                    wordmark, a link to the game's start;
+ *                 3. the theme toggle (./theme);
+ *                 4. the navigation: the game's links, the current one `aria-current="page"`,
+ *                    then anything the game adds (its chat button, a Quick Test link);
+ *                 5. the account: signed in, the chip "name (role)" to the account page and
+ *                    "Sign out"; signed out, "Sign in" and "Register", or in website mode one
+ *                    "Sign in" to the website;
+ *                 6. the development tools, rendered only when the game passes them (its lazily
+ *                    loaded ./dev DevSignIn, behind its dev flag).
+ *                 Below 960 px the navigation and the account fold into one menu button
+ *                 (./MenuFold). Its sizes keep the game's floors (../../css/header.css, K14). The
+ *                 words of the links, the role and the routes are the game's; the header holds
+ *                 only their places.
+ * Source:         seasonal-bingo-royale apps/web/src/shell/AppShell.tsx (the bar, `Nav`,
+ *                 `Account`) and shell.css at a43209a: Bingo's test server's header, which the
+ *                 owner made every game's (D5, 2026-11-21). Built on ./BackLink, ./theme
+ *                 (ThemeToggle) and ./MenuFold.
+ */
+import type { ReactElement, ReactNode } from 'react';
+export interface HeaderLink {
+    readonly href: string;
+    readonly label: string;
+    readonly active: boolean;
+}
+export interface HeaderAccount {
+    readonly name: string;
+    readonly role: string;
+    readonly href: string;
+    readonly onSignOut: () => void;
+}
+export interface AppHeaderProps {
+    readonly websiteMode: boolean;
+    readonly brand: {
+        readonly href: string;
+        readonly emblem: ReactNode;
+        readonly name: string;
+    };
+    readonly links: readonly HeaderLink[];
+    readonly navExtra?: ReactNode;
+    readonly account: HeaderAccount | null;
+    readonly signIn: {
+        readonly signInHref: string;
+        readonly registerHref?: string;
+    };
+    readonly devTools?: ReactNode;
+    readonly closeKey: string;
+    readonly buttonClassName?: string;
+}
+export declare function AppHeader(p: AppHeaderProps): ReactElement;

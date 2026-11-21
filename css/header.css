@@ -1,0 +1,270 @@
+/**
+ * @file   css/header.css
+ * @brief  The shared app header (src/react/AppHeader.tsx): one bar, folding into a menu below
+ *         960 px.
+ *
+ * Responsibility: a bar on the website's sidebar background over the page:
+ *                 - the back link first (./shell.css), the brand (emblem, name, the wordmark in
+ *                   small capitals), the theme toggle (./shell.css), the navigation as pills
+ *                   with the current one solid, and the account (chip and buttons);
+ *                 - sticky from 640 px, with the focus kept below it;
+ *                 - below 960 px one row (brand, toggle, Menu), the navigation and the account
+ *                   in an opaque panel under it (src/react/MenuFold.tsx);
+ *                 - on a phone (≤ 640 px) the back link its own short first row, the wordmark
+ *                   hidden, the account chip whole.
+ *                 Text never below the game's floor (`--sk-floor-text`, ./fit.css); targets
+ *                 44 px. Colours only from ./tokens.css, so light and dark both work. The buttons
+ *                 are ./bar.css's `sk-bar-button` and the back link and toggle ./shell.css's: a
+ *                 game imports both with this file.
+ * Source:         seasonal-bingo-royale apps/web/src/shell/shell.css (the bar, brand, nav,
+ *                 account, chip prefix) and menu.css at a43209a
+ */
+
+.sk-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  padding: 0.6rem var(--gutter);
+  background: var(--sidebar-background);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Sticky from 640 px: on a phone the bar would take a large part of the screen. Keyboard focus
+   and in-page jumps stop below it (WCAG 2.4.11). */
+@media (min-width: 640px) {
+  html:has(.sk-header) {
+    scroll-padding-top: 5.5rem;
+  }
+
+  .sk-header {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.sk-header > .sk-back-link {
+  order: 0;
+}
+
+.sk-header-brand {
+  order: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-right: auto;
+  color: inherit;
+  text-decoration: none;
+  font-weight: var(--font-weight-heading);
+  letter-spacing: 0.02em;
+}
+
+.sk-header-emblem {
+  display: inline-flex;
+  flex: none;
+}
+
+.sk-header-emblem img {
+  width: 42px;
+  height: auto;
+}
+
+.sk-header-brand small {
+  display: block;
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-body);
+  font-size: max(var(--sk-floor-text), var(--font-size-small));
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sk-header > .sk-theme-toggle {
+  order: 3;
+}
+
+.sk-header-nav {
+  order: 2;
+  display: flex;
+  gap: 0.25rem;
+  overflow-x: auto;
+}
+
+.sk-header-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit-target);
+  padding: 0 0.95rem;
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: var(--font-weight-strong);
+  white-space: nowrap;
+}
+
+.sk-header-nav a:hover {
+  background: var(--color-active-bg);
+}
+
+/* The current page is the solid pill, as on the website. */
+.sk-header-nav a[aria-current='page'] {
+  background: var(--color-solid);
+  color: var(--color-on-solid);
+}
+
+.sk-header-account {
+  order: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* "Sign in" and "Register" are links that look like the bar's buttons; no button label wraps. */
+.sk-header-account a.sk-bar-button {
+  text-decoration: none;
+}
+
+/* The header's buttons carry words: on a phone ./bar.css makes `sk-bar-button` an icon-only
+   square, so here they keep their width and padding, at least the 44 px target. */
+.sk-header .sk-bar-button {
+  width: auto;
+  min-height: var(--hit-target);
+  padding-inline: 0.65rem;
+  white-space: nowrap;
+}
+
+/* The account chip leads to the account page: a chip that reacts like a button. */
+.sk-header-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit-target);
+  padding: 0 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-glass);
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sk-header-chip:hover {
+  background: var(--color-active-bg);
+}
+
+/* "Signed in as" is read out, not shown, up to wide screens (a host's bar stays one row). */
+@media (max-width: 1440px) {
+  .sk-header-chip-prefix {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* The development sign-in menu, when the game passes it. */
+.sk-dev-menu {
+  position: relative;
+}
+
+.sk-dev-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: var(--space-1);
+  box-sizing: border-box;
+  width: min(18rem, calc(100vw - 2 * var(--gutter)));
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.sk-dev-menu-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: max(var(--sk-floor-text), var(--font-size-small));
+}
+
+/* The fold: on a wide screen no button and no box of its own. */
+.sk-menu-button {
+  display: none;
+}
+
+.sk-menu {
+  display: contents;
+}
+
+/* Below 960 px one row: brand, toggle, Menu; the menu an opaque panel under the bar. */
+@media (max-width: 959px) {
+  .sk-header-brand {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .sk-header > .sk-theme-toggle {
+    order: 1;
+  }
+
+  .sk-menu-button {
+    display: inline-flex;
+    order: 2;
+  }
+
+  .sk-menu {
+    display: none;
+  }
+
+  .sk-menu[data-open='true'] {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    z-index: 30;
+    display: grid;
+    gap: var(--space-2);
+    max-height: calc(100dvh - 4rem);
+    overflow-y: auto;
+    padding: var(--space-2) var(--gutter);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .sk-menu .sk-header-nav {
+    display: grid;
+    overflow-x: visible;
+  }
+
+  .sk-menu .sk-header-account {
+    width: 100%;
+  }
+
+  /* Inside the scrolling panel the dev menu opens in the flow, not over it (it would be cut). */
+  .sk-menu .sk-dev-menu-panel {
+    position: static;
+    width: 100%;
+    margin-top: var(--space-1);
+  }
+
+  .sk-menu .sk-dev-menu {
+    flex-basis: 100%;
+  }
+}
+
+/* A phone: the wordmark gone, the chip whole (the back link's own row is ./shell.css's). */
+@media (max-width: 640px) {
+  .sk-header-brand small {
+    display: none;
+  }
+
+  .sk-header-chip {
+    white-space: nowrap;
+  }
+}

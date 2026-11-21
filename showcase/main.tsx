@@ -16,6 +16,7 @@ import '../css/dock.css';
 import '../css/frames.css';
 import '../css/bar.css';
 import '../css/call.css';
+import '../css/header.css';
 import './showcase.css';
 
 import { createRoot } from 'react-dom/client';

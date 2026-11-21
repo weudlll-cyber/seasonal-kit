@@ -7,15 +7,84 @@ applies it.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-21
+
+The shared app header and the development tools, and the owner's decisions D1–D6 of
+2026-11-21 (DECISIONS K17–K22).
+
 ### Added
 
+- `AppHeader` (`@seasonal/kit/react`) and `@seasonal/kit/header.css`: Bingo's bar as the shared
+  header (K21). It shows the back link first in website mode; the brand with the emblem, the
+  game's name and the "Seasonal Entertainment" wordmark; the game's links with the current one
+  solid; the theme toggle; and the account: the chip "name (role)" leading to the account page,
+  plus Sign out. Signed out it shows "Sign in" and "Register", or one "Sign in" in website
+  mode. Below 960 px the links and the account fold into one "Menu": the focus moves in,
+  Escape closes it and gives the focus back, and so do a press outside and a new `closeKey`. A
+  `navExtra` slot and a `devTools` slot. `header.css` needs `bar.css`.
+- `DevSignIn` (`@seasonal/kit/react/dev`): the development sign-in menu with the game's
+  identities, for a game to load lazily and only in development.
+- `@seasonal/kit/devtools`, the server side of the dev tools as a shared recipe:
+  `devSignInAccount` (the request checked against the game's dev accounts and its load-player
+  pattern; own keys only), `devStubPlugin` (an esbuild plugin that swaps the dev module for a
+  stub in the production bundle) and `devMarkersIn` with `KIT_DEV_MARKERS` (the bundle test's
+  scan).
+- `recoveryLookups` and `recoveryMatches` (`@seasonal/kit/server`).
+- The showcase shows the three headers. On every phone viewport and theme it opens the menu and
+  the dev menu, with axe.
 - `docs/ADOPTION.md`: per game, which of its files each kit export replaces (paths and lines),
   what stays, the order of steps, the risks and the tests to run, and what needs the owner's
-  word.
+  word. Now also the header and dev tools for every game, Bingo's docked layout with the sweep
+  condition (K18), and Seasonal Party's header once it has accounts.
 
 ### Changed
 
+- **Breaking:** `WebsiteChatFrame` is always sandboxed (K17); the `sandboxed` prop is gone.
+- **Breaking:** `recoveryHash(code, style, key)` is HMAC-SHA-256 with the game's key, at least
+  32 bytes (K20). A shorter key throws.
+- `identityFrom` decodes the name header as the website encodes it (K22): the header's bytes
+  as UTF-8. An ASCII name is unchanged; a name sent as UTF-8 bytes ("Jürgen", an emoji) is
+  decoded; bytes that are not UTF-8 give no identity instead of a garbled name.
+- `showcase` is a required check of master (K19). CONTRIBUTING lists the six.
 - `docs/DELIVERY.md` records the v0.8.0 proof.
+
+### Security
+
+An independent review of the dev tools and the recovery codes ran before the release. It found
+no high-severity defect, 5 medium and 7 low findings. Fixed (docs/security-pass.md):
+
+- **The recovery key** must be a byte array of 32 bytes or more that are not one byte repeated;
+  `recoveryMatches` checks it before it looks at the stored hash.
+- **`devSignInAccount`:** a load name must match the game's pattern as a whole and have at most
+  64 characters. A pattern with the g or y flag throws. That error's message is a server
+  marker in `KIT_DEV_MARKERS`, so a leaked dev sign-in is found in a server bundle too.
+- **`devStubPlugin`** also sees absolute imports and refuses a g or y pattern. An import through
+  a package name, a `paths` alias or `#imports` is still not seen (the bundle scan is the
+  backstop).
+- **`DevSignIn`** shows a failed sign-in as an alert instead of leaving an unhandled rejection.
+
+A second fresh review of the fixed diff found 1 medium and 5 low. Fixed: a test ties the
+markers to what `DevSignIn` renders; `devSignInAccount` reads only the body's own `as`; the
+stored hash is measured in bytes; the plugin's header says it tests the import as written.
+
+Not changed, and recorded: legacy SHA-256 codes keep verifying (D4) until each is used or
+replaced, so those rows stay as weak as before against a leaked or writable table. The
+departure from the website's AUTH.md (plain SHA-256 there) is the owner's D4.
+
+### Migration, per game
+
+- **Both games:**
+  - drop `sandboxed` from `WebsiteChatFrame`. Bingo's frame gets the sandbox: run its chat
+    e2e;
+  - create a recovery key (32 random bytes or more) and keep it with the server's secrets.
+    Never use the key that encrypts TOTP secrets, so losing that one leaves the codes working;
+  - store new codes with `recoveryHash(code, style, key)`, and look up with
+    `code_hash = ANY($2)` and `recoveryLookups(code, style, key)`, so old SHA-256 codes still
+    work; or compare one stored hash with `recoveryMatches`;
+  - the header and dev tools as [docs/ADOPTION.md](docs/ADOPTION.md) lists them.
+- **Bingo Royale:** its bar becomes `AppHeader` with `buttonClassName="sbr-btn"`. Its look stays.
+- **Mini Games:** its bar becomes `AppHeader`. The "Signed in as" prefix now shows only above
+  1440 px, as in Bingo.
 
 ## [0.8.0] - 2026-11-21
 
@@ -410,7 +479,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.5.0...v0.6.0

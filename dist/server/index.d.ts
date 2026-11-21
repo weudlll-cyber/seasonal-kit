@@ -11,7 +11,7 @@
  */
 export { IDENTITY_HEADERS, identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck, type Headers, type IdentityHeaders, type SignInCheck, type SignInDecision, type WebsiteIdentity, } from './identity.js';
 export { RateLimiter, type RateDecision, type RateRule } from './rateLimit.js';
-export { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash, type RecoveryStyle, } from './recoveryCodes.js';
+export { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash, recoveryLookups, recoveryMatches, type RecoveryStyle, } from './recoveryCodes.js';
 export { safeNext, websiteLoginLocation } from './returnPath.js';
 export { SessionEnds, type SessionEndsListener } from './sessionEnds.js';
 export { type Ladder, type Step, type StepsMode } from './steps.js';

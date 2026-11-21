@@ -56,9 +56,19 @@ Only the latest tag receives security fixes.
     but the role and can-host headers, and never `super_admin` or `security_admin`.
   - Return paths stay under the game's base path.
   - A TOTP step works once, and all candidates are compared in constant time. Recovery codes
-    come from the system's random source and are kept only as hashes.
+    come from the system's random source and are kept only as HMAC-SHA-256 hashes with the
+    game's recovery key (since v0.9.0, K20), so a leaked table cannot be searched without the
+    key. A legacy SHA-256 hash still verifies; both are compared in constant time.
+  - The username header is decoded as the website encodes it (K22); bytes that are not UTF-8
+    give no identity.
   - The kit stores nothing: secrets, sessions and accounts stay in each game's database.
   - Independently reviewed before release (docs/security-pass.md).
+- **Development tools (`@seasonal/kit/devtools`, `@seasonal/kit/react/dev`, since v0.9.0).**
+  A dev sign-in names only the game's own dev accounts, never an inherited key. The route stays
+  behind the game's dev switch, its module is replaced by a stub in the production bundle
+  (`devStubPlugin`), and the game's bundle test fails on any dev marker (`devMarkersIn`).
+- **The website chat frame is sandboxed** in every game (K17): scripts, its own origin, forms
+  and popups, nothing else.
 - **No secrets.** The kit holds none and reads none. A season colour check reads the website's
   public `tokens.css` over HTTPS and nothing else. The server entry takes the game's secrets as
   arguments and never logs or keeps them.

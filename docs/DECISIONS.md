@@ -41,6 +41,7 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   by GitHub Actions, and the branch must be up to date. Every change goes through a pull request,
   with 0 required approvals: the owner approves and merges. Unresolved conversations block a
   merge. The rules apply to admins too. Force pushes and deletion of the branch are not allowed.
+  Since 2026-11-21 `showcase` is the sixth required check (K19).
 
 ## 2026-11-21
 
@@ -53,3 +54,24 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   is changed: adopting the kit in a game needs the owner.
 - **K16 — Screenshots are not committed and do not pile up.** The showcase's screens stay local
   in a git-ignored folder, and each run deletes the previous run's ([SHOWCASE.md](SHOWCASE.md)).
+- **K17 — Every game sandboxes the website chat frame (D1).** The chat frame always carries
+  `sandbox="allow-scripts allow-same-origin allow-forms allow-popups"`. The kit's
+  `WebsiteChatFrame` has no option to turn it off (v0.9.0).
+- **K18 — Bingo moves to the docked layout, after a sweep (D2).** Seasonal Bingo Royale moves to
+  the docked chat strip, the start card and the game bar with focus mode. Before the owner
+  tests it, a check at the sweep sizes must pass: desktop 1280×720, 1366×768, 1536×768,
+  1440×900, 1900×860 and 1920×1080; phone 375×667, 360×780, 390×844 and 430×932; each in light
+  and dark ([ADOPTION.md](ADOPTION.md)).
+- **K19 — `showcase` is a required check (D3).** The showcase's Playwright and axe run is the
+  sixth required check on `master` (K13).
+- **K20 — Recovery codes are HMAC-SHA-256 with a server key (D4).** A game passes the key; it is
+  never in a repository. A legacy SHA-256 hash still verifies, and both are compared in
+  constant time (v0.9.0).
+- **K21 — Bingo's header becomes the shared header (D5).** The app header that Seasonal Bingo
+  Royale's test server shows is the kit's `AppHeader` for every game (v0.9.0).
+- **K22 — Non-ASCII usernames are handled correctly (D6).** The kit decodes the website's
+  identity headers as the website encodes them. A name it cannot decode gives no identity,
+  never a garbled name (v0.9.0).
+- **K23 — A full audit after v0.9.0 (D7).** A full audit of the kit follows v0.9.0, with one
+  independent reviewer per area. The night chain of 2026-11-21/22 that runs it is approved as
+  written, merges and tags included.

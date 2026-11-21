@@ -11,7 +11,7 @@
  */
 export { IDENTITY_HEADERS, identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck, } from './identity.js';
 export { RateLimiter } from './rateLimit.js';
-export { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash, } from './recoveryCodes.js';
+export { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash, recoveryLookups, recoveryMatches, } from './recoveryCodes.js';
 export { safeNext, websiteLoginLocation } from './returnPath.js';
 export { SessionEnds } from './sessionEnds.js';
 export {} from './steps.js';

@@ -14,10 +14,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   protocol (website `docs/EMBED.md`). Done when: both are in the kit with tests, and a game uses
   them. The kit's part is in v0.3.0 (`websiteSignIn`, `chatEmbed`, `chatArrivals`). The item
   stays open until a game uses them (item 5).
-- **4. Server sign-in and 2FA** (DECISIONS K5). One reviewed merge of Bingo's and Mini Games'
-  `websiteSignIn`, `websiteIdentity`, `twoFactor` and `totp`. Done when: the kit holds the more
-  complete version plus what only the other has, reviewed and tested, and a security pass is
-  recorded.
 - **5. Adopt the kit in the games:** Mini Games first, then Bingo Royale, then Seasonal Party,
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts.
@@ -57,3 +53,9 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   (GAME-INTEGRATION §9, decided 2026-11-20). The kit reserves exactly those: `css/call.css`
   (`sk-call-slot`) and `callSlot`, hidden while no call is linked, plus the typed
   `seasonal-call` link. Framing the view itself is item 8. Closed by PR #6 and v0.3.0.
+- **4. Server sign-in and 2FA** (2026-11-21, DECISIONS K5). One reviewed merge of Bingo's and
+  Mini Games' website sign-in, identity, two-factor and TOTP code, plus what only one had:
+  `@seasonal/kit/server`. Each game's visible behaviour is a per-game option: the steps rule,
+  the recovery-code style, how `guest` and `invalid` are answered. Tested at 100 %. Three
+  independent reviews ran; every confirmed finding is fixed, and the last was clean. A security
+  pass is recorded (docs/security-pass.md). Closed by PR #13 and v0.8.0.

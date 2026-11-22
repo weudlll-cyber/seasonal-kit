@@ -13,7 +13,13 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { readTokens } from '../scripts/css-tokens.mjs';
-import { contrast, contrastFailures, parseColour } from '../scripts/contrast.mjs';
+import {
+  contrast,
+  contrastFailures,
+  focusRingFailures,
+  parseColour,
+  sidebarColours,
+} from '../scripts/contrast.mjs';
 
 const css = readFileSync(new URL('../css/tokens.css', import.meta.url), 'utf8');
 
@@ -32,6 +38,55 @@ describe('the contrast of the text tokens', () => {
   it('fails Summer when the text on the seasons turns grey', () => {
     const bad = css.replace('--color-on-season: #14171c;', '--color-on-season: #5a5a5a;');
     expect(contrastFailures(readTokens(bad)).map((f) => f.background)).toContain('--color-summer');
+  });
+});
+
+describe('the header’s background and the focus ring (audit B7, DECISIONS K29)', () => {
+  const shell = readFileSync(new URL('../css/shell.css', import.meta.url), 'utf8');
+  const ring = /--sk-focus-ring:\s*var\((--[\w-]+)\)/.exec(shell)?.[1] ?? 'missing';
+
+  it('checks the header’s whole gradient: every stop and 15 points between, over its base', () => {
+    const tokens = readTokens(css);
+    // 4 stops: 3 spans of 16 points, and the last stop.
+    expect(sidebarColours(tokens, 'light')).toHaveLength(49);
+    // The last stop, rgb(4 170 247 / 30%), over #0c1538.
+    expect(sidebarColours(tokens, 'dark')[48]?.map(Math.round)).toEqual([10, 66, 113, 1]);
+  });
+
+  it('samples between stops, where a blend can be darker than both (v0.10.0 pass, finding 3)', () => {
+    const two = readTokens(
+      ':root { --color-background: #ffffff; --sidebar-background: linear-gradient(90deg, #ff0000 0%, #00ff00 100%); }',
+    );
+    expect(sidebarColours(two, 'light')[8]).toEqual([127.5, 127.5, 0, 1]);
+  });
+
+  it.each([
+    ['an rgba() stop', 'linear-gradient(90deg, rgba(1, 2, 3, 0.5) 0%, #ffffff 100%)'],
+    ['an 8-digit hex stop', 'linear-gradient(90deg, #ffffff80 0%, #ffffff 100%)'],
+    ['a named colour', 'linear-gradient(90deg, white 0%, #ffffff 100%)'],
+    ['no gradient', '#ffffff'],
+  ])('refuses %s instead of skipping it (v0.10.0 pass, finding 2)', (_what, value) => {
+    const odd = readTokens(
+      `:root { --color-background: #ffffff; --sidebar-background: ${value}; }`,
+    );
+    expect(() => sidebarColours(odd, 'light')).toThrow(/Not a/);
+  });
+
+  it('fails muted text on a header stop it cannot be read on', () => {
+    const bad = css.replace('#f8d9c2 35%', '#8a8f99 35%');
+    const failures = contrastFailures(readTokens(bad));
+    // The second stop is the 17th colour across the width.
+    expect(failures.map((f) => f.background)).toContain('--sidebar-background point 17');
+  });
+
+  it('draws the focus ring at 3:1 or more on every background, light and dark', () => {
+    expect(ring).toBe('--color-text');
+    expect(focusRingFailures(readTokens(css), ring)).toEqual([]);
+  });
+
+  it('fails a ring as faint as the hairline border', () => {
+    const failures = focusRingFailures(readTokens(css), '--color-border-strong');
+    expect(failures.length).toBeGreaterThan(0);
   });
 });
 

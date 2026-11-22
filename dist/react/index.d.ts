@@ -15,7 +15,7 @@
  * Source:         new in the kit.
  */
 export { AppHeader, type AppHeaderProps, type HeaderAccount, type HeaderLink, } from './AppHeader.js';
-export { BackLink } from './BackLink.js';
+export { BackLink, type BackLinkProps } from './BackLink.js';
 export { ChatDock, type ChatDockProps } from './ChatDock.js';
 export { DockedScreen, type DockedScreenProps } from './DockedScreen.js';
 export { useDockArrivals, useDockView, type DockView } from './dockSight.js';

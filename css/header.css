@@ -5,10 +5,11 @@
  *
  * Responsibility: a bar on the website's sidebar background over the page:
  *                 - the back link first (./shell.css), the brand (emblem, name, the wordmark in
- *                   small capitals), the theme toggle (./shell.css), the navigation as pills
- *                   with the current one solid, and the account (chip and buttons);
+ *                   small capitals), the navigation as pills with the current one solid, the
+ *                   account (chip and buttons), and last the theme toggle (./shell.css). The
+ *                   order shown is the DOM's, so the tab order matches it (since v0.10.0);
  *                 - sticky from 640 px, with the focus kept below it;
- *                 - below 960 px one row (brand, toggle, Menu), the navigation and the account
+ *                 - below 960 px one row (brand, Menu, toggle), the navigation and the account
  *                   in an opaque panel under it (src/react/MenuFold.tsx);
  *                 - on a phone (≤ 640 px) the back link its own short first row, the wordmark
  *                   hidden, the account chip whole.
@@ -45,12 +46,10 @@
   }
 }
 
-.sk-header > .sk-back-link {
-  order: 0;
-}
-
+/* No `order` anywhere: what is shown follows the DOM, so the tab order is the visual order
+   (WCAG 2.4.3, audit 2026-11-22 B7 finding 4): back link, brand, Menu, navigation, account,
+   theme toggle. tests/header-css.test.ts keeps it so. */
 .sk-header-brand {
-  order: 1;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -80,15 +79,13 @@
   text-transform: uppercase;
 }
 
-.sk-header > .sk-theme-toggle {
-  order: 3;
-}
-
 .sk-header-nav {
-  order: 2;
   display: flex;
   gap: 0.25rem;
   overflow-x: auto;
+  /* Room for the focus ring, which a scrolling box would otherwise cut off. */
+  padding: 4px;
+  margin: -4px;
 }
 
 .sk-header-nav a {
@@ -114,7 +111,6 @@
 }
 
 .sk-header-account {
-  order: 4;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -201,20 +197,15 @@
   display: contents;
 }
 
-/* Below 960 px one row: brand, toggle, Menu; the menu an opaque panel under the bar. */
+/* Below 960 px one row: brand, Menu, toggle; the menu an opaque panel under the bar. */
 @media (max-width: 959px) {
   .sk-header-brand {
     flex: 1 1 0;
     min-width: 0;
   }
 
-  .sk-header > .sk-theme-toggle {
-    order: 1;
-  }
-
   .sk-menu-button {
     display: inline-flex;
-    order: 2;
   }
 
   .sk-menu {

@@ -38,9 +38,7 @@ export const KIT_DEV_MARKERS = [
 ];
 // A relative or absolute path (POSIX, or a Windows drive); a package name is never a dev module.
 const LOCAL_IMPORT = /^(?:\.|\/|[A-Za-z]:[\\/])/;
-// `devModule` tests the import's path as written, joined to the importing folder; `stub` is
-// the stub file's absolute path.
-export function devStubPlugin(devModule, stub) {
+export function devStubPlugin({ devModule, stub }) {
     if (devModule.global || devModule.sticky) {
         throw new TypeError('devStubPlugin: the dev-module pattern has the g or y flag');
     }

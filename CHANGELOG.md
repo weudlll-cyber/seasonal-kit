@@ -7,6 +7,87 @@ applies it.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-22
+
+Keyboard, focus and touch fixes from the audit of 2026-11-22, B7, and its API cleanup, B4, both
+before any game adopts the kit (DECISIONS K29). The API changes break; each is below with its
+before and after.
+
+### Added
+
+- One kit focus ring: `--sk-focus-ring` (the text colour) on every control the kit draws, for
+  keyboard focus, 2 px outside the control (css/shell.css). Its contrast is checked at 3:1 or
+  more on the page, the surfaces, the card and across the header's whole background, in light
+  and dark.
+- The contrast check covers the header's background (`--sidebar-background`): the text and the
+  muted text on every stop and 15 points between each two, since a blend can be darker
+  than its ends. A stop the check cannot read fails it instead of being skipped.
+- The showcase: four screens of the focus ring (`focus-ring-<viewport>-<theme>.png`, desktop and
+  phone, light and dark) and a check that nothing scrolls sideways at 320 px.
+
+### Changed
+
+- **The header's menu** (`AppHeader`, below 960 px) closes when the focus leaves it, and on
+  Escape on the Menu button too. When a new page (`closeKey`) closes it while the focus was
+  inside, the focus goes to the Menu button instead of the page's start.
+- **The header's order:** the theme toggle is now last, after the account, on wide screens as in
+  the DOM, so the tab order is the order shown. Below 960 px the row is brand, Menu, toggle.
+  `header.css` sets no `order` any more.
+- **The phone chat sheet** takes the focus (its Close button) when it opens; Escape and Close
+  give it back to the chat bar, as before.
+- **Targets:** the game bar's buttons are 44 px on a desktop too (36 px before); the back link is
+  a 44 px target.
+- **The phase strip** wraps its parts instead of scrolling sideways when they do not fit; its
+  text keeps the game's floor.
+- **Breaking (`@seasonal/kit/server`):** the request-headers type `Headers` is `RequestHeaders`,
+  so it no longer hides the Fetch API's global `Headers` in a game's file.
+- **Breaking (`@seasonal/kit/react`):** `BarIconName` names the panel icons only (`chat`,
+  `players`, `host`); the full-screen button's `expand` and `shrink` are the bar's own.
+- **Breaking:** `GameBar`'s `time` is always given (`null` before the round opens), as every kit
+  prop says "none" with `null`; `AppHeader`'s `signIn.signInHref` is `signIn.href`.
+- **Breaking (`@seasonal/kit/devtools`):** `devStubPlugin` takes one options object
+  (`{ devModule, stub }`, the new type `DevStubOptions`), like `devSignInAccount`'s rules;
+  `devMarkersIn` returns a readonly list.
+- `BackLinkProps` is exported, like every other component's props. `useDisclosure`'s `toggle`
+  and `close` keep their identity across renders, like `usePanels`'.
+- Kept as they are: `connectCall` and `CALL_SLOT` (BACKLOG 8 needs them, K29).
+- The repository's GitHub settings (DECISIONS K24): merge commits only, the branch deleted
+  after a merge, a ruleset that keeps `v*` tags from being moved or deleted, vulnerability alerts
+  on, no wiki or Projects, actions pinned to commit SHAs. Read back in docs/RELEASING.md.
+- CLAUDE.md: `seasonal-spirits` and `seasonal-cases` are read-only sources too; planning happens
+  in the Seasonal Entertainment planning chat (K25); a night's sheet branch may stay on origin
+  until its PR merges.
+- Decided (K26–K28): the fonts stay as they are; legacy recovery codes keep working with no end
+  date; Seasonal Cases takes v0.10.0 (docs/ADOPTION.md, docs/security-pass.md).
+
+### Migration, per game
+
+What a player sees change, before → after, for a game that takes v0.10.0:
+
+- **Every game with `AppHeader`:** the theme toggle moves from between the brand and the
+  navigation to the end of the bar (wide screens); on a phone the row is brand, Menu, toggle
+  instead of brand, toggle, Menu. A keyboard focus shows the kit's ring. Nothing to change in
+  the game's code.
+- **Every game with `BackLink`:** the link is a 44 px target (its words the same size), so the
+  phone's first row is 44 px high instead of one line of small text.
+- **Mini Games (`GameBar`, `buttonClassName="smg-btn"`):** the bar's buttons are 44 px instead of
+  36 px on a desktop; the bar itself stays at most 44 px high.
+- **Mind Games' `PhaseStrip`:** parts that do not fit side by side wrap to a second row
+  instead of running off a narrow screen.
+- **A game with its own focus styles** on the kit's classes keeps them: the kit's ring is in
+  `:where()`, so a game's own `:focus-visible` rule on those controls wins.
+
+The API breaks, before → after (no game pins the kit yet; each adoption step takes them):
+
+| Where                    | Before (v0.9.x)                                                  | After (v0.10.0)                                                  |
+| ------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Server, both games       | `import type { Headers } from '@seasonal/kit/server'`            | `import type { RequestHeaders } from '@seasonal/kit/server'`     |
+| `AppHeader`, both games  | `signIn={{ signInHref: '/sign-in', registerHref: '/register' }}` | `signIn={{ href: '/sign-in', registerHref: '/register' }}`       |
+| `GameBar`, Mini Games    | `time` left out before the round opens                           | `time={null}` before the round opens                             |
+| `GameBar` actions        | `icon: 'expand'` or `'shrink'` was allowed                       | `icon` is `'chat'`, `'players'` or `'host'`                      |
+| Server build, both games | `devStubPlugin(/devSignIn\.js$/, stubPath)`                      | `devStubPlugin({ devModule: /devSignIn\.js$/, stub: stubPath })` |
+| Bundle test, both games  | `devMarkersIn(dir, markers).sort()`                              | `[...devMarkersIn(dir, markers)].sort()` (the list is readonly)  |
+
 ## [0.9.1] - 2026-11-22
 
 The fixes of the audit of 2026-11-22 ([docs/AUDIT-2026-11-22.md](docs/AUDIT-2026-11-22.md)) that
@@ -527,7 +608,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...v0.8.0

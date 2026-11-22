@@ -30,10 +30,12 @@ import {
 } from '../src/react/index.js';
 import { Headers } from './Headers.js';
 
+// Four parts, one with a longer name: the strip's worst case at 320 px (it wraps, DECISIONS K29).
 const PARTS = [
   { id: 'join', name: 'Join', from: 0, to: 30_000 },
   { id: 'play', name: 'Play', from: 30_000, to: 60_000 },
-  { id: 'reveal', name: 'Reveal', from: 60_000, to: 75_000 },
+  { id: 'second', name: 'Second chance', from: 60_000, to: 70_000 },
+  { id: 'reveal', name: 'Reveal', from: 70_000, to: 85_000 },
 ];
 
 function Bar(): ReactElement {

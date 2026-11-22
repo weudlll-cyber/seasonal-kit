@@ -6,6 +6,9 @@ the games' `origin/master` on 2026-11-21: Mini Games `866df03`, Bingo Royale `a4
 Seasonal Party `5976ef2` (branch `proto/sumo`). The header and dev-tools rows (v0.9.0) are Mini
 Games `8de30b2` and Seasonal Party `8bb648e`.
 
+**Seasonal Cases** (`seasonal-cases`) moves to v0.10.0 once it is released (DECISIONS K28). Its
+plan is made in its own repository; the kit only records the version it moves to.
+
 The kit's exports are listed in the [README](../README.md); each version's changes for a game
 are in the [CHANGELOG](../CHANGELOG.md) under "Migration, per game".
 
@@ -204,14 +207,13 @@ adopts it.
 ## Needs the owner's word
 
 Decided on 2026-11-21: the sandbox in every game (K17), Bingo's docked layout (K18), `showcase`
-as a required check (K19).
+as a required check (K19). Decided on 2026-11-22: the audit's keyboard, focus and API fixes are
+in v0.10.0, before any game adopts the kit (K29); every game takes them with the header.
 
 - **Seasonal Party**, the frame's colours turning into the website's at its first step (asked by
   K4, but visible).
 - **Every game**, the recovery key: each game's operator creates one (32 random bytes or more)
   and keeps it with the server's other secrets before the step that adopts v0.9.0's recovery
   codes.
-- **Every game**, whether legacy SHA-256 recovery codes get an end date (independent review of
-  v0.9.0, finding 2). Until a member's legacy codes are used or replaced, they are as weak as
-  before against a leaked or writable table. A game could ask members with 2FA to make new
-  codes, then stop accepting the legacy hash.
+  Decided on 2026-11-22: legacy SHA-256 recovery codes stay valid with no end date, and no game
+  sets a deadline for them (K27). A member's legacy codes keep working until each is used.

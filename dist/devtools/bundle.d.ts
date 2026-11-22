@@ -14,6 +14,10 @@ export interface DevStubPlugin {
     readonly name: string;
     readonly setup: (build: PluginBuild) => void;
 }
-export declare function devStubPlugin(devModule: RegExp, stub: string): DevStubPlugin;
-export declare function devMarkersIn(dir: string, markers: readonly string[]): string[];
+export interface DevStubOptions {
+    readonly devModule: RegExp;
+    readonly stub: string;
+}
+export declare function devStubPlugin({ devModule, stub }: DevStubOptions): DevStubPlugin;
+export declare function devMarkersIn(dir: string, markers: readonly string[]): readonly string[];
 export {};

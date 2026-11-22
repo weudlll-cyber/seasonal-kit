@@ -14,7 +14,12 @@
  */
 import type { ReactElement } from 'react';
 
-export function BackLink(p: { readonly websiteMode: boolean }): ReactElement | null {
+// Its props by name like every other component's (since v0.10.0; audit 2026-11-22, B4).
+export interface BackLinkProps {
+  readonly websiteMode: boolean;
+}
+
+export function BackLink(p: BackLinkProps): ReactElement | null {
   if (!p.websiteMode) return null;
   return (
     <a className="sk-back-link" href="/games" data-testid="back-link">

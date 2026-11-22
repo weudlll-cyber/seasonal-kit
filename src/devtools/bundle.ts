@@ -61,7 +61,15 @@ export interface DevStubPlugin {
 
 // `devModule` tests the import's path as written, joined to the importing folder; `stub` is
 // the stub file's absolute path.
-export function devStubPlugin(devModule: RegExp, stub: string): DevStubPlugin {
+// What the game's build passes, by name like `devSignInAccount`'s rules (since v0.10.0).
+export interface DevStubOptions {
+  // Tests the import's path as written, joined to the importing folder.
+  readonly devModule: RegExp;
+  // The stub file's absolute path.
+  readonly stub: string;
+}
+
+export function devStubPlugin({ devModule, stub }: DevStubOptions): DevStubPlugin {
   if (devModule.global || devModule.sticky) {
     throw new TypeError('devStubPlugin: the dev-module pattern has the g or y flag');
   }
@@ -76,7 +84,7 @@ export function devStubPlugin(devModule: RegExp, stub: string): DevStubPlugin {
 }
 
 // "file: marker" for every shipped file below `dir` that holds a marker.
-export function devMarkersIn(dir: string, markers: readonly string[]): string[] {
+export function devMarkersIn(dir: string, markers: readonly string[]): readonly string[] {
   const found: string[] = [];
   for (const entry of readdirSync(dir, { recursive: true, withFileTypes: true })) {
     if (entry.name.endsWith('.map')) continue;

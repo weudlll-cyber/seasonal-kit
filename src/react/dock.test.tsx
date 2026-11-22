@@ -97,6 +97,31 @@ describe('the dock on a phone', () => {
     fireEvent.click(bar);
     fireEvent.click(screen.getByText('Close'));
     expect(bar.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(bar);
+  });
+});
+
+describe('the phone sheet and the focus (audit B7, DECISIONS K29)', () => {
+  it('moves the focus into the sheet when it opens', () => {
+    render(<ChatDock chat={<p>chat</p>} phone bar="line" callId={null} />);
+    fireEvent.click(screen.getByTestId('chat-bar'));
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
+  });
+
+  it('takes no focus when a resize brings back the phone layout with the sheet open', () => {
+    const chat = (phone: boolean) => (
+      <>
+        <ChatDock chat={<p>chat</p>} phone={phone} bar="line" callId={null} />
+        <button type="button">Elsewhere</button>
+      </>
+    );
+    const { rerender } = render(chat(true));
+    fireEvent.click(screen.getByTestId('chat-bar'));
+    const elsewhere = screen.getByRole('button', { name: 'Elsewhere' });
+    elsewhere.focus();
+    rerender(chat(false));
+    rerender(chat(true));
+    expect(document.activeElement).toBe(elsewhere);
   });
 
   it('shows the game’s field only in the form field, and the call strip above the bar', () => {

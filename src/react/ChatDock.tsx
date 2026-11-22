@@ -7,8 +7,9 @@
  *                 under 760 px high, ../../css/dock.css), always in sight, with the chat on the
  *                 left and the call slot at its right end at the strip's full height. On a phone
  *                 the bar at the bottom of the screen, in the layout: "Chat · <newest message>"
- *                 and the unread count, which opens the chat as a sheet above the bar (Escape or
- *                 Close shut it and hand the focus back). In the bar's form `field` the game's
+ *                 and the unread count, which opens the chat as a sheet above the bar. The sheet
+ *                 takes the focus (since v0.10.0); Escape or Close shut it and hand the focus
+ *                 back. In the bar's form `field` the game's
  *                 own writing field sits under it. The call slot is the 48 px strip directly
  *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
  *                 nothing is framed in it: the site's call page does not exist yet (BACKLOG 8).
@@ -21,7 +22,7 @@
  *                 (createChatArrivals, chatBarText), ../callSlot (callSlot) and ./useDisclosure.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §5 and §9 (at e7b995c)
  */
-import { useEffect, useMemo, useState, type ReactElement, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
 
 import { callSlot } from '../callSlot.js';
 import { chatBarText, createChatArrivals, type ChatArrivalsState } from '../chatArrivals.js';
@@ -89,6 +90,16 @@ function Body(p: {
   readonly phone: boolean;
   readonly children: ReactNode;
 }): ReactElement {
+  // The phone's sheet takes the focus when it opens; Close and Escape give it back to the chat
+  // bar (../useDisclosure). WCAG 2.4.3, audit 2026-11-22 B7 finding 6 (DECISIONS K29). Only the
+  // opening itself moves it, never a resize into the phone layout with the sheet already open
+  // (v0.10.0 security pass, finding 4).
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(p.sheet.open);
+  useEffect(() => {
+    if (p.phone && p.sheet.open && !wasOpen.current) closeButton.current?.focus();
+    wasOpen.current = p.sheet.open;
+  }, [p.phone, p.sheet.open]);
   return (
     <div
       id={p.sheet.panelId}
@@ -100,7 +111,12 @@ function Body(p: {
       {p.phone ? (
         <header className="sk-chat-dock-head">
           <h2>Chat</h2>
-          <button type="button" className="sk-chat-dock-close" onClick={p.sheet.close}>
+          <button
+            ref={closeButton}
+            type="button"
+            className="sk-chat-dock-close"
+            onClick={p.sheet.close}
+          >
             Close
           </button>
         </header>

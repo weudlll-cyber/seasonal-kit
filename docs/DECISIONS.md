@@ -75,3 +75,26 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
 - **K23 — A full audit after v0.9.0 (D7).** A full audit of the kit follows v0.9.0, with one
   independent reviewer per area. The night chain of 2026-11-21/22 that runs it is approved as
   written, merges and tags included.
+
+## 2026-11-22
+
+- **K24 — The repository's GitHub settings.** The settings proposed by the audit of 2026-11-22
+  are applied: merge commits only, the branch deleted after a merge, `v*` tags that can be
+  neither moved nor deleted, vulnerability alerts on, no wiki and no Projects, actions pinned to
+  commit SHAs. There is no CODEOWNERS file. The settings as read back are in
+  [RELEASING.md](RELEASING.md).
+- **K25 — Planning moved to the Seasonal Entertainment planning chat.** Since 2026-11-21 the kit
+  is planned there; its decisions are recorded here as before ([CLAUDE.md](../CLAUDE.md)).
+- **K26 — The font question of the audit is closed.** The Luxora Grotesk files stay in the kit
+  as they are; K8 and K9 are unchanged (audit 2026-11-22, B8).
+- **K27 — Legacy recovery codes keep working.** Recovery codes stored as plain SHA-256 stay
+  valid with no end date, and no game sets a deadline for them (K20 keeps them verifying).
+- **K28 — Seasonal Cases takes v0.10.0.** Seasonal Cases moves to the kit's v0.10.0 once it is
+  released ([ADOPTION.md](ADOPTION.md)); its repository is not touched from here.
+- **K29 — Keyboard, focus and API fixes go into v0.10.0.** The audit's keyboard and focus
+  fixes (B7) and its API cleanup (B4) are both part of v0.10.0, before any game adopts the kit:
+  the header menu closes when the focus leaves it and returns the focus after a page change;
+  the tab order follows the order shown; one kit focus ring; the phone chat sheet takes and
+  returns the focus; 44 px targets, the back link included; nothing scrolls sideways at 320 px;
+  the header's background is contrast-checked. `connectCall` and `CALL_SLOT` stay exported:
+  BACKLOG 8 needs them.

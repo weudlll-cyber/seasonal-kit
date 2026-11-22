@@ -24,20 +24,26 @@ import type { Fullscreen } from './useFullscreen.js';
 import type { Panels } from './usePanels.js';
 import { barButtonClass } from './barButtonClass.js';
 
-// Each icon's strokes on a 24 × 24 grid.
-const PATHS = {
+// Each icon's strokes on a 24 × 24 grid: the panel icons a game names for its buttons ...
+const PANEL_PATHS = {
   chat: 'M4 5h16v10H9l-4 4v-4H4z',
   players:
     'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 19c0-3 3-5 6-5s6 2 6 5M16 5.5a3 3 0 0 1 0 5.5M18 14c2 .6 3 2.4 3 5',
   host: 'M4 7h10M18 7h2M4 17h4M12 17h8M14 4.5v5M8 14.5v5',
+} as const;
+
+// ... and the full-screen button's own two, which no panel button takes (since v0.10.0).
+const PATHS = {
+  ...PANEL_PATHS,
   expand: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
   shrink: 'M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5',
 } as const;
 
-export type BarIconName = keyof typeof PATHS;
+// The icons a game's panel button may name (audit 2026-11-22, B4).
+export type BarIconName = keyof typeof PANEL_PATHS;
 
 // A 20 px line drawing in the text colour, hidden from screen readers: the button has words.
-function BarIcon({ name }: { readonly name: BarIconName }): ReactElement {
+function BarIcon({ name }: { readonly name: keyof typeof PATHS }): ReactElement {
   return (
     <svg
       className="sk-bar-icon"
@@ -78,8 +84,9 @@ export interface BarFact {
 export interface GameBarProps<Id extends string> {
   readonly lead?: ReactNode;
   readonly facts?: readonly BarFact[];
-  // The time in words, and whether " left" follows it; null before the round opens.
-  readonly time?: { readonly text: string; readonly left: boolean } | null;
+  // The time in words, and whether " left" follows it; null before the round opens (since
+  // v0.10.0 always given: null is "none", as for every other kit prop).
+  readonly time: { readonly text: string; readonly left: boolean } | null;
   readonly actions: readonly BarAction<Id>[];
   readonly panels: Panels<Id>;
   readonly fullscreen?: Fullscreen;
@@ -145,7 +152,7 @@ export function GameBar<Id extends string>(p: GameBarProps<Id>): ReactElement {
           {fact.text}
         </span>
       ))}
-      {p.time == null ? null : (
+      {p.time === null ? null : (
         <span className="sk-bar-fact" data-testid="bar-time">
           {p.time.text}
           {/* A phone shows "9:50" and reads the word out: the bar keeps one row. */}

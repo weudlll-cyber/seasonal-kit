@@ -84,7 +84,10 @@ describe('the dev-stub plugin', () => {
   it('replaces exactly the local imports that resolve to a development module', () => {
     let resolve: ((args: { path: string; resolveDir: string }) => unknown) | null = null;
     let filter: RegExp | null = null;
-    const plugin = devStubPlugin(/[\\/]src[\\/]routes[\\/]devSignIn\.js$/, '/repo/devStub.mjs');
+    const plugin = devStubPlugin({
+      devModule: /[\\/]src[\\/]routes[\\/]devSignIn\.js$/,
+      stub: '/repo/devStub.mjs',
+    });
     plugin.setup({
       onResolve(options, callback) {
         filter = options.filter;
@@ -110,8 +113,12 @@ describe('the dev-stub plugin', () => {
   });
 
   it('refuses a dev-module pattern with the g or y flag', () => {
-    expect(() => devStubPlugin(/devSignIn\.js$/g, '/stub.mjs')).toThrow(TypeError);
-    expect(() => devStubPlugin(/devSignIn\.js$/y, '/stub.mjs')).toThrow(TypeError);
+    expect(() => devStubPlugin({ devModule: /devSignIn\.js$/g, stub: '/stub.mjs' })).toThrow(
+      TypeError,
+    );
+    expect(() => devStubPlugin({ devModule: /devSignIn\.js$/y, stub: '/stub.mjs' })).toThrow(
+      TypeError,
+    );
   });
 });
 
@@ -132,7 +139,7 @@ describe('the production-bundle scan', () => {
     writeFileSync(path.join(dir, 'server.mjs'), `throw new TypeError("${DEV_SIGN_IN_MARKER}")`);
     writeFileSync(path.join(dir, 'clean.js'), 'console.log(1)');
     const found = devMarkersIn(dir, ['/dev/sign-in', 'Quick Test', ...KIT_DEV_MARKERS]);
-    expect(found.sort()).toEqual(
+    expect([...found].sort()).toEqual(
       [
         'index.js: /dev/sign-in',
         `server.mjs: ${DEV_SIGN_IN_MARKER}`,

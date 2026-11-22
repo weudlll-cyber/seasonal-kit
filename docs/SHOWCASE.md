@@ -46,7 +46,10 @@ The first `pnpm showcase:test` on a machine needs Playwright's Chromium:
 - the themes: `light` and `dark`.
 
 On each phone viewport and theme one more screen, `header-menu-<viewport>-<theme>.png`, shows
-the third header's menu and its dev menu opened. That makes 24 screens a run. Before every run the folder is emptied
+the third header's menu and its dev menu opened. Four more show the kit's focus ring on the first
+header, `focus-ring-<viewport>-<theme>.png`, at 1280 × 720 and 390 × 844, light and dark (for
+the owner to look at, DECISIONS K29). That makes 28 screens a run. Before every run the folder is
+emptied
 ([`showcase/global-setup.ts`](../showcase/global-setup.ts)), so only the last run's screens are
 there. The folder is git-ignored: screens are never committed and never pile up (DECISIONS K16).
 CI takes the same screenshots on its runner and keeps none.
@@ -61,7 +64,9 @@ three things:
   phone);
 - axe, with the WCAG 2.0, 2.1 and 2.2 A and AA rules, finds no serious or critical violation.
 
-For each of the 4 header screens it opens the first header's Menu (axe again), then the third
+For each focus-ring screen, Tab reaches the header's brand, its outline is solid, and axe finds
+nothing serious. At 320 × 640 the page must not scroll sideways (WCAG 1.4.10). For each of the 4
+header-menu screens it opens the first header's Menu (axe again), then the third
 header's Menu and its Dev sign-in panel (axe again). Moderate axe findings do not fail the run.
 
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

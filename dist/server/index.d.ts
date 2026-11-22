@@ -10,7 +10,7 @@
  *                 every database statement stay in the games.
  * Source:         new in the kit.
  */
-export { IDENTITY_HEADERS, identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck, type Headers, type IdentityHeaders, type SignInCheck, type SignInDecision, type WebsiteIdentity, } from './identity.js';
+export { IDENTITY_HEADERS, identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck, type IdentityHeaders, type RequestHeaders, type SignInCheck, type SignInDecision, type WebsiteIdentity, } from './identity.js';
 export { RateLimiter, type RateDecision, type RateRule } from './rateLimit.js';
 export { looksLikeRecoveryCode, newRecoveryCodes, recoveryHash, recoveryLookups, recoveryMatches, type RecoveryStyle, } from './recoveryCodes.js';
 export { safeNext, websiteLoginLocation } from './returnPath.js';

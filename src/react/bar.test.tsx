@@ -120,6 +120,7 @@ describe('the game bar: time and full screen', () => {
       <GameBar
         actions={[]}
         panels={panels}
+        time={null}
         fullscreen={{ supported: true, on: false, toggle: vi.fn() }}
       />,
     );

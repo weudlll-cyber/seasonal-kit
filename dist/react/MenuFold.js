@@ -15,70 +15,59 @@ import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-run
  *                 - on a press outside;
  *                 - on a new `closeKey` (the route, the account): if the focus was inside the
  *                   panel, it goes to the Menu button instead of the page (WCAG 2.4.3).
- *                 Audit 2026-11-22, B7 findings 2 and 3 (DECISIONS K29).
+ *                 Audit 2026-11-22, B7 findings 2 and 3 (DECISIONS K29). Built on
+ *                 ./useDisclosure (its `close` and `dismiss`) and ./usePressOutside since
+ *                 v0.10.1.
  * Source:         seasonal-bingo-royale apps/web/src/shell/MenuFold.tsx at a43209a (its `where`
  *                 and `who` are one `closeKey` here; the panel's id is React's own, so two
  *                 headers on a page never share one).
  */
-import { useEffect, useId, useRef, useState, } from 'react';
+import { useEffect, useRef, } from 'react';
 import { barButtonClass } from './barButtonClass.js';
-const within = (box, node) => node instanceof Node && box.current?.contains(node) === true;
+import { useDisclosure } from './useDisclosure.js';
+import { usePressOutside, within } from './usePressOutside.js';
 // While open: the focus moves to the panel's first item; a press outside panel and button
-// closes it.
-function useOpenedPanel(open, panel, button, setOpen) {
+// closes it and leaves the focus to the press (./usePressOutside).
+function useOpenedPanel(menu, panel) {
+    const { open, button, dismiss } = menu;
     useEffect(() => {
-        if (!open)
-            return undefined;
-        panel.current?.querySelector('a[href], button, select')?.focus();
-        const outside = (e) => {
-            if (!within(panel, e.target) && !within(button, e.target))
-                setOpen(false);
-        };
-        document.addEventListener('pointerdown', outside);
-        return () => {
-            document.removeEventListener('pointerdown', outside);
-        };
-    }, [open, panel, button, setOpen]);
+        if (open)
+            panel.current?.querySelector('a[href], button, select')?.focus();
+    }, [open, panel]);
+    usePressOutside(open, [panel, button], dismiss);
 }
 // A new route or account closes the menu; a focus left inside the hidden panel goes to the
-// Menu button, not to the page's start.
-function useCloseOnKey(closeKey, panel, button, setOpen) {
+// Menu button (`close`), not to the page's start; a focus elsewhere stays (`dismiss`).
+function useCloseOnKey(closeKey, menu, panel) {
+    const { close, dismiss } = menu;
     const first = useRef(true);
     useEffect(() => {
         if (first.current) {
             first.current = false;
             return;
         }
-        const focusInside = within(panel, document.activeElement);
-        setOpen(false);
-        if (focusInside)
-            button.current?.focus();
-    }, [closeKey, panel, button, setOpen]);
+        if (within(panel, document.activeElement))
+            close();
+        else
+            dismiss();
+    }, [closeKey, panel, close, dismiss]);
 }
 export function MenuFold(p) {
-    const [open, setOpen] = useState(false);
-    const panelId = useId();
-    const button = useRef(null);
+    // Open state, panel id, the button's ref, Escape (focus back) and the stable callbacks:
+    // ./useDisclosure, reused since v0.10.1.
+    const menu = useDisclosure();
     const panel = useRef(null);
-    useOpenedPanel(open, panel, button, setOpen);
-    useCloseOnKey(p.closeKey, panel, button, setOpen);
-    const escape = (e) => {
-        if (e.key !== 'Escape' || !open)
-            return;
-        e.stopPropagation();
-        setOpen(false);
-        button.current?.focus();
-    };
+    useOpenedPanel(menu, panel);
+    useCloseOnKey(p.closeKey, menu, panel);
     // The focus moved to an element outside panel and button: the menu closes where it is. A
     // blur to nowhere (relatedTarget null) is no such move: Safari focuses no link or button on a
     // tap, so tapping a second item blurs the first to nowhere, and a press outside is the
     // pointerdown listener's (v0.10.0 security pass, finding 1).
     const left = (e) => {
         const to = e.relatedTarget;
-        if (open && to !== null && !within(panel, to) && !within(button, to))
-            setOpen(false);
+        if (menu.open && to !== null && !within(panel, to) && !within(menu.button, to)) {
+            menu.dismiss();
+        }
     };
-    return (_jsxs(_Fragment, { children: [_jsx("button", { ref: button, type: "button", className: barButtonClass(p.buttonClassName, 'sk-menu-button'), "aria-expanded": open, "aria-controls": panelId, "data-testid": "menu-button", onClick: () => {
-                    setOpen(!open);
-                }, onKeyDown: escape, onBlur: left, children: "Menu" }), _jsx("div", { ref: panel, id: panelId, className: "sk-menu", "data-open": open, onKeyDown: escape, onBlur: left, children: p.children })] }));
+    return (_jsxs(_Fragment, { children: [_jsx("button", { ref: menu.button, type: "button", className: barButtonClass(p.buttonClassName, 'sk-menu-button'), "aria-expanded": menu.open, "aria-controls": menu.panelId, "data-testid": "menu-button", onClick: menu.toggle, onKeyDown: menu.onKeyDown, onBlur: left, children: "Menu" }), _jsx("div", { ref: panel, id: menu.panelId, className: "sk-menu", "data-sk-open": menu.open, onKeyDown: menu.onKeyDown, onBlur: left, children: p.children })] }));
 }

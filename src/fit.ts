@@ -2,12 +2,12 @@
  * @file   src/fit.ts
  * @brief  Fitting a screen to the space it has: its scale `--fit`, and each game's floors.
  *
- * Responsibility: a screen (its root) names its fixed parts (`[data-fit-fixed]`, else all its
+ * Responsibility: a screen (its root) names its fixed parts (`[data-sk-fit-fixed]`, else all its
  *                 children). The space they have is the nearest box that clips or scrolls, or
  *                 the root's own box (`self`). `settle` finds the largest scale ≤ 1 at which the
  *                 fixed parts fit, never below the game's scale floor. It sets it on the root as
  *                 the CSS custom property `--fit`, which the screen's sizes multiply, each with
- *                 its own readable floor (../css/fit.css), and as `data-fit-scale` for tests.
+ *                 its own readable floor (../css/fit.css), and as `data-sk-fit-scale` for tests.
  *                 Where there is room the scale is 1 and the screen looks as without it.
  *                 `watchFit` fits again when the box's size or the visual viewport changes, in
  *                 the next frame, never inside the observer's own delivery, so nothing loops.
@@ -46,13 +46,32 @@ export const FIT_FLOORS: Readonly<Record<FitGame, FitFloors>> = {
 // The passes of one fitting after the first measurement: each halves the gap left.
 const PASSES = 7;
 
+// Tolerances, all from Mini Games' useFit.ts (866df03), named since v0.10.1:
+// - FITS_WITHIN_PX: what still counts as fitting. Boxes are laid out in fractions of a pixel
+//   and rounded at paint, so content that is 0.5 px over is not seen and must not shrink a
+//   screen that has room.
+const FITS_WITHIN_PX = 0.5;
+// - HIDDEN_OVER_PX: what a clipping box may hide before it counts. scrollHeight is rounded
+//   to whole pixels and clientHeight down, so 1 px is rounding, not hidden content.
+const HIDDEN_OVER_PX = 1;
+// - UNDER_BY: how far below the proportional scale the first guess stays, so it lands inside
+//   rather than on the edge.
+const UNDER_BY = 0.005;
+// - SCALE_STEP: scales are kept to three decimals (a 1000th), finer than a pixel at any size.
+const SCALE_STEP = 1000;
+// - CLOSE_ENOUGH: the search stops once the largest fitting and the smallest failing scale are
+//   within 1 % (a few pixels at most).
+const CLOSE_ENOUGH = 0.01;
+
+const rounded = (scale: number): number => Math.round(scale * SCALE_STEP) / SCALE_STEP;
+
 // The next scale from one measurement: the fixed parts took `used` pixels of `room` at the
 // scale `current`; they shrink about in proportion, so the largest scale ≤ 1 that fits, a
 // little under it to stay inside (never below the floor). Already fitting: `current` stays.
 export function nextScale(current: number, used: number, room: number, floor: number): number {
-  if (used <= room + 0.5 || used <= 0 || room <= 0) return current;
-  const next = Math.min(1, (current * room) / used) - 0.005;
-  return Math.max(floor, Math.round(next * 1000) / 1000);
+  if (used <= room + FITS_WITHIN_PX || used <= 0 || room <= 0) return current;
+  const next = Math.min(1, (current * room) / used) - UNDER_BY;
+  return Math.max(floor, rounded(next));
 }
 
 // The box the screen's fixed parts must fit: the root itself when it clips or scrolls, else
@@ -71,14 +90,15 @@ function hidden(part: Element): number {
   let most = 0;
   for (const e of [part, ...part.querySelectorAll('*')]) {
     const over = e.scrollHeight - e.clientHeight;
-    if (over > 1 && getComputedStyle(e).overflowY !== 'visible') most = Math.max(most, over);
+    if (over > HIDDEN_OVER_PX && getComputedStyle(e).overflowY !== 'visible')
+      most = Math.max(most, over);
   }
   return most;
 }
 
 // How far the fixed parts reach in the box's content, from its top edge, and the box's room.
 function measure(root: HTMLElement, box: HTMLElement): { used: number; room: number } {
-  const marked = root.querySelectorAll<HTMLElement>('[data-fit-fixed]');
+  const marked = root.querySelectorAll<HTMLElement>('[data-sk-fit-fixed]');
   const parts = marked.length > 0 ? [...marked] : [...root.children];
   const b = box.getBoundingClientRect();
   const top = b.top + box.clientTop - box.scrollTop;
@@ -100,7 +120,7 @@ export function settle(root: HTMLElement, box: HTMLElement, floor: number): numb
   const fits = (scale: number): boolean => {
     root.style.setProperty('--fit', String(scale));
     const { used, room } = measure(root, box);
-    return used <= room + 0.5;
+    return used <= room + FITS_WITHIN_PX;
   };
   let scale = 1;
   if (floor < 1 && !fits(1)) {
@@ -108,15 +128,15 @@ export function settle(root: HTMLElement, box: HTMLElement, floor: number): numb
     let low = floor;
     let high = 1;
     let guess = nextScale(1, first.used, first.room, floor);
-    for (let pass = 0; pass < PASSES && high - low > 0.01; pass += 1) {
+    for (let pass = 0; pass < PASSES && high - low > CLOSE_ENOUGH; pass += 1) {
       if (fits(guess)) low = guess;
       else high = guess;
-      guess = Math.round(((low + high) / 2) * 1000) / 1000;
+      guess = rounded((low + high) / 2);
     }
     scale = low;
   }
   root.style.setProperty('--fit', String(scale));
-  root.dataset['fitScale'] = String(scale);
+  root.dataset['skFitScale'] = String(scale);
   return scale;
 }
 

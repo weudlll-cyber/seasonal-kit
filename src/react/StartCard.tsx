@@ -48,7 +48,7 @@ export function StartCard(p: StartCardProps): ReactElement {
     <section
       ref={fit}
       className="sk-start-card"
-      data-season={p.season ?? undefined}
+      data-sk-season={p.season ?? undefined}
       aria-labelledby={headingId}
       data-testid="start-card"
     >

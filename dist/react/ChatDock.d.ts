@@ -14,7 +14,9 @@
  *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
  *                 nothing is framed in it: the site's call page does not exist yet (BACKLOG 8).
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
- *                 provides its arrivals to the chat inside (./dockSight). The same element holds
+ *                 provides its arrivals to the chat inside (./dockSight). A changed count is
+ *                 announced in a polite live region (role status, since v0.10.1), never on the
+ *                 first render. The same element holds
  *                 the chat in both layouts, so turning a phone does not reload it.
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead

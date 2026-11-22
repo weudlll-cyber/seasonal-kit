@@ -212,7 +212,7 @@
     display: none;
   }
 
-  .sk-menu[data-open='true'] {
+  .sk-menu[data-sk-open='true'] {
     position: absolute;
     top: 100%;
     right: 0;

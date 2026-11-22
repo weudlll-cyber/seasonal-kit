@@ -7,7 +7,7 @@
  * Responsibility: the toggle says what a click does, flips, stores and sets <html data-theme>;
  *                 the system is followed while nothing is stored; the shown theme follows
  *                 <html>. The disclosure opens, closes on Escape only while open and gives the
- *                 focus back. The back link shows only in website mode and leads to /games. The
+ *                 focus back; `dismiss` closes and leaves the focus. The back link shows only in website mode and leads to /games. The
  *                 fit hook sets `--fit` on its element and stops on unmount.
  * Depends on:     vitest, jsdom, @testing-library/react
  */
@@ -76,7 +76,7 @@ describe('the theme toggle', () => {
 describe('the disclosure', () => {
   it('keeps toggle and close the same across renders (audit B4)', () => {
     const { result, rerender } = renderHook(() => useDisclosure());
-    const { toggle, close } = result.current;
+    const { toggle, close, dismiss } = result.current;
     act(() => {
       toggle();
     });
@@ -84,6 +84,23 @@ describe('the disclosure', () => {
     expect(result.current.open).toBe(true);
     expect(result.current.toggle).toBe(toggle);
     expect(result.current.close).toBe(close);
+    expect(result.current.dismiss).toBe(dismiss);
+  });
+
+  it('dismisses: closes and leaves the focus where it is (v0.10.1)', () => {
+    const { result } = renderHook(() => useDisclosure(true));
+    const button = document.createElement('button');
+    const elsewhere = document.createElement('button');
+    document.body.append(button, elsewhere);
+    result.current.button.current = button;
+    elsewhere.focus();
+    act(() => {
+      result.current.dismiss();
+    });
+    expect(result.current.open).toBe(false);
+    expect(document.activeElement).toBe(elsewhere);
+    button.remove();
+    elsewhere.remove();
   });
 
   it('opens, closes on Escape only while open, and gives the focus back', () => {
@@ -139,7 +156,7 @@ describe('the fit hook', () => {
   it('sets the scale on its element and stops on unmount', () => {
     vi.stubGlobal('ResizeObserver', undefined);
     const { unmount, rerender } = render(<Screen signature="a" />);
-    expect(screen.getByTestId('screen').dataset['fitScale']).toBe('1');
+    expect(screen.getByTestId('screen').dataset['skFitScale']).toBe('1');
     rerender(<Screen signature="b" />);
     expect(screen.getByTestId('screen').style.getPropertyValue('--fit')).toBe('1');
     unmount();

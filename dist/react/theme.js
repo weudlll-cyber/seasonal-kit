@@ -4,7 +4,8 @@ import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-run
  * @brief  React over the kit's theme logic: the page's theme with its toggle, the theme shown,
  *         and the light/dark toggle button.
  *
- * Responsibility: `useTheme` starts from the early script's resolution, sets it on <html>,
+ * Responsibility: `useTheme` takes the early script's resolution before the first paint (never
+ *                 during a render, so it renders on a server since v0.10.1), sets it on <html>,
  *                 follows the system setting while nothing is stored, and stores a click's
  *                 choice. `useShownTheme` follows <html data-theme> for parts that must match the
  *                 page (the website's chat frame). `ThemeToggle` is the round glass button with a
@@ -18,13 +19,24 @@ import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-run
  *                 onSystemThemeChange, shownTheme, onShownThemeChange).
  * Spec:           Seasonal Entertainment docs/DESIGN.md "Theme logic", "Icons"
  */
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useLayoutEffect, useState, useSyncExternalStore, } from 'react';
 import { applyTheme, onShownThemeChange, onSystemThemeChange, resolveTheme, shownTheme, storeTheme, } from '../theme.js';
+// The theme a render shows before the page's own is known: on a server, and in the client's
+// first render, so the two match (hydration).
+const UNRESOLVED_SHOWS = 'light';
 export function useTheme() {
-    const [theme, setTheme] = useState(resolveTheme);
+    // null until resolved: rendering never reads `window` or storage, so the toggle and the
+    // header render on a server (since v0.10.1, audit 2026-11-22 "Noted"). The layout effect
+    // resolves it before the browser paints, so the client never shows the placeholder.
+    const [resolved, setTheme] = useState(null);
+    useLayoutEffect(() => {
+        setTheme(resolveTheme());
+    }, []);
     useEffect(() => {
-        applyTheme(theme);
-    }, [theme]);
+        if (resolved !== null)
+            applyTheme(resolved);
+    }, [resolved]);
+    const theme = resolved ?? UNRESOLVED_SHOWS;
     // The system setting is followed live while no choice is stored.
     useEffect(() => onSystemThemeChange(setTheme), []);
     const toggle = () => {
@@ -42,5 +54,5 @@ const MOON = 'M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z';
 export function ThemeToggle() {
     const { theme, toggle } = useTheme();
     const next = theme === 'dark' ? 'light' : 'dark';
-    return (_jsx("button", { type: "button", className: "sk-theme-toggle", "data-testid": "theme-toggle", "data-theme-now": theme, "aria-label": `Switch to ${next} theme`, title: `Switch to ${next} theme`, onClick: toggle, children: _jsx("svg", { "aria-hidden": "true", width: "22", height: "22", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round", children: theme === 'dark' ? (_jsxs(_Fragment, { children: [_jsx("circle", { cx: "12", cy: "12", r: "4" }), _jsx("path", { d: SUN })] })) : (_jsx("path", { d: MOON })) }) }));
+    return (_jsx("button", { type: "button", className: "sk-theme-toggle", "data-testid": "theme-toggle", "data-sk-theme-now": theme, "aria-label": `Switch to ${next} theme`, title: `Switch to ${next} theme`, onClick: toggle, children: _jsx("svg", { "aria-hidden": "true", width: "22", height: "22", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round", children: theme === 'dark' ? (_jsxs(_Fragment, { children: [_jsx("circle", { cx: "12", cy: "12", r: "4" }), _jsx("path", { d: SUN })] })) : (_jsx("path", { d: MOON })) }) }));
 }

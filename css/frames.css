@@ -4,7 +4,7 @@
  *         part.
  *
  * Responsibility: `.sk-start-card` fills its space under the game's bar and never scrolls the
- *                 page: a card framed and tinted in the season's colour (`data-season`, the
+ *                 page: a card framed and tinted in the season's colour (`data-sk-season`, the
  *                 website's colours from ./tokens.css), everything centred, the title in the
  *                 largest type, the special, the facts and the seconds left, sizes following the
  *                 viewport's smaller side. `.sk-result` is the result: its first part one screen
@@ -44,24 +44,24 @@
   text-align: center;
 }
 
-.sk-start-card[data-season='spring'] {
+.sk-start-card[data-sk-season='spring'] {
   --sk-season: var(--color-spring);
 }
 
-.sk-start-card[data-season='summer'] {
+.sk-start-card[data-sk-season='summer'] {
   --sk-season: var(--color-summer);
 }
 
-.sk-start-card[data-season='autumn'] {
+.sk-start-card[data-sk-season='autumn'] {
   --sk-season: var(--color-autumn);
 }
 
-.sk-start-card[data-season='winter'] {
+.sk-start-card[data-sk-season='winter'] {
   --sk-season: var(--color-winter);
 }
 
 /* A game whose rounds show no season: the card on the surface, with a hairline. */
-.sk-start-card:not([data-season]) {
+.sk-start-card:not([data-sk-season]) {
   border-width: 1px;
   background: var(--color-surface);
 }
@@ -150,7 +150,7 @@
 }
 
 /* A list game's first part is as tall as its content; a board game's grid keeps the height. */
-.sk-result:not([data-layout='board']) .sk-result-first {
+.sk-result:not([data-sk-layout='board']) .sk-result-first {
   height: auto;
   grid-template-rows: auto auto auto;
   /* Given more height (in the docked screen), its rows stay together at the top. */
@@ -221,7 +221,7 @@
       'reveal places';
   }
 
-  .sk-result:not([data-layout='board']) .sk-result-first {
+  .sk-result:not([data-sk-layout='board']) .sk-result-first {
     grid-template-rows: auto auto;
   }
 

@@ -7,6 +7,70 @@ applies it.
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-11-22
+
+The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed"). Nothing a player sees
+changes; the data attributes' rename is the one thing a game's code would see, listed below.
+Released unattended with the owner's approval (DECISIONS K30).
+
+### Added
+
+- `ChatDock` tells a screen reader when the unread count changes: a visually hidden polite
+  live region (role `status`) says "2 unread chat messages", and nothing on the first render or
+  once the chat is read.
+- `useDisclosure` returns `dismiss`: it closes and leaves the focus where it is, for a press
+  outside or a focus already gone elsewhere. Stable across renders like `close` and `toggle`.
+
+### Changed
+
+- The header's menu (`MenuFold`) is built on `useDisclosure` instead of its own state. Its
+  behaviour is unchanged: the header's tests run as before, plus one that a press outside leaves
+  the focus alone.
+
+- Renovate updates the scanner images' tags and digests in `ci.yml`'s `env:` (a regex
+  manager), and `packageManager` carries pnpm's sha512 hash (docs/RELEASING.md). Nothing a game
+  installs changes.
+- **Every data attribute the kit sets or reads is `data-sk-` prefixed**, like its classes and
+  keyframes (DECISIONS K7, K31). tests/prefix.test.ts now checks attributes too, in the CSS, the
+  source and the early script. Two attributes stay as they are: `data-testid`, the testing
+  library's convention, and `data-theme`, the website's. Every rename is listed below.
+- `fit.ts`'s tolerances are named constants with the reason for each: 0.5 px still fits, 1 px
+  of scroll in a clipping box is rounding, and the guess margin, rounding step and 1 % stop.
+  The values are unchanged.
+- The server entry decodes its name and steps headers with one shared strict UTF-8 decoder
+  (`src/server/utf8.ts`) instead of making one per steps header.
+
+### Migration, per game
+
+Players see no change. In a game's code, before → after:
+
+| Before                                    | After                                              | Where                                         |
+| ----------------------------------------- | -------------------------------------------------- | --------------------------------------------- |
+| `data-fit-fixed` (the game marks a part)  | `data-sk-fit-fixed`                                | a screen fitted with `watchFit`/`useFitScale` |
+| `data-fit-scale` (set by the kit)         | `data-sk-fit-scale`, `dataset['skFitScale']`       | a test that reads the scale                   |
+| `data-view`                               | `data-sk-view`                                     | `ChatDock`, `DockedScreen`                    |
+| `data-bar`, `data-open`                   | `data-sk-bar`, `data-sk-open`                      | `ChatDock` (`data-sk-open` on `MenuFold` too) |
+| `data-form`                               | `data-sk-form`                                     | the call slot                                 |
+| `data-phase`, `data-current`, `data-done` | `data-sk-phase`, `data-sk-current`, `data-sk-done` | `PhaseStrip`                                  |
+| `data-layout`                             | `data-sk-layout`                                   | `ResultFrame`                                 |
+| `data-season`                             | `data-sk-season`                                   | `StartCard`                                   |
+| `data-theme-now`                          | `data-sk-theme-now`                                | `ThemeToggle`                                 |
+
+A game's own CSS or test that names one of the old attributes changes it the same way. No game
+uses the kit yet (docs/ADOPTION.md), so nothing in a game's code breaks today.
+
+- **The dev sign-in menu** (`DevSignIn`, development only) closes on a press outside, like the
+  header's fold: both use one hook, `src/react/usePressOutside.ts`, moved out of `MenuFold`.
+  Its failure alert names the label the menu showed ("Dev sign-in failed: Sign in as host.")
+  instead of the route's id ("Dev sign-in as player-1 failed.").
+
+### Fixed
+
+- `ThemeToggle` (and so `AppHeader`) renders on a server: `useTheme` no longer reads `window`
+  or storage while rendering. A render before the theme is known shows the light toggle; in
+  the browser a layout effect resolves the theme before the first paint, and `<html
+data-theme>` is written only once it is known.
+
 ## [0.10.0] - 2026-11-22
 
 Keyboard, focus and touch fixes from the audit of 2026-11-22, B7, and its API cleanup, B4, both
@@ -608,7 +672,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...v0.9.0

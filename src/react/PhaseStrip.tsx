@@ -50,9 +50,9 @@ function PartItem(p: { readonly part: PhasePart; readonly at: number | null }): 
   return (
     <li
       className="sk-phase"
-      data-phase={part.id}
-      data-current={current}
-      data-done={done}
+      data-sk-phase={part.id}
+      data-sk-current={current}
+      data-sk-done={done}
       aria-current={current ? 'step' : undefined}
       style={{ flexGrow: Math.max(1, part.to - part.from) }}
     >

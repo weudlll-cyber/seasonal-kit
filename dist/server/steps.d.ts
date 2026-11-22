@@ -20,7 +20,8 @@
  * Source:         seasonal-mini-games apps/server/src/auth/websiteIdentity.ts (`stepsFrom`) and
  *                 packages/contracts/src/http/session.ts (`PlayerStep`) at 866df03;
  *                 seasonal-bingo-royale packages/contracts/src/http/steps.ts (`parseSteps`) at
- *                 a43209a. No zod: the kit has no runtime dependency.
+ *                 a43209a. No zod: the kit has no runtime dependency. The decoder is ./utf8's,
+ *                 shared with ./identity (since v0.10.1).
  * Spec:           Seasonal Entertainment docs/AUTH.md "Embedded games"; GAME-INTEGRATION.md §2
  */
 export type Ladder = 'holder' | 'farmer' | 'investor';

@@ -15,7 +15,7 @@
  *                 `sk-visually-hidden`, which a game imports with this file.
  * Source:         seasonal-mini-games apps/web/src/match/chatDock.css and docked.css at 866df03
  *                 (the 190/150 px strip, the bar, the sheet; the 760 px query without its 900 px
- *                 width, which `data-view` carries here)
+ *                 width, which `data-sk-view` carries here)
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Placement and sizes"
  */
 
@@ -48,13 +48,13 @@
 }
 
 /* Desktop: the strip, chat on the left and the call slot at the right end. */
-.sk-chat-dock[data-view='desktop'] .sk-chat-dock-row {
+.sk-chat-dock[data-sk-view='desktop'] .sk-chat-dock-row {
   display: flex;
   gap: 12px;
   height: var(--sk-dock-height);
 }
 
-.sk-chat-dock[data-view='desktop'] .sk-chat-dock-body {
+.sk-chat-dock[data-sk-view='desktop'] .sk-chat-dock-body {
   flex: 1;
   min-width: 0;
   padding: 12px 16px;
@@ -63,7 +63,7 @@
   background: var(--color-card);
 }
 
-.sk-chat-dock[data-view='desktop'] .sk-call-slot {
+.sk-chat-dock[data-sk-view='desktop'] .sk-call-slot {
   height: var(--sk-dock-height);
 }
 
@@ -93,16 +93,16 @@
 }
 
 /* Phone: the content scrolls alone above the dock. */
-.sk-docked[data-view='phone'] {
+.sk-docked[data-sk-view='phone'] {
   gap: 0;
 }
 
-.sk-docked[data-view='phone'] > .sk-docked-main {
+.sk-docked[data-sk-view='phone'] > .sk-docked-main {
   position: relative;
   overflow-y: auto;
 }
 
-.sk-chat-dock[data-view='phone'] {
+.sk-chat-dock[data-sk-view='phone'] {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -110,7 +110,7 @@
   margin: 0 10px 10px;
 }
 
-.sk-chat-dock[data-view='phone'] .sk-chat-dock-row {
+.sk-chat-dock[data-sk-view='phone'] .sk-chat-dock-row {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -162,7 +162,7 @@
 }
 
 /* The open sheet: above the bar, never over it. */
-.sk-chat-dock[data-view='phone'] .sk-chat-dock-body {
+.sk-chat-dock[data-sk-view='phone'] .sk-chat-dock-body {
   position: absolute;
   z-index: 40;
   left: 0;

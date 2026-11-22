@@ -6,7 +6,7 @@
  *
  * Responsibility: Mini Games' fit.test.ts (apps/web/src/round at 866df03) with the floor passed
  *                 per game: `nextScale` keeps a fitting scale, shrinks in proportion, never above
- *                 1 or below the floor. `settle` starts from 1, sets `--fit` and `data-fit-scale`,
+ *                 1 or below the floor. `settle` starts from 1, sets `--fit` and `data-sk-fit-scale`,
  *                 finds the largest fitting scale in at most nine measurements, stops at the
  *                 floor, and never shrinks a game whose floor is 1 (Bingo). Added: the box is the
  *                 nearest one that clips or scrolls; a part's hidden overflow counts; `watchFit`
@@ -29,6 +29,9 @@ describe('nextScale', () => {
     expect(nextScale(1, 400, 400, MG)).toBe(1);
     expect(nextScale(0.8, 300, 400, MG)).toBe(0.8);
     expect(nextScale(0.8, 0, 0, MG)).toBe(0.8);
+    // Half a pixel over is layout rounding, and still fits; more is not (v0.10.1, named).
+    expect(nextScale(1, 400.5, 400, MG)).toBe(1);
+    expect(nextScale(1, 400.6, 400, MG)).toBeLessThan(1);
   });
 
   it('shrinks in proportion to the room, never above 1 or below the floor', () => {
@@ -44,7 +47,7 @@ function screenOf(natural: number, fixed: number, room: number) {
   const box = document.createElement('div');
   const root = document.createElement('div');
   const part = document.createElement('div');
-  part.dataset['fitFixed'] = '';
+  part.dataset['skFitFixed'] = '';
   root.append(part);
   box.append(root);
   document.body.append(box);
@@ -72,7 +75,7 @@ describe('settle', () => {
     const s = screenOf(300, 0, 400);
     expect(settle(s.root, s.box, MG)).toBe(1);
     expect(s.root.style.getPropertyValue('--fit')).toBe('1');
-    expect(s.root.dataset['fitScale']).toBe('1');
+    expect(s.root.dataset['skFitScale']).toBe('1');
     expect(s.reads()).toBe(1);
   });
 
@@ -106,12 +109,24 @@ describe('settle', () => {
 
   it('counts what a part hides in a box that clips, and measures all children when none is marked', () => {
     const s = screenOf(300, 0, 400);
-    delete s.part.dataset['fitFixed'];
+    delete s.part.dataset['skFitFixed'];
     s.part.style.overflowY = 'hidden';
     Object.defineProperty(s.part, 'scrollHeight', { value: 500 });
     Object.defineProperty(s.part, 'clientHeight', { value: 300 });
     // 300 px laid out plus 200 px hidden does not fit 400 px.
     expect(settle(s.root, s.box, MG)).toBeLessThan(1);
+  });
+
+  it('takes 1 px of scroll over a clipping box as rounding, 2 px as hidden (v0.10.1, named)', () => {
+    const hiding = (over: number): number => {
+      const s = screenOf(399, 0, 400);
+      s.part.style.overflowY = 'hidden';
+      Object.defineProperty(s.part, 'scrollHeight', { value: 300 + over });
+      Object.defineProperty(s.part, 'clientHeight', { value: 300 });
+      return settle(s.root, s.box, MG);
+    };
+    expect(hiding(1)).toBe(1);
+    expect(hiding(2)).toBeLessThan(1);
   });
 });
 
@@ -149,7 +164,7 @@ describe('watchFit', () => {
     const s = screenOf(300, 0, 400);
     s.box.style.overflowY = 'auto';
     const stop = watchFit(s.root, 'mini-games');
-    expect(s.root.dataset['fitScale']).toBe('1');
+    expect(s.root.dataset['skFitScale']).toBe('1');
     const fire = observed as unknown as () => void;
     fire();
     expect(frames).toHaveLength(0);
@@ -157,7 +172,7 @@ describe('watchFit', () => {
     fire();
     expect(frames).toHaveLength(1);
     frames[0]?.(0);
-    expect(Number(s.root.dataset['fitScale'])).toBeLessThan(1);
+    expect(Number(s.root.dataset['skFitScale'])).toBeLessThan(1);
     stop();
     expect(disconnect).toHaveBeenCalled();
   });
@@ -167,7 +182,7 @@ describe('watchFit', () => {
     const s = screenOf(300, 0, 400);
     Object.defineProperty(s.root, 'clientHeight', { value: 100 });
     const stop = watchFit(s.root, 'mini-games', true);
-    expect(Number(s.root.dataset['fitScale'])).toBeLessThan(1);
+    expect(Number(s.root.dataset['skFitScale'])).toBeLessThan(1);
     stop();
   });
 });

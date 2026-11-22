@@ -53,7 +53,7 @@ describe('the dock on a desktop', () => {
     const { rerender } = render(
       <ChatDock chat={<p>chat</p>} phone={false} bar="line" callId={null} />,
     );
-    expect(screen.getByTestId('chat-dock').dataset['view']).toBe('desktop');
+    expect(screen.getByTestId('chat-dock').dataset['skView']).toBe('desktop');
     expect(screen.queryByTestId('chat-bar')).toBeNull();
     const slot = screen.getByTestId('call-slot');
     expect(slot.hidden).toBe(true);
@@ -131,7 +131,7 @@ describe('the phone sheet and the focus (audit B7, DECISIONS K29)', () => {
     );
     expect(screen.getByLabelText('Write')).not.toBeNull();
     const slot = screen.getByTestId('call-slot');
-    expect(slot.dataset['form']).toBe('strip');
+    expect(slot.dataset['skForm']).toBe('strip');
     expect(slot.nextElementSibling?.contains(screen.getByTestId('chat-bar'))).toBe(true);
     rerender(<ChatDock chat={<p>chat</p>} phone bar="line" field={field} callId={3} />);
     expect(screen.queryByLabelText('Write')).toBeNull();
@@ -220,7 +220,7 @@ describe('the docked screen', () => {
       </DockedScreen>,
     );
     const dock = screen.getByTestId('chat-dock');
-    expect(dock.dataset['view']).toBe('desktop');
+    expect(dock.dataset['skView']).toBe('desktop');
     rerender(
       <DockedScreen chat={<p>chat</p>} bar="line" callId={null}>
         <p>result</p>
@@ -254,7 +254,7 @@ describe('the docked screen on a phone', () => {
     });
     const box = screen.getByTestId('docked-screen');
     const visible = () => document.documentElement.style.getPropertyValue('--sk-visible-height');
-    expect(box.dataset['view']).toBe('phone');
+    expect(box.dataset['skView']).toBe('phone');
     expect(visible()).toBe('600px');
     // The box keeps its container's height: it may sit under other parts of the page.
     expect(box.style.height).toBe('');
@@ -284,7 +284,7 @@ describe('the docked screen on a phone', () => {
         <p>round</p>
       </DockedScreen>,
     );
-    expect(screen.getByTestId('docked-screen').dataset['view']).toBe('phone');
+    expect(screen.getByTestId('docked-screen').dataset['skView']).toBe('phone');
     expect(document.documentElement.style.getPropertyValue('--sk-visible-height')).toBe('');
   });
 });

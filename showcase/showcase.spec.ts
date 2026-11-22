@@ -73,7 +73,7 @@ for (const viewport of VIEWPORTS) {
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
         const phone = viewport.width < 900;
         await expect(page.getByTestId('chat-dock')).toHaveAttribute(
-          'data-view',
+          'data-sk-view',
           phone ? 'phone' : 'desktop',
         );
         await page.screenshot({

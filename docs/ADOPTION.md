@@ -179,8 +179,9 @@ comes from the kit.
 
 **The header, once it has accounts.** The shared header (K21) comes when Seasonal Party gets
 sign-in. Without React it writes `AppHeader`'s markup by hand with the same classes
-(`sk-header`, `sk-header-brand`, `sk-header-nav`, `sk-header-account`, `sk-menu`), and opens and
-closes the fold itself with the same rules (focus in, Escape, a press outside). The dev tools
+(`sk-header`, `sk-header-brand`, `sk-header-nav`, `sk-header-account`, `sk-menu`) and the fold's
+`data-sk-open` (`data-open` before v0.10.1), and opens and closes the fold itself with the same
+rules (focus in, Escape, a press outside). The dev tools
 come with its server's dev sign-in.
 
 The React parts do not apply as they are. `dock.css`, `frames.css`, `bar.css` and `fit.css` can

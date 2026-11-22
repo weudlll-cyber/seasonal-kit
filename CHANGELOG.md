@@ -20,6 +20,10 @@ The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
   behaviour is unchanged: the header's tests run as before, plus one that a press outside leaves
   the focus alone.
 
+- Renovate updates the scanner images' tags and digests in `ci.yml`'s `env:` (a regex
+  manager), and `packageManager` carries pnpm's sha512 hash (docs/RELEASING.md). Nothing a game
+  installs changes.
+
 ### Fixed
 
 - `ThemeToggle` (and so `AppHeader`) renders on a server: `useTheme` no longer reads `window`

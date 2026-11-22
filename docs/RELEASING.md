@@ -63,3 +63,16 @@ day:
 
 Master's branch protection is DECISIONS K13 and K19. Renovate (`renovate.json`) needs its GitHub
 app, which the owner installs: no Renovate PR or dependency dashboard has appeared yet.
+
+## What Renovate updates (since v0.10.1)
+
+- **Dependencies and actions:** the built-in managers, pinned versions and action digests.
+- **The scanner images:** `OSV_SCANNER_IMAGE`, `GITLEAKS_IMAGE` and `LYCHEE_IMAGE` sit in
+  `ci.yml`'s `env:` as `<image>:<tag>@sha256:<digest>`. No built-in manager reads them, so a
+  regex manager in `renovate.json` does, on the docker datasource. It updates tag and digest
+  together.
+- **pnpm:** `packageManager` is `pnpm@<version>+sha512.<hash>`, so the toolchain is pinned to its
+  bytes. Renovate updates version and hash together. The hash is the npm tarball's sha512
+  (`npm view pnpm@<version> dist.integrity`, base64 to hex).
+
+tests/renovate.test.ts fails when a `*_IMAGE` line is not matched or the hash is missing.

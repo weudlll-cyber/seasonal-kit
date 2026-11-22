@@ -1,7 +1,7 @@
 /**
  * @file   css/header.css
- * @brief  The shared app header (src/react/AppHeader.tsx): one bar, folding into a menu below
- *         960 px.
+ * @brief  The shared app header (src/react/AppHeader.tsx): one bar, folding into a menu when
+ *         its items do not fit on one row.
  *
  * Responsibility: a bar on the website's sidebar background over the page:
  *                 - the back link first (./shell.css), the brand (emblem, name, the wordmark in
@@ -9,8 +9,10 @@
  *                   account (chip and buttons), and last the theme toggle (./shell.css). The
  *                   order shown is the DOM's, so the tab order matches it (since v0.10.0);
  *                 - sticky from 640 px, with the focus kept below it;
- *                 - below 960 px one row (brand, Menu, toggle), the navigation and the account
- *                   in an opaque panel under it (src/react/MenuFold.tsx);
+ *                 - folded (`data-sk-folded`, set before the paint when the items would take a
+ *                   second row, src/react/useHeaderFold.ts; since v0.11.0, before it below
+ *                   960 px) one row (brand, Menu, toggle), the navigation and the account in an
+ *                   opaque panel under it (src/react/MenuFold.tsx);
  *                 - on a phone (≤ 640 px) the back link its own short first row, the wordmark
  *                   hidden, the account chip whole.
  *                 Text never below the game's floor (`--sk-floor-text`, ./fit.css); targets
@@ -197,56 +199,56 @@
   display: contents;
 }
 
-/* Below 960 px one row: brand, Menu, toggle; the menu an opaque panel under the bar. */
-@media (max-width: 959px) {
-  .sk-header-brand {
-    flex: 1 1 0;
-    min-width: 0;
-  }
+/* Folded (src/react/useHeaderFold.ts: the items would take a second row; since v0.11.0, before
+   it below a fixed 960 px): one row, brand, Menu, toggle; the menu an opaque panel under the
+   bar. */
+.sk-header[data-sk-folded='true'] .sk-header-brand {
+  flex: 1 1 0;
+  min-width: 0;
+}
 
-  .sk-menu-button {
-    display: inline-flex;
-  }
+.sk-header[data-sk-folded='true'] .sk-menu-button {
+  display: inline-flex;
+}
 
-  .sk-menu {
-    display: none;
-  }
+.sk-header[data-sk-folded='true'] .sk-menu {
+  display: none;
+}
 
-  .sk-menu[data-sk-open='true'] {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: 0;
-    z-index: 30;
-    display: grid;
-    gap: var(--space-2);
-    max-height: calc(100dvh - 4rem);
-    overflow-y: auto;
-    padding: var(--space-2) var(--gutter);
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-raised);
-  }
+.sk-header[data-sk-folded='true'] .sk-menu[data-sk-open='true'] {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  z-index: 30;
+  display: grid;
+  gap: var(--space-2);
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
+  padding: var(--space-2) var(--gutter);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
 
-  .sk-menu .sk-header-nav {
-    display: grid;
-    overflow-x: visible;
-  }
+.sk-header[data-sk-folded='true'] .sk-menu .sk-header-nav {
+  display: grid;
+  overflow-x: visible;
+}
 
-  .sk-menu .sk-header-account {
-    width: 100%;
-  }
+.sk-header[data-sk-folded='true'] .sk-menu .sk-header-account {
+  width: 100%;
+}
 
-  /* Inside the scrolling panel the dev menu opens in the flow, not over it (it would be cut). */
-  .sk-menu .sk-dev-menu-panel {
-    position: static;
-    width: 100%;
-    margin-top: var(--space-1);
-  }
+/* Inside the scrolling panel the dev menu opens in the flow, not over it (it would be cut). */
+.sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu-panel {
+  position: static;
+  width: 100%;
+  margin-top: var(--space-1);
+}
 
-  .sk-menu .sk-dev-menu {
-    flex-basis: 100%;
-  }
+.sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu {
+  flex-basis: 100%;
 }
 
 /* A phone: the wordmark gone, the chip whole (the back link's own row is ./shell.css's). */

@@ -9,6 +9,19 @@ applies it.
 
 The games' requests (DECISIONS K32), the season feed and the handbook.
 
+### Changed
+
+- **The app header folds whenever its items do not fit on one row** (Bingo R1: "the top bar
+  never takes two rows"). Before the paint, `useHeaderFold` (new, inside `MenuFold`) checks
+  whether an item starts below another's bottom; if so the header folds into its Menu and says
+  so in `data-sk-folded`. It tries one row again on a new close key and in a window grown past
+  the width it folded at, and it checks again when the header changes size. There is no fixed
+  width any more: before, it folded below 960 px only. Now a website admin's long bar in website
+  mode folds at 1280 px, and a short bar stays in one row on a wide tablet. Folding again closes
+  nothing. Unfolding closes an open menu, since its items are back in the bar. A render never
+  reads the window: the first render is unfolded, and the layout effect decides before the
+  paint.
+
 ### Fixed
 
 - **The back link's space.** "←" and "Seasonal Entertainment" no longer touch: in the link's

@@ -9,10 +9,15 @@ check that runs on every pull request. It lives in `showcase/`
 ## What it shows
 
 - **The shell:** the back link and the theme toggle.
-- **The app header** three times ([`showcase/Headers.tsx`](../showcase/Headers.tsx)): signed out
-  and standalone (Sign in, Register); signed in, in website mode (the back link, "Walter (host)");
-  and signed in with the development tools (a Quick Test link and the Dev sign-in menu). Below
-  960 px each folds into one Menu.
+- **The app header** four times ([`showcase/Headers.tsx`](../showcase/Headers.tsx)):
+  - signed out and standalone (Sign in, Register);
+  - signed in, in website mode (the back link, "Walter (host)");
+  - signed in with the development tools (a Quick Test link and the Dev sign-in menu);
+  - a website admin's long bar in website mode.
+
+  Each folds into one Menu whenever its items do not fit on one row: the phones fold all four,
+  and 1280 px folds the admin's.
+
 - **The game bar:** the season pill, "Shared", "9:50 left", Chat with 3 unread, Players and Host,
   and the phase strip with "Play · now". Under it a crowded bar, as Seasonal Cases has it.
 - **The docked screen,** in a box 640 px high: the start card (or, with `?screen=result`, the
@@ -71,7 +76,9 @@ header's Menu and its Dev sign-in panel (axe again). Moderate axe findings do no
 
 What only a browser's layout shows is measured in
 [`showcase/layout.spec.ts`](../showcase/layout.spec.ts) (since v0.11.0): the back link keeps a
-gap of 4 px or more between its arrow and its words; a crowded game bar (Seasonal Cases' lead,
+gap of 4 px or more between its arrow and its words; every app header keeps one row at 1280,
+1536, 1920 and 390 px, the admin's folded at 1280 px and a short one unfolded at 1920 px; a
+crowded game bar (Seasonal Cases' lead,
 two long facts, the time and three buttons) stays inside the screen at 320, 360 and 375 px, every
 button still 44 px.
 

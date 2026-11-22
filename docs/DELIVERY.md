@@ -225,6 +225,23 @@ TypeScript 5.9.3 (NodeNext, `skipLibCheck: false`), Vitest 5.0.5 with jsdom 30.1
 
 The consumer was deleted afterwards.
 
+## The v0.10.1 noted items (2026-11-22, the tag itself)
+
+A scratch consumer pinned `#v0.10.1`, with scripts off, the same toolchain as for v0.10.0. The
+lockfile resolved the tag to the merge commit's tarball (`76bd872`, `version: 0.10.1`).
+
+- `tsc` worked, `useDisclosure`'s `dismiss` included.
+- Five tests passed:
+  - in Node, with no `window`: `renderToString` of `ThemeToggle` (`data-sk-theme-now="light"`)
+    and of `AppHeader` (`data-sk-open="false"`);
+  - in Node: `identityFrom` decoded a UTF-8 name ("Jürgen") and a steps header;
+  - in jsdom: `ChatDock` with `data-sk-view`, its live region empty at first and then "1 unread
+    chat message";
+  - `useDisclosure`'s `dismiss` closed the panel;
+  - `DevSignIn` closed on a press outside.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

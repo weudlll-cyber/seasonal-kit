@@ -247,7 +247,8 @@ describe('the dev sign-in menu', () => {
       });
     };
     await pick();
-    expect(screen.getByRole('alert').textContent).toBe('Dev sign-in as host failed.');
+    // The label the menu showed, not the route's id (v0.10.1).
+    expect(screen.getByRole('alert').textContent).toBe('Dev sign-in failed: Sign in as host.');
     await pick();
     expect(screen.queryByRole('alert')).toBeNull();
   });
@@ -255,6 +256,22 @@ describe('the dev sign-in menu', () => {
   it('takes the game’s button class', () => {
     render(<DevSignIn identities={[]} onSignIn={vi.fn()} buttonClassName="sbr-btn" />);
     expect(screen.getByTestId('dev-menu').className).toBe('sk-bar-button sbr-btn');
+  });
+});
+
+describe('the dev sign-in menu on a press (v0.10.1)', () => {
+  it('closes on a press outside, not on one inside, leaving the focus', () => {
+    render(
+      <DevSignIn identities={[{ as: 'host', label: 'Sign in as host' }]} onSignIn={vi.fn()} />,
+    );
+    const button = screen.getByTestId('dev-menu');
+    fireEvent.click(button);
+    fireEvent.pointerDown(screen.getByTestId('dev-menu-panel'));
+    fireEvent.pointerDown(button);
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    fireEvent.pointerDown(document.body);
+    expect(screen.queryByTestId('dev-menu-panel')).toBeNull();
+    expect(document.activeElement).not.toBe(button);
   });
 });
 

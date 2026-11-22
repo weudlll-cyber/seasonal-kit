@@ -52,6 +52,11 @@ Players see no change. In a game's code, before → after:
 A game's own CSS or test that names one of the old attributes changes it the same way. No game
 uses the kit yet (docs/ADOPTION.md), so nothing in a game's code breaks today.
 
+- **The dev sign-in menu** (`DevSignIn`, development only) closes on a press outside, like the
+  header's fold: both use one hook, `src/react/usePressOutside.ts`, moved out of `MenuFold`.
+  Its failure alert names the label the menu showed ("Dev sign-in failed: Sign in as host.")
+  instead of the route's id ("Dev sign-in as player-1 failed.").
+
 ### Fixed
 
 - `ThemeToggle` (and so `AppHeader`) renders on a server: `useTheme` no longer reads `window`

@@ -15,7 +15,8 @@
  *                 - on a new `closeKey` (the route, the account): if the focus was inside the
  *                   panel, it goes to the Menu button instead of the page (WCAG 2.4.3).
  *                 Audit 2026-11-22, B7 findings 2 and 3 (DECISIONS K29). Built on
- *                 ./useDisclosure since v0.10.1 (its `close` and `dismiss`).
+ *                 ./useDisclosure (its `close` and `dismiss`) and ./usePressOutside since
+ *                 v0.10.1.
  * Source:         seasonal-bingo-royale apps/web/src/shell/MenuFold.tsx at a43209a (its `where`
  *                 and `who` are one `closeKey` here; the panel's id is React's own, so two
  *                 headers on a page never share one).
@@ -31,6 +32,7 @@ import {
 
 import { barButtonClass } from './barButtonClass.js';
 import { useDisclosure, type Disclosure } from './useDisclosure.js';
+import { usePressOutside, within } from './usePressOutside.js';
 
 export interface MenuFoldProps {
   // Changes whenever the menu has done its job: a new route, another account.
@@ -39,24 +41,14 @@ export interface MenuFoldProps {
   readonly children: ReactNode;
 }
 
-const within = (box: RefObject<HTMLElement | null>, node: unknown): boolean =>
-  node instanceof Node && box.current?.contains(node) === true;
-
 // While open: the focus moves to the panel's first item; a press outside panel and button
-// closes it and leaves the focus to the press.
+// closes it and leaves the focus to the press (./usePressOutside).
 function useOpenedPanel(menu: Disclosure, panel: RefObject<HTMLDivElement | null>): void {
   const { open, button, dismiss } = menu;
   useEffect(() => {
-    if (!open) return undefined;
-    panel.current?.querySelector<HTMLElement>('a[href], button, select')?.focus();
-    const outside = (e: PointerEvent): void => {
-      if (!within(panel, e.target) && !within(button, e.target)) dismiss();
-    };
-    document.addEventListener('pointerdown', outside);
-    return () => {
-      document.removeEventListener('pointerdown', outside);
-    };
-  }, [open, panel, button, dismiss]);
+    if (open) panel.current?.querySelector<HTMLElement>('a[href], button, select')?.focus();
+  }, [open, panel]);
+  usePressOutside(open, [panel, button], dismiss);
 }
 
 // A new route or account closes the menu; a focus left inside the hidden panel goes to the

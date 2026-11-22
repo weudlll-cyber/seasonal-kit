@@ -15,7 +15,8 @@
  *                 - on a new `closeKey` (the route, the account): if the focus was inside the
  *                   panel, it goes to the Menu button instead of the page (WCAG 2.4.3).
  *                 Audit 2026-11-22, B7 findings 2 and 3 (DECISIONS K29). Built on
- *                 ./useDisclosure since v0.10.1 (its `close` and `dismiss`).
+ *                 ./useDisclosure (its `close` and `dismiss`) and ./usePressOutside since
+ *                 v0.10.1.
  * Source:         seasonal-bingo-royale apps/web/src/shell/MenuFold.tsx at a43209a (its `where`
  *                 and `who` are one `closeKey` here; the panel's id is React's own, so two
  *                 headers on a page never share one).

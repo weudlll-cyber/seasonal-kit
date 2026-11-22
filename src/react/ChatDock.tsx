@@ -14,7 +14,9 @@
  *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
  *                 nothing is framed in it: the site's call page does not exist yet (BACKLOG 8).
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
- *                 provides its arrivals to the chat inside (./dockSight). The same element holds
+ *                 provides its arrivals to the chat inside (./dockSight). A changed count is
+ *                 announced in a polite live region (role status, since v0.10.1), never on the
+ *                 first render. The same element holds
  *                 the chat in both layouts, so turning a phone does not reload it.
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
@@ -50,6 +52,21 @@ function useArrivals(visible: boolean): DockSightValue & { readonly state: ChatA
     arrivals.setVisible(visible);
   }, [arrivals, visible]);
   return { visible, arrivals, state };
+}
+
+// What the live region says about the unread count: nothing at first, then each new count
+// once it changes ("2 unread chat messages"), and nothing again once all is read. The badge
+// alone is never re-read by a screen reader (audit 2026-11-22 "Noted", B7 info; v0.10.1).
+function useUnreadAnnouncement(unread: number): string {
+  const [said, setSaid] = useState('');
+  const last = useRef(unread);
+  useEffect(() => {
+    if (unread === last.current) return;
+    last.current = unread;
+    const plural = unread === 1 ? '' : 's';
+    setSaid(unread === 0 ? '' : `${String(unread)} unread chat message${plural}`);
+  }, [unread]);
+  return said;
 }
 
 function PhoneBar(p: {
@@ -147,6 +164,7 @@ function CallSlotBox(p: { readonly callId: number | null; readonly phone: boolea
 export function ChatDock(p: ChatDockProps): ReactElement {
   const sheet = useDisclosure();
   const sight = useArrivals(!p.phone || sheet.open);
+  const announced = useUnreadAnnouncement(sight.state.unread);
   const value = useMemo(
     () => ({ visible: sight.visible, arrivals: sight.arrivals }),
     [sight.visible, sight.arrivals],
@@ -162,6 +180,15 @@ export function ChatDock(p: ChatDockProps): ReactElement {
         data-testid="chat-dock"
         onKeyDown={sheet.onKeyDown}
       >
+        {/* In the page from the first render, empty, so its later changes are announced. */}
+        <p
+          className="sk-visually-hidden"
+          role="status"
+          aria-live="polite"
+          data-testid="chat-announce"
+        >
+          {announced}
+        </p>
         {p.phone ? <CallSlotBox callId={p.callId} phone /> : null}
         <div className="sk-chat-dock-row">
           {p.phone ? (

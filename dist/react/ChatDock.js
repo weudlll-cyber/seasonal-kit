@@ -15,7 +15,9 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
  *                 nothing is framed in it: the site's call page does not exist yet (BACKLOG 8).
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
- *                 provides its arrivals to the chat inside (./dockSight). The same element holds
+ *                 provides its arrivals to the chat inside (./dockSight). A changed count is
+ *                 announced in a polite live region (role status, since v0.10.1), never on the
+ *                 first render. The same element holds
  *                 the chat in both layouts, so turning a phone does not reload it.
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
@@ -37,6 +39,21 @@ function useArrivals(visible) {
         arrivals.setVisible(visible);
     }, [arrivals, visible]);
     return { visible, arrivals, state };
+}
+// What the live region says about the unread count: nothing at first, then each new count
+// once it changes ("2 unread chat messages"), and nothing again once all is read. The badge
+// alone is never re-read by a screen reader (audit 2026-11-22 "Noted", B7 info; v0.10.1).
+function useUnreadAnnouncement(unread) {
+    const [said, setSaid] = useState('');
+    const last = useRef(unread);
+    useEffect(() => {
+        if (unread === last.current)
+            return;
+        last.current = unread;
+        const plural = unread === 1 ? '' : 's';
+        setSaid(unread === 0 ? '' : `${String(unread)} unread chat message${plural}`);
+    }, [unread]);
+    return said;
 }
 function PhoneBar(p) {
     const newest = chatBarText(p.state.newest);
@@ -69,6 +86,7 @@ function CallSlotBox(p) {
 export function ChatDock(p) {
     const sheet = useDisclosure();
     const sight = useArrivals(!p.phone || sheet.open);
+    const announced = useUnreadAnnouncement(sight.state.unread);
     const value = useMemo(() => ({ visible: sight.visible, arrivals: sight.arrivals }), [sight.visible, sight.arrivals]);
-    return (_jsx(DockSight.Provider, { value: value, children: _jsxs("section", { className: "sk-chat-dock", "aria-label": "Chat", "data-sk-view": p.phone ? 'phone' : 'desktop', "data-sk-bar": p.bar, "data-sk-open": sheet.open, "data-testid": "chat-dock", onKeyDown: sheet.onKeyDown, children: [p.phone ? _jsx(CallSlotBox, { callId: p.callId, phone: true }) : null, _jsxs("div", { className: "sk-chat-dock-row", children: [p.phone ? (_jsx(PhoneBar, { sheet: sheet, state: sight.state, field: p.bar === 'field' ? (p.field ?? null) : null })) : null, _jsx(Body, { sheet: sheet, phone: p.phone, children: p.chat }), p.phone ? null : _jsx(CallSlotBox, { callId: p.callId, phone: false })] })] }) }));
+    return (_jsx(DockSight.Provider, { value: value, children: _jsxs("section", { className: "sk-chat-dock", "aria-label": "Chat", "data-sk-view": p.phone ? 'phone' : 'desktop', "data-sk-bar": p.bar, "data-sk-open": sheet.open, "data-testid": "chat-dock", onKeyDown: sheet.onKeyDown, children: [_jsx("p", { className: "sk-visually-hidden", role: "status", "aria-live": "polite", "data-testid": "chat-announce", children: announced }), p.phone ? _jsx(CallSlotBox, { callId: p.callId, phone: true }) : null, _jsxs("div", { className: "sk-chat-dock-row", children: [p.phone ? (_jsx(PhoneBar, { sheet: sheet, state: sight.state, field: p.bar === 'field' ? (p.field ?? null) : null })) : null, _jsx(Body, { sheet: sheet, phone: p.phone, children: p.chat }), p.phone ? null : _jsx(CallSlotBox, { callId: p.callId, phone: false })] })] }) }));
 }

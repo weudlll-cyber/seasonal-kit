@@ -11,6 +11,9 @@ The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
 
 ### Added
 
+- `ChatDock` tells a screen reader when the unread count changes: a visually hidden polite
+  live region (role `status`) says "2 unread chat messages", and nothing on the first render or
+  once the chat is read.
 - `useDisclosure` returns `dismiss`: it closes and leaves the focus where it is, for a press
   outside or a focus already gone elsewhere. Stable across renders like `close` and `toggle`.
 

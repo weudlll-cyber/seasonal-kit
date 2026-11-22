@@ -30,6 +30,40 @@ async function seriousViolations(page: Page): Promise<string[]> {
     .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);
 }
 
+// The kit's focus ring (DECISIONS K29), for the owner to look at: Tab from the page's start
+// into the first app header, a screen of that header with its ring, and axe on the page.
+for (const at of [VIEWPORTS[0], VIEWPORTS[4]]) {
+  for (const theme of THEMES) {
+    test(`focus ring at ${at.name} in ${theme}`, async ({ page }) => {
+      await page.setViewportSize({ width: at.width, height: at.height });
+      await page.goto(`/?theme=${theme}`);
+      const header = page.getByTestId('app-header').first();
+      const brand = header.locator('.sk-header-brand');
+      // The showcase's own back link and toggle come first; Tab on to the header's brand.
+      for (
+        let i = 0;
+        i < 6 && !(await brand.evaluate((el) => el === document.activeElement));
+        i++
+      ) {
+        await page.keyboard.press('Tab');
+      }
+      await expect(brand).toBeFocused();
+      const outline = await brand.evaluate((el) => getComputedStyle(el).outlineStyle);
+      expect(outline).toBe('solid');
+      await header.screenshot({ path: `${SCREENS}focus-ring-${at.name}-${theme}.png` });
+      expect(await seriousViolations(page), `focus ring at ${at.name}`).toEqual([]);
+    });
+  }
+}
+
+// 320 px, the narrowest width WCAG 1.4.10 asks for: nothing on the page scrolls sideways.
+test('no sideways scrolling at 320 px', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto('/?theme=light');
+  const wide = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(wide).toBeLessThanOrEqual(320);
+});
+
 for (const viewport of VIEWPORTS) {
   for (const theme of THEMES) {
     for (const shown of SCREENS_SHOWN) {

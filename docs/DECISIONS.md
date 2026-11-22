@@ -91,3 +91,10 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   valid with no end date, and no game sets a deadline for them (K20 keeps them verifying).
 - **K28 — Seasonal Cases takes v0.10.0.** Seasonal Cases moves to the kit's v0.10.0 once it is
   released ([ADOPTION.md](ADOPTION.md)); its repository is not touched from here.
+- **K29 — Keyboard, focus and API fixes go into v0.10.0.** The audit's keyboard and focus
+  fixes (B7) and its API cleanup (B4) are both part of v0.10.0, before any game adopts the kit:
+  the header menu closes when the focus leaves it and returns the focus after a page change;
+  the tab order follows the order shown; one kit focus ring; the phone chat sheet takes and
+  returns the focus; 44 px targets, the back link included; nothing scrolls sideways at 320 px;
+  the header's background is contrast-checked. `connectCall` and `CALL_SLOT` stay exported:
+  BACKLOG 8 needs them.

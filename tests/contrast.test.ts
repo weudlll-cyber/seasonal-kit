@@ -13,7 +13,13 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { readTokens } from '../scripts/css-tokens.mjs';
-import { contrast, contrastFailures, parseColour } from '../scripts/contrast.mjs';
+import {
+  contrast,
+  contrastFailures,
+  focusRingFailures,
+  parseColour,
+  sidebarStops,
+} from '../scripts/contrast.mjs';
 
 const css = readFileSync(new URL('../css/tokens.css', import.meta.url), 'utf8');
 
@@ -32,6 +38,34 @@ describe('the contrast of the text tokens', () => {
   it('fails Summer when the text on the seasons turns grey', () => {
     const bad = css.replace('--color-on-season: #14171c;', '--color-on-season: #5a5a5a;');
     expect(contrastFailures(readTokens(bad)).map((f) => f.background)).toContain('--color-summer');
+  });
+});
+
+describe('the header’s background and the focus ring (audit B7, DECISIONS K29)', () => {
+  const shell = readFileSync(new URL('../css/shell.css', import.meta.url), 'utf8');
+  const ring = /--sk-focus-ring:\s*var\((--[\w-]+)\)/.exec(shell)?.[1] ?? 'missing';
+
+  it('checks every stop of the header’s gradient, laid over its base in dark', () => {
+    const tokens = readTokens(css);
+    expect(sidebarStops(tokens, 'light')).toHaveLength(4);
+    // rgb(4 170 247 / 30%) over #0c1538.
+    expect(sidebarStops(tokens, 'dark')[3]?.map(Math.round)).toEqual([10, 66, 113, 1]);
+  });
+
+  it('fails muted text on a header stop it cannot be read on', () => {
+    const bad = css.replace('#f8d9c2 35%', '#8a8f99 35%');
+    const failures = contrastFailures(readTokens(bad));
+    expect(failures.map((f) => f.background)).toContain('--sidebar-background stop 2');
+  });
+
+  it('draws the focus ring at 3:1 or more on every background, light and dark', () => {
+    expect(ring).toBe('--color-text');
+    expect(focusRingFailures(readTokens(css), ring)).toEqual([]);
+  });
+
+  it('fails a ring as faint as the hairline border', () => {
+    const failures = focusRingFailures(readTokens(css), '--color-border-strong');
+    expect(failures.length).toBeGreaterThan(0);
   });
 });
 

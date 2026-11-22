@@ -2,9 +2,10 @@
  * @file   css/shell.css
  * @brief  The shell's shared parts: the way back to the website and the light/dark toggle.
  *
- * Responsibility: `.sk-back-link` is "← Seasonal Entertainment": small and muted text, so it
- *                 takes no play area, underlined on hover and focus, and on its own short first
- *                 row at phone width. `.sk-theme-toggle` is the round glass button with a
+ * Responsibility: `--sk-focus-ring` and the kit's one focus ring for every control it draws
+ *                 (since v0.10.0). `.sk-back-link` is "← Seasonal Entertainment": small and
+ *                 muted text in a 44 px target, underlined on hover and focus, and on its own
+ *                 first row at phone width. `.sk-theme-toggle` is the round glass button with a
  *                 hairline, a 44 px target. Where each sits in a game's bar (`order`, rows) stays
  *                 the game's. `.sk-visually-hidden` is read out, not shown, for every kit part
  *                 that says more than it shows. Colours come only from ./tokens.css, so both work
@@ -15,7 +16,33 @@
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §8
  */
 
+/* The kit's focus ring, on every control the kit draws (DECISIONS K29; audit 2026-11-22, B7
+   finding 5). The text colour, so it shows in light and dark: tests/contrast.test.ts keeps it
+   at 3:1 or more against the page, the surfaces, the card and the header (WCAG 1.4.11). Drawn
+   outside the control (offset), only for keyboard focus (:focus-visible). */
+:root {
+  --sk-focus-ring: var(--color-text);
+}
+
+:where(
+  .sk-back-link,
+  .sk-theme-toggle,
+  .sk-bar-button,
+  .sk-header-brand,
+  .sk-header-nav a,
+  .sk-header-chip,
+  .sk-chat-bar,
+  .sk-chat-dock-close
+):focus-visible {
+  outline: 2px solid var(--sk-focus-ring);
+  outline-offset: 2px;
+}
+
+/* A 44 px target like every kit control (DECISIONS K29), its words still small and muted. */
 .sk-back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--hit-target);
   color: var(--color-text-muted);
   font-size: var(--font-size-small);
   text-decoration: none;

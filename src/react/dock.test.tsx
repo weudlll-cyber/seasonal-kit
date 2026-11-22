@@ -97,6 +97,13 @@ describe('the dock on a phone', () => {
     fireEvent.click(bar);
     fireEvent.click(screen.getByText('Close'));
     expect(bar.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(bar);
+  });
+
+  it('moves the focus into the sheet when it opens (audit B7, DECISIONS K29)', () => {
+    render(<ChatDock chat={<p>chat</p>} phone bar="line" callId={null} />);
+    fireEvent.click(screen.getByTestId('chat-bar'));
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
   });
 
   it('shows the game’s field only in the form field, and the call strip above the bar', () => {

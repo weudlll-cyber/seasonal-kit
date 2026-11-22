@@ -207,7 +207,8 @@ adopts it.
 ## Needs the owner's word
 
 Decided on 2026-11-21: the sandbox in every game (K17), Bingo's docked layout (K18), `showcase`
-as a required check (K19).
+as a required check (K19). Decided on 2026-11-22: the audit's keyboard, focus and API fixes are
+in v0.10.0, before any game adopts the kit (K29); every game takes them with the header.
 
 - **Seasonal Party**, the frame's colours turning into the website's at its first step (asked by
   K4, but visible).

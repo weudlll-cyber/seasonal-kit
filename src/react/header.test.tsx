@@ -127,6 +127,70 @@ describe('the folded menu', () => {
   });
 });
 
+describe('the folded menu and the focus (audit B7, DECISIONS K29)', () => {
+  it('closes when the focus leaves panel and button, not when it moves between them', () => {
+    render(
+      <>
+        <AppHeader {...base} />
+        <button type="button">After</button>
+      </>,
+    );
+    const button = screen.getByTestId('menu-button');
+    fireEvent.click(button);
+    const play = screen.getByRole('link', { name: 'Play' });
+    fireEvent.blur(play, { relatedTarget: screen.getByRole('link', { name: 'Leaderboard' }) });
+    fireEvent.blur(play, { relatedTarget: button });
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    fireEvent.blur(play, { relatedTarget: screen.getByRole('button', { name: 'After' }) });
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('closes on Escape pressed on the Menu button too', () => {
+    render(<AppHeader {...base} />);
+    const button = screen.getByTestId('menu-button');
+    fireEvent.click(button);
+    button.focus();
+    fireEvent.keyDown(button, { key: 'Escape' });
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(button);
+  });
+
+  it('gives the focus to the Menu button when a new page closes it with the focus inside', () => {
+    const { rerender } = render(<AppHeader {...base} />);
+    const button = screen.getByTestId('menu-button');
+    fireEvent.click(button);
+    expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Play' }));
+    rerender(<AppHeader {...base} closeKey="leaderboard" />);
+    expect(document.activeElement).toBe(button);
+  });
+
+  it('leaves the focus alone when a new page comes while it is elsewhere', () => {
+    const { rerender } = render(
+      <>
+        <AppHeader {...base} />
+        <button type="button">Elsewhere</button>
+      </>,
+    );
+    const elsewhere = screen.getByRole('button', { name: 'Elsewhere' });
+    elsewhere.focus();
+    rerender(
+      <>
+        <AppHeader {...base} closeKey="leaderboard" />
+        <button type="button">Elsewhere</button>
+      </>,
+    );
+    expect(document.activeElement).toBe(elsewhere);
+  });
+});
+
+describe('the tab order in the header (audit B7, DECISIONS K29)', () => {
+  it('puts the theme toggle last in the DOM, where it is shown, so Tab meets it there', () => {
+    render(<AppHeader {...base} />);
+    const header = screen.getByTestId('app-header');
+    expect(header.lastElementChild).toBe(screen.getByTestId('theme-toggle'));
+  });
+});
+
 describe('the dev sign-in menu', () => {
   it('lists the game’s identities and signs in with one click, closing the menu', async () => {
     const onSignIn = vi.fn(() => Promise.resolve());

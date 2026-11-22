@@ -7,8 +7,33 @@ applies it.
 
 ## [Unreleased]
 
+Keyboard, focus and touch fixes from the audit of 2026-11-22, B7 (DECISIONS K29).
+
+### Added
+
+- One kit focus ring: `--sk-focus-ring` (the text colour) on every control the kit draws, for
+  keyboard focus, 2 px outside the control (css/shell.css). Its contrast is checked at 3:1 or
+  more on the page, the surfaces, the card and every stop of the header's background, in light
+  and dark.
+- The contrast check covers the header's background (`--sidebar-background`): the text and the
+  muted text on each of its gradient's stops.
+- The showcase: four screens of the focus ring (`focus-ring-<viewport>-<theme>.png`, desktop and
+  phone, light and dark) and a check that nothing scrolls sideways at 320 px.
+
 ### Changed
 
+- **The header's menu** (`AppHeader`, below 960 px) closes when the focus leaves it, and on
+  Escape on the Menu button too. When a new page (`closeKey`) closes it while the focus was
+  inside, the focus goes to the Menu button instead of the page's start.
+- **The header's order:** the theme toggle is now last, after the account, on wide screens as in
+  the DOM, so the tab order is the order shown. Below 960 px the row is brand, Menu, toggle.
+  `header.css` sets no `order` any more.
+- **The phone chat sheet** takes the focus (its Close button) when it opens; Escape and Close
+  give it back to the chat bar, as before.
+- **Targets:** the game bar's buttons are 44 px on a desktop too (36 px before); the back link is
+  a 44 px target.
+- **The phase strip** wraps its parts instead of scrolling sideways when they do not fit; its
+  text keeps the game's floor.
 - The repository's GitHub settings (DECISIONS K24): merge commits only, the branch deleted
   after a merge, a ruleset that keeps `v*` tags from being moved or deleted, vulnerability alerts
   on, no wiki or Projects, actions pinned to commit SHAs. Read back in docs/RELEASING.md.
@@ -17,6 +42,23 @@ applies it.
   until its PR merges.
 - Decided (K26–K28): the fonts stay as they are; legacy recovery codes keep working with no end
   date; Seasonal Cases takes v0.10.0 (docs/ADOPTION.md, docs/security-pass.md).
+
+### Migration, per game
+
+What a player sees change, before → after, for a game that takes v0.10.0:
+
+- **Every game with `AppHeader`:** the theme toggle moves from between the brand and the
+  navigation to the end of the bar (wide screens); on a phone the row is brand, Menu, toggle
+  instead of brand, toggle, Menu. A keyboard focus shows the kit's ring. Nothing to change in
+  the game's code.
+- **Every game with `BackLink`:** the link is a 44 px target (its words the same size), so the
+  phone's first row is 44 px high instead of one line of small text.
+- **Mini Games (`GameBar`, `buttonClassName="smg-btn"`):** the bar's buttons are 44 px instead of
+  36 px on a desktop; the bar itself stays at most 44 px high.
+- **Mind Games' `PhaseStrip`:** parts that do not fit side by side wrap to a second row
+  instead of running off a narrow screen.
+- **A game with its own focus styles** on the kit's classes keeps them: the kit's ring is in
+  `:where()`, so a game's own `:focus-visible` rule on those controls wins.
 
 ## [0.9.1] - 2026-11-22
 

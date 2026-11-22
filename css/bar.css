@@ -2,8 +2,8 @@
  * @file   css/bar.css
  * @brief  The slim game bar of a round in focus mode, and the phase strip.
  *
- * Responsibility: the bar is one row of small text, at most 44 px high on a desktop (36 px
- *                 controls) and 52 px on a phone (44 px touch targets): the game's lead part,
+ * Responsibility: the bar is one row of small text, at most 44 px high on a desktop and 52 px
+ *                 on a phone, its controls 44 px targets everywhere (since v0.10.0, K29): the game's lead part,
  *                 its facts and the time, the panel buttons with their icons (and their words on
  *                 a desktop) and the unread badge on a button's corner. `.sk-bar-desktop` parts
  *                 are read out on a phone, not shown. The phase strip's parts are segments in
@@ -39,14 +39,14 @@
   margin-left: auto;
 }
 
-/* Flat buttons of 36 px on a desktop: the bar is a strip, not a toolbar of large buttons. */
+/* Flat buttons, 44 px targets like every kit control (DECISIONS K29; 36 px before v0.10.0). */
 .sk-bar-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: var(--hit-target);
+  min-height: var(--hit-target);
   padding-inline: 0.65rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
@@ -120,13 +120,16 @@
   gap: 0.25rem;
 }
 
+/* Parts that do not fit side by side wrap to a second row: at 320 px nothing scrolls sideways
+   (WCAG 1.4.10; DECISIONS K29). The text keeps the game's floor. */
 .sk-phases {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: var(--font-size-small);
+  font-size: max(var(--sk-floor-text), var(--font-size-small));
 }
 
 .sk-phase {
@@ -175,7 +178,7 @@
 
 .sk-phase-line {
   margin: 0;
-  font-size: var(--font-size-small);
+  font-size: max(var(--sk-floor-text), var(--font-size-small));
 }
 
 @media (max-width: 899px), (orientation: portrait) {

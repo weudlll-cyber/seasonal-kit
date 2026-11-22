@@ -69,4 +69,8 @@ nothing serious. At 320 × 640 the page must not scroll sideways (WCAG 1.4.10). 
 header-menu screens it opens the first header's Menu (axe again), then the third
 header's Menu and its Dev sign-in panel (axe again). Moderate axe findings do not fail the run.
 
+What only a browser's layout shows is measured in
+[`showcase/layout.spec.ts`](../showcase/layout.spec.ts) (since v0.11.0): the back link keeps a
+gap of 4 px or more between its arrow and its words.
+
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

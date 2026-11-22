@@ -4,7 +4,8 @@
  *
  * Responsibility: `--sk-focus-ring` and the kit's one focus ring for every control it draws
  *                 (since v0.10.0). `.sk-back-link` is "← Seasonal Entertainment": small and
- *                 muted text in a 44 px target, underlined on hover and focus, and on its own
+ *                 muted text in a 44 px target, a gap between arrow and words (since v0.11.0),
+ *                 underlined on hover and focus, and on its own
  *                 first row at phone width. `.sk-theme-toggle` is the round glass button with a
  *                 hairline, a 44 px target. Where each sits in a game's bar (`order`, rows) stays
  *                 the game's. `.sk-visually-hidden` is read out, not shown, for every kit part
@@ -38,10 +39,13 @@
   outline-offset: 2px;
 }
 
-/* A 44 px target like every kit control (DECISIONS K29), its words still small and muted. */
+/* A 44 px target like every kit control (DECISIONS K29), its words still small and muted. In
+   a flex box the space after the arrow is the start of the text's own box and collapses, so
+   the gap is the space between them (since v0.11.0; Bingo R2, Seasonal Party). */
 .sk-back-link {
   display: inline-flex;
   align-items: center;
+  gap: 0.35em;
   min-height: var(--hit-target);
   color: var(--color-text-muted);
   font-size: var(--font-size-small);

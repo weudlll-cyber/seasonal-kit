@@ -7,6 +7,14 @@ applies it.
 
 ## [Unreleased]
 
+The games' requests (DECISIONS K32), the season feed and the handbook.
+
+### Fixed
+
+- **The back link's space.** "←" and "Seasonal Entertainment" no longer touch: in the link's
+  flex box the space after the arrow collapsed, so `.sk-back-link` keeps a `gap` of 0.35em
+  (Bingo R2, Seasonal Party). showcase/layout.spec.ts measures it in the browser.
+
 ## [0.10.1] - 2026-11-22
 
 The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed"). Nothing a player sees

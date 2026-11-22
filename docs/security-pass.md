@@ -79,8 +79,9 @@ The review's findings:
    SHA-256. **Fixed:** the header names K20 as a departure from AUTH.md. The text the website's
    AUTH.md would need is in PR #16.
 2. **Medium:** legacy SHA-256 codes stay brute-forceable from a leak, and plantable by whoever
-   can write the table, until used or replaced. **Kept by D4**, documented in the header, the
-   CHANGELOG and ADOPTION's "Needs the owner's word" (an end date per game).
+   can write the table, until used or replaced. **Kept by D4**, documented in the header and
+   the CHANGELOG. On 2026-11-22 the owner decided that legacy codes stay valid with no end date
+   (K27).
 3. **Low:** weak keys accepted. **Fixed:** the key must be bytes, not one byte repeated.
 4. **Low:** a wrong-length stored hash hid a bad key. **Fixed:** the key is checked first.
 5. **Medium:** `devStubPlugin` saw relative imports only. **Fixed** for absolute imports. Package

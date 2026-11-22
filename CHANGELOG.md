@@ -12,6 +12,11 @@ applies it.
 - The repository's GitHub settings (DECISIONS K24): merge commits only, the branch deleted
   after a merge, a ruleset that keeps `v*` tags from being moved or deleted, vulnerability alerts
   on, no wiki or Projects, actions pinned to commit SHAs. Read back in docs/RELEASING.md.
+- CLAUDE.md: `seasonal-spirits` and `seasonal-cases` are read-only sources too; planning happens
+  in the Seasonal Entertainment planning chat (K25); a night's sheet branch may stay on origin
+  until its PR merges.
+- Decided (K26–K28): the fonts stay as they are; legacy recovery codes keep working with no end
+  date; Seasonal Cases takes v0.10.0 (docs/ADOPTION.md, docs/security-pass.md).
 
 ## [0.9.1] - 2026-11-22
 

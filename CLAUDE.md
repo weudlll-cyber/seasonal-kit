@@ -14,9 +14,11 @@ Everything in this repository is English: code, comments, commit messages, docs.
 - The season colours come from the website (`seasonal-entertainment`
   `client/src/styles/tokens.css`, master). They are never edited here by hand; CI compares them.
 - The source repositories (`seasonal-mini-games`, `seasonal-bingo-royale`,
-  `seasonal-entertainment`) are read-only from here: read committed state with `git fetch` and
-  `git show origin/master:<path>`, never check out or write there. Something there that looks
-  wrong is reported, not changed.
+  `seasonal-entertainment`, `seasonal-spirits` (Seasonal Party) and `seasonal-cases`) are
+  read-only from here: read committed state with `git fetch` and `git show origin/<branch>:<path>`,
+  never check out or write there. Something there that looks wrong is reported, not changed.
+- Planning for the kit happens in the Seasonal Entertainment planning chat (DECISIONS K25); the
+  decisions it makes are recorded here in docs/DECISIONS.md.
 
 ## What goes into the kit
 
@@ -44,7 +46,8 @@ Everything in this repository is English: code, comments, commit messages, docs.
 
 - `master` is protected. Work on a branch, open a PR, merge only when every required check is
   green and the owner has approved; then delete the branch on origin and locally, so only
-  `master` stays on origin.
+  `master` stays on origin. The one exception: during an unattended night, that night's
+  morning-sheet branch (`night/<date>…`) stays on origin until its PR merges.
 - Never force-push, reset published history or amend a pushed commit.
 - Releases only as docs/RELEASING.md says (annotated tag on the merge commit).
 - Run commands one at a time; no chains with `&&`, `;` or `|` unless a single tool needs a pipe.

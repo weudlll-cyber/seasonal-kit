@@ -83,3 +83,11 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   neither moved nor deleted, vulnerability alerts on, no wiki and no Projects, actions pinned to
   commit SHAs. There is no CODEOWNERS file. The settings as read back are in
   [RELEASING.md](RELEASING.md).
+- **K25 — Planning moved to the Seasonal Entertainment planning chat.** Since 2026-11-21 the kit
+  is planned there; its decisions are recorded here as before ([CLAUDE.md](../CLAUDE.md)).
+- **K26 — The font question of the audit is closed.** The Luxora Grotesk files stay in the kit
+  as they are; K8 and K9 are unchanged (audit 2026-11-22, B8).
+- **K27 — Legacy recovery codes keep working.** Recovery codes stored as plain SHA-256 stay
+  valid with no end date, and no game sets a deadline for them (K20 keeps them verifying).
+- **K28 — Seasonal Cases takes v0.10.0.** Seasonal Cases moves to the kit's v0.10.0 once it is
+  released ([ADOPTION.md](ADOPTION.md)); its repository is not touched from here.

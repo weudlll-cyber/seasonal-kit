@@ -19,9 +19,10 @@
  *                 alone gives nothing to brute-force for the keyed codes (about 40 bits each).
  *                 Codes stored before as plain SHA-256 still verify (D4): `recoveryLookups`
  *                 gives both hashes for the game's single lookup, and `recoveryMatches` checks a
- *                 stored hash in constant time against both. Until every legacy code is used or
- *                 replaced, those rows can be brute-forced from a leak, and whoever can write
- *                 the table can plant one (v0.9.0 pass, review 1, finding 2). The game
+ *                 stored hash in constant time against both, with no end date (DECISIONS K27).
+ *                 Until every legacy code is used, those rows can be brute-forced from a leak,
+ *                 and whoever can write the table can plant one (v0.9.0 pass, review 1,
+ *                 finding 2). The game
  *                 marks a code used in the same statement that finds it, and never stores or
  *                 logs a code itself. `looksLikeRecoveryCode` tells a recovery code from a
  *                 6-digit TOTP code.

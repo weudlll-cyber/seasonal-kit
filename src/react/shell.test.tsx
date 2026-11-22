@@ -156,7 +156,7 @@ describe('the fit hook', () => {
   it('sets the scale on its element and stops on unmount', () => {
     vi.stubGlobal('ResizeObserver', undefined);
     const { unmount, rerender } = render(<Screen signature="a" />);
-    expect(screen.getByTestId('screen').dataset['fitScale']).toBe('1');
+    expect(screen.getByTestId('screen').dataset['skFitScale']).toBe('1');
     rerender(<Screen signature="b" />);
     expect(screen.getByTestId('screen').style.getPropertyValue('--fit')).toBe('1');
     unmount();

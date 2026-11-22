@@ -64,11 +64,11 @@ function CallSlotBox(p) {
         collapsed: p.phone,
         windowHeight: window.innerHeight,
     });
-    return (_jsx("div", { className: slot?.className ?? 'sk-call-slot', hidden: slot === null, "data-form": slot?.form, "data-testid": "call-slot" }));
+    return (_jsx("div", { className: slot?.className ?? 'sk-call-slot', hidden: slot === null, "data-sk-form": slot?.form, "data-testid": "call-slot" }));
 }
 export function ChatDock(p) {
     const sheet = useDisclosure();
     const sight = useArrivals(!p.phone || sheet.open);
     const value = useMemo(() => ({ visible: sight.visible, arrivals: sight.arrivals }), [sight.visible, sight.arrivals]);
-    return (_jsx(DockSight.Provider, { value: value, children: _jsxs("section", { className: "sk-chat-dock", "aria-label": "Chat", "data-view": p.phone ? 'phone' : 'desktop', "data-bar": p.bar, "data-open": sheet.open, "data-testid": "chat-dock", onKeyDown: sheet.onKeyDown, children: [p.phone ? _jsx(CallSlotBox, { callId: p.callId, phone: true }) : null, _jsxs("div", { className: "sk-chat-dock-row", children: [p.phone ? (_jsx(PhoneBar, { sheet: sheet, state: sight.state, field: p.bar === 'field' ? (p.field ?? null) : null })) : null, _jsx(Body, { sheet: sheet, phone: p.phone, children: p.chat }), p.phone ? null : _jsx(CallSlotBox, { callId: p.callId, phone: false })] })] }) }));
+    return (_jsx(DockSight.Provider, { value: value, children: _jsxs("section", { className: "sk-chat-dock", "aria-label": "Chat", "data-sk-view": p.phone ? 'phone' : 'desktop', "data-sk-bar": p.bar, "data-sk-open": sheet.open, "data-testid": "chat-dock", onKeyDown: sheet.onKeyDown, children: [p.phone ? _jsx(CallSlotBox, { callId: p.callId, phone: true }) : null, _jsxs("div", { className: "sk-chat-dock-row", children: [p.phone ? (_jsx(PhoneBar, { sheet: sheet, state: sight.state, field: p.bar === 'field' ? (p.field ?? null) : null })) : null, _jsx(Body, { sheet: sheet, phone: p.phone, children: p.chat }), p.phone ? null : _jsx(CallSlotBox, { callId: p.callId, phone: false })] })] }) }));
 }

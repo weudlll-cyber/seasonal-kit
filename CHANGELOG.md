@@ -23,6 +23,34 @@ The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
 - Renovate updates the scanner images' tags and digests in `ci.yml`'s `env:` (a regex
   manager), and `packageManager` carries pnpm's sha512 hash (docs/RELEASING.md). Nothing a game
   installs changes.
+- **Every data attribute the kit sets or reads is `data-sk-` prefixed**, like its classes and
+  keyframes (DECISIONS K7). tests/prefix.test.ts now checks attributes too, in the CSS, the
+  source and the early script. Two attributes stay as they are: `data-testid`, the testing
+  library's convention, and `data-theme`, the website's. Every rename is listed below.
+- `fit.ts`'s tolerances are named constants with the reason for each: 0.5 px still fits, 1 px
+  of scroll in a clipping box is rounding, and the guess margin, rounding step and 1 % stop.
+  The values are unchanged.
+- The server entry decodes its name and steps headers with one shared strict UTF-8 decoder
+  (`src/server/utf8.ts`) instead of making one per steps header.
+
+### Migration, per game
+
+Players see no change. In a game's code, before → after:
+
+| Before                                    | After                                              | Where                                         |
+| ----------------------------------------- | -------------------------------------------------- | --------------------------------------------- |
+| `data-fit-fixed` (the game marks a part)  | `data-sk-fit-fixed`                                | a screen fitted with `watchFit`/`useFitScale` |
+| `data-fit-scale` (set by the kit)         | `data-sk-fit-scale`, `dataset['skFitScale']`       | a test that reads the scale                   |
+| `data-view`                               | `data-sk-view`                                     | `ChatDock`, `DockedScreen`                    |
+| `data-bar`, `data-open`                   | `data-sk-bar`, `data-sk-open`                      | `ChatDock` (`data-sk-open` on `MenuFold` too) |
+| `data-form`                               | `data-sk-form`                                     | the call slot                                 |
+| `data-phase`, `data-current`, `data-done` | `data-sk-phase`, `data-sk-current`, `data-sk-done` | `PhaseStrip`                                  |
+| `data-layout`                             | `data-sk-layout`                                   | `ResultFrame`                                 |
+| `data-season`                             | `data-sk-season`                                   | `StartCard`                                   |
+| `data-theme-now`                          | `data-sk-theme-now`                                | `ThemeToggle`                                 |
+
+A game's own CSS or test that names one of the old attributes changes it the same way. No game
+uses the kit yet (docs/ADOPTION.md), so nothing in a game's code breaks today.
 
 ### Fixed
 

@@ -50,10 +50,10 @@ export function ResultFrame(p: ResultFrameProps): ReactElement {
     <section
       ref={p.fitted === true ? fit : undefined}
       className="sk-result"
-      data-layout={p.layout ?? 'list'}
+      data-sk-layout={p.layout ?? 'list'}
       data-testid="result"
     >
-      <div className="sk-result-first" data-fit-fixed="" data-testid="result-first">
+      <div className="sk-result-first" data-sk-fit-fixed="" data-testid="result-first">
         <header className="sk-result-head">
           <h1>{p.headline}</h1>
           {p.lines}

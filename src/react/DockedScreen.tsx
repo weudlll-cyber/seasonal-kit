@@ -52,7 +52,7 @@ export function DockedScreen({ children, ...dock }: DockedScreenProps): ReactEle
   const view = useDockView();
   useVisibleHeight(view === 'phone');
   return (
-    <div className="sk-docked" data-view={view} data-testid="docked-screen">
+    <div className="sk-docked" data-sk-view={view} data-testid="docked-screen">
       <div className="sk-docked-main">{children}</div>
       <ChatDock {...dock} phone={view === 'phone'} />
     </div>

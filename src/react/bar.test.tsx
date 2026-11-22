@@ -228,7 +228,7 @@ describe('the phase strip', () => {
       'Reveal until 1:15',
     ]);
     expect(parts[1]?.getAttribute('aria-current')).toBe('step');
-    expect(parts[0]?.dataset['done']).toBe('true');
+    expect(parts[0]?.dataset['skDone']).toBe('true');
     expect(parts[1]?.querySelector<HTMLElement>('.sk-phase-fill')?.style.width).toBe('50%');
     expect(screen.getByRole('status').textContent).toBe('Joining has closed.');
     expect(screen.getByText('You see the round 10 s late')).not.toBeNull();
@@ -238,7 +238,9 @@ describe('the phase strip', () => {
   it('has nothing now in the hold after the last part, nor without timing', () => {
     const { rerender } = render(<PhaseStrip parts={PARTS} at={80_000} label="Phases" />);
     expect(document.querySelector('[aria-current]')).toBeNull();
-    expect(screen.getAllByRole('listitem').every((li) => li.dataset['done'] === 'true')).toBe(true);
+    expect(screen.getAllByRole('listitem').every((li) => li.dataset['skDone'] === 'true')).toBe(
+      true,
+    );
     rerender(<PhaseStrip parts={PARTS} at={null} label="Phases" />);
     expect(document.querySelector('[aria-current]')).toBeNull();
     expect(screen.queryByRole('status')).toBeNull();

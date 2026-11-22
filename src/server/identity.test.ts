@@ -15,7 +15,7 @@
  * Depends on:     vitest
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §2, §3; docs/AUTH.md
  */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   IDENTITY_HEADERS,
@@ -349,6 +349,20 @@ describe('the steps header when it is broken', () => {
     const who = identityFrom({ ...member, 'x-acting-user-steps': '%%%' }, 'all');
     expect(who?.badSteps).toBe(true);
     expect(who?.steps).toEqual([]);
+  });
+});
+
+describe('the one decoder (v0.10.1)', () => {
+  it('makes no TextDecoder per request: steps and name share ./utf8', () => {
+    const made = vi.spyOn(globalThis, 'TextDecoder');
+    const who = identityFrom(
+      { ...member, 'x-acting-user': wire('Jürgen'), 'x-acting-user-steps': encode([step('A')]) },
+      'each',
+    );
+    expect(who?.websiteName).toBe('Jürgen');
+    expect(who?.steps).toHaveLength(1);
+    expect(made).not.toHaveBeenCalled();
+    made.mockRestore();
   });
 });
 

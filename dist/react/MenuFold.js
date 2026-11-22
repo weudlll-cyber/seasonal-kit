@@ -76,5 +76,5 @@ export function MenuFold(p) {
             menu.dismiss();
         }
     };
-    return (_jsxs(_Fragment, { children: [_jsx("button", { ref: menu.button, type: "button", className: barButtonClass(p.buttonClassName, 'sk-menu-button'), "aria-expanded": menu.open, "aria-controls": menu.panelId, "data-testid": "menu-button", onClick: menu.toggle, onKeyDown: menu.onKeyDown, onBlur: left, children: "Menu" }), _jsx("div", { ref: panel, id: menu.panelId, className: "sk-menu", "data-open": menu.open, onKeyDown: menu.onKeyDown, onBlur: left, children: p.children })] }));
+    return (_jsxs(_Fragment, { children: [_jsx("button", { ref: menu.button, type: "button", className: barButtonClass(p.buttonClassName, 'sk-menu-button'), "aria-expanded": menu.open, "aria-controls": menu.panelId, "data-testid": "menu-button", onClick: menu.toggle, onKeyDown: menu.onKeyDown, onBlur: left, children: "Menu" }), _jsx("div", { ref: panel, id: menu.panelId, className: "sk-menu", "data-sk-open": menu.open, onKeyDown: menu.onKeyDown, onBlur: left, children: p.children })] }));
 }

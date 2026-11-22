@@ -20,9 +20,11 @@
  * Source:         seasonal-mini-games apps/server/src/auth/websiteIdentity.ts (`stepsFrom`) and
  *                 packages/contracts/src/http/session.ts (`PlayerStep`) at 866df03;
  *                 seasonal-bingo-royale packages/contracts/src/http/steps.ts (`parseSteps`) at
- *                 a43209a. No zod: the kit has no runtime dependency.
+ *                 a43209a. No zod: the kit has no runtime dependency. The decoder is ./utf8's,
+ *                 shared with ./identity (since v0.10.1).
  * Spec:           Seasonal Entertainment docs/AUTH.md "Embedded games"; GAME-INTEGRATION.md §2
  */
+import { UTF8 } from './utf8.js';
 const LADDERS = ['holder', 'farmer', 'investor'];
 const MAX_STEPS = 3;
 const MAX_HEADER = 2_048;
@@ -56,7 +58,7 @@ function arrayIn(header) {
     if (header.length > MAX_HEADER || !/^[A-Za-z0-9_-]*={0,2}$/.test(header))
         return null;
     try {
-        const text = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.from(header, 'base64url'));
+        const text = UTF8.decode(Buffer.from(header, 'base64url'));
         const parsed = JSON.parse(text);
         return Array.isArray(parsed) ? parsed : null;
     }

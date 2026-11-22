@@ -115,7 +115,7 @@ export function MenuFold(p: MenuFoldProps): ReactElement {
         ref={panel}
         id={menu.panelId}
         className="sk-menu"
-        data-open={menu.open}
+        data-sk-open={menu.open}
         onKeyDown={menu.onKeyDown}
         onBlur={left}
       >

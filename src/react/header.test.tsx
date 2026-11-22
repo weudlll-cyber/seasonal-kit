@@ -108,7 +108,7 @@ describe('the folded menu', () => {
     const panel = document.getElementById(button.getAttribute('aria-controls') ?? '');
     fireEvent.click(button);
     expect(button.getAttribute('aria-expanded')).toBe('true');
-    expect(panel?.dataset['open']).toBe('true');
+    expect(panel?.dataset['skOpen']).toBe('true');
     expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Play' }));
     fireEvent.keyDown(panel as HTMLElement, { key: 'Escape' });
     expect(button.getAttribute('aria-expanded')).toBe('false');

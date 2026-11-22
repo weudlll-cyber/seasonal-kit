@@ -138,7 +138,7 @@ function CallSlotBox(p: { readonly callId: number | null; readonly phone: boolea
     <div
       className={slot?.className ?? 'sk-call-slot'}
       hidden={slot === null}
-      data-form={slot?.form}
+      data-sk-form={slot?.form}
       data-testid="call-slot"
     />
   );
@@ -156,9 +156,9 @@ export function ChatDock(p: ChatDockProps): ReactElement {
       <section
         className="sk-chat-dock"
         aria-label="Chat"
-        data-view={p.phone ? 'phone' : 'desktop'}
-        data-bar={p.bar}
-        data-open={sheet.open}
+        data-sk-view={p.phone ? 'phone' : 'desktop'}
+        data-sk-bar={p.bar}
+        data-sk-open={sheet.open}
         data-testid="chat-dock"
         onKeyDown={sheet.onKeyDown}
       >

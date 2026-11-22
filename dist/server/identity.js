@@ -43,6 +43,7 @@
 import { createHash } from 'node:crypto';
 import { stepsFrom } from './steps.js';
 import { secretMatches, trustedPeers } from './trust.js';
+import { UTF8 } from './utf8.js';
 // The contract's names, lower case as Node gives request headers.
 export const IDENTITY_HEADERS = {
     id: 'x-acting-user-id',
@@ -72,7 +73,6 @@ const isTrue = (value) => one(value)?.toLowerCase() === 'true';
 // no identity, never a garbled name. So does a decoded name with a control character, a line
 // or paragraph separator, or a bidi control (U+200E/F, U+202A–E, U+2066–9, U+061C): it could
 // split a log line or show another name than it is (audit 2026-11-22, B1 finding 2).
-const UTF8 = new TextDecoder('utf-8', { fatal: true });
 const UNSAFE_IN_NAME = /[\p{Cc}\u2028\u2029\u200e\u200f\u202a-\u202e\u2066-\u2069\u061c]/u;
 function decodedName(value) {
     // A character past one byte (a surrogate half of an emoji included) came from no header.

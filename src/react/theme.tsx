@@ -78,7 +78,7 @@ export function ThemeToggle(): ReactElement {
       type="button"
       className="sk-theme-toggle"
       data-testid="theme-toggle"
-      data-theme-now={theme}
+      data-sk-theme-now={theme}
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
       onClick={toggle}

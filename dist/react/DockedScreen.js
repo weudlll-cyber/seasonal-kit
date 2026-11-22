@@ -45,5 +45,5 @@ function useVisibleHeight(phone) {
 export function DockedScreen({ children, ...dock }) {
     const view = useDockView();
     useVisibleHeight(view === 'phone');
-    return (_jsxs("div", { className: "sk-docked", "data-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", children: children }), _jsx(ChatDock, { ...dock, phone: view === 'phone' })] }));
+    return (_jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", children: children }), _jsx(ChatDock, { ...dock, phone: view === 'phone' })] }));
 }

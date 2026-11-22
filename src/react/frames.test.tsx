@@ -42,7 +42,7 @@ describe('the start card', () => {
       />,
     );
     const card = screen.getByTestId('start-card');
-    expect(card.dataset['season']).toBe('winter');
+    expect(card.dataset['skSeason']).toBe('winter');
     expect(screen.getByRole('region', { name: 'Winter' })).toBe(card);
     expect(screen.getByTestId('icon').parentElement?.getAttribute('aria-hidden')).toBe('true');
     expect(screen.getByText('Halving round')).not.toBeNull();
@@ -54,7 +54,7 @@ describe('the start card', () => {
     expect(count.getAttribute('role')).toBe('timer');
     expect(count.getAttribute('aria-live')).toBe('off');
     expect(count.textContent).toBe('Opens in 5 s');
-    expect(card.dataset['fitScale']).toBe('1');
+    expect(card.dataset['skFitScale']).toBe('1');
   });
 
   it('shows a seasonless game without tint, icon, special or facts, never below 0 s', () => {
@@ -69,7 +69,7 @@ describe('the start card', () => {
       />,
     );
     const card = screen.getByTestId('start-card');
-    expect(card.hasAttribute('data-season')).toBe(false);
+    expect(card.hasAttribute('data-sk-season')).toBe(false);
     expect(screen.queryByTestId('icon')).toBeNull();
     expect(screen.queryByRole('list')).toBeNull();
     expect(card.querySelector('.sk-start-special')).toBeNull();
@@ -92,16 +92,16 @@ describe('the result frame', () => {
       />,
     );
     const result = screen.getByTestId('result');
-    expect(result.dataset['layout']).toBe('list');
+    expect(result.dataset['skLayout']).toBe('list');
     const first = screen.getByTestId('result-first');
-    expect(first.hasAttribute('data-fit-fixed')).toBe(true);
+    expect(first.hasAttribute('data-sk-fit-fixed')).toBe(true);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Walter found it first');
     expect(first.querySelector('.sk-result-proof')?.textContent).toBe('Fairness proof');
     expect(first.querySelector('.sk-result-reveal')?.textContent).toBe('42');
     expect(first.querySelector('.sk-result-places ol')).not.toBeNull();
     expect(result.querySelector('.sk-result-more')?.textContent).toBe('Standings');
     // Not fitted unless asked: a result that does not fit scrolls as today.
-    expect(result.dataset['fitScale']).toBeUndefined();
+    expect(result.dataset['skFitScale']).toBeUndefined();
   });
 
   it('takes the board layout, fits when asked, and leaves out what is not given', () => {
@@ -117,8 +117,8 @@ describe('the result frame', () => {
       />,
     );
     const result = screen.getByTestId('result');
-    expect(result.dataset['layout']).toBe('board');
-    expect(result.dataset['fitScale']).toBe('1');
+    expect(result.dataset['skLayout']).toBe('board');
+    expect(result.dataset['skFitScale']).toBe('1');
     expect(result.querySelector('.sk-result-proof')).toBeNull();
     expect(result.querySelector('.sk-result-more')).toBeNull();
   });

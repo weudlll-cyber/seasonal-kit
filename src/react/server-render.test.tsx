@@ -22,7 +22,7 @@ describe('rendering on a server (v0.10.1)', () => {
   it('renders the theme toggle in its placeholder theme', () => {
     const html = renderToString(<ThemeToggle />);
     expect(html).toContain('aria-label="Switch to dark theme"');
-    expect(html).toContain('data-theme-now="light"');
+    expect(html).toContain('data-sk-theme-now="light"');
   });
 
   it('renders the app header with the toggle', () => {

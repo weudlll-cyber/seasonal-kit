@@ -148,7 +148,7 @@
 }
 
 /* The part the round is in now: a strong frame, a fill as it runs and "· now". */
-.sk-phase[data-current='true'] {
+.sk-phase[data-sk-current='true'] {
   background: var(--color-surface);
   border-color: var(--color-solid);
 }
@@ -171,7 +171,7 @@
 }
 
 /* The last part still to come: dashed; once ended it is plain like the others. */
-.sk-phase:last-child[data-current='false'][data-done='false'] {
+.sk-phase:last-child[data-sk-current='false'][data-sk-done='false'] {
   background: var(--color-surface);
   border: 2px dashed var(--color-border-strong);
 }

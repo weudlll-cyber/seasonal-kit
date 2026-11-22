@@ -98,3 +98,11 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   returns the focus; 44 px targets, the back link included; nothing scrolls sideways at 320 px;
   the header's background is contrast-checked. `connectCall` and `CALL_SLOT` stay exported:
   BACKLOG 8 needs them.
+- **K30 — v0.10.1 is released unattended.** The owner approved (2026-11-22) merging and
+  releasing v0.10.1 in the night without a morning look, because nothing in it is visible to
+  players: once all six required checks are green, the release PR is merged, tagged and its
+  delivery proven, and the delivery record's PR is merged once its checks are green.
+- **K31 — Data attributes take the prefix too.** Every data attribute the kit sets or reads is
+  `data-sk-` prefixed, as K7 has it for classes and keyframes; tests/prefix.test.ts checks both.
+  `data-testid` (the testing library's) and `data-theme` (the website's) stay as they are
+  (v0.10.1, audit 2026-11-22 "Noted, not changed").

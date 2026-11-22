@@ -7,7 +7,11 @@ applies it.
 
 ## [Unreleased]
 
-The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
+## [0.10.1] - 2026-11-22
+
+The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed"). Nothing a player sees
+changes; the data attributes' rename is the one thing a game's code would see, listed below.
+Released unattended with the owner's approval (DECISIONS K30).
 
 ### Added
 
@@ -27,7 +31,7 @@ The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
   manager), and `packageManager` carries pnpm's sha512 hash (docs/RELEASING.md). Nothing a game
   installs changes.
 - **Every data attribute the kit sets or reads is `data-sk-` prefixed**, like its classes and
-  keyframes (DECISIONS K7). tests/prefix.test.ts now checks attributes too, in the CSS, the
+  keyframes (DECISIONS K7, K31). tests/prefix.test.ts now checks attributes too, in the CSS, the
   source and the early script. Two attributes stay as they are: `data-testid`, the testing
   library's convention, and `data-theme`, the website's. Every rename is listed below.
 - `fit.ts`'s tolerances are named constants with the reason for each: 0.5 px still fits, 1 px
@@ -668,7 +672,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...v0.9.0

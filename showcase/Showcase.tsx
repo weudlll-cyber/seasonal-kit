@@ -54,6 +54,21 @@ function Bar(): ReactElement {
         ]}
         panels={panels}
       />
+      {/* A crowded bar, as Seasonal Cases has it: a lead, two long facts and the time beside
+          three buttons, more than a 320–375 px phone holds side by side (Cases 32). */}
+      <div data-testid="busy-bar" style={{ minWidth: 0 }}>
+        <GameBar
+          lead={<span className="showcase-pill">Seasonal Cases</span>}
+          facts={[{ text: '12 cases left' }, { text: '5 prizes left' }]}
+          time={{ text: '9:50', left: true }}
+          actions={[
+            { id: 'chat', icon: 'chat', label: 'Chat', badge: 3 },
+            { id: 'players', icon: 'players', label: 'Players' },
+            { id: 'host', icon: 'host', label: 'Host' },
+          ]}
+          panels={panels}
+        />
+      </div>
       <PhaseStrip
         parts={PARTS}
         at={45_000}

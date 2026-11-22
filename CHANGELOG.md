@@ -14,6 +14,12 @@ The games' requests (DECISIONS K32), the season feed and the handbook.
 - **The back link's space.** "←" and "Seasonal Entertainment" no longer touch: in the link's
   flex box the space after the arrow collapsed, so `.sk-back-link` keeps a `gap` of 0.35em
   (Bingo R2, Seasonal Party). showcase/layout.spec.ts measures it in the browser.
+- **The game bar on narrow phones** (Cases 32). Its facts shrink and end in "…", and its
+  buttons wrap to a second row only when they alone do not fit, so a crowded bar no longer runs
+  past a 320–375 px screen. The time keeps its width, and every button keeps its 44 px target.
+  A phone bar is as high as its buttons; it was capped at 52 px, and is now taller only when the
+  buttons wrap. The time has the class `sk-bar-time`. Measured at 320, 360 and 375 px in
+  showcase/layout.spec.ts.
 
 ## [0.10.1] - 2026-11-22
 

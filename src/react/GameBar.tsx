@@ -153,7 +153,7 @@ export function GameBar<Id extends string>(p: GameBarProps<Id>): ReactElement {
         </span>
       ))}
       {p.time === null ? null : (
-        <span className="sk-bar-fact" data-testid="bar-time">
+        <span className="sk-bar-fact sk-bar-time" data-testid="bar-time">
           {p.time.text}
           {/* A phone shows "9:50" and reads the word out: the bar keeps one row. */}
           {p.time.left ? <span className="sk-bar-desktop"> left</span> : null}

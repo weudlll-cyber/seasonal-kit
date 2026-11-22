@@ -119,6 +119,8 @@ describe('the folded menu', () => {
     expect(button.getAttribute('aria-expanded')).toBe('true');
     fireEvent.pointerDown(document.body);
     expect(button.getAttribute('aria-expanded')).toBe('false');
+    // A press outside leaves the focus to the press, not to the Menu button.
+    expect(document.activeElement).not.toBe(button);
     fireEvent.click(button);
     fireEvent.pointerDown(button);
     expect(button.getAttribute('aria-expanded')).toBe('true');

@@ -7,6 +7,19 @@ applies it.
 
 ## [Unreleased]
 
+The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
+
+### Added
+
+- `useDisclosure` returns `dismiss`: it closes and leaves the focus where it is, for a press
+  outside or a focus already gone elsewhere. Stable across renders like `close` and `toggle`.
+
+### Changed
+
+- The header's menu (`MenuFold`) is built on `useDisclosure` instead of its own state. Its
+  behaviour is unchanged: the header's tests run as before, plus one that a press outside leaves
+  the focus alone.
+
 ## [0.10.0] - 2026-11-22
 
 Keyboard, focus and touch fixes from the audit of 2026-11-22, B7, and its API cleanup, B4, both

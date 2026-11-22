@@ -14,24 +14,23 @@
  *                 - on a press outside;
  *                 - on a new `closeKey` (the route, the account): if the focus was inside the
  *                   panel, it goes to the Menu button instead of the page (WCAG 2.4.3).
- *                 Audit 2026-11-22, B7 findings 2 and 3 (DECISIONS K29).
+ *                 Audit 2026-11-22, B7 findings 2 and 3 (DECISIONS K29). Built on
+ *                 ./useDisclosure since v0.10.1 (its `close` and `dismiss`).
  * Source:         seasonal-bingo-royale apps/web/src/shell/MenuFold.tsx at a43209a (its `where`
  *                 and `who` are one `closeKey` here; the panel's id is React's own, so two
  *                 headers on a page never share one).
  */
 import {
   useEffect,
-  useId,
   useRef,
-  useState,
   type FocusEvent,
-  type KeyboardEvent,
   type ReactElement,
   type ReactNode,
   type RefObject,
 } from 'react';
 
 import { barButtonClass } from './barButtonClass.js';
+import { useDisclosure, type Disclosure } from './useDisclosure.js';
 
 export interface MenuFoldProps {
   // Changes whenever the menu has done its job: a new route, another account.
@@ -44,91 +43,80 @@ const within = (box: RefObject<HTMLElement | null>, node: unknown): boolean =>
   node instanceof Node && box.current?.contains(node) === true;
 
 // While open: the focus moves to the panel's first item; a press outside panel and button
-// closes it.
-function useOpenedPanel(
-  open: boolean,
-  panel: RefObject<HTMLDivElement | null>,
-  button: RefObject<HTMLButtonElement | null>,
-  setOpen: (open: boolean) => void,
-): void {
+// closes it and leaves the focus to the press.
+function useOpenedPanel(menu: Disclosure, panel: RefObject<HTMLDivElement | null>): void {
+  const { open, button, dismiss } = menu;
   useEffect(() => {
     if (!open) return undefined;
     panel.current?.querySelector<HTMLElement>('a[href], button, select')?.focus();
     const outside = (e: PointerEvent): void => {
-      if (!within(panel, e.target) && !within(button, e.target)) setOpen(false);
+      if (!within(panel, e.target) && !within(button, e.target)) dismiss();
     };
     document.addEventListener('pointerdown', outside);
     return () => {
       document.removeEventListener('pointerdown', outside);
     };
-  }, [open, panel, button, setOpen]);
+  }, [open, panel, button, dismiss]);
 }
 
 // A new route or account closes the menu; a focus left inside the hidden panel goes to the
-// Menu button, not to the page's start.
+// Menu button (`close`), not to the page's start; a focus elsewhere stays (`dismiss`).
 function useCloseOnKey(
   closeKey: string,
+  menu: Disclosure,
   panel: RefObject<HTMLDivElement | null>,
-  button: RefObject<HTMLButtonElement | null>,
-  setOpen: (open: boolean) => void,
 ): void {
+  const { close, dismiss } = menu;
   const first = useRef(true);
   useEffect(() => {
     if (first.current) {
       first.current = false;
       return;
     }
-    const focusInside = within(panel, document.activeElement);
-    setOpen(false);
-    if (focusInside) button.current?.focus();
-  }, [closeKey, panel, button, setOpen]);
+    if (within(panel, document.activeElement)) close();
+    else dismiss();
+  }, [closeKey, panel, close, dismiss]);
 }
 
 export function MenuFold(p: MenuFoldProps): ReactElement {
-  const [open, setOpen] = useState(false);
-  const panelId = useId();
-  const button = useRef<HTMLButtonElement>(null);
+  // Open state, panel id, the button's ref, Escape (focus back) and the stable callbacks:
+  // ./useDisclosure, reused since v0.10.1.
+  const menu = useDisclosure();
   const panel = useRef<HTMLDivElement>(null);
-  useOpenedPanel(open, panel, button, setOpen);
-  useCloseOnKey(p.closeKey, panel, button, setOpen);
+  useOpenedPanel(menu, panel);
+  useCloseOnKey(p.closeKey, menu, panel);
 
-  const escape = (e: KeyboardEvent): void => {
-    if (e.key !== 'Escape' || !open) return;
-    e.stopPropagation();
-    setOpen(false);
-    button.current?.focus();
-  };
   // The focus moved to an element outside panel and button: the menu closes where it is. A
   // blur to nowhere (relatedTarget null) is no such move: Safari focuses no link or button on a
   // tap, so tapping a second item blurs the first to nowhere, and a press outside is the
   // pointerdown listener's (v0.10.0 security pass, finding 1).
   const left = (e: FocusEvent): void => {
     const to = e.relatedTarget;
-    if (open && to !== null && !within(panel, to) && !within(button, to)) setOpen(false);
+    if (menu.open && to !== null && !within(panel, to) && !within(menu.button, to)) {
+      menu.dismiss();
+    }
   };
   return (
     <>
       <button
-        ref={button}
+        ref={menu.button}
         type="button"
         className={barButtonClass(p.buttonClassName, 'sk-menu-button')}
-        aria-expanded={open}
-        aria-controls={panelId}
+        aria-expanded={menu.open}
+        aria-controls={menu.panelId}
         data-testid="menu-button"
-        onClick={() => {
-          setOpen(!open);
-        }}
-        onKeyDown={escape}
+        onClick={menu.toggle}
+        onKeyDown={menu.onKeyDown}
         onBlur={left}
       >
         Menu
       </button>
       <div
         ref={panel}
-        id={panelId}
+        id={menu.panelId}
         className="sk-menu"
-        data-open={open}
-        onKeyDown={escape}
+        data-open={menu.open}
+        onKeyDown={menu.onKeyDown}
         onBlur={left}
       >
         {p.children}

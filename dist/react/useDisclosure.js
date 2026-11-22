@@ -2,14 +2,16 @@
  * @file   src/react/useDisclosure.ts
  * @brief  React hook: a button that opens and closes a panel, closed again with Escape.
  *
- * Responsibility: the open state, the panel's id for `aria-controls`, the button's ref, and
+ * Responsibility: the open state, the panel's id for `aria-controls`, the button's ref;
  *                 `close`, which hands the focus back to the button, where the person was before
- *                 opening. `onKeyDown` goes on the element around button and panel, so Escape
- *                 closes from anywhere inside; with nested menus only the innermost open one
- *                 closes. `toggle` and `close` keep their identity across renders (since
- *                 v0.10.0, like ./usePanels'), so a game can list them in an effect's
- *                 dependencies. The docked chat's phone sheet (./ChatDock) and the dev sign-in
- *                 menu (./dev/DevSignIn) use it.
+ *                 opening; and `dismiss` (since v0.10.1), which closes and leaves the focus where
+ *                 it is, for a press outside or a focus already gone elsewhere. `onKeyDown` goes
+ *                 on the element around button and panel, so Escape closes from anywhere inside;
+ *                 with nested menus only the innermost open one closes. `toggle`, `close` and
+ *                 `dismiss` keep their identity across renders (since v0.10.0, like
+ *                 ./usePanels'), so a game can list them in an effect's dependencies. The docked
+ *                 chat's phone sheet (./ChatDock), the dev sign-in menu (./dev/DevSignIn) and the
+ *                 header's fold (./MenuFold) use it.
  * Source:         seasonal-mini-games packages/ui/src/useDisclosure.ts at 866df03; the stable
  *                 callbacks are the kit's (audit 2026-11-22, B4).
  */
@@ -22,6 +24,9 @@ export function useDisclosure(initiallyOpen = false) {
         setOpen(false);
         button.current?.focus();
     }, []);
+    const dismiss = useCallback(() => {
+        setOpen(false);
+    }, []);
     const toggle = useCallback(() => {
         setOpen((o) => !o);
     }, []);
@@ -29,6 +34,7 @@ export function useDisclosure(initiallyOpen = false) {
         open,
         toggle,
         close,
+        dismiss,
         panelId,
         button,
         onKeyDown: (e) => {

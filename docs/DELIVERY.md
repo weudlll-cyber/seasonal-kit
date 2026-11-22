@@ -204,6 +204,27 @@ commit's tarball (`4d57a7e`, `version: 0.9.1`).
 
 The consumer was deleted afterwards.
 
+## The v0.10.0 focus fixes and API cleanup (2026-11-22, the tag itself)
+
+A scratch consumer pinned `#v0.10.0`, with scripts off: React and React DOM 19.3.1, Vite 8.3.4,
+TypeScript 5.9.3 (NodeNext, `skipLibCheck: false`), Vitest 5.0.5 with jsdom 30.1.3, and
+@types/node 22.20.5. The lockfile resolved the tag to the merge commit's tarball (`36a72cf`,
+`version: 0.10.0`).
+
+- `tsc` worked with the new names: `RequestHeaders`, `BackLinkProps`, `DevStubOptions`, and
+  `devStubPlugin({ devModule, stub })`. The removed ones failed as the CHANGELOG's migration
+  says: `Headers`, the positional `devStubPlugin`, and `'expand'` as a `BarIconName`
+  (`@ts-expect-error` on each).
+- Four tests passed:
+  - the types above, used at run time;
+  - `AppHeader` with `signIn.href`: the toggle is the header's last element, and the menu closes
+    when the focus leaves it (jsdom);
+  - `GameBar` rendered with `time={null}`;
+  - `@seasonal/kit/shell.css` resolved to a shipped file with `--sk-focus-ring` and
+    `:focus-visible`.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

@@ -20,6 +20,13 @@ The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed").
   behaviour is unchanged: the header's tests run as before, plus one that a press outside leaves
   the focus alone.
 
+### Fixed
+
+- `ThemeToggle` (and so `AppHeader`) renders on a server: `useTheme` no longer reads `window`
+  or storage while rendering. A render before the theme is known shows the light toggle; in
+  the browser a layout effect resolves the theme before the first paint, and `<html
+data-theme>` is written only once it is known.
+
 ## [0.10.0] - 2026-11-22
 
 Keyboard, focus and touch fixes from the audit of 2026-11-22, B7, and its API cleanup, B4, both

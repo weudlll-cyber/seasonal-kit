@@ -3,7 +3,8 @@
  * @brief  React over the kit's theme logic: the page's theme with its toggle, the theme shown,
  *         and the light/dark toggle button.
  *
- * Responsibility: `useTheme` starts from the early script's resolution, sets it on <html>,
+ * Responsibility: `useTheme` takes the early script's resolution before the first paint (never
+ *                 during a render, so it renders on a server since v0.10.1), sets it on <html>,
  *                 follows the system setting while nothing is stored, and stores a click's
  *                 choice. `useShownTheme` follows <html data-theme> for parts that must match the
  *                 page (the website's chat frame). `ThemeToggle` is the round glass button with a

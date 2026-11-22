@@ -98,11 +98,13 @@ export function MenuFold(p: MenuFoldProps): ReactElement {
     setOpen(false);
     button.current?.focus();
   };
-  // The focus left both panel and button: the menu closes where it is.
+  // The focus moved to an element outside panel and button: the menu closes where it is. A
+  // blur to nowhere (relatedTarget null) is no such move: Safari focuses no link or button on a
+  // tap, so tapping a second item blurs the first to nowhere, and a press outside is the
+  // pointerdown listener's (v0.10.0 security pass, finding 1).
   const left = (e: FocusEvent): void => {
-    if (open && !within(panel, e.relatedTarget) && !within(button, e.relatedTarget)) {
-      setOpen(false);
-    }
+    const to = e.relatedTarget;
+    if (open && to !== null && !within(panel, to) && !within(button, to)) setOpen(false);
   };
   return (
     <>

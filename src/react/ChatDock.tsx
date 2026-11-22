@@ -91,12 +91,15 @@ function Body(p: {
   readonly children: ReactNode;
 }): ReactElement {
   // The phone's sheet takes the focus when it opens; Close and Escape give it back to the chat
-  // bar (../useDisclosure). WCAG 2.4.3, audit 2026-11-22 B7 finding 6 (DECISIONS K29).
+  // bar (../useDisclosure). WCAG 2.4.3, audit 2026-11-22 B7 finding 6 (DECISIONS K29). Only the
+  // opening itself moves it, never a resize into the phone layout with the sheet already open
+  // (v0.10.0 security pass, finding 4).
   const closeButton = useRef<HTMLButtonElement>(null);
-  const sheetOpen = p.phone && p.sheet.open;
+  const wasOpen = useRef(p.sheet.open);
   useEffect(() => {
-    if (sheetOpen) closeButton.current?.focus();
-  }, [sheetOpen]);
+    if (p.phone && p.sheet.open && !wasOpen.current) closeButton.current?.focus();
+    wasOpen.current = p.sheet.open;
+  }, [p.phone, p.sheet.open]);
   return (
     <div
       id={p.sheet.panelId}

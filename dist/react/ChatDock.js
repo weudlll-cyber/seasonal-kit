@@ -44,13 +44,16 @@ function PhoneBar(p) {
 }
 function Body(p) {
     // The phone's sheet takes the focus when it opens; Close and Escape give it back to the chat
-    // bar (../useDisclosure). WCAG 2.4.3, audit 2026-11-22 B7 finding 6 (DECISIONS K29).
+    // bar (../useDisclosure). WCAG 2.4.3, audit 2026-11-22 B7 finding 6 (DECISIONS K29). Only the
+    // opening itself moves it, never a resize into the phone layout with the sheet already open
+    // (v0.10.0 security pass, finding 4).
     const closeButton = useRef(null);
-    const sheetOpen = p.phone && p.sheet.open;
+    const wasOpen = useRef(p.sheet.open);
     useEffect(() => {
-        if (sheetOpen)
+        if (p.phone && p.sheet.open && !wasOpen.current)
             closeButton.current?.focus();
-    }, [sheetOpen]);
+        wasOpen.current = p.sheet.open;
+    }, [p.phone, p.sheet.open]);
     return (_jsxs("div", { id: p.sheet.panelId, className: "sk-chat-dock-body", role: p.phone ? 'dialog' : undefined, "aria-label": p.phone ? 'Chat' : undefined, hidden: p.phone && !p.sheet.open, children: [p.phone ? (_jsxs("header", { className: "sk-chat-dock-head", children: [_jsx("h2", { children: "Chat" }), _jsx("button", { ref: closeButton, type: "button", className: "sk-chat-dock-close", onClick: p.sheet.close, children: "Close" })] })) : null, p.children] }));
 }
 // The reserved call slot: its form from ../callSlot, hidden without a call id.

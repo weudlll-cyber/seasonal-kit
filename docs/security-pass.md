@@ -63,6 +63,35 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-22 — before v0.10.0, focus and API (branch `night/2026-11-22-v0.10`)
+
+| Scan                         | Tool and command                                                                                  | Result                                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 47 commits scanned.                                                                         |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues. No dependency was added.                                                                   |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on the release PR (docs/NIGHT-2026-11-22b.md).                                                   |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | After the tag (docs/RELEASING.md step 7); the owner looks at the focus-ring screens before the merge. |
+| The changed parts            | an independent review (a fresh agent given only the diff, AUTH.md and GAME-INTEGRATION §2–§4)     | No high finding; 1 medium, 3 low. Each checked against the code; all four fixed.                      |
+
+The diff reviewed: the server's type rename and the recovery-code header, the dev tools'
+options object, `MenuFold`, `ChatDock`, `useDisclosure` and the contrast script. The server's
+sign-in and recovery-code logic is unchanged.
+
+1. **Medium:** `MenuFold` closed on a blur to nowhere. Safari focuses no link or button on a tap,
+   so tapping a second item in the phone menu closed it before the tap landed. **Fixed:** only a
+   focus that moves to a known element outside closes it; presses outside stay the pointerdown
+   listener's. Tested.
+2. **Low:** the header-background check skipped stops it could not read (`rgba()`, 8-digit hex,
+   names). **Fixed:** every stop must parse, or the check throws. Tested.
+3. **Low:** checking the stops alone missed a blend darker than both ends. **Fixed:** 15 points
+   between each two stops are checked too. Tested.
+4. **Low:** the chat sheet took the focus when a resize brought back the phone layout with the
+   sheet open. **Fixed:** only the opening moves the focus. Tested.
+
+The reviewer also asked for tests of the new rules, which were outside the diff it was given;
+they are in `src/react/header.test.tsx`, `src/react/dock.test.tsx`, `src/react/shell.test.tsx`,
+`tests/contrast.test.ts` and `tests/focus-and-targets.test.ts`.
+
 ### 2026-11-21 — before v0.9.0, the header, dev tools and recovery key (branch `feat/v0.9.0`, PR #16)
 
 | Scan                         | Tool and command                                                                                  | Result                                                                                                      |

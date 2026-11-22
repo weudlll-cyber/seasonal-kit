@@ -144,6 +144,17 @@ describe('the folded menu and the focus (audit B7, DECISIONS K29)', () => {
     fireEvent.blur(play, { relatedTarget: screen.getByRole('button', { name: 'After' }) });
     expect(button.getAttribute('aria-expanded')).toBe('false');
   });
+});
+
+describe('the folded menu on a tap and on its button (v0.10.0 security pass)', () => {
+  it('stays open on a blur to nowhere, as a Safari tap on another item gives', () => {
+    render(<AppHeader {...base} />);
+    const button = screen.getByTestId('menu-button');
+    fireEvent.click(button);
+    fireEvent.blur(screen.getByRole('link', { name: 'Play' }), { relatedTarget: null });
+    fireEvent.blur(button, { relatedTarget: null });
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+  });
 
   it('closes on Escape pressed on the Menu button too', () => {
     render(<AppHeader {...base} />);

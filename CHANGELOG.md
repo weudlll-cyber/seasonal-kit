@@ -7,6 +7,8 @@ applies it.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-22
+
 Keyboard, focus and touch fixes from the audit of 2026-11-22, B7, and its API cleanup, B4, both
 before any game adopts the kit (DECISIONS K29). The API changes break; each is below with its
 before and after.
@@ -15,10 +17,11 @@ before and after.
 
 - One kit focus ring: `--sk-focus-ring` (the text colour) on every control the kit draws, for
   keyboard focus, 2 px outside the control (css/shell.css). Its contrast is checked at 3:1 or
-  more on the page, the surfaces, the card and every stop of the header's background, in light
+  more on the page, the surfaces, the card and across the header's whole background, in light
   and dark.
 - The contrast check covers the header's background (`--sidebar-background`): the text and the
-  muted text on each of its gradient's stops.
+  muted text on every stop and 15 points between each two, since a blend can be darker
+  than its ends. A stop the check cannot read fails it instead of being skipped.
 - The showcase: four screens of the focus ring (`focus-ring-<viewport>-<theme>.png`, desktop and
   phone, light and dark) and a check that nothing scrolls sideways at 320 px.
 
@@ -76,14 +79,14 @@ What a player sees change, before → after, for a game that takes v0.10.0:
 
 The API breaks, before → after (no game pins the kit yet; each adoption step takes them):
 
-| Where                    | Before (v0.9.x)                                                  | After (v0.10.0)                                                 |
-| ------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------- |
-| Server, both games       | `import type { Headers } from '@seasonal/kit/server'`            | `import type { RequestHeaders } from '@seasonal/kit/server'`    |
-| `AppHeader`, both games  | `signIn={{ signInHref: '/sign-in', registerHref: '/register' }}` | `signIn={{ href: '/sign-in', registerHref: '/register' }}`      |
-| `GameBar`, Mini Games    | `time` left out before the round opens                           | `time={null}` before the round opens                            |
-| `GameBar` actions        | `icon: 'expand'` or `'shrink'` was allowed                       | `icon` is `'chat'`, `'players'` or `'host'`                     |
-| Server build, both games | `devStubPlugin(/devSignIn.js$/, stubPath)`                       | `devStubPlugin({ devModule: /devSignIn.js$/, stub: stubPath })` |
-| Bundle test, both games  | `devMarkersIn(dir, markers).sort()`                              | `[...devMarkersIn(dir, markers)].sort()` (the list is readonly) |
+| Where                    | Before (v0.9.x)                                                  | After (v0.10.0)                                                  |
+| ------------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Server, both games       | `import type { Headers } from '@seasonal/kit/server'`            | `import type { RequestHeaders } from '@seasonal/kit/server'`     |
+| `AppHeader`, both games  | `signIn={{ signInHref: '/sign-in', registerHref: '/register' }}` | `signIn={{ href: '/sign-in', registerHref: '/register' }}`       |
+| `GameBar`, Mini Games    | `time` left out before the round opens                           | `time={null}` before the round opens                             |
+| `GameBar` actions        | `icon: 'expand'` or `'shrink'` was allowed                       | `icon` is `'chat'`, `'players'` or `'host'`                      |
+| Server build, both games | `devStubPlugin(/devSignIn\.js$/, stubPath)`                      | `devStubPlugin({ devModule: /devSignIn\.js$/, stub: stubPath })` |
+| Bundle test, both games  | `devMarkersIn(dir, markers).sort()`                              | `[...devMarkersIn(dir, markers)].sort()` (the list is readonly)  |
 
 ## [0.9.1] - 2026-11-22
 
@@ -605,7 +608,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.7.0...v0.8.0

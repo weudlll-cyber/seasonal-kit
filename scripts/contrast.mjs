@@ -5,7 +5,7 @@
  * Responsibility: every text colour on every background it is used on, in both themes, at
  *                 4.5:1 or more: the text on each season colour, the text and muted text on the
  *                 page, the surfaces and the translucent card (laid over the page's base colour),
- *                 on every stop of the header's gradient (since v0.10.0), and the solid pill's
+ *                 across the header's whole gradient (since v0.10.0), and the solid pill's
  *                 text. The focus ring at 3:1 against the same backgrounds (WCAG 1.4.11). WCAG
  *                 2.2 relative luminance and contrast ratio.
  * Source:         new (Mini Games checks its own tokens in apps/web/src/designTokens.test.ts at
@@ -76,28 +76,72 @@ const PAIRS = [
 // Non-text contrast (WCAG 1.4.11): a focus ring against what is next to it.
 export const NON_TEXT = 3;
 
+// Points sampled between two adjacent stops: a blend can be darker or lighter than both of its
+// ends, so the stops alone do not cover the width (v0.10.0 security pass, finding 3).
+const STEPS = 16;
+
 /**
- * The header's background, `--sidebar-background`: a gradient whose colour stops, each laid over
- * the gradient's trailing base colour (dark) or the page (light), are the backgrounds the
- * header's text and focus ring sit on. Every stop is checked, so the whole width is.
+ * `text` split at the commas outside any parentheses.
+ * @param {string} text
+ */
+function splitTop(text) {
+  /** @type {string[]} */
+  const parts = [];
+  let depth = 0;
+  let from = 0;
+  // The CSS is ASCII here, so indexing by UTF-16 unit is indexing by character.
+  for (let i = 0; i < text.length; i++) {
+    const ch = text.charAt(i);
+    depth += ch === '(' ? 1 : ch === ')' ? -1 : 0;
+    if (ch === ',' && depth === 0) {
+      parts.push(text.slice(from, i).trim());
+      from = i + 1;
+    }
+  }
+  return [...parts, text.slice(from).trim()];
+}
+
+/** @type {(a: Rgba, b: Rgba, t: number) => Rgba} */
+const mix = (a, b, t) => [
+  a[0] * (1 - t) + b[0] * t,
+  a[1] * (1 - t) + b[1] * t,
+  a[2] * (1 - t) + b[2] * t,
+  a[3] * (1 - t) + b[3] * t,
+];
+
+/**
+ * The header's background, `--sidebar-background`: `linear-gradient(<direction>, <stops>)`,
+ * optionally followed by the base colour it is laid over (else the page). Each stop must be a
+ * colour the check reads, or it throws: a stop it skipped would pass unchecked (finding 2).
+ * Returns the colours seen across the whole width: every stop and 15 points between each two,
+ * each laid over the base.
  * @param {import('./css-tokens.mjs').Tokens} tokens
  * @param {'light' | 'dark'} theme
  * @returns {Rgba[]}
  */
-export function sidebarStops(tokens, theme) {
+export function sidebarColours(tokens, theme) {
   const value = tokenValue(tokens, theme, '--sidebar-background') ?? 'missing --sidebar-background';
-  const colours = [...value.matchAll(/#[0-9a-f]{6}|rgb\([^)]*\)/gi)].map((m) => parseColour(m[0]));
-  // A colour after the gradient's closing parenthesis is the base the stops are laid over.
-  const hasBase = /\)\s*,\s*(?:#[0-9a-f]{6}|rgb\([^)]*\))\s*$/i.test(value);
-  const base = hasBase ? colours.pop() : undefined;
-  const under = base ?? parseColour(tokenValue(tokens, theme, '--color-background') ?? '');
-  if (colours.length === 0) throw new Error(`No colour stops in --sidebar-background: ${value}`);
-  return colours.map((stop) => over(stop, under));
+  const [gradient = '', base, ...more] = splitTop(value);
+  const inner = /^linear-gradient\((.*)\)$/.exec(gradient)?.[1];
+  if (inner === undefined || more.length > 0) {
+    throw new Error(`Not a gradient the check reads: ${value}`);
+  }
+  const [first = '', ...rest] = splitTop(inner);
+  const stops = (/^(?:to |-?[\d.]+(?:deg|turn|rad))/.test(first) ? rest : [first, ...rest]).map(
+    (stop) => parseColour(stop.replace(/\s+-?[\d.]+%$/, '')),
+  );
+  const under = parseColour(base ?? tokenValue(tokens, theme, '--color-background') ?? '');
+  const seen = stops.flatMap((stop, i) => {
+    const next = stops[i + 1];
+    if (next === undefined) return [stop];
+    return Array.from({ length: STEPS }, (_, s) => mix(stop, next, s / STEPS));
+  });
+  return seen.map((colour) => over(/** @type {Rgba} */ (colour), under));
 }
 
 /**
  * The opaque backgrounds a colour is checked on in `theme`, by name: the page, surfaces and
- * card (laid over the page), and each stop of the header's background.
+ * card (laid over the page), and the colours across the header's background.
  * @param {import('./css-tokens.mjs').Tokens} tokens
  * @param {'light' | 'dark'} theme
  * @param {readonly string[]} names
@@ -109,9 +153,9 @@ function backgroundsOf(tokens, theme, names) {
   const page = colour('--color-background');
   return [
     ...names.map((name) => /** @type {[string, Rgba]} */ ([name, over(colour(name), page)])),
-    ...sidebarStops(tokens, theme).map(
+    ...sidebarColours(tokens, theme).map(
       (stop, i) =>
-        /** @type {[string, Rgba]} */ ([`--sidebar-background stop ${String(i + 1)}`, stop]),
+        /** @type {[string, Rgba]} */ ([`--sidebar-background point ${String(i + 1)}`, stop]),
     ),
   ];
 }
@@ -135,10 +179,10 @@ export function contrastFailures(tokens) {
       ratio: contrast(colour(theme, text), over(colour(theme, background), page)),
     }));
     const header = ['--color-text', '--color-text-muted'].flatMap((text) =>
-      sidebarStops(tokens, theme).map((stop, i) => ({
+      sidebarColours(tokens, theme).map((stop, i) => ({
         theme,
         text,
-        background: `--sidebar-background stop ${String(i + 1)}`,
+        background: `--sidebar-background point ${String(i + 1)}`,
         ratio: contrast(colour(theme, text), stop),
       })),
     );

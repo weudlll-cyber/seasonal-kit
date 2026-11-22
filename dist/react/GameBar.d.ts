@@ -21,14 +21,12 @@
 import type { ReactElement, ReactNode } from 'react';
 import type { Fullscreen } from './useFullscreen.js';
 import type { Panels } from './usePanels.js';
-declare const PATHS: {
+declare const PANEL_PATHS: {
     readonly chat: "M4 5h16v10H9l-4 4v-4H4z";
     readonly players: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 19c0-3 3-5 6-5s6 2 6 5M16 5.5a3 3 0 0 1 0 5.5M18 14c2 .6 3 2.4 3 5";
     readonly host: "M4 7h10M18 7h2M4 17h4M12 17h8M14 4.5v5M8 14.5v5";
-    readonly expand: "M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5";
-    readonly shrink: "M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5";
 };
-export type BarIconName = keyof typeof PATHS;
+export type BarIconName = keyof typeof PANEL_PATHS;
 export interface BarAction<Id extends string> {
     readonly id: Id;
     readonly icon: BarIconName;
@@ -43,7 +41,7 @@ export interface BarFact {
 export interface GameBarProps<Id extends string> {
     readonly lead?: ReactNode;
     readonly facts?: readonly BarFact[];
-    readonly time?: {
+    readonly time: {
         readonly text: string;
         readonly left: boolean;
     } | null;

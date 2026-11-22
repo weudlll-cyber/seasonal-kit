@@ -48,7 +48,7 @@ export interface AppHeaderProps {
     readonly navExtra?: ReactNode;
     readonly account: HeaderAccount | null;
     readonly signIn: {
-        readonly signInHref: string;
+        readonly href: string;
         readonly registerHref?: string;
     };
     readonly devTools?: ReactNode;

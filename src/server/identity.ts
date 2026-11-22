@@ -79,7 +79,9 @@ export interface WebsiteIdentity {
   readonly badSteps: boolean;
 }
 
-export type Headers = Readonly<Record<string, HeaderValue>>;
+// A request's headers as Node gives them (`req.headers`). Named so it never hides the global
+// `Headers` of the Fetch API in a game's file (since v0.10.0; audit 2026-11-22, B4).
+export type RequestHeaders = Readonly<Record<string, HeaderValue>>;
 
 const SUBJECT = /^[1-9]\d{0,15}$/;
 const NAME_CHARS = /[^\p{L}\p{N}_.-]+/gu;
@@ -160,14 +162,14 @@ function gameName(websiteName: string, subject: string): string {
 // A guest unless the header is absent or exactly "false": "true, true" (a joined repeat), an
 // empty value or any other value is a guest too. Failing closed keeps a guest from ever being
 // read as a member (v0.8.0 pass, review 3, finding 5).
-export function isWebsiteGuest(headers: Headers, names = IDENTITY_HEADERS): boolean {
+export function isWebsiteGuest(headers: RequestHeaders, names = IDENTITY_HEADERS): boolean {
   const value = headers[names.guest.toLowerCase()];
   if (value === undefined) return false;
   return one(value)?.toLowerCase() !== 'false';
 }
 
 export function identityFrom(
-  headers: Headers,
+  headers: RequestHeaders,
   steps: StepsMode,
   names = IDENTITY_HEADERS,
 ): WebsiteIdentity | null {
@@ -221,7 +223,7 @@ export type SignInDecision =
 // trusted-proxy setting that reads a forwarding header anyone can send (audit 2026-11-22, B1).
 export function websiteSignInCheck(
   check: SignInCheck,
-): (peer: string | undefined, headers: Headers) => SignInDecision {
+): (peer: string | undefined, headers: RequestHeaders) => SignInDecision {
   const trusted = trustedPeers(check.trustedProxies);
   const fromProxy = secretMatches(check.proxySecret);
   const names = lowerNames(check.names ?? IDENTITY_HEADERS);

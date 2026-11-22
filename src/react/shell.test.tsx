@@ -74,6 +74,18 @@ describe('the theme toggle', () => {
 });
 
 describe('the disclosure', () => {
+  it('keeps toggle and close the same across renders (audit B4)', () => {
+    const { result, rerender } = renderHook(() => useDisclosure());
+    const { toggle, close } = result.current;
+    act(() => {
+      toggle();
+    });
+    rerender();
+    expect(result.current.open).toBe(true);
+    expect(result.current.toggle).toBe(toggle);
+    expect(result.current.close).toBe(close);
+  });
+
   it('opens, closes on Escape only while open, and gives the focus back', () => {
     const { result } = renderHook(() => useDisclosure());
     const button = document.createElement('button');

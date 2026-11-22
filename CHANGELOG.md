@@ -7,7 +7,9 @@ applies it.
 
 ## [Unreleased]
 
-Keyboard, focus and touch fixes from the audit of 2026-11-22, B7 (DECISIONS K29).
+Keyboard, focus and touch fixes from the audit of 2026-11-22, B7, and its API cleanup, B4, both
+before any game adopts the kit (DECISIONS K29). The API changes break; each is below with its
+before and after.
 
 ### Added
 
@@ -34,6 +36,18 @@ Keyboard, focus and touch fixes from the audit of 2026-11-22, B7 (DECISIONS K29)
   a 44 px target.
 - **The phase strip** wraps its parts instead of scrolling sideways when they do not fit; its
   text keeps the game's floor.
+- **Breaking (`@seasonal/kit/server`):** the request-headers type `Headers` is `RequestHeaders`,
+  so it no longer hides the Fetch API's global `Headers` in a game's file.
+- **Breaking (`@seasonal/kit/react`):** `BarIconName` names the panel icons only (`chat`,
+  `players`, `host`); the full-screen button's `expand` and `shrink` are the bar's own.
+- **Breaking:** `GameBar`'s `time` is always given (`null` before the round opens), as every kit
+  prop says "none" with `null`; `AppHeader`'s `signIn.signInHref` is `signIn.href`.
+- **Breaking (`@seasonal/kit/devtools`):** `devStubPlugin` takes one options object
+  (`{ devModule, stub }`, the new type `DevStubOptions`), like `devSignInAccount`'s rules;
+  `devMarkersIn` returns a readonly list.
+- `BackLinkProps` is exported, like every other component's props. `useDisclosure`'s `toggle`
+  and `close` keep their identity across renders, like `usePanels`'.
+- Kept as they are: `connectCall` and `CALL_SLOT` (BACKLOG 8 needs them, K29).
 - The repository's GitHub settings (DECISIONS K24): merge commits only, the branch deleted
   after a merge, a ruleset that keeps `v*` tags from being moved or deleted, vulnerability alerts
   on, no wiki or Projects, actions pinned to commit SHAs. Read back in docs/RELEASING.md.
@@ -59,6 +73,17 @@ What a player sees change, before → after, for a game that takes v0.10.0:
   instead of running off a narrow screen.
 - **A game with its own focus styles** on the kit's classes keeps them: the kit's ring is in
   `:where()`, so a game's own `:focus-visible` rule on those controls wins.
+
+The API breaks, before → after (no game pins the kit yet; each adoption step takes them):
+
+| Where                    | Before (v0.9.x)                                                  | After (v0.10.0)                                                 |
+| ------------------------ | ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| Server, both games       | `import type { Headers } from '@seasonal/kit/server'`            | `import type { RequestHeaders } from '@seasonal/kit/server'`    |
+| `AppHeader`, both games  | `signIn={{ signInHref: '/sign-in', registerHref: '/register' }}` | `signIn={{ href: '/sign-in', registerHref: '/register' }}`      |
+| `GameBar`, Mini Games    | `time` left out before the round opens                           | `time={null}` before the round opens                            |
+| `GameBar` actions        | `icon: 'expand'` or `'shrink'` was allowed                       | `icon` is `'chat'`, `'players'` or `'host'`                     |
+| Server build, both games | `devStubPlugin(/devSignIn.js$/, stubPath)`                       | `devStubPlugin({ devModule: /devSignIn.js$/, stub: stubPath })` |
+| Bundle test, both games  | `devMarkersIn(dir, markers).sort()`                              | `[...devMarkersIn(dir, markers)].sort()` (the list is readonly) |
 
 ## [0.9.1] - 2026-11-22
 

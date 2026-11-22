@@ -43,7 +43,7 @@ const base: AppHeaderProps = {
     { href: '#/leaderboard', label: 'Leaderboard', active: false },
   ],
   account: null,
-  signIn: { signInHref: '#/sign-in', registerHref: '#/register' },
+  signIn: { href: '#/sign-in', registerHref: '#/register' },
   closeKey: 'lobby',
 };
 
@@ -69,7 +69,7 @@ describe('the app header', () => {
       <AppHeader
         {...base}
         websiteMode
-        signIn={{ signInHref: '/games/bingo/auth/website/login?next=%2F' }}
+        signIn={{ href: '/games/bingo/auth/website/login?next=%2F' }}
       />,
     );
     const header = screen.getByTestId('app-header');

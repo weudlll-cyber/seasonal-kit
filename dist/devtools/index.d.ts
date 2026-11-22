@@ -9,4 +9,4 @@
  * Source:         new in the kit.
  */
 export { devSignInAccount, type DevAccount, type DevSignInRules } from './signIn.js';
-export { devMarkersIn, devStubPlugin, KIT_DEV_MARKERS, type DevStubPlugin } from './bundle.js';
+export { devMarkersIn, devStubPlugin, KIT_DEV_MARKERS, type DevStubOptions, type DevStubPlugin, } from './bundle.js';

@@ -20,9 +20,9 @@ export interface WebsiteIdentity {
     readonly steps: readonly Step[];
     readonly badSteps: boolean;
 }
-export type Headers = Readonly<Record<string, HeaderValue>>;
-export declare function isWebsiteGuest(headers: Headers, names?: IdentityHeaders): boolean;
-export declare function identityFrom(headers: Headers, steps: StepsMode, names?: IdentityHeaders): WebsiteIdentity | null;
+export type RequestHeaders = Readonly<Record<string, HeaderValue>>;
+export declare function isWebsiteGuest(headers: RequestHeaders, names?: IdentityHeaders): boolean;
+export declare function identityFrom(headers: RequestHeaders, steps: StepsMode, names?: IdentityHeaders): WebsiteIdentity | null;
 export declare function mappedRoles(who: Pick<WebsiteIdentity, 'roles' | 'canHost'>): readonly string[];
 export interface SignInCheck {
     readonly trustedProxies: readonly string[];
@@ -41,4 +41,4 @@ export type SignInDecision = {
     readonly kind: 'member';
     readonly identity: WebsiteIdentity;
 };
-export declare function websiteSignInCheck(check: SignInCheck): (peer: string | undefined, headers: Headers) => SignInDecision;
+export declare function websiteSignInCheck(check: SignInCheck): (peer: string | undefined, headers: RequestHeaders) => SignInDecision;

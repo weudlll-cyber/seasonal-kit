@@ -13,6 +13,7 @@
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §8 (at e7b995c)
  */
 import type { ReactElement } from 'react';
-export declare function BackLink(p: {
+export interface BackLinkProps {
     readonly websiteMode: boolean;
-}): ReactElement | null;
+}
+export declare function BackLink(p: BackLinkProps): ReactElement | null;

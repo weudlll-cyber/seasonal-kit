@@ -31,7 +31,7 @@ const base: AppHeaderProps = {
     { href: '#/leaderboard', label: 'Leaderboard', active: false },
   ],
   account: null,
-  signIn: { signInHref: '#/sign-in', registerHref: '#/register' },
+  signIn: { href: '#/sign-in', registerHref: '#/register' },
   closeKey: 'showcase',
 };
 
@@ -48,7 +48,7 @@ export function Headers(): ReactElement {
         {...base}
         websiteMode
         account={account}
-        signIn={{ signInHref: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
+        signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
       />
       <h3>Signed in, with the development tools</h3>
       <AppHeader

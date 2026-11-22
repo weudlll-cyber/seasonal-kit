@@ -60,8 +60,8 @@ export interface AppHeaderProps {
   // Signed in, or null.
   readonly account: HeaderAccount | null;
   // Signed out: where "Sign in" (website mode: the website's sign-in) and "Register" lead;
-  // `register` is left out in website mode.
-  readonly signIn: { readonly signInHref: string; readonly registerHref?: string };
+  // `registerHref` is left out in website mode (`href`, since v0.10.0, was `signInHref`).
+  readonly signIn: { readonly href: string; readonly registerHref?: string };
   readonly devTools?: ReactNode;
   // Closes the folded menu when it changes (route, account).
   readonly closeKey: string;
@@ -88,7 +88,7 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
     <div className="sk-header-account" data-testid="account">
       {account === null ? (
         <>
-          <a className={button} href={signIn.signInHref} data-testid="sign-in">
+          <a className={button} href={signIn.href} data-testid="sign-in">
             Sign in
           </a>
           {p.websiteMode || signIn.registerHref === undefined ? null : (

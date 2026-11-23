@@ -11,7 +11,9 @@
  *                 `useDockView`. On a phone the content scrolls alone above the chat bar, and the
  *                 visible viewport's height is published as `--sk-visible-height` on <html>: the
  *                 game's root (the element a screen high) takes it, so the bar stays directly
- *                 above the on-screen keyboard. The box itself never takes the viewport's height:
+ *                 above the on-screen keyboard. With `withoutChat` (since v0.12.0) there is no
+ *                 dock at all, no strip and no sheet, and the content still follows the keyboard
+ *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
  *                 it may sit under other parts of the page (v0.7.0, found by the showcase).
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
@@ -19,7 +21,11 @@
  */
 import { type ReactElement, type ReactNode } from 'react';
 import { type ChatDockProps } from './ChatDock.js';
-export interface DockedScreenProps extends Omit<ChatDockProps, 'phone'> {
+export type DockedScreenProps = {
     readonly children: ReactNode;
-}
-export declare function DockedScreen({ children, ...dock }: DockedScreenProps): ReactElement;
+} & ((Omit<ChatDockProps, 'phone'> & {
+    readonly withoutChat?: false;
+}) | {
+    readonly withoutChat: true;
+});
+export declare function DockedScreen(p: DockedScreenProps): ReactElement;

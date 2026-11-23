@@ -23,10 +23,10 @@
  *                 cc75504.
  * Spec:           Seasonal Entertainment docs/EMBED.md; docs/GAME-INTEGRATION.md §5
  */
-import { useContext, useEffect, useRef, type ReactElement } from 'react';
+import { useEffect, useRef, type ReactElement } from 'react';
 
 import { chatEmbedUrl, connectChat } from '../chatEmbed.js';
-import { DockSight } from './dockSight.js';
+import { useDockSight } from './dockSight.js';
 import { useShownTheme } from './theme.js';
 
 // Mini Games' sandbox: scripts, the site's own cookie, forms and the login popup.
@@ -46,7 +46,7 @@ function ChatFrame(p: {
   readonly origin?: string;
   readonly className: string | undefined;
 }): ReactElement {
-  const sight = useContext(DockSight);
+  const sight = useDockSight();
   const frame = useRef<HTMLIFrameElement>(null);
   const visible = sight?.visible;
   const arrivals = sight?.arrivals;

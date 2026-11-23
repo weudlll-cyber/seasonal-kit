@@ -24,15 +24,15 @@ import { jsx as _jsx } from "react/jsx-runtime";
  *                 cc75504.
  * Spec:           Seasonal Entertainment docs/EMBED.md; docs/GAME-INTEGRATION.md §5
  */
-import { useContext, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { chatEmbedUrl, connectChat } from '../chatEmbed.js';
-import { DockSight } from './dockSight.js';
+import { useDockSight } from './dockSight.js';
 import { useShownTheme } from './theme.js';
 // Mini Games' sandbox: scripts, the site's own cookie, forms and the login popup.
 const SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-popups';
 // The frame both kinds share: `src` on `origin` (this page's when left out), the checked link.
 function ChatFrame(p) {
-    const sight = useContext(DockSight);
+    const sight = useDockSight();
     const frame = useRef(null);
     const visible = sight?.visible;
     const arrivals = sight?.arrivals;

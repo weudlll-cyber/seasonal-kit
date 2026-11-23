@@ -30,6 +30,17 @@ T416). Every change is opt-in: a game that changes nothing sees exactly today's 
   32 px over the card). Off by default; where there is no font set nothing is listened to.
   `FitOptions` is exported from `@seasonal/kit`.
 
+- **`DockedScreen` without a chat** (`withoutChat`): the screen renders its content and no dock
+  at all (no strip, no sheet, no call slot), and on a phone still publishes
+  `--sk-visible-height` so the game's root follows the on-screen keyboard as it does today
+  (Mini Games T416). `withoutChat` unset or `false` is the docked layout as before; the props
+  are now a union, so `chat`, `bar` and `callId` stay required unless `withoutChat` is `true`.
+- **The dock's visibility signal** (`useDockSight`, with the type `DockSightValue`, from
+  `@seasonal/kit/react`): a game's own frame inside the dock reads `visible` (always on a
+  desktop, while the sheet is open on a phone) and passes its unread count to `arrivals`, as the
+  website's chat frame does. It is `null` outside a dock. `useDockArrivals` and
+  `WebsiteChatFrame` now read it too (reused, nothing changes for them).
+
 ### Changed
 
 - **Stale lines about the call view** (`callView.ts`, `ChatDock.tsx`, the README): the site

@@ -9,3 +9,4 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 8\. The call view in the slot: waits for the site's `/embed/call/<id>` page.
 - 10\. Mini Games' bar and fit needs (a `prefs` icon, a refit after fonts): wait for the owner's
   word.
+- 11\. The token names take the `sk-` prefix: the next minor, with a migration note per game.

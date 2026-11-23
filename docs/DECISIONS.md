@@ -130,3 +130,15 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   releasing v0.11.0 in the night without a morning look: nothing changes for players until a
   game moves to it with the owner's word. Once all six required checks are green the release PR
   is merged, tagged and its delivery proven, and the delivery record's PR is merged once green.
+
+## 2026-11-23
+
+- **K37 — The peer dependencies are ranges.** `react` and `vite`, the kit's two optional peers,
+  are caret ranges from the version the kit is tested with (`^19.3.1`, `^8.3.4`), not exact
+  versions, so a game on a later minor or patch installs the kit with npm as with pnpm. The
+  kit's own devDependencies stay exact and must meet the range. Renovate never bumps a peer on a
+  minor, patch or pin; a new major widens the range (v0.11.1,
+  [DELIVERY.md](DELIVERY.md), [RELEASING.md](RELEASING.md)).
+- **K38 — Renovate never updates Node.** `engines.node` stays `>=22` and `.nvmrc` stays `22`;
+  the two name the same major and change together, by hand, in a reviewed PR. Renovate's npm and
+  nvm managers leave `node` alone (v0.11.1, [RELEASING.md](RELEASING.md)).

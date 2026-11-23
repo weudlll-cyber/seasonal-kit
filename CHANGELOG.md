@@ -7,6 +7,32 @@ applies it.
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-11-23
+
+The peers become ranges and Renovate leaves Node and the peers alone (DECISIONS K37, K38).
+Nothing changes for players; the owner approved merging and releasing it once green.
+
+### Changed
+
+- **The peer dependencies are caret ranges** (K37): `react` `^19.3.1` and `vite` `^8.3.4`, still
+  optional, instead of the exact `19.3.1` and `8.3.4`. Up to v0.11.0 npm refused to install the
+  kit next to any other version (`ERESOLVE` with Vite 8.3.5, 2026-11-23). The kit still builds
+  and tests with its own exact devDependencies, which tests/renovate.test.ts holds inside the
+  ranges. The rule is in docs/DELIVERY.md, "The peer ranges".
+- **Renovate** (`renovate.json`, K38): `node` is off for the npm and nvm managers, so
+  `engines.node` stays `>=22` and `.nvmrc` stays `22`. A peer is never bumped on a minor, patch
+  or pin, and a new major widens its range. The rules are in docs/RELEASING.md, "What Renovate
+  leaves alone"; tests/renovate.test.ts fails if one is removed or `engines` and `.nvmrc`
+  disagree.
+- **The delivery proof** runs twice from this version on, once with pnpm and once with npm, the
+  npm one on a later peer patch than the kit's own (docs/RELEASING.md step 7).
+
+### Migration, per game
+
+- **Mini Games, Bingo Royale, Seasonal Party, Seasonal Cases:** nothing to do. A game that pins
+  React 19.3.1 and Vite 8.3.4 or later on the same major installs as before; the pin moves to
+  `#v0.11.1` with the owner's word.
+
 ## [0.11.0] - 2026-11-23
 
 The games' requests (DECISIONS K32), the season feed (K34), 24 px pointer targets (K33) and the
@@ -827,7 +853,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...HEAD
+[0.11.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0

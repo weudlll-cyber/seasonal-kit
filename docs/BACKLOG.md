@@ -37,6 +37,14 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 
   Done when: the owner decides each, and what is decided is in the kit with a test.
 
+- **11. The token names take the prefix** (the race's adoption plan, 2026-11-22, its third
+  point). `css/tokens.css` defines its 49 custom properties without the `sk-` prefix
+  (`--color-text`, `--space-2`, `--gutter`, …), so they can clash with a game's own. Every game
+  reads them, so renaming them breaks every game: it goes into the next minor, not into v0.11.1.
+  Done when: each shared token is `--sk-` prefixed, tests/prefix.test.ts checks custom
+  properties too, and the CHANGELOG has a migration note per game with the old and the new
+  name.
+
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no

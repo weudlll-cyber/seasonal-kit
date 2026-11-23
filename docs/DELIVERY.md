@@ -16,6 +16,22 @@ How a game gets the kit, and what was proven on 2026-11-20 before anything else 
 - What a game receives is **compiled JavaScript and `.d.ts` files in `dist/`**, plus the CSS
   files, committed at each tag. Nothing is built and no script runs on install.
 
+## The peer ranges (since v0.11.1, DECISIONS K37)
+
+The kit's two peers are optional: `react` (for `@seasonal/kit/react`) and `vite` (the types of
+`@seasonal/kit/vite`). A game brings its own; the kit never installs a copy.
+
+- **A peer is a caret range** from the version the kit is tested with: `react` `^19.3.1`,
+  `vite` `^8.3.4`. A game may run any later minor or patch of the same major.
+- **The kit tests with exact versions**: its devDependencies pin one version each, and that
+  version must meet the range (tests/renovate.test.ts).
+- **Why:** up to v0.11.0 the peers were exact. npm treats a peer that does not match as an
+  error, optional or not: a scratch consumer with Vite 8.3.5 could not install `#v0.11.0` with
+  npm (`ERESOLVE`, `peerOptional vite@"8.3.4"`, 2026-11-23).
+- **A range's floor rises** only in a reviewed change with a CHANGELOG note per game. A new
+  major widens the range (`^19.3.1 || ^20.0.0`) until no game is on the old one
+  ([RELEASING.md](RELEASING.md)).
+
 ## The proof (2026-11-20, tag v0.0.1, commit 07a8484)
 
 A scratch consumer outside every repository had `.npmrc` `ignore-scripts=true` and was installed

@@ -40,7 +40,9 @@ master`). Check that `git ls-remote origin` lists only `master` and the tags (an
    unattended night, its sheet branch until the sheet's PR merges).
 7. Prove the delivery on the tag: a scratch consumer outside every repository, with
    `ignore-scripts=true`, installs `#vX.Y.Z`, typechecks and tests what the version added, and is
-   deleted afterwards. Record it in [DELIVERY.md](DELIVERY.md).
+   deleted afterwards. Since v0.11.1 there are two, one installed with pnpm and one with npm
+   (whose peer check is strict), the npm one on a later patch of a peer than the kit's own.
+   Record both in [DELIVERY.md](DELIVERY.md).
 
 The one tag not on a merge commit is v0.0.1, the delivery probe on the root commit (07a8484),
 cut before master was protected.
@@ -61,8 +63,8 @@ day:
 | Wiki and Projects               | `has_wiki: false`, `has_projects: false`: the docs live in this repository                                                                  |
 | Actions pinned to commit SHAs   | `sha_pinning_required: true`; every `uses:` in `.github/` was already a full SHA                                                            |
 
-Master's branch protection is DECISIONS K13 and K19. Renovate (`renovate.json`) needs its GitHub
-app, which the owner installs: no Renovate PR or dependency dashboard has appeared yet.
+Master's branch protection is DECISIONS K13 and K19. Renovate (`renovate.json`) runs as its
+GitHub app, which the owner installed on 2026-11-23; its first PRs were #25 and #26.
 
 ## What Renovate updates (since v0.10.1)
 
@@ -75,4 +77,23 @@ app, which the owner installs: no Renovate PR or dependency dashboard has appear
   bytes. Renovate updates version and hash together. The hash is the npm tarball's sha512
   (`npm view pnpm@<version> dist.integrity`, base64 to hex).
 
-tests/renovate.test.ts fails when a `*_IMAGE` line is not matched or the hash is missing.
+## What Renovate leaves alone (since v0.11.1)
+
+- **Node** (DECISIONS K38): `engines.node` is `>=22` and `.nvmrc` is `22`, the same major. A
+  rule turns off `node` for the npm and nvm managers. Renovate's first PR (#25) had rewritten
+  `engines.node` to `v26.13.1` and `.nvmrc` to `v22.23.5`, which contradict each other, and every
+  install in CI refused the engine. A Node move is a reviewed PR that changes both files.
+- **The peer ranges** (DECISIONS K37): `react` `^19.3.1` and `vite` `^8.3.4` are what a game may
+  bring, not what the kit tests with. Renovate updates the kit's own exact devDependencies, never
+  a peer on a minor, patch or pin. A new major widens the range (`rangeStrategy: widen`, as in
+  `^19.3.1 || ^20.0.0`), so a game on the old major keeps working. Raising a range's floor is a
+  reviewed change with a CHANGELOG note per game.
+
+tests/renovate.test.ts fails when a `*_IMAGE` line is not matched, the hash is missing, the Node
+rule or the peer rules are removed, `engines` and `.nvmrc` disagree, or a peer is not a caret
+range met by the kit's own devDependency.
+
+`renovate.json` was checked with Renovate's own `renovate-config-validator --strict` (44.257.9,
+installed once outside the repository, not a dependency) on 2026-11-23. It rejected a rule that
+combined `matchUpdateTypes` with `rangeStrategy`, so the widen rule and the off rule are two
+rules.

@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -53,8 +53,8 @@
     "fonts"
   ],
   "peerDependencies": {
-    "react": "19.3.1",
-    "vite": "8.3.4"
+    "react": "^19.3.1",
+    "vite": "^8.3.4"
   },
   "peerDependenciesMeta": {
     "react": {

@@ -7,6 +7,13 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- **The showcase's build** (`showcase/vite.config.ts`): its two pages are the input map of
+  `build.rolldownOptions` instead of the deprecated `rollupOptions`, which Vite 8.3.8's types
+  flag for lint (Renovate #25). Only the showcase changes; `dist/` and everything a game uses
+  stay the same, so no release follows.
+
 ## [0.11.1] - 2026-11-23
 
 The peers become ranges and Renovate leaves Node and the peers alone (DECISIONS K37, K38).

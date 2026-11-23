@@ -12,9 +12,12 @@
  *                 scan. A flood of fresh keys therefore neither grows the map, nor costs a scan
  *                 per request, nor resets another key's bucket. The trade-off: someone who keeps
  *                 100 000 keys busy shuts out new ones. Games key by account and by IPv6 /64
- *                 (never a whole address), which makes that cost one address range per key. A
+ *                 (never a whole address), which makes that cost one address range per key. Keys
+ *                 are held as given, so a game passes short, normalised keys (an account id, an
+ *                 address range; never a raw login name before sign-in), or hashes long ones. A
  *                 clock that went back drains nothing; a time that is not finite touches
- *                 nothing. A rule must be a whole limit ≥ 1 over a finite window. It may be a
+ *                 nothing. A rule must be a whole limit ≥ 1 over a whole window of 1 ms or more,
+ *                 read once into a copy of its own (since v0.11.0). It may be a
  *                 function that gives the rule, read on every request, so a limit a game's admin
  *                 changes applies at once (since v0.11.0, Bingo R3); a broken rule it gives later
  *                 keeps the last valid one, never lifting the limit or throwing. The clock is
@@ -28,11 +31,20 @@
 // How many keys a limiter holds at most by default; past it, idle keys go first, and a new key
 // is refused while every held key is still active (v0.8.0 pass, review 1, finding 5).
 const MAX_KEYS = 100_000;
-const validRule = (rule) => Number.isSafeInteger(rule.limit) &&
-    rule.limit >= 1 &&
-    Number.isFinite(rule.windowMs) &&
-    rule.windowMs > 0;
-const RULE_ERROR = 'A rate rule needs a whole limit ≥ 1 and a finite window';
+// The rule read once into a frozen copy of its own, or null when it is no valid rule: a whole
+// limit ≥ 1 over a whole window of 1 ms or more. A copy, because a rule the game changes in
+// place (or a getter) would otherwise skip this check (v0.11.0 pass, findings 9, 10 and 12).
+function ruleOf(read) {
+    if (typeof read !== 'object' || read === null)
+        return null;
+    const { limit, windowMs } = read;
+    if (!Number.isSafeInteger(limit) || limit < 1)
+        return null;
+    if (!Number.isSafeInteger(windowMs) || windowMs < 1)
+        return null;
+    return Object.freeze({ limit: limit, windowMs: windowMs });
+}
+const RULE_ERROR = 'A rate rule needs a whole limit ≥ 1 and a whole window of 1 ms or more';
 export class RateLimiter {
     source;
     now;
@@ -43,14 +55,15 @@ export class RateLimiter {
     // flood of new keys against a full map costs nothing per request (v0.8.0 pass, review 2, finding
     // 1).
     fullPrunedAt = Number.NEGATIVE_INFINITY;
-    // The last valid rule read: a source that gives a broken one later keeps this one.
+    // The last valid rule read, as a copy: a source that gives a broken one later keeps this one,
+    // and a fixed rule changed in place by the game is never read again.
     rule;
     constructor(source, now = Date.now, maxKeys = MAX_KEYS) {
         this.source = source;
         this.now = now;
         this.maxKeys = maxKeys;
-        const first = typeof source === 'function' ? source() : source;
-        if (!validRule(first) || !Number.isSafeInteger(maxKeys) || maxKeys < 1) {
+        const first = ruleOf(typeof source === 'function' ? source() : source);
+        if (first === null || !Number.isSafeInteger(maxKeys) || maxKeys < 1) {
             throw new RangeError(RULE_ERROR);
         }
         this.rule = first;
@@ -62,8 +75,8 @@ export class RateLimiter {
         if (typeof this.source !== 'function')
             return this.rule;
         try {
-            const read = this.source();
-            if (validRule(read))
+            const read = ruleOf(this.source());
+            if (read !== null)
                 this.rule = read;
         }
         catch {

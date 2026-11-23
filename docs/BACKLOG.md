@@ -30,6 +30,12 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Done when: they are in the kit with tests, and a game uses them. The kit's part is in v0.4.0
   (`WebsiteChatFrame`, `ChatDock`, `DockedScreen`, `useDockArrivals`); open until a game uses
   them (item 5).
+- **10. Mini Games' bar and fit needs** (found while refreshing [ADOPTION.md](ADOPTION.md),
+  2026-11-23). Neither is built, since no task names them:
+  - a `prefs` icon in `GameBar`'s `BarIconName`, for its Pre-picks button (O117);
+  - `watchFit` fitting again once web fonts load (its T404: a WebKit wrap 32 px over the card).
+
+  Done when: the owner decides each, and what is decided is in the kit with a test.
 
 ## Part two — closed
 

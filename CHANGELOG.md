@@ -7,7 +7,11 @@ applies it.
 
 ## [Unreleased]
 
-The games' requests (DECISIONS K32), the season feed and the handbook.
+## [0.11.0] - 2026-11-23
+
+The games' requests (DECISIONS K32), the season feed (K34), 24 px pointer targets (K33) and the
+handbook (K35). Nothing changes for players until a game moves to it with the owner's word;
+released unattended with the owner's approval (K36).
 
 ### Added
 
@@ -105,6 +109,58 @@ timeoutMs?, staleAfterMs? })` reads the website's `GET /api/public/season` serve
   A phone bar is as high as its buttons; it was capped at 52 px, and is now taller only when the
   buttons wrap. The time has the class `sk-bar-time`. Measured at 320, 360 and 375 px in
   showcase/layout.spec.ts.
+
+### Security
+
+The pass before this version (docs/security-pass.md, 2026-11-23): gitleaks and osv-scanner found
+nothing, and a fresh reviewer read the season feed reader and the rate limiter. Each finding is
+fixed with a test:
+
+- **The season feed's 64 KiB cap** is counted in bytes as the body streams in. The stream is
+  cancelled past the cap; before, a body without a length was read whole first.
+- **The reader's own checks:**
+  - a refused answer's body is cancelled;
+  - a redirected answer is refused;
+  - a timer of its own covers the whole read, even when the game's fetch drops the signal;
+  - reads that overlap share one request;
+  - the options must be whole milliseconds;
+  - impossible dates, out-of-order days and more than 64 halving days are no feed.
+- **`RateLimiter` keeps a frozen copy of each rule it checked,** never the game's object. A rule
+  changed in place can no longer lift the limit. A window must be whole and at least 1 ms;
+  before, any finite window over 0 was taken.
+
+### Migration, per game
+
+Players see no change until a game takes these. In a game's code:
+
+- **Every game with `AppHeader`:** the fold is measured, so a short bar may stay in one row on
+  a tablet, and a long one folds on a desktop. A game's own CSS for the folded header keys on
+  `.sk-header[data-sk-folded='true']` instead of `@media (max-width: 959px)`.
+- **Every game with `GameBar`:** on a narrow phone its facts end in "…" and its buttons may
+  wrap. A phone bar with wrapped buttons grows past the 52 px it was capped at.
+- **Every game with `RateLimiter`:** a rule's window must be whole milliseconds, 1 or more.
+  Every game's rules are already whole.
+- **Seasonal Bingo Royale:** its kept parts can go:
+  - its header (`useBarFold`, `MenuFold`, `menu.css`) for `AppHeader` (R1);
+  - its `.shell-back` for `BackLink` (R2);
+  - its limiter, passing `liveRule`'s function to the kit's (R3);
+  - `FinalPlacement`'s section for `ResultFrame`'s `panel={{ level: 3 }}` (R4);
+  - its open-rounds answer for `openRoundsPage`.
+- **Seasonal Mini Games:** its open-rounds answer becomes `openRoundsPage`; a season read of its
+  own becomes `seasonFeedReader` with its guarded fetch.
+- **Seasonal Cases:** its stand-ins go:
+  - `fit-cases.css` → `data-sk-game="cases"` and `useFitScale('cases')`;
+  - `useDockReserve` → the kit's;
+  - `OriginChatFrame` → the kit's;
+  - `BarToggle` → `GameBar`'s `toggles`;
+  - the lead it hides up to 480 px (`moments.css`) can show again;
+  - `onUnread` feeds its chat button's `badge`;
+  - its open-rounds answer → `openRoundsPage`.
+
+  It also takes v0.10.x's notes: `data-sk-fit-fixed`, and no `sandboxed` prop.
+
+- **Seasonal Party:** `data-sk-game="seasonal-party"` in place of no game (the same floors).
+  The back link keeps its space.
 
 ## [0.10.1] - 2026-11-22
 
@@ -771,7 +827,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1

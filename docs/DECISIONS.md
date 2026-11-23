@@ -126,3 +126,7 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   game uses, and a short summary of embedding that links the website's own docs) is one
   document, [HANDBOOK.md](HANDBOOK.md), linked from the README. Each rule there names where it
   is enforced (v0.11.0).
+- **K36 — v0.11.0 is released unattended.** The owner approved (2026-11-22) merging and
+  releasing v0.11.0 in the night without a morning look: nothing changes for players until a
+  game moves to it with the owner's word. Once all six required checks are green the release PR
+  is merged, tagged and its delivery proven, and the delivery record's PR is merged once green.

@@ -12,9 +12,12 @@
  *                 scan. A flood of fresh keys therefore neither grows the map, nor costs a scan
  *                 per request, nor resets another key's bucket. The trade-off: someone who keeps
  *                 100 000 keys busy shuts out new ones. Games key by account and by IPv6 /64
- *                 (never a whole address), which makes that cost one address range per key. A
+ *                 (never a whole address), which makes that cost one address range per key. Keys
+ *                 are held as given, so a game passes short, normalised keys (an account id, an
+ *                 address range; never a raw login name before sign-in), or hashes long ones. A
  *                 clock that went back drains nothing; a time that is not finite touches
- *                 nothing. A rule must be a whole limit ≥ 1 over a finite window. It may be a
+ *                 nothing. A rule must be a whole limit ≥ 1 over a whole window of 1 ms or more,
+ *                 read once into a copy of its own (since v0.11.0). It may be a
  *                 function that gives the rule, read on every request, so a limit a game's admin
  *                 changes applies at once (since v0.11.0, Bingo R3); a broken rule it gives later
  *                 keeps the last valid one, never lifting the limit or throwing. The clock is

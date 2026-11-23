@@ -33,6 +33,8 @@ const json = (body: unknown, init: ResponseInit = {}): Response =>
 describe('parseSeasonFeed', () => {
   it('reads the website’s answer as it is, and drops fields it does not know', () => {
     expect(parseSeasonFeed(FEED)).toEqual(FEED);
+    const ms = { ...FEED, inSeason: { ...FEED.inSeason, since: '2026-03-05T22:32:17.000Z' } };
+    expect(parseSeasonFeed(ms)?.inSeason.since).toBe('2026-03-05T22:32:17.000Z');
     const more = { ...FEED, next: 'x', inSeason: { ...FEED.inSeason, colour: '#fff' } };
     expect(parseSeasonFeed(more)).toEqual(FEED);
   });
@@ -51,6 +53,14 @@ describe('parseSeasonFeed', () => {
       { ...FEED, halvingDays: [{ day: '4 Dec', token: 'AUTUMN' }] },
       { ...FEED, halvingDays: [{ day: '2026-12-04', token: 'autumn' }] },
       { ...FEED, halvingDays: ['2026-12-04'] },
+      // Dates that Date.parse rolls over, and days that are no date (v0.11.0 pass, finding 6).
+      { ...FEED, inSeason: { ...FEED.inSeason, since: '2026-02-30T00:00:00Z' } },
+      { ...FEED, inSeason: { ...FEED.inSeason, since: '2026-02-28T24:00:00Z' } },
+      { ...FEED, halvingDays: [{ day: '2026-99-99', token: 'AUTUMN' }] },
+      { ...FEED, halvingDays: [{ day: '2026-02-30', token: 'AUTUMN' }] },
+      // Out of order, and more halvings than two and a half years hold (finding 7).
+      { ...FEED, halvingDays: [FEED.halvingDays[1], FEED.halvingDays[0]] },
+      { ...FEED, halvingDays: Array.from({ length: 65 }, () => FEED.halvingDays[0]) },
     ];
     for (const value of broken) expect(parseSeasonFeed(value)).toBeNull();
   });

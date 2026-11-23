@@ -78,3 +78,34 @@ describe('a broken rule read on a request', () => {
     expect(() => new RateLimiter(() => ({ limit: 0, windowMs: 1_000 }))).toThrow(RangeError);
   });
 });
+
+describe('the rule held as a copy (v0.11.0 security pass, findings 9, 10 and 12)', () => {
+  it('never reads a fixed rule again after the game changes it in place', () => {
+    const rule = { limit: 1, windowMs: 60_000 };
+    const limiter = new RateLimiter(rule, () => 0);
+    rule.limit = Number.POSITIVE_INFINITY;
+    expect(limiter.take('a').allowed).toBe(true);
+    expect(limiter.take('a').allowed).toBe(false);
+  });
+
+  it('keeps the last valid copy when the source breaks the same object in place', () => {
+    const settings = { rule: { limit: 1, windowMs: 60_000 } };
+    const limiter = new RateLimiter(
+      () => settings.rule,
+      () => 0,
+    );
+    expect(limiter.take('a').allowed).toBe(true);
+    settings.rule.windowMs = 0;
+    expect(limiter.take('a').allowed).toBe(false);
+    settings.rule.limit = Number.POSITIVE_INFINITY;
+    expect(limiter.take('b').allowed).toBe(true);
+    expect(limiter.take('b').allowed).toBe(false);
+  });
+
+  it('takes only a whole window of 1 ms or more, and no rule that is not an object', () => {
+    for (const windowMs of [0.5, 1e-6, 5e-324]) {
+      expect(() => new RateLimiter({ limit: 1, windowMs })).toThrow(RangeError);
+    }
+    expect(() => new RateLimiter(() => null as unknown as RateRule)).toThrow(RangeError);
+  });
+});

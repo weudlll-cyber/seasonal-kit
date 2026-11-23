@@ -45,7 +45,7 @@ own, and adds only its own arena tokens and animations.
 
 ```json
 "dependencies": {
-  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.10.1"
+  "@seasonal/kit": "github:weudlll-cyber/seasonal-kit#v0.11.0"
 }
 ```
 

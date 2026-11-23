@@ -32,7 +32,7 @@ export {
   type OpenRoundsOptions,
   type OpenRoundsPage,
 } from './openRounds.js';
-export { RateLimiter, type RateDecision, type RateRule } from './rateLimit.js';
+export { RateLimiter, type RateDecision, type RateRule, type RateRuleSource } from './rateLimit.js';
 export {
   looksLikeRecoveryCode,
   newRecoveryCodes,

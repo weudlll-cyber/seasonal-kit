@@ -45,6 +45,12 @@ timeoutMs?, staleAfterMs? })` reads the website's `GET /api/public/season` serve
 
 ### Changed
 
+- **`RateLimiter` takes a rule or a function that gives it** (`RateRuleSource`, Bingo R3). A
+  function is read on every `take`, so a limit a game's admin changes at runtime applies at once.
+  A lowered limit caps the buckets now, a raised one refills them toward it, and a new window
+  counts for the refill and for forgetting idle keys. A broken rule given later, or a read that
+  throws, keeps the last valid rule: the limit never lifts and `take` never throws. A broken
+  first rule still fails at construction. A fixed rule works as before.
 - **The app header folds whenever its items do not fit on one row** (Bingo R1: "the top bar
   never takes two rows"). Before the paint, `useHeaderFold` (new, inside `MenuFold`) checks
   whether an item starts below another's bottom; if so the header folds into its Menu and says

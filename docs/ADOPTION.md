@@ -335,6 +335,18 @@ Not in it, recorded in [BACKLOG.md](BACKLOG.md) part one: a middle part in `Resu
 T417), the dock bar's padding and field (13, T416 (3)), a host chat from another https origin
 (14, T412, deferred).
 
+## What v0.13.0 answers
+
+Opt-in again; each names the game that asked.
+
+- **Bingo Royale** (K40, K41): `AppHeader`'s `foldBelow={960}` replaces its always-fold media
+  query, and `--sk-floor-text` has a default in `tokens.css` for a game that loads no `fit.css`.
+- **Seasonal Cases** (its items 41 and 43): `GameBar`'s `presses` for "Applaud", and
+  `useOpenDockChat()` for the bar's Chat button; its `pending/BarPress.tsx` and
+  `pending/useChatHandOver.ts` go.
+- **Every game with a call** (BACKLOG 8, K44): the dock's slot frames the website's call view when
+  the game passes a call id.
+
 ## Needs the owner's word
 
 Decided on 2026-11-21: the sandbox in every game (K17), Bingo's docked layout (K18), `showcase`

@@ -19,17 +19,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
   game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21).
-- **8. The call view in the slot** (DECISIONS K6). Frame the website's `/embed/call/<id>` page
-  in the slot (`allow="autoplay; fullscreen"`, nothing more) once a game passes a call id. The
-  site serves the page now (website `master` e11b3eb, GAME-INTEGRATION §9 "Built"). Done when:
-  the kit builds its address and frames it only with a call id, and the kit's message layer
-  (`connectCall`, v0.3.0) has been checked against the site's real messages.
-- **9. React wrappers.** What is left of it: the dock's arrivals (`useDockArrivals`, Mini Games'
-  `ChatArrivals`, `HostChatSight`), `ChatDock`, `DockedScreen` and the call slot. In the kit
-  since v0.4.0 with tests. Done when: a game uses them. Checked 2026-11-24: Seasonal Cases
-  `073f9ad` uses `useDockReserve` and `useFitScale` only (`apps/web/src/board/
-RegistrationBoard.tsx` line 12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's `master`
-  has its own `ChatDock` around the kit's frame. The chat frame's link is closed (part two, 9a).
 - **11. The token names take the prefix** (the race's adoption plan, 2026-11-22, its third
   point). `css/tokens.css` defines its 49 custom properties without the `sk-` prefix
   (`--color-text`, `--space-2`, `--gutter`, …), so they can clash with a game's own. Every game
@@ -104,3 +93,8 @@ RegistrationBoard.tsx` line 12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's
   `AppHeader`'s `foldBelow`, on top of the measured fold, opt-in. Closed by v0.13.0.
 - **16. A default for `--sk-floor-text` outside `fit.css`** (Bingo's wish, K41). A zero-
   specificity default of 14 px in `tokens.css`; `fit.css` still wins. Closed by v0.13.0.
+- **8. The call view in the slot** (DECISIONS K6, K44). The website serves `/embed/call/<id>`
+  (website `master` e11b3eb). The kit builds its address, frames it only with a call id
+  (`allow="autoplay; fullscreen"`, nothing more) and follows it (`resize`, `ended`), and its
+  message layer was checked against the website's own sender on 2026-11-24: nothing differed.
+  Closed by v0.13.0. No game passes a call id yet.

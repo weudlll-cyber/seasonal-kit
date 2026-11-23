@@ -3,16 +3,20 @@
  * @brief  The website's call view inside a game, game side: its typed postMessage link
  *         (`seasonal-call` from the view, `seasonal-call-host` to it).
  *
- * Responsibility: `connectCall` links the page to the call view's frame with the chat's checks
+ * Responsibility: `callEmbedUrl` is the view's page on this site, `/embed/call/<id>?theme=`
+ *                 (since v0.13.0), relative like the chat's, only for a valid call id.
+ *                 `connectCall` links the page to the call view's frame with the chat's checks
  *                 (./frameMessages: origin, window and `source`; posts only at the view's
  *                 origin, never `'*'`). Every message type and field of GAME-INTEGRATION §9 is
- *                 checked. Anything malformed or unknown is ignored, and so is a `ready` that
- *                 names another call than the one linked. It needs a call id, so nothing links
- *                 while a game has none (./callSlot hides the slot then). It frames and loads
- *                 nothing itself: the site serves `/embed/call/<id>` (website e11b3eb), but the
- *                 kit has not yet been checked against its real messages (BACKLOG 8), so a game
- *                 frames nothing in the slot. Nothing the page sends is secret: flags and a
- *                 theme name.
+ *                 checked, and was checked against the website's own sender on 2026-11-24
+ *                 (seasonal-entertainment e11b3eb, client/src/embed/EmbedCallPage.jsx and
+ *                 callView.js: the sources, the six messages and their fields, and the error
+ *                 codes of server/src/calls/joinRoutes.js, which all fit `isCode`). Anything
+ *                 malformed or unknown is ignored, and so is a `ready` that names another call
+ *                 than the one linked. It needs a call id, so nothing links while a game has
+ *                 none (./callSlot hides the slot then). It frames nothing itself:
+ *                 ./react/CallFrame does, in ./react/CallSlotBox, only with a call id. Nothing
+ *                 the page sends is secret: flags and a theme name.
  * Source:         new for the kit, built on the chat embed's link (./chatEmbed, from
  *                 seasonal-mini-games apps/web/src/chat/useHostChatFrame.ts at 91b23bc); no game
  *                 has a call view yet (Mini Games 91b23bc, Bingo c3b76c1).
@@ -20,6 +24,7 @@
  *                 (at e7b995c)
  */
 import type { EmbedTheme } from './chatEmbed.js';
+import { isLocalPath } from './localPath.js';
 import { isFlag, isSize, linkFrame, type Fields, type FrameLink } from './frameMessages.js';
 
 export type CallStatus = 'scheduled' | 'live' | 'ended';
@@ -51,6 +56,15 @@ export type ToCall =
 // The site's numeric call id.
 export const isCallId = (value: unknown): value is number =>
   typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
+
+const EMBED_PATH = '/embed/call';
+
+// "/embed/call/7?theme=dark"; `path` is the game's configured embed path (without the id).
+export function callEmbedUrl(callId: number, theme: EmbedTheme, path: string = EMBED_PATH): string {
+  if (!isCallId(callId)) throw new TypeError(`Not a call id: ${String(callId)}`);
+  if (!isLocalPath(path)) throw new TypeError(`Not a path on this site: ${path}`);
+  return `${path.replace(/\/$/, '')}/${String(callId)}?${new URLSearchParams({ theme }).toString()}`;
+}
 
 const oneOf =
   <T extends string>(...values: readonly T[]) =>

@@ -8,12 +8,14 @@
  *                 types, the chat's `source`, another origin or window, and a `ready` for
  *                 another call are ignored. No link without a valid call id. Each message to the
  *                 view carries only its own fields, at the view's origin.
+ *                 `callEmbedUrl` builds `/embed/call/<id>?theme=` for a valid id on a local path
+ *                 only. The website's real messages, as its EmbedCallPage sends them, are heard.
  * Depends on:     vitest, jsdom, ../tests/frame
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { deliver, testFrame } from '../tests/frame.js';
-import { connectCall, parseCall, type FromCall, type ToCall } from './callView.js';
+import { callEmbedUrl, connectCall, parseCall, type FromCall, type ToCall } from './callView.js';
 
 const ORIGIN = window.location.origin;
 const closers: (() => void)[] = [];
@@ -134,5 +136,49 @@ describe('the call link: what it says', () => {
     call.close();
     call.post({ type: 'mute', muted: true });
     expect(posted()).toEqual([]);
+  });
+});
+
+// What the website's EmbedCallPage.jsx sends (seasonal-entertainment e11b3eb, read 2026-11-24):
+// `resizeFor` of callView.js for each form on a desktop and on a phone, the error codes of
+// server/src/calls/joinRoutes.js, and the six types with the fields it gives them. The kit
+// hears all of them.
+describe('the website’s own messages (checked against e11b3eb on 2026-11-24)', () => {
+  const site: Record<string, unknown>[] = [
+    { type: 'ready', call: 7, status: 'live', signedIn: true },
+    { type: 'live', listening: false },
+    { type: 'ended', reason: 'ended' },
+    { type: 'speaking', active: true },
+    // Desktop picture from a 190 px strip, desktop collapsed, phone picture, phone strip.
+    { type: 'resize', mode: 'picture', width: 338, height: 190 },
+    { type: 'resize', mode: 'collapsed', width: 48, height: 190 },
+    { type: 'resize', mode: 'picture', width: 390, height: 219 },
+    { type: 'resize', mode: 'collapsed', width: 390, height: 48 },
+    ...['banned', 'recording_consent', 'call_full', 'invalid_input', 'on_stage'].map((code) => ({
+      type: 'error',
+      code,
+    })),
+  ];
+
+  it.each(site)('hears %j', (message) => {
+    const { win, heard } = link(7);
+    deliver(win, { source: 'seasonal-call', ...message });
+    expect(heard).toEqual([message]);
+  });
+});
+
+describe('callEmbedUrl', () => {
+  it('is the website’s page for the call, on this site', () => {
+    expect(callEmbedUrl(7, 'dark')).toBe('/embed/call/7?theme=dark');
+    expect(callEmbedUrl(7, 'auto', '/games/x/embed/call/')).toBe(
+      '/games/x/embed/call/7?theme=auto',
+    );
+  });
+
+  it('refuses a call id that is none, and a path that leaves the site', () => {
+    expect(() => callEmbedUrl(0, 'auto')).toThrow(TypeError);
+    expect(() => callEmbedUrl(1.5, 'auto')).toThrow(TypeError);
+    expect(() => callEmbedUrl(7, 'auto', '//evil.example')).toThrow(TypeError);
+    expect(() => callEmbedUrl(7, 'auto', 'https://evil.example')).toThrow(TypeError);
   });
 });

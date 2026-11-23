@@ -46,6 +46,7 @@ export {
   type ChatArrivalsState,
 } from './chatArrivals.js';
 export {
+  callEmbedUrl,
   connectCall,
   type CallLinkOptions,
   type CallStatus,

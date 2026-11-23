@@ -1,6 +1,16 @@
+import { isLocalPath } from './localPath.js';
 import { isFlag, isSize, linkFrame } from './frameMessages.js';
 // The site's numeric call id.
 export const isCallId = (value) => typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
+const EMBED_PATH = '/embed/call';
+// "/embed/call/7?theme=dark"; `path` is the game's configured embed path (without the id).
+export function callEmbedUrl(callId, theme, path = EMBED_PATH) {
+    if (!isCallId(callId))
+        throw new TypeError(`Not a call id: ${String(callId)}`);
+    if (!isLocalPath(path))
+        throw new TypeError(`Not a path on this site: ${path}`);
+    return `${path.replace(/\/$/, '')}/${String(callId)}?${new URLSearchParams({ theme }).toString()}`;
+}
 const oneOf = (...values) => (value) => values.some((v) => v === value);
 const isStatus = oneOf('scheduled', 'live', 'ended');
 const isReason = oneOf('ended', 'gone');

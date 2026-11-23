@@ -22,9 +22,10 @@ check that runs on every pull request. It lives in `showcase/`
   and the phase strip with "Play · now". Under it a crowded bar, as Seasonal Cases has it.
 - **The docked screen,** in a box 640 px high: the start card (or, with `?screen=result`, the
   result) on top, and under it the chat strip with the website's chat frame (a stub page,
-  [`showcase/embed/chat/`](../showcase/embed/chat/index.html)) and the reserved call slot with a
-  call id. The slot is outlined on this page only, since it frames nothing yet (BACKLOG 8). A phone
-  shows the chat bar and the 48 px call strip instead.
+  [`showcase/embed/chat/`](../showcase/embed/chat/index.html)) and the call slot with call id 7,
+  which frames a stub of the call view
+  ([`showcase/embed/call/7.html`](../showcase/embed/call/7.html), since v0.13.0). A phone shows
+  the chat bar and the 48 px call strip instead.
 - **The result frame** on its own.
 
 `?theme=light` or `?theme=dark` opens the page in that theme; without it, the toggle starts from the

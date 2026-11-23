@@ -39,8 +39,22 @@ onPress, tip? }]}` adds a button that only sends a press, after the toggles and 
   (which takes the focus), the focus into the strip on a desktop. It does nothing outside a
   docked screen or in one `withoutChat`. `useDisclosure` gains `show` (open and stay open).
 
+- **The call view in the slot** (BACKLOG 8, K44): with a call id, `ChatDock` (so `DockedScreen`)
+  frames the website's call view in its slot: `callEmbedUrl(callId, theme, path?)` builds
+  `/embed/call/<id>?theme=`, and `CallFrame` frames it with `allow="autoplay; fullscreen"` and
+  nothing more, sandboxed as the chat's frame (plus popups that leave the sandbox, for "Open
+  the call page"). The slot follows the view: a `resize` to its other form moves the slot to
+  that form (a phone starts in the 48 px strip), `ended` hides it and the game goes on.
+  `ChatDock` takes `callPath` for a game's own embed path. No call id, nothing framed, as before.
+  The kit's `connectCall` was checked against the website's own sender (`EmbedCallPage.jsx`,
+  `callView.js`, `joinRoutes.js` at seasonal-entertainment `e11b3eb`): sources, six messages,
+  their fields and the error codes all agree, so the message layer is unchanged.
+
 ### Migration, per game
 
+- **Every game that passes a call id to `ChatDock` or `DockedScreen`:** the slot now holds the
+  view, where it was empty. A game that passes `callId={null}` sees no change. Add the stylesheet
+  `call.css` (the frame's `sk-call-frame` fills the slot).
 - **Seasonal Cases:** delete `packages/ui/src/pending/BarPress.tsx` and `useChatHandOver.ts`; use
   `GameBar`'s `presses` for "Applaud" and `useOpenDockChat()` for the Chat button.
 - **Bingo Royale:** pass `foldBelow={960}` to `AppHeader` and drop the `max-width: 959px` fold

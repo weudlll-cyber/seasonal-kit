@@ -63,6 +63,15 @@ timeoutMs?, staleAfterMs? })` reads the website's `GET /api/public/season` serve
 
 ### Changed
 
+- **docs/ADOPTION.md, checked against the games of 2026-11-23:**
+  - Mini Games master `21434d8`: the Pre-picks button, per-account settings, open rounds, the
+    refit after fonts, comment-free production files, its audit;
+  - Bingo's adoption branch `5c613c0`, on v0.10.1 with R1–R4 kept until now;
+  - Seasonal Cases `cc75504`, on v0.8.0, its six stand-ins and what replaces them;
+  - Seasonal Party `e907de9`, with its new floors.
+
+  Two Mini Games needs the kit does not cover yet are listed for the owner.
+
 - **`RateLimiter` takes a rule or a function that gives it** (`RateRuleSource`, Bingo R3). A
   function is read on every `take`, so a limit a game's admin changes at runtime applies at once.
   A lowered limit caps the buckets now, a raised one refills them toward it, and a new window

@@ -9,12 +9,12 @@ it, and keeps its number. [OPEN.md](OPEN.md) is the short page over part one.
 Each item keeps its number for good, so the lists are bullets with the number in bold: a
 numbered Markdown list would be renumbered by the formatter once an item closes.
 
-- **2. Sign-in helpers and the chat embed, client side.** The website sign-in route helpers
-  (Mini Games `packages/ui/src/websiteSignIn.ts`), and the host side of the website chat's embed
-  protocol (website `docs/EMBED.md`). Done when: both are in the kit with tests, and a game uses
-  them. The kit's part is in v0.3.0 (`websiteSignIn`, `chatEmbed`, `chatArrivals`). Bingo
-  Royale's `master` (3a00729, pinning v0.11.1) uses the chat frame (`WebsiteChatFrame`); no game
-  on `master` uses the sign-in route helpers yet. The item stays open until one does (item 5).
+- **2. Sign-in helpers, client side.** The website sign-in route helpers (Mini Games
+  `packages/ui/src/websiteSignIn.ts`: `websiteSignInHref`, `signInAgain`, `signInAgainAfter`).
+  Done when: a game uses them. They are in the kit since v0.3.0 with tests. No game's `master`
+  uses them yet (checked 2026-11-24: Bingo Royale `3a00729`, Seasonal Cases `073f9ad`; Mini
+  Games `721761f` and Seasonal Party `a09f803` pin no kit). The host side of the chat embed,
+  the other half of this item, is closed (part two, 2a).
 - **5. Adopt the kit in the games:** Mini Games first, then Bingo Royale, then Seasonal Party,
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
@@ -24,12 +24,12 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   site serves the page now (website `master` e11b3eb, GAME-INTEGRATION §9 "Built"). Done when:
   the kit builds its address and frames it only with a call id, and the kit's message layer
   (`connectCall`, v0.3.0) has been checked against the site's real messages.
-- **9. React wrappers.** The hooks and components the games build on the kit's framework-free
-  parts: the chat frame's link and its arrivals (Mini Games' `useHostChatFrame`, `ChatArrivals`,
-  `HostChatSight`), and the call slot. Left for a later step by the owner's brief for v0.3.0.
-  Done when: they are in the kit with tests, and a game uses them. The kit's part is in v0.4.0
-  (`WebsiteChatFrame`, `ChatDock`, `DockedScreen`, `useDockArrivals`); open until a game uses
-  them (item 5).
+- **9. React wrappers.** What is left of it: the dock's arrivals (`useDockArrivals`, Mini Games'
+  `ChatArrivals`, `HostChatSight`), `ChatDock`, `DockedScreen` and the call slot. In the kit
+  since v0.4.0 with tests. Done when: a game uses them. Checked 2026-11-24: Seasonal Cases
+  `073f9ad` uses `useDockReserve` and `useFitScale` only (`apps/web/src/board/
+RegistrationBoard.tsx` line 12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's `master`
+  has its own `ChatDock` around the kit's frame. The chat frame's link is closed (part two, 9a).
 - **11. The token names take the prefix** (the race's adoption plan, 2026-11-22, its third
   point). `css/tokens.css` defines its 49 custom properties without the `sk-` prefix
   (`--color-text`, `--space-2`, `--gutter`, …), so they can clash with a game's own. Every game
@@ -101,3 +101,10 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   re-orders back link, brand, navigation, toggle, account). Decided K43: the kit keeps the toggle
   last in the row, there is no configurable order, and Bingo aligns to the kit later. Closed as
   decided; nothing to build.
+- **2a. The host side of the chat embed** (BACKLOG 2, 2026-11-24). Seasonal Bingo Royale
+  `master` `3a00729` frames the website chat with the kit's `WebsiteChatFrame`
+  (`apps/web/src/shell/ChatDock.tsx`, import at line 21, use at line 140), which links the frame
+  with the kit's `connectChat`. Closed by that use; the sign-in helpers stay open in item 2.
+- **9a. The chat frame's link as a React part** (BACKLOG 9, 2026-11-24). The same use of
+  `WebsiteChatFrame` in Bingo's `master` (`3a00729`, `apps/web/src/shell/ChatDock.tsx`). The
+  rest of item 9 stays open.

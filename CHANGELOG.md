@@ -7,6 +7,13 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- **Working rules** (CLAUDE.md, docs only): a "Working cheaply" section (owner decision of
+  2026-11-23: the saving rules apply to every Seasonal project), the test-file limit of 400
+  lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
+  game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
+
 ## [0.12.0] - 2026-11-23
 
 Five additive answers to Seasonal Mini Games' adoption requests (its O143, T414, O144/T415,

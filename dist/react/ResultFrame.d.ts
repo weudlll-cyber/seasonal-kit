@@ -12,10 +12,15 @@
  *                 chat. `fitted` shrinks the first part with the screen's scale (`--fit`) where
  *                 it has not the room; off by default, so a result that does not fit scrolls as
  *                 today. A board game's reveal (`layout` board) keeps the part's full height.
+ *                 `panel` (since v0.11.0, Bingo R4) makes it a panel inside a screen (a replay,
+ *                 a notice, a host console): its headline a heading of the game's level instead
+ *                 of the page's h1, no one-screen first part, and names broken only at their
+ *                 own break points, never inside (../../css/frames.css).
  * Source:         seasonal-mini-games apps/web/src/round/ResultScreen.tsx and result.css at
  *                 866df03 (the first part's grid; its proof, placings and standings stay in the
  *                 game); seasonal-bingo-royale apps/web/src/components/Podium.tsx and results.css
- *                 at a43209a, whose podium and rows are a game's placings slot. Built on
+ *                 at a43209a, whose podium and rows are a game's placings slot; the panel from
+ *                 its FinalPlacement.tsx and podium.css at 5c613c0. Built on
  *                 ./useFitScale.
  * Spec:           Mini Games DECISIONS T145, O111; kit DECISIONS K14
  */
@@ -32,5 +37,8 @@ export interface ResultFrameProps {
     readonly layout?: 'list' | 'board';
     readonly fitted?: boolean;
     readonly signature: string;
+    readonly panel?: {
+        readonly level: 2 | 3 | 4 | 5 | 6;
+    };
 }
 export declare function ResultFrame(p: ResultFrameProps): ReactElement;

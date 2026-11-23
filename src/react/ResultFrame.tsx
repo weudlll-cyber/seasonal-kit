@@ -12,10 +12,15 @@
  *                 chat. `fitted` shrinks the first part with the screen's scale (`--fit`) where
  *                 it has not the room; off by default, so a result that does not fit scrolls as
  *                 today. A board game's reveal (`layout` board) keeps the part's full height.
+ *                 `panel` (since v0.11.0, Bingo R4) makes it a panel inside a screen (a replay,
+ *                 a notice, a host console): its headline a heading of the game's level instead
+ *                 of the page's h1, no one-screen first part, and names broken only at their
+ *                 own break points, never inside (../../css/frames.css).
  * Source:         seasonal-mini-games apps/web/src/round/ResultScreen.tsx and result.css at
  *                 866df03 (the first part's grid; its proof, placings and standings stay in the
  *                 game); seasonal-bingo-royale apps/web/src/components/Podium.tsx and results.css
- *                 at a43209a, whose podium and rows are a game's placings slot. Built on
+ *                 at a43209a, whose podium and rows are a game's placings slot; the panel from
+ *                 its FinalPlacement.tsx and podium.css at 5c613c0. Built on
  *                 ./useFitScale.
  * Spec:           Mini Games DECISIONS T145, O111; kit DECISIONS K14
  */
@@ -42,20 +47,28 @@ export interface ResultFrameProps {
   readonly fitted?: boolean;
   // Changes when the result's content does, so it fits again.
   readonly signature: string;
+  // A panel inside a screen instead of a page of its own (since v0.11.0, Bingo R4): its
+  // headline a heading of the game's level, its first part as high as its content.
+  readonly panel?: { readonly level: 2 | 3 | 4 | 5 | 6 };
 }
+
+const HEADINGS = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5', 6: 'h6' } as const;
 
 export function ResultFrame(p: ResultFrameProps): ReactElement {
   const fit = useFitScale<HTMLElement>(p.game, p.signature);
+  // A page's headline is its h1; a panel's sits at the level the game gives it.
+  const Heading = p.panel === undefined ? 'h1' : HEADINGS[p.panel.level];
   return (
     <section
       ref={p.fitted === true ? fit : undefined}
       className="sk-result"
       data-sk-layout={p.layout ?? 'list'}
+      data-sk-variant={p.panel === undefined ? 'page' : 'panel'}
       data-testid="result"
     >
       <div className="sk-result-first" data-sk-fit-fixed="" data-testid="result-first">
         <header className="sk-result-head">
-          <h1>{p.headline}</h1>
+          <Heading>{p.headline}</Heading>
           {p.lines}
           {p.proof === undefined ? null : <div className="sk-result-proof">{p.proof}</div>}
         </header>

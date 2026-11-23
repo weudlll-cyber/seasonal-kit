@@ -26,6 +26,11 @@ The games' requests (DECISIONS K32), the season feed and the handbook.
   `onDrop` hears each round left out and why, with its id only. `OPEN_ROUNDS_CACHE_CONTROL` is
   the answer's header. It replaces the three games' own builders: Bingo, Mini Games and Cases.
 
+- **`ResultFrame` as a panel inside a screen** (`panel={{ level }}`, Bingo R4): the headline is a
+  heading of the game's level (2–6) instead of the page's `h1`, and `data-sk-variant="panel"` gives
+  it no one-screen first part. Names break only at their own break points (`overflow-wrap:
+normal`) instead of anywhere. A frame without `panel` is the page it was
+  (`data-sk-variant="page"`).
 - **The season feed reader** (`/server`, DECISIONS K34). `seasonFeedReader({ origin, fetch,
 timeoutMs?, staleAfterMs? })` reads the website's `GET /api/public/season` server to server.
   Its `refresh()` never throws and keeps the last good answer when a read fails. `state()` gives

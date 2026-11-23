@@ -14,6 +14,55 @@ applies it.
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
 
+## [0.13.0] - 2026-11-24
+
+Additions for Bingo Royale's and Seasonal Cases' requests (DECISIONS K40, K41 and the Cases
+items 41, 43 and the call view, BACKLOG 8). Every one is opt-in, or a default no game sees where
+it loads `fit.css`.
+
+### Added
+
+- **`AppHeader` `foldBelow`** (K40): `foldBelow={960}` folds the header into its Menu button
+  under that window width in px, whatever the items measure; from it up the measured fold
+  decides as before. Without it nothing changes.
+- **A default for `--sk-floor-text`** (K41): `css/tokens.css` has `:where(:root) {
+--sk-floor-text: 14px }`, the strictest text floor of all games, so the header, the bar and
+  the dock have a floor for a game that loads no `fit.css`. It has zero specificity, so where
+  `fit.css` is loaded its values win in any import order. It is not one of the 49 shared tokens.
+
+- **A press action in `GameBar`** (`presses`, Cases 41): `presses={[{ id, icon: 'applaud', label,
+onPress, tip? }]}` adds a button that only sends a press, after the toggles and before the
+  panel buttons. It has the bar's button and icon parts, no `aria-expanded` and no
+  `aria-pressed`. `applaud` (two clapping hands) is its first icon (`BarPressIconName`).
+- **Opening the docked chat from the game** (`useOpenDockChat()`, Cases 43): inside a
+  `DockedScreen`, it returns a stable function that opens the dock's chat: the sheet on a phone
+  (which takes the focus), the focus into the strip on a desktop. It does nothing outside a
+  docked screen or in one `withoutChat`. `useDisclosure` gains `show` (open and stay open).
+
+- **The call view in the slot** (BACKLOG 8, K44): with a call id, `ChatDock` (so `DockedScreen`)
+  frames the website's call view in its slot: `callEmbedUrl(callId, theme, path?)` builds
+  `/embed/call/<id>?theme=`, and `CallFrame` frames it with `allow="autoplay; fullscreen"` and
+  nothing more, sandboxed as the chat's frame (plus popups that leave the sandbox, for "Open
+  the call page"). The slot follows the view: a `resize` to its other form moves the slot to
+  that form (a phone starts in the 48 px strip), `ended` hides it and the game goes on.
+  `ChatDock` takes `callPath` for a game's own embed path. No call id, nothing framed, as before.
+  The kit's `connectCall` was checked against the website's own sender (`EmbedCallPage.jsx`,
+  `callView.js`, `joinRoutes.js` at seasonal-entertainment `e11b3eb`): sources, six messages,
+  their fields and the error codes all agree, so the message layer is unchanged.
+
+### Migration, per game
+
+- **Every game that passes a call id to `ChatDock` or `DockedScreen`:** the slot now holds the
+  view, where it was empty. A game that passes `callId={null}` sees no change. Add the stylesheet
+  `call.css` (the frame's `sk-call-frame` fills the slot).
+- **Seasonal Cases:** delete `packages/ui/src/pending/BarPress.tsx` and `useChatHandOver.ts`; use
+  `GameBar`'s `presses` for "Applaud" and `useOpenDockChat()` for the Chat button.
+- **Bingo Royale:** pass `foldBelow={960}` to `AppHeader` and drop the `max-width: 959px` fold
+  rules of `header.css`; the text floor now comes from `tokens.css`, so its own small-type
+  overrides may stay or go.
+- **Mini Games, Seasonal Party, Seasonal Cases:** nothing to do (they load `fit.css`, whose
+  floors win).
+
 ## [0.12.0] - 2026-11-23
 
 Five additive answers to Seasonal Mini Games' adoption requests (its O143, T414, O144/T415,
@@ -913,7 +962,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...v0.12.0
 [0.11.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0

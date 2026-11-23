@@ -7,7 +7,8 @@
  *                 the items fit, the button is hidden and the panel lays its items into the bar
  *                 (display: contents, ../../css/header.css). When they would take a second row
  *                 (./useHeaderFold, measured before the paint; since v0.11.0, before it below a
- *                 fixed 960 px) the header is folded: one row (brand, Menu, theme toggle), and
+ *                 fixed 960 px), or the window is under the game's `foldBelow` (since v0.13.0),
+ *                 the header is folded: one row (brand, Menu, theme toggle), and
  *                 the button opens the panel under it. The
  *                 button reports aria-expanded and names the panel. Opening moves the focus to
  *                 the panel's first item. It closes:
@@ -28,6 +29,7 @@ import { type ReactElement, type ReactNode } from 'react';
 export interface MenuFoldProps {
     readonly closeKey: string;
     readonly buttonClassName?: string;
+    readonly foldBelow?: number;
     readonly children: ReactNode;
 }
 export declare function MenuFold(p: MenuFoldProps): ReactElement;

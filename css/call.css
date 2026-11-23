@@ -54,3 +54,12 @@
 .sk-call-slot[hidden] {
   display: none;
 }
+
+/* The website's call view in the slot (since v0.13.0): the frame fills the box, whatever form the
+   view takes (the slot's modifier classes above set the size). */
+.sk-call-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

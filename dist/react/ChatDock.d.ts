@@ -11,19 +11,20 @@
  *                 takes the focus (since v0.10.0); Escape or Close shut it and hand the focus
  *                 back. In the bar's form `field` the game's
  *                 own writing field sits under it. The call slot is the 48 px strip directly
- *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
- *                 nothing is framed in it: the site's call page exists, but the kit's link is not yet
- *                 checked against its real messages (BACKLOG 8).
+ *                 above the bar. The slot is hidden while no call id is set (../callSlot); with one
+ *                 it frames the website's call view (./CallSlotBox, since v0.13.0).
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the
  *                 first render. `onUnread` hands each new count to the game, for its bar's chat
  *                 button (since v0.11.0). The same element holds
- *                 the chat in both layouts, so turning a phone does not reload it.
+ *                 the chat in both layouts, so turning a phone does not reload it. Inside a
+ *                 ./DockedScreen it tells the game what "open the chat" means (./dockHandOver,
+ *                 since v0.13.0).
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
  *                 (apps/web/src/shell/ChatDock.tsx at a43209a). Built on ../chatArrivals
- *                 (createChatArrivals, chatBarText), ../callSlot (callSlot) and ./useDisclosure.
+ *                 (createChatArrivals, chatBarText), ./CallSlotBox and ./useDisclosure.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §5 and §9 (at e7b995c)
  */
 import { type ReactElement, type ReactNode } from 'react';
@@ -34,5 +35,6 @@ export interface ChatDockProps {
     readonly field?: ReactNode;
     readonly callId: number | null;
     readonly onUnread?: (count: number) => void;
+    readonly callPath?: string;
 }
 export declare function ChatDock(p: ChatDockProps): ReactElement;

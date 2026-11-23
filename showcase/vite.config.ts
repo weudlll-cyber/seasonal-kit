@@ -1,13 +1,15 @@
 /**
  * @file   showcase/vite.config.ts
- * @brief  Vite for the kit's showcase: two pages, the showcase and the stub of the website's
- *         chat embed, built into showcase/dist/ (git-ignored, never shipped).
+ * @brief  Vite for the kit's showcase: three pages, the showcase and the stubs of the website's
+ *         chat and call embeds, built into showcase/dist/ (git-ignored, never shipped).
  *
  * Responsibility: `pnpm showcase` serves it for people; the Playwright run builds it and
  *                 serves the build on a fixed port (../playwright.config.ts). The stub lives at
  *                 /embed/chat/, where `WebsiteChatFrame` frames the website's chat on a game's
- *                 own origin, so the showcase frames a page of its own and never a 404.
- *                 The two pages are the input map of `build.rolldownOptions` (since 2026-11-23;
+ *                 own origin, so the showcase frames a page of its own and never a 404. The call
+ *                 stub is `/embed/call/7` (the showcase's call id, since v0.13.0): Vite's
+ *                 preview serves `7.html` for it.
+ *                 The pages are the input map of `build.rolldownOptions` (since 2026-11-23;
  *                 before, the deprecated `rollupOptions`).
  * Source:         new in the kit.
  */
@@ -19,7 +21,7 @@ const here = (path: string): string => fileURLToPath(new URL(path, import.meta.u
 
 export default defineConfig({
   root: here('.'),
-  // Two pages, no single-page fallback: without it /embed/chat served the showcase itself,
+  // Three pages, no single-page fallback: without it /embed/chat served the showcase itself,
   // which then framed itself again.
   appType: 'mpa',
   build: {
@@ -27,7 +29,11 @@ export default defineConfig({
     emptyOutDir: true,
     // Vite 8 bundles with Rolldown; `rollupOptions` is its deprecated alias (#25, Vite 8.3.8).
     rolldownOptions: {
-      input: { main: here('index.html'), chat: here('embed/chat/index.html') },
+      input: {
+        main: here('index.html'),
+        chat: here('embed/chat/index.html'),
+        call: here('embed/call/7.html'),
+      },
     },
   },
   preview: { port: 4317, strictPort: true },

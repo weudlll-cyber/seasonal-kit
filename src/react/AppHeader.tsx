@@ -18,7 +18,8 @@
  *                 6. the theme toggle (./theme).
  *                 When they would not fit on one row, the navigation and the account fold
  *                 into one menu button (./MenuFold, ./useHeaderFold; since v0.11.0, measured
- *                 before the paint, before it below 960 px). Its sizes keep the game's floors
+ *                 before the paint; a game may also name a width under which it always folds, `foldBelow`,
+ *                 since v0.13.0). Its sizes keep the game's floors
  *                 (../../css/header.css, K14). The words of the links, the role and the routes
  *                 are the game's; the header holds only their places.
  * Source:         seasonal-bingo-royale apps/web/src/shell/AppShell.tsx (the bar, `Nav`,
@@ -67,6 +68,9 @@ export interface AppHeaderProps {
   // Closes the folded menu when it changes (route, account).
   readonly closeKey: string;
   readonly buttonClassName?: string;
+  // Always fold under this window width in px, on top of the measured fold (since v0.13.0;
+  // Bingo folds below 960 px). Left out: the measure alone decides, as before.
+  readonly foldBelow?: number;
 }
 
 function Nav(p: Pick<AppHeaderProps, 'links' | 'navExtra'>): ReactElement {
@@ -136,6 +140,7 @@ export function AppHeader(p: AppHeaderProps): ReactElement {
       <MenuFold
         closeKey={p.closeKey}
         {...(p.buttonClassName === undefined ? {} : { buttonClassName: p.buttonClassName })}
+        {...(p.foldBelow === undefined ? {} : { foldBelow: p.foldBelow })}
       >
         <Nav links={p.links} navExtra={p.navExtra} />
         <Account {...p} />

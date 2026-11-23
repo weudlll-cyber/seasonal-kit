@@ -157,3 +157,10 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   both are checked against Bingo, Mini Games and Cases.
 - **K43 — The theme toggle stays last in the header's row** (decided 2026-11-23, Bingo's wish,
   BACKLOG 18). The kit has no configurable order; Bingo aligns to the kit later.
+- **K44 — The call view is framed in the slot, sandboxed like the chat** (decided 2026-11-24,
+  v0.13.0, BACKLOG 8). With a call id the dock's slot frames the website's
+  `/embed/call/<id>?theme=` and nothing otherwise. The frame allows `autoplay; fullscreen` and
+  nothing more, and is sandboxed as the chat's frame is (K17) plus `allow-popups-to-escape-
+sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page of the site in
+  a new tab. The extra token is the one point beyond the chat's sandbox and is open to the
+  owner's review.

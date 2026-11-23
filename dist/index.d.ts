@@ -17,7 +17,7 @@ export { applyTheme, onShownThemeChange, onSystemThemeChange, resolveTheme, show
 export { signInAgain, signInAgainAfter, websiteLoginHref, websiteSignInHref, } from './websiteSignIn.js';
 export { chatEmbedUrl, connectChat, type ChatLinkOptions, type EmbedTheme, type FromChat, type ToChat, } from './chatEmbed.js';
 export { chatBarText, createChatArrivals, type ChatArrival, type ChatArrivals, type ChatArrivalsState, } from './chatArrivals.js';
-export { connectCall, type CallLinkOptions, type CallStatus, type FromCall, type ToCall, } from './callView.js';
+export { callEmbedUrl, connectCall, type CallLinkOptions, type CallStatus, type FromCall, type ToCall, } from './callView.js';
 export { CALL_SLOT, callSlot, type CallSlot, type CallSlotForm, type CallSlotInput, } from './callSlot.js';
 export { MIN_POINTER_TARGET, type FitGame, type FitOptions } from './fit.js';
 export type { FrameLink } from './frameMessages.js';

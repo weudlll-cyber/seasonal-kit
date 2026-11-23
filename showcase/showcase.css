@@ -4,7 +4,7 @@
  *
  * Responsibility: the page on the kit's background with its font, sections one under the
  *                 other, the docked screen in a box of a fixed height (as a game's screen
- *                 would be), the reserved call slot outlined, and a sample pill. Colours only
+ *                 would be), a sample pill. Colours only
  *                 from ../css/tokens.css.
  * Source:         new in the kit.
  */
@@ -48,12 +48,6 @@ main {
 /* A game's screen: a fixed height the docked screen shares out. */
 .showcase-box {
   height: 640px;
-}
-
-/* The reserved call slot frames nothing yet (BACKLOG 8): outlined here so the space shows. */
-.showcase-docked .sk-call-slot:not([hidden]) {
-  border: 1px dashed var(--color-border-strong);
-  border-radius: var(--radius-card);
 }
 
 .showcase-pill {

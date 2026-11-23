@@ -11,25 +11,36 @@
  *                 takes the focus (since v0.10.0); Escape or Close shut it and hand the focus
  *                 back. In the bar's form `field` the game's
  *                 own writing field sits under it. The call slot is the 48 px strip directly
- *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
- *                 nothing is framed in it: the site's call page exists, but the kit's link is not yet
- *                 checked against its real messages (BACKLOG 8).
+ *                 above the bar. The slot is hidden while no call id is set (../callSlot); with one
+ *                 it frames the website's call view (./CallSlotBox, since v0.13.0).
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the
  *                 first render. `onUnread` hands each new count to the game, for its bar's chat
  *                 button (since v0.11.0). The same element holds
- *                 the chat in both layouts, so turning a phone does not reload it.
+ *                 the chat in both layouts, so turning a phone does not reload it. Inside a
+ *                 ./DockedScreen it tells the game what "open the chat" means (./dockHandOver,
+ *                 since v0.13.0).
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
  *                 (apps/web/src/shell/ChatDock.tsx at a43209a). Built on ../chatArrivals
- *                 (createChatArrivals, chatBarText), ../callSlot (callSlot) and ./useDisclosure.
+ *                 (createChatArrivals, chatBarText), ./CallSlotBox and ./useDisclosure.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §5 and §9 (at e7b995c)
  */
-import { useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from 'react';
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 
-import { callSlot } from '../callSlot.js';
 import { chatBarText, createChatArrivals, type ChatArrivalsState } from '../chatArrivals.js';
+import { CallSlotBox } from './CallSlotBox.js';
+import { DockHandOver } from './dockHandOver.js';
 import { DockSight, type DockSightValue } from './dockSight.js';
 import { useDisclosure, type Disclosure } from './useDisclosure.js';
 
@@ -46,6 +57,9 @@ export interface ChatDockProps {
   // Hears each new unread count, so the game's bar can show it on its chat button (since
   // v0.11.0, Cases 24): the dock's arrivals reach only the chat inside it.
   readonly onUnread?: (count: number) => void;
+  // The game's configured call embed path, without the id; the website's `/embed/call` by
+  // default (since v0.13.0).
+  readonly callPath?: string;
 }
 
 // The arrivals while the chat is out of sight, as React state.
@@ -110,6 +124,7 @@ function PhoneBar(p: {
 function Body(p: {
   readonly sheet: Disclosure;
   readonly phone: boolean;
+  readonly element: RefObject<HTMLDivElement | null>;
   readonly children: ReactNode;
 }): ReactElement {
   // The phone's sheet takes the focus when it opens; Close and Escape give it back to the chat
@@ -124,6 +139,7 @@ function Body(p: {
   }, [p.phone, p.sheet.open]);
   return (
     <div
+      ref={p.element}
       id={p.sheet.panelId}
       className="sk-chat-dock-body"
       role={p.phone ? 'dialog' : undefined}
@@ -148,26 +164,40 @@ function Body(p: {
   );
 }
 
-// The reserved call slot: its form from ../callSlot, hidden without a call id.
-function CallSlotBox(p: { readonly callId: number | null; readonly phone: boolean }) {
-  const slot = callSlot({
-    callId: p.callId,
-    phone: p.phone,
-    collapsed: p.phone,
-    windowHeight: window.innerHeight,
-  });
-  return (
-    <div
-      className={slot?.className ?? 'sk-call-slot'}
-      hidden={slot === null}
-      data-sk-form={slot?.form}
-      data-testid="call-slot"
-    />
-  );
+// The first thing in the strip a person can type into or press: the website's frame, or a
+// game's own field.
+const FIRST_FOCUSABLE = 'iframe, input, textarea, select, button, a[href], [tabindex]';
+
+// Tells a game's `useOpenDockChat` what opening the chat means here (./dockHandOver): the sheet
+// on a phone (it takes the focus itself), the focus into the always visible strip on a desktop.
+function useHandOver(
+  phone: boolean,
+  sheet: Disclosure,
+  body: RefObject<HTMLDivElement | null>,
+): void {
+  const slot = useContext(DockHandOver);
+  const { show } = sheet;
+  useEffect(() => {
+    if (slot === null) return undefined;
+    slot.current = (): void => {
+      if (phone) {
+        show();
+        return;
+      }
+      // `focus` scrolls the strip into view itself.
+      body.current?.querySelector<HTMLElement>(FIRST_FOCUSABLE)?.focus();
+    };
+    return () => {
+      slot.current = null;
+    };
+  }, [slot, phone, show, body]);
 }
 
 export function ChatDock(p: ChatDockProps): ReactElement {
   const sheet = useDisclosure();
+  const body = useRef<HTMLDivElement>(null);
+  useHandOver(p.phone, sheet, body);
+  const callPath = p.callPath === undefined ? {} : { callPath: p.callPath };
   const sight = useArrivals(!p.phone || sheet.open);
   const announced = useUnreadAnnouncement(sight.state.unread);
   const { onUnread } = p;
@@ -199,7 +229,7 @@ export function ChatDock(p: ChatDockProps): ReactElement {
         >
           {announced}
         </p>
-        {p.phone ? <CallSlotBox callId={p.callId} phone /> : null}
+        {p.phone ? <CallSlotBox callId={p.callId} phone {...callPath} /> : null}
         <div className="sk-chat-dock-row">
           {p.phone ? (
             <PhoneBar
@@ -208,10 +238,10 @@ export function ChatDock(p: ChatDockProps): ReactElement {
               field={p.bar === 'field' ? (p.field ?? null) : null}
             />
           ) : null}
-          <Body sheet={sheet} phone={p.phone}>
+          <Body sheet={sheet} phone={p.phone} element={body}>
             {p.chat}
           </Body>
-          {p.phone ? null : <CallSlotBox callId={p.callId} phone={false} />}
+          {p.phone ? null : <CallSlotBox callId={p.callId} phone={false} {...callPath} />}
         </div>
       </section>
     </DockSight.Provider>

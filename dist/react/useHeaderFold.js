@@ -14,6 +14,9 @@
  *                 stays unfolded on a tablet and a long one (an admin's, the back link in website
  *                 mode) folds at 1280 px. A render never reads the window: the first one is
  *                 unfolded and the layout effect decides before the paint.
+ *                 A game may also pass `foldBelow` (since v0.13.0, Bingo's wish, K40): under that
+ *                 window width the header is always folded, on top of the measure; from it up
+ *                 the measure decides. Without it nothing changes.
  * Source:         seasonal-bingo-royale apps/web/src/shell/useBarFold.ts at 5c613c0 (its
  *                 `wraps`, the fold before paint, `foldedAt`), without its fixed 960 px.
  */
@@ -56,9 +59,13 @@ function useRecheck(header, foldedAt, setFolded) {
         };
     }, [header, foldedAt, setFolded]);
 }
-// `inside`: an element whose parent is the header; `items`: changes when its items may.
-export function useHeaderFold(inside, items) {
+// `inside`: an element whose parent is the header; `items`: changes when its items may;
+// `foldBelow`: a window width in px under which the header always folds (since v0.13.0).
+export function useHeaderFold(inside, items, foldBelow) {
     const [folded, setFolded] = useState(false);
+    // Folded by the game's width, whatever the items measure. Kept apart from `folded`, which
+    // is the measured answer: past the width the measure decides again, as it always did.
+    const [narrow, setNarrow] = useState(false);
     const foldedAt = useRef(0);
     const header = useRef(null);
     // New items: try one row again.
@@ -71,12 +78,16 @@ export function useHeaderFold(inside, items) {
         header.current = bar;
         if (bar === null)
             return;
-        bar.dataset['skFolded'] = String(folded);
-        if (!folded && wraps(bar)) {
+        // Read here, never in a render, like the measure; a resize renders again (`useRecheck`).
+        const below = foldBelow !== undefined && window.innerWidth < foldBelow;
+        if (below !== narrow)
+            setNarrow(below);
+        bar.dataset['skFolded'] = String(folded || narrow);
+        if (!folded && !narrow && wraps(bar)) {
             foldedAt.current = window.innerWidth;
             setFolded(true);
         }
     });
     useRecheck(header, foldedAt, setFolded);
-    return folded;
+    return folded || narrow;
 }

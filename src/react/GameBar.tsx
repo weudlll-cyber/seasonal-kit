@@ -13,7 +13,9 @@
  *                 icon and reads the words out. A button may carry an unread count, never the
  *                 only sign ("3 unread"). The full-screen toggle shows only where the browser
  *                 offers it (./useFullscreen). A toggle (the sound, since v0.11.0) switches a
- *                 setting in place, `aria-pressed` saying whether it is on. Which buttons there
+ *                 setting in place, `aria-pressed` saying whether it is on. A press button
+ *                 (`presses`, since v0.13.0, e.g. "Applaud") only sends a press: no panel, no
+ *                 state, the same button and icon parts. Which buttons there
  *                 are (chat, players, host, prefs since v0.12.0) is the game's: a game without a chat passes no chat
  *                 button; the chat button's unread count comes from the dock's `onUnread`
  *                 (./ChatDock, since v0.11.0). `buttonClassName`
@@ -47,10 +49,17 @@ const TOGGLE_PATHS = {
   'sound-off': 'M4 9h4l5-4v14l-5-4H4zM16 9l5 6M21 9l-5 6',
 } as const;
 
+// ... a press button's (since v0.13.0): two palms meeting and three lines of the clap, from
+// Seasonal Cases' "Applaud" (packages/ui/src/pending/BarPress.tsx at 073f9ad) ...
+const PRESS_PATHS = {
+  applaud: 'M9 21l-3-6 4-8 2 1-2 5 4-7 2 1-3 6 3-4 2 1-4 7-2 4zM14 2v2M18 3l-1 2M20 7h-2',
+} as const;
+
 // ... and the full-screen button's own two, which no panel button takes (since v0.10.0).
 const PATHS = {
   ...PANEL_PATHS,
   ...TOGGLE_PATHS,
+  ...PRESS_PATHS,
   expand: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
   shrink: 'M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5',
 } as const;
@@ -81,6 +90,9 @@ function BarIcon({ name }: { readonly name: keyof typeof PATHS }): ReactElement 
   );
 }
 
+// The icons a press button may name (since v0.13.0).
+export type BarPressIconName = keyof typeof PRESS_PATHS;
+
 export interface BarAction<Id extends string> {
   // The panel this button opens.
   readonly id: Id;
@@ -102,6 +114,19 @@ export interface BarToggle {
   readonly testId?: string;
 }
 
+// A button that does something once per press, in neither of the other two ways: not a panel it
+// opens (`BarAction`), not a setting it switches (`BarToggle`), e.g. Cases' "Applaud" (since
+// v0.13.0, Cases 41). It carries no `aria-expanded` and no `aria-pressed`: nothing stays on.
+export interface BarPress {
+  readonly id: string;
+  readonly icon: BarPressIconName;
+  readonly label: string;
+  readonly onPress: () => void;
+  // A longer word for a pointer (the title), e.g. "Applaud the host"; the label is the name.
+  readonly tip?: string;
+  readonly testId?: string;
+}
+
 export interface BarFact {
   readonly text: ReactNode;
   // Shown on a desktop only, read out on a phone.
@@ -120,6 +145,8 @@ export interface GameBarProps<Id extends string> {
   readonly actions: readonly BarAction<Id>[];
   // Before the panel buttons: settings switched in place (since v0.11.0).
   readonly toggles?: readonly BarToggle[];
+  // After the toggles, before the panel buttons: buttons that only send a press (since v0.13.0).
+  readonly presses?: readonly BarPress[];
   readonly panels: Panels<Id>;
   readonly fullscreen?: Fullscreen;
   readonly buttonClassName?: string;
@@ -171,6 +198,22 @@ function ToggleButton(p: { readonly toggle: BarToggle; readonly className: strin
   );
 }
 
+function PressButton(p: { readonly press: BarPress; readonly className: string }) {
+  const { press } = p;
+  return (
+    <button
+      type="button"
+      className={p.className}
+      title={press.tip}
+      data-testid={press.testId}
+      onClick={press.onPress}
+    >
+      <BarIcon name={press.icon} />
+      <span className="sk-bar-label">{press.label}</span>
+    </button>
+  );
+}
+
 function FullscreenButton(p: { readonly fullscreen: Fullscreen; readonly className: string }) {
   const { on, toggle } = p.fullscreen;
   return (
@@ -211,6 +254,9 @@ export function GameBar<Id extends string>(p: GameBarProps<Id>): ReactElement {
       <span className="sk-bar-actions">
         {(p.toggles ?? []).map((toggle) => (
           <ToggleButton key={toggle.id} toggle={toggle} className={className} />
+        ))}
+        {(p.presses ?? []).map((press) => (
+          <PressButton key={press.id} press={press} className={className} />
         ))}
         {p.actions.map((action) => (
           <BarButton key={action.id} action={action} panels={p.panels} className={className} />

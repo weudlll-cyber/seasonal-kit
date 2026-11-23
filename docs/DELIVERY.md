@@ -325,6 +325,30 @@ and the same four tests:
 
 Both consumers were deleted afterwards.
 
+## The v0.13.0 additions, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.13.0` (merge commit `f93dcf0`), both with `ignore-scripts=true`,
+with the toolchain of v0.12.0's proof (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false`, Vitest 5.0.5 with jsdom 31.0.1). Each ran `tsc` and three tests:
+
+- the installed kit is `0.13.0`; its `tokens.css` has the `:where(:root)` text floor default and
+  its `call.css` the `sk-call-frame` rule;
+- `AppHeader` with `foldBelow={960}` in an 800 px window says `data-sk-folded="true"`;
+- a `GameBar` press button calls its handler; `callEmbedUrl(7, 'dark')` is
+  `/embed/call/7?theme=dark`; in a phone `DockedScreen` with call id 7 the frame is
+  `/embed/call/7?theme=…` with `allow="autoplay; fullscreen"`, a game's `useOpenDockChat()` button
+  opens the chat sheet, and the view's `ended` message hides the slot.
+
+| Consumer                 | Install                                                                                                                                                                  | `tsc`  | Tests    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.8 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/f93dcf0…`, `gitHosted: true`).                                                    | Worked | 3 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked, with no `ERESOLVE`. `npm ls` shows the kit `0.13.0` at `…seasonal-kit.git#f93dcf0…` with its `vite` deduped to the consumer's 8.3.5 (8.3.8 is the newest 8.3.x). | Worked | 3 passed |
+
+The first run of the pnpm consumer failed one assertion, which was the consumer's own: it
+expected `theme=auto` in the frame's address, but the page's shown theme was `light` once the
+test had stubbed `matchMedia` (the kit's `useShownTheme`, as for the chat frame). The assertion
+now accepts `light` or `auto`; nothing in the kit changed. Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

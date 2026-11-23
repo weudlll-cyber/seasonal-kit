@@ -303,6 +303,28 @@ Earlier the same day, `#v0.11.0` next to Vite 8.3.5 had failed with npm (`ERESOL
 `peerOptional vite@"8.3.4"`), which is what v0.11.1 fixes. Both consumers were deleted
 afterwards.
 
+## The v0.12.0 additions, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.12.0` (merge commit `01dd712`), both with `ignore-scripts=true`.
+Their toolchain was React and React DOM 19.3.1, TypeScript 5.9.3 (NodeNext,
+`skipLibCheck: false`), Vitest 5.0.5 with jsdom 31.0.1 and @types/node 22.20.5. Each ran `tsc`
+and the same four tests:
+
+- the installed kit is `0.12.0` and its `bar.css` has `.sk-back-words`;
+- `GameBar` with `back={{ websiteMode: true }}` has the back link first, named "Seasonal
+  Entertainment", and a `prefs` button; without the prop there is no back link;
+- `useFitScale(…, { afterFonts })` listens to `document.fonts` only when on (`FitOptions` typed
+  from the root entry);
+- `DockedScreen withoutChat` has no dock, and `useDockSight` in a phone `ChatDock` says `false`
+  and then `true` once the sheet is open (`DockSightValue` typed).
+
+| Consumer                 | Install                                                                                                                                                                                                                                                  | `tsc`  | Tests    |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.8 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/01dd712…`, `gitHosted: true`, an `integrity` hash).                                                                                                               | Worked | 4 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked, with no `ERESOLVE`. `package-lock.json` holds the kit at `…seasonal-kit.git#01dd712…`; `npm ls` shows its `react` and `vite` deduped to the consumer's 19.3.1 and 8.3.5. 8.3.8 is the newest 8.3.x, so no later patch than the kit's own exists. | Worked | 4 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

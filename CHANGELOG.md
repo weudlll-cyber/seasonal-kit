@@ -26,6 +26,19 @@ The games' requests (DECISIONS K32), the season feed and the handbook.
   `onDrop` hears each round left out and why, with its id only. `OPEN_ROUNDS_CACHE_CONTROL` is
   the answer's header. It replaces the three games' own builders: Bingo, Mini Games and Cases.
 
+- **Seasonal Cases' requests** (BACKLOG 20, 23, 24, 36 there):
+  - `useDockReserve()` (20): the height a screen without a chat keeps free at the bottom for
+    the dock. It is the strip's 190 px on a desktop and 150 px in a window under 760 px high
+    (`CALL_SLOT`), nothing on a phone (`useDockView`), and it follows the window;
+  - `ChatDock`/`DockedScreen` `onUnread` (24): hears each new unread count, so the game's bar
+    can show it on its chat button (`badge`);
+  - `GameBar` `toggles` (36, `BarToggle`): a setting switched in place, e.g. the sound, before
+    the panel buttons. Its words stay the same; `aria-pressed` and the icon (a speaker, crossed
+    out when off) show whether it is on;
+  - `OriginChatFrame({ origin, room })` (23): the website's chat from the website's dev server
+    on this PC, for local development. It shares the checked link and sandbox of
+    `WebsiteChatFrame`. Any origin that is not a loopback host (localhost, 127.0.0.1, [::1])
+    renders nothing, so no production origin is ever framed this way.
 - **`ResultFrame` as a panel inside a screen** (`panel={{ level }}`, Bingo R4): the headline is a
   heading of the game's level (2–6) instead of the page's `h1`, and `data-sk-variant="panel"` gives
   it no one-screen first part. Names break only at their own break points (`overflow-wrap:

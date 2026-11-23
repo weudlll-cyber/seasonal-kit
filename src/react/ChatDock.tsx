@@ -16,7 +16,8 @@
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the
- *                 first render. The same element holds
+ *                 first render. `onUnread` hands each new count to the game, for its bar's chat
+ *                 button (since v0.11.0). The same element holds
  *                 the chat in both layouts, so turning a phone does not reload it.
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
@@ -41,6 +42,9 @@ export interface ChatDockProps {
   readonly field?: ReactNode;
   // The call the game's host linked, or null: the slot is hidden then.
   readonly callId: number | null;
+  // Hears each new unread count, so the game's bar can show it on its chat button (since
+  // v0.11.0, Cases 24): the dock's arrivals reach only the chat inside it.
+  readonly onUnread?: (count: number) => void;
 }
 
 // The arrivals while the chat is out of sight, as React state.
@@ -165,6 +169,11 @@ export function ChatDock(p: ChatDockProps): ReactElement {
   const sheet = useDisclosure();
   const sight = useArrivals(!p.phone || sheet.open);
   const announced = useUnreadAnnouncement(sight.state.unread);
+  const { onUnread } = p;
+  const unread = sight.state.unread;
+  useEffect(() => {
+    onUnread?.(unread);
+  }, [onUnread, unread]);
   const value = useMemo(
     () => ({ visible: sight.visible, arrivals: sight.arrivals }),
     [sight.visible, sight.arrivals],

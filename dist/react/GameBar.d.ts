@@ -3,15 +3,18 @@
  * @brief  The slim game bar during a round, in place of the app header (focus mode), and its
  *         line icons.
  *
- * Responsibility: one row, at most 44 px on a desktop and 52 px on a phone (../../css/bar.css):
+ * Responsibility: one row, at most 44 px on a desktop (../../css/bar.css):
  *                 the game's lead part (its season pill), its facts ("Shared"; a desktop-only
  *                 fact is read out on a phone), the time ("9:50 left"; a phone shows "9:50" and
  *                 reads " left" out), then the buttons of the panels on demand (./usePanels).
  *                 Each button has its icon and words: a desktop shows both, a phone shows the
  *                 icon and reads the words out. A button may carry an unread count, never the
  *                 only sign ("3 unread"). The full-screen toggle shows only where the browser
- *                 offers it (./useFullscreen). Which buttons there are (chat, players, host) is
- *                 the game's: a game without a chat passes no chat button. `buttonClassName`
+ *                 offers it (./useFullscreen). A toggle (the sound, since v0.11.0) switches a
+ *                 setting in place, `aria-pressed` saying whether it is on. Which buttons there
+ *                 are (chat, players, host) is the game's: a game without a chat passes no chat
+ *                 button; the chat button's unread count comes from the dock's `onUnread`
+ *                 (./ChatDock, since v0.11.0). `buttonClassName`
  *                 lets a game keep its own button look (Mini Games: `smg-btn`).
  * Source:         seasonal-mini-games apps/web/src/round/FocusBar.tsx and FocusIcons.tsx at
  *                 866df03 (its season pill, mode, `barTime` and panel ids stay in the game);
@@ -34,6 +37,14 @@ export interface BarAction<Id extends string> {
     readonly testId?: string;
     readonly badge?: number;
 }
+export interface BarToggle {
+    readonly id: string;
+    readonly icon: 'sound';
+    readonly label: string;
+    readonly on: boolean;
+    readonly onToggle: () => void;
+    readonly testId?: string;
+}
 export interface BarFact {
     readonly text: ReactNode;
     readonly desktopOnly?: boolean;
@@ -46,6 +57,7 @@ export interface GameBarProps<Id extends string> {
         readonly left: boolean;
     } | null;
     readonly actions: readonly BarAction<Id>[];
+    readonly toggles?: readonly BarToggle[];
     readonly panels: Panels<Id>;
     readonly fullscreen?: Fullscreen;
     readonly buttonClassName?: string;

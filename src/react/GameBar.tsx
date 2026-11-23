@@ -3,15 +3,18 @@
  * @brief  The slim game bar during a round, in place of the app header (focus mode), and its
  *         line icons.
  *
- * Responsibility: one row, at most 44 px on a desktop and 52 px on a phone (../../css/bar.css):
+ * Responsibility: one row, at most 44 px on a desktop (../../css/bar.css):
  *                 the game's lead part (its season pill), its facts ("Shared"; a desktop-only
  *                 fact is read out on a phone), the time ("9:50 left"; a phone shows "9:50" and
  *                 reads " left" out), then the buttons of the panels on demand (./usePanels).
  *                 Each button has its icon and words: a desktop shows both, a phone shows the
  *                 icon and reads the words out. A button may carry an unread count, never the
  *                 only sign ("3 unread"). The full-screen toggle shows only where the browser
- *                 offers it (./useFullscreen). Which buttons there are (chat, players, host) is
- *                 the game's: a game without a chat passes no chat button. `buttonClassName`
+ *                 offers it (./useFullscreen). A toggle (the sound, since v0.11.0) switches a
+ *                 setting in place, `aria-pressed` saying whether it is on. Which buttons there
+ *                 are (chat, players, host) is the game's: a game without a chat passes no chat
+ *                 button; the chat button's unread count comes from the dock's `onUnread`
+ *                 (./ChatDock, since v0.11.0). `buttonClassName`
  *                 lets a game keep its own button look (Mini Games: `smg-btn`).
  * Source:         seasonal-mini-games apps/web/src/round/FocusBar.tsx and FocusIcons.tsx at
  *                 866df03 (its season pill, mode, `barTime` and panel ids stay in the game);
@@ -32,9 +35,16 @@ const PANEL_PATHS = {
   host: 'M4 7h10M18 7h2M4 17h4M12 17h8M14 4.5v5M8 14.5v5',
 } as const;
 
+// ... a toggle's, on and off (a speaker with its sound, or crossed out; since v0.11.0) ...
+const TOGGLE_PATHS = {
+  sound: 'M4 9h4l5-4v14l-5-4H4zM16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11',
+  'sound-off': 'M4 9h4l5-4v14l-5-4H4zM16 9l5 6M21 9l-5 6',
+} as const;
+
 // ... and the full-screen button's own two, which no panel button takes (since v0.10.0).
 const PATHS = {
   ...PANEL_PATHS,
+  ...TOGGLE_PATHS,
   expand: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
   shrink: 'M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5',
 } as const;
@@ -75,6 +85,17 @@ export interface BarAction<Id extends string> {
   readonly badge?: number;
 }
 
+// A setting the bar switches on and off in place, e.g. the sound (since v0.11.0, Cases 36): its
+// words stay the same, `aria-pressed` says whether it is on, the icon shows it too.
+export interface BarToggle {
+  readonly id: string;
+  readonly icon: 'sound';
+  readonly label: string;
+  readonly on: boolean;
+  readonly onToggle: () => void;
+  readonly testId?: string;
+}
+
 export interface BarFact {
   readonly text: ReactNode;
   // Shown on a desktop only, read out on a phone.
@@ -88,6 +109,8 @@ export interface GameBarProps<Id extends string> {
   // v0.10.0 always given: null is "none", as for every other kit prop).
   readonly time: { readonly text: string; readonly left: boolean } | null;
   readonly actions: readonly BarAction<Id>[];
+  // Before the panel buttons: settings switched in place (since v0.11.0).
+  readonly toggles?: readonly BarToggle[];
   readonly panels: Panels<Id>;
   readonly fullscreen?: Fullscreen;
   readonly buttonClassName?: string;
@@ -119,6 +142,22 @@ function BarButton<Id extends string>(p: {
           <span className="sk-visually-hidden"> unread</span>
         </span>
       )}
+    </button>
+  );
+}
+
+function ToggleButton(p: { readonly toggle: BarToggle; readonly className: string }) {
+  const { toggle } = p;
+  return (
+    <button
+      type="button"
+      className={p.className}
+      aria-pressed={toggle.on}
+      data-testid={toggle.testId}
+      onClick={toggle.onToggle}
+    >
+      <BarIcon name={toggle.on ? toggle.icon : `${toggle.icon}-off`} />
+      <span className="sk-bar-label">{toggle.label}</span>
     </button>
   );
 }
@@ -160,6 +199,9 @@ export function GameBar<Id extends string>(p: GameBarProps<Id>): ReactElement {
         </span>
       )}
       <span className="sk-bar-actions">
+        {(p.toggles ?? []).map((toggle) => (
+          <ToggleButton key={toggle.id} toggle={toggle} className={className} />
+        ))}
         {p.actions.map((action) => (
           <BarButton key={action.id} action={action} panels={p.panels} className={className} />
         ))}

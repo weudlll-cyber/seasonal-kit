@@ -8,7 +8,10 @@
  *                 image cannot be added that Renovate does not update; `packageManager` names
  *                 pnpm's exact version with its sha512 hash (corepack's form), so the toolchain
  *                 is pinned to the bytes. Audit 2026-11-22 "Noted, not changed" (B6 info).
- * Source:         new in the kit (v0.10.1).
+ *                 Since v0.11.1: Renovate never touches Node (engines `>=22` and .nvmrc `22`
+ *                 agree, K38); the peers are caret ranges that the kit's own exact
+ *                 devDependencies satisfy, widened on a major and never bumped otherwise (K37).
+ * Source:         new in the kit (v0.10.1); the Node and peer rules since v0.11.1.
  */
 import { readFileSync } from 'node:fs';
 
@@ -23,9 +26,27 @@ interface CustomManager {
   readonly datasourceTemplate: string;
 }
 
-const config = JSON.parse(read('renovate.json')) as { customManagers: CustomManager[] };
+interface PackageRule {
+  readonly matchDepNames?: readonly string[];
+  readonly matchManagers?: readonly string[];
+  readonly matchDepTypes?: readonly string[];
+  readonly matchUpdateTypes?: readonly string[];
+  readonly rangeStrategy?: string;
+  readonly enabled?: boolean;
+}
+
+const config = JSON.parse(read('renovate.json')) as {
+  customManagers: CustomManager[];
+  packageRules: PackageRule[];
+};
 const ci = read('.github/workflows/ci.yml');
-const pkg = JSON.parse(read('package.json')) as { packageManager: string };
+const pkg = JSON.parse(read('package.json')) as {
+  packageManager: string;
+  engines: { node: string };
+  peerDependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
+};
+const peerRules = config.packageRules.filter((r) => r.matchDepTypes?.includes('peerDependencies'));
 
 // Renovate's `/…/` file pattern as a JS RegExp.
 const filePattern = (pattern: string): RegExp => new RegExp(pattern.slice(1, -1));
@@ -63,5 +84,43 @@ describe('Renovate and the scanner images', () => {
 describe('the pinned package manager', () => {
   it('is pnpm at an exact version with its sha512 hash', () => {
     expect(pkg.packageManager).toMatch(/^pnpm@\d+\.\d+\.\d+\+sha512\.[a-f0-9]{128}$/);
+  });
+});
+
+describe('Node, kept by hand (K38)', () => {
+  it('is never updated by Renovate, in engines (npm) or in .nvmrc (nvm)', () => {
+    const rule = config.packageRules.find((r) => r.matchDepNames?.includes('node'));
+    expect(rule?.enabled).toBe(false);
+    expect(rule?.matchManagers).toEqual(expect.arrayContaining(['npm', 'nvm']));
+    expect(rule?.matchUpdateTypes).toBeUndefined();
+  });
+
+  it('says the same major in engines and .nvmrc', () => {
+    expect(pkg.engines.node).toBe('>=22');
+    expect(read('.nvmrc').trim()).toBe(pkg.engines.node.slice(2));
+  });
+});
+
+describe('the peer ranges (K37)', () => {
+  it('are caret ranges, each met by the exact devDependency the kit tests with', () => {
+    expect(Object.keys(pkg.peerDependencies).sort()).toEqual(['react', 'vite']);
+    for (const [name, range] of Object.entries(pkg.peerDependencies)) {
+      const floor = /^\^(\d+)\.(\d+)\.(\d+)$/.exec(range);
+      const own = /^(\d+)\.(\d+)\.(\d+)$/.exec(pkg.devDependencies[name] ?? '');
+      expect(floor, `${name} ${range}`).not.toBeNull();
+      expect(own, `${name} devDependency`).not.toBeNull();
+      // Same major, and minor.patch at or above the range's floor.
+      const [lo = [], at = []] = [floor, own].map((m) => (m ?? []).slice(1).map(Number));
+      expect(at[0]).toBe(lo[0]);
+      const rank = (v: readonly number[]): number => (v[1] ?? 0) * 1e6 + (v[2] ?? 0);
+      expect(rank(at)).toBeGreaterThanOrEqual(rank(lo));
+    }
+  });
+
+  it('are widened on a major and never bumped on a minor, patch or pin', () => {
+    expect(peerRules.find((r) => r.rangeStrategy !== undefined)?.rangeStrategy).toBe('widen');
+    const off = peerRules.find((r) => r.enabled === false);
+    expect(off?.matchUpdateTypes).toEqual(expect.arrayContaining(['minor', 'patch', 'pin']));
+    expect(off?.matchUpdateTypes).not.toContain('major');
   });
 });

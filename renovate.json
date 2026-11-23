@@ -10,6 +10,23 @@
       "description": "One weekly PR for all non-major updates.",
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "groupName": "minor and patch updates"
+    },
+    {
+      "description": "Node stays as the kit states it: engines.node \">=22\" and .nvmrc \"22\" move together, by hand, never by Renovate (DECISIONS K38; #25 once wrote \"v26.13.1\" into engines).",
+      "matchDepNames": ["node"],
+      "matchManagers": ["npm", "nvm"],
+      "enabled": false
+    },
+    {
+      "description": "A peer range is widened, never pinned or replaced: a new major becomes \"^19.3.1 || ^20.0.0\", so games on the old major keep working (DECISIONS K37).",
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen"
+    },
+    {
+      "description": "Peer ranges are what games may bring: no minor, patch or pin bump of a peer; only a major reaches them (DECISIONS K37).",
+      "matchDepTypes": ["peerDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "enabled": false
     }
   ],
   "customManagers": [

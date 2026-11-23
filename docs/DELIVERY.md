@@ -281,6 +281,28 @@ lockfile resolved the tag to the merge commit's tarball (`ab03151`, `version: 0.
 
 The consumer was deleted afterwards.
 
+## The v0.11.1 peer ranges, with pnpm and with npm (2026-11-23, the tag itself)
+
+Two scratch consumers pinned `#v0.11.1`, both with `ignore-scripts=true`. Their toolchain was
+React and React DOM 19.3.1, TypeScript 5.9.3 (NodeNext, `skipLibCheck: false`), Vitest 5.0.5 with
+jsdom 31.0.1, and @types/node 22.20.5. Each typechecked a `vite.config.ts` that typed the kit's
+`themeInit()` as its own Vite's `Plugin`, and ran the same three tests:
+
+- the installed kit is `0.11.1`, with peers `react` `^19.3.1` and `vite` `^8.3.4`, and the Vite
+  in use is the consumer's own;
+- `themeInit()` runs under that Vite (`seasonal-kit:theme-init`);
+- `renderToString` of `ThemeToggle` with that React; `MIN_POINTER_TARGET` is 24; a
+  `RateLimiter` lets one request pass and refuses the next.
+
+| Consumer                 | Install                                                                                                                                                                                          | `tsc`  | Tests    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.4 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/acd011a…`, `gitHosted: true`, an `integrity` hash, `version: 0.11.1`).                                    | Worked | 3 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked, with no `ERESOLVE`. `package-lock.json` holds `version: 0.11.1` at `…seasonal-kit.git#acd011a…`; `npm ls` shows the kit's `react` and `vite` deduped to the consumer's 19.3.1 and 8.3.5. | Worked | 3 passed |
+
+Earlier the same day, `#v0.11.0` next to Vite 8.3.5 had failed with npm (`ERESOLVE`,
+`peerOptional vite@"8.3.4"`), which is what v0.11.1 fixes. Both consumers were deleted
+afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

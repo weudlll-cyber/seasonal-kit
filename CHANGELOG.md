@@ -46,6 +46,9 @@ T416). Every change is opt-in: a game that changes nothing sees exactly today's 
 - **Stale lines about the call view** (`callView.ts`, `ChatDock.tsx`, the README): the site
   serves `/embed/call/<id>` now (website e11b3eb); the kit still frames nothing until its link
   is checked against the site's real messages (BACKLOG 8).
+- **The showcase** (`showcase/`) has Mini Games' bar as one more state (the back link first, a
+  `prefs` button), and `layout.spec.ts` measures it at 1280, 390 and 320 px; its back-link gap
+  test reads the words' own `<span>`. Nothing a game uses.
 - **The showcase's build** (`showcase/vite.config.ts`): its two pages are the input map of
   `build.rolldownOptions` instead of the deprecated `rollupOptions`, which Vite 8.3.8's types
   flag for lint (Renovate #25). Only the showcase changes; nothing a game uses.

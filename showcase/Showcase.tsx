@@ -39,7 +39,7 @@ const PARTS = [
 ];
 
 function Bar(): ReactElement {
-  const panels = usePanels<'chat' | 'players' | 'host'>();
+  const panels = usePanels<'chat' | 'players' | 'host' | 'prefs'>();
   return (
     <section aria-labelledby="bar-title" className="showcase-section">
       <h2 id="bar-title">Game bar and phase strip</h2>
@@ -65,6 +65,21 @@ function Bar(): ReactElement {
             { id: 'chat', icon: 'chat', label: 'Chat', badge: 3 },
             { id: 'players', icon: 'players', label: 'Players' },
             { id: 'host', icon: 'host', label: 'Host' },
+          ]}
+          panels={panels}
+        />
+      </div>
+      {/* Mini Games' bar (v0.12.0): the back link first, the Pre-picks button with `prefs`. */}
+      <div data-testid="back-bar" style={{ minWidth: 0 }}>
+        <GameBar
+          back={{ websiteMode: true }}
+          lead={<span className="showcase-pill">Winter</span>}
+          time={{ text: '9:50', left: true }}
+          actions={[
+            { id: 'chat', icon: 'chat', label: 'Chat' },
+            { id: 'players', icon: 'players', label: 'Players' },
+            { id: 'host', icon: 'host', label: 'Host' },
+            { id: 'prefs', icon: 'prefs', label: 'Pre-picks' },
           ]}
           panels={panels}
         />

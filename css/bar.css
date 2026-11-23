@@ -89,6 +89,7 @@
    (./shell.css), which on a phone takes a row of its own; in the bar it stays beside the lead
    part, never shrinking. */
 .sk-game-bar > .sk-back-link {
+  position: relative;
   flex: none;
 }
 

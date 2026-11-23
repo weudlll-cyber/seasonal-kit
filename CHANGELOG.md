@@ -11,6 +11,21 @@ The games' requests (DECISIONS K32), the season feed and the handbook.
 
 ### Added
 
+- **The open-rounds publisher** (`/server`): `openRoundsPage(rounds, { origin, now?, onDrop? })`
+  builds version 1 of the website's open-rounds page from a game's own rounds, with the
+  website's checks applied here (docs/OPEN-ROUNDS.md, `openRoundsContract.js` at d4230af):
+  - id 1–64, never cut;
+  - title 1–80 and kind 0–40, cut to fit, never through an emoji;
+  - UTC times (a `Date` written as one) or null;
+  - whole counts;
+  - an https `joinUrl` on the game's origin;
+  - no closed sign-up;
+  - at most 20, counted after the check;
+  - no unknown field.
+
+  `onDrop` hears each round left out and why, with its id only. `OPEN_ROUNDS_CACHE_CONTROL` is
+  the answer's header. It replaces the three games' own builders: Bingo, Mini Games and Cases.
+
 - **Fit floors for Seasonal Party and Seasonal Cases** (K14): `FitGame` gains `seasonal-party`
   and `cases`, with `[data-sk-game=…]` rules in `fit.css`, each with exactly what the game has
   today: 14 px text, 24 px display values, 22 px rows, 44 px targets, a 14 px badge and the

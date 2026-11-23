@@ -11,6 +11,11 @@ The games' requests (DECISIONS K32), the season feed and the handbook.
 
 ### Added
 
+- **docs/HANDBOOK.md** (DECISIONS K35): how we build a Seasonal game, one place for every new
+  game. It covers how we work, the repository and the kit pin, security, hygiene, tests, docs,
+  the kit parts every game uses, and embedding in the website. That last part links the
+  website's ADDING-A-GAME.md, GAME-INTEGRATION.md and OPEN-ROUNDS.md instead of copying them.
+  Every rule names where it is enforced. The README links it.
 - **The open-rounds publisher** (`/server`): `openRoundsPage(rounds, { origin, now?, onDrop? })`
   builds version 1 of the website's open-rounds page from a game's own rounds, with the
   website's checks applied here (docs/OPEN-ROUNDS.md, `openRoundsContract.js` at d4230af):

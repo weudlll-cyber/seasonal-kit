@@ -121,3 +121,8 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   `inSeason` and `halvingDays`) is read through one reader in the kit, `seasonFeedReader` in
   `/server`, server to server and with the game's own guarded fetch, instead of each game reading
   it its own way (v0.11.0).
+- **K35 — A handbook for building a game lives in the kit.** How a Seasonal game is built (how
+  we work, the repository and its kit pin, security, hygiene, tests, docs, the kit parts every
+  game uses, and a short summary of embedding that links the website's own docs) is one
+  document, [HANDBOOK.md](HANDBOOK.md), linked from the README. Each rule there names where it
+  is enforced (v0.11.0).

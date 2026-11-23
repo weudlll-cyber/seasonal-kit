@@ -5,6 +5,10 @@ place: Seasonal Bingo Royale, Seasonal Mini Games, Seasonal Party and later game
 their own play; the kit holds what is the same around it. Every game depends on it, so it is held
 to a stricter standard than any single game ([docs/DECISIONS.md](docs/DECISIONS.md) K2).
 
+**Building a game?** Start with the handbook, [docs/HANDBOOK.md](docs/HANDBOOK.md): how we work,
+security, hygiene, tests and docs, the kit parts every game uses, and where the website's own
+docs on embedding a game are.
+
 ## What is inside
 
 | Import                     | What it is                                                                                                                                                                                                                                                                                                                                                                                                       |

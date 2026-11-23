@@ -6,19 +6,22 @@
  *                 box's size or the visual viewport changes, by ../fit `watchFit`, with the
  *                 game's floors (`FIT_FLOORS`). A new `signature` (the screen's content changed)
  *                 fits from 1 again. `self`: the screen fills a height of its own, so its own box
- *                 is the one to fit.
+ *                 is the one to fit. `options.afterFonts` also fits once web fonts have loaded
+ *                 (since v0.12.0, off by default).
  * Source:         seasonal-mini-games apps/web/src/round/useFit.ts `useFitScale` at 866df03, its
  *                 work moved to ../fit (reused: watchFit).
  */
 import { useLayoutEffect, useRef } from 'react';
 import { watchFit } from '../fit.js';
-export function useFitScale(game, signature, self = false) {
+export function useFitScale(game, signature, self = false, options = {}) {
     const ref = useRef(null);
+    // The one flag, not the object: a new object each render must not fit again.
+    const afterFonts = options.afterFonts === true;
     useLayoutEffect(() => {
         const root = ref.current;
         if (root === null)
             return undefined;
-        return watchFit(root, game, self);
-    }, [game, signature, self]);
+        return watchFit(root, game, self, { afterFonts });
+    }, [game, signature, self, afterFonts]);
     return ref;
 }

@@ -83,5 +83,8 @@ gap of 4 px or more between its arrow and its words; every app header keeps one 
 crowded game bar (Seasonal Cases' lead,
 two long facts, the time and three buttons) stays inside the screen at 320, 360 and 375 px, every
 button still 44 px.
+Since v0.12.0 Mini Games' bar (the back link first, the Pre-picks button with the `prefs` icon) is
+on the page too: at 1280 px the link shows arrow and words, at 390 and 320 px the arrow alone in a
+target 44 px wide with the words as its accessible name, and the bar ends inside the screen.
 
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

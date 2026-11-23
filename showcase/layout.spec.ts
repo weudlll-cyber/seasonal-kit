@@ -7,7 +7,9 @@
  *                 visible gap, measured from the arrow's box to the text's own box (a Range),
  *                 not read from textContent, which has the space either way (Bingo R2,
  *                 Seasonal Party; v0.11.0). A crowded game bar ends inside 320, 360 and 375 px,
- *                 each button still 44 px wide (Cases 32; v0.11.0).
+ *                 each button still 44 px wide (Cases 32; v0.11.0). The bar's back link shows
+ *                 arrow and words on a desktop and the arrow alone, 44 px wide, on a phone, with
+ *                 the words as its name (v0.12.0).
  * Depends on:     @playwright/test
  * Source:         new in the kit.
  */
@@ -23,10 +25,9 @@ test('the back link keeps a gap between arrow and words', async ({ page }) => {
     .first()
     .evaluate((link) => {
       const arrow = link.querySelector('[aria-hidden="true"]');
-      const words = [...link.childNodes].find(
-        (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim() !== '',
-      );
-      if (arrow === null || words === undefined) return -1;
+      // The words are a part of their own since v0.12.0: the text inside it is what is measured.
+      const words = link.querySelector('.sk-back-words')?.firstChild;
+      if (arrow === null || words === undefined || words === null) return -1;
       const range = document.createRange();
       range.selectNodeContents(words);
       const text = [...range.getClientRects()].find((r) => r.width > 0);
@@ -66,6 +67,42 @@ test('the admin bar folds at 1280 px by measure; a short bar stays unfolded at 1
   await page.setViewportSize({ width: 1920, height: 1000 });
   await expect(page.getByTestId('app-header').first()).toHaveAttribute('data-sk-folded', 'false');
 });
+
+// The back link in the game bar (v0.12.0): arrow and words on a desktop, the arrow alone in a
+// 44 px target on a phone, the words still its name; the bar ends inside the screen at 320 px.
+for (const [width, alone] of [
+  [1280, false],
+  [390, true],
+  [320, true],
+] as const) {
+  test(`the bar's back link at ${String(width)} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 740 });
+    await page.goto('/?theme=light');
+    const bar = page.getByTestId('back-bar').getByTestId('game-bar');
+    const link = bar.getByTestId('back-link');
+    await expect(link).toHaveAccessibleName('Seasonal Entertainment');
+    const seen = await bar.evaluate((el) => {
+      const words = el.querySelector('.sk-back-words')?.getBoundingClientRect();
+      const back = el.querySelector('.sk-back-link')?.getBoundingClientRect();
+      return {
+        words: words?.width ?? -1,
+        back: back?.width ?? -1,
+        first: el.firstElementChild?.classList.contains('sk-back-link') ?? false,
+        itemsEnd: Math.max(...[...el.children].map((c) => c.getBoundingClientRect().right)),
+        right: el.getBoundingClientRect().right,
+      };
+    });
+    expect(seen.first).toBe(true);
+    if (alone) {
+      expect(seen.words).toBeLessThanOrEqual(1);
+      expect(seen.back).toBeGreaterThanOrEqual(44);
+    } else {
+      expect(seen.words).toBeGreaterThan(40);
+    }
+    expect(seen.itemsEnd).toBeLessThanOrEqual(seen.right + 0.5);
+    expect(seen.right).toBeLessThanOrEqual(width);
+  });
+}
 
 // Narrow phones (Cases 32): a crowded game bar stays inside its width, its buttons 44 px.
 for (const width of [320, 360, 375]) {

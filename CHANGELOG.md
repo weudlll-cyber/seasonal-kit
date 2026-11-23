@@ -7,12 +7,58 @@ applies it.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-23
+
+Five additive answers to Seasonal Mini Games' adoption requests (its O143, T414, O144/T415,
+T416). Every change is opt-in: a game that changes nothing sees exactly today's behaviour.
+
+### Added
+
+- **A `prefs` icon for `GameBar`** (`BarIconName`): three vertical sliders on the same 24 × 24
+  grid and stroke as chat, players and host, for Mini Games' Pre-picks button (O117).
+- **A back link in `GameBar`** (`back`, K39): `back={{ websiteMode }}` puts the shell's
+  `BackLink` (reused, not a second link) at the start of the row. A desktop shows arrow and
+  words; a phone shows the arrow alone in a 44 px target, the words as its accessible name
+  (`sk-back-words`, visually hidden), so it fits beside the season pill. Without the prop, and in
+  standalone mode, the bar is unchanged. `BackLink`'s words are now their own `<span>`; its look
+  and text are the same.
+
+- **A refit after web fonts** (`afterFonts`): `watchFit(root, game, self, { afterFonts: true })`
+  and `useFitScale(game, signature, self, { afterFonts: true })` fit again on `document.fonts`
+  `loadingdone` and once `fonts.ready` settles, in the next frame, as for a new size. Text set
+  in a late font changes height without the box changing size (Mini Games T404, a WebKit wrap
+  32 px over the card). Off by default; where there is no font set nothing is listened to.
+  `FitOptions` is exported from `@seasonal/kit`.
+
+- **`DockedScreen` without a chat** (`withoutChat`): the screen renders its content and no dock
+  at all (no strip, no sheet, no call slot), and on a phone still publishes
+  `--sk-visible-height` so the game's root follows the on-screen keyboard as it does today
+  (Mini Games T416). `withoutChat` unset or `false` is the docked layout as before; the props
+  are now a union, so `chat`, `bar` and `callId` stay required unless `withoutChat` is `true`.
+- **The dock's visibility signal** (`useDockSight`, with the type `DockSightValue`, from
+  `@seasonal/kit/react`): a game's own frame inside the dock reads `visible` (always on a
+  desktop, while the sheet is open on a phone) and passes its unread count to `arrivals`, as the
+  website's chat frame does. It is `null` outside a dock. `useDockArrivals` and
+  `WebsiteChatFrame` now read it too (reused, nothing changes for them).
+
 ### Changed
 
+- **Stale lines about the call view** (`callView.ts`, `ChatDock.tsx`, the README): the site
+  serves `/embed/call/<id>` now (website e11b3eb); the kit still frames nothing until its link
+  is checked against the site's real messages (BACKLOG 8).
+- **The showcase** (`showcase/`) has Mini Games' bar as one more state (the back link first, a
+  `prefs` button), and `layout.spec.ts` measures it at 1280, 390 and 320 px; its back-link gap
+  test reads the words' own `<span>`. Nothing a game uses.
 - **The showcase's build** (`showcase/vite.config.ts`): its two pages are the input map of
   `build.rolldownOptions` instead of the deprecated `rollupOptions`, which Vite 8.3.8's types
-  flag for lint (Renovate #25). Only the showcase changes; `dist/` and everything a game uses
-  stay the same, so no release follows.
+  flag for lint (Renovate #25). Only the showcase changes; nothing a game uses.
+
+- **Docs only:** Bingo's four kit wishes of 2026-11-23 are recorded (DECISIONS K40–K43,
+  BACKLOG 15–18), and docs/ADOPTION.md names each v0.12.0 answer by Mini Games' own record.
+
+### Migration, per game
+
+- **Every game:** nothing to do. Each addition is a prop or an option a game must name.
 
 ## [0.11.1] - 2026-11-23
 
@@ -860,7 +906,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...v0.12.0
 [0.11.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1

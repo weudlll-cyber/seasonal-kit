@@ -5,7 +5,8 @@
  * Responsibility: the bar is one row of small text, at most 44 px high on a desktop, its
  *                 controls 44 px targets everywhere (since v0.10.0, K29); on a narrow phone its
  *                 facts shrink to "…" and its buttons wrap rather than run off the screen (since
- *                 v0.11.0, Cases 32): the game's lead part,
+ *                 v0.11.0, Cases 32): the way back (since v0.12.0: arrow and words, a phone the
+ *                 arrow alone), the game's lead part,
  *                 its facts and the time, the panel buttons with their icons (and their words on
  *                 a desktop) and the unread badge on a button's corner. `.sk-bar-desktop` parts
  *                 are read out on a phone, not shown. The phase strip's parts are segments in
@@ -84,6 +85,14 @@
   flex: none;
 }
 
+/* The way back, at the start of the row (since v0.12.0). It is the shell's back link
+   (./shell.css), which on a phone takes a row of its own; in the bar it stays beside the lead
+   part, never shrinking. */
+.sk-game-bar > .sk-back-link {
+  position: relative;
+  flex: none;
+}
+
 /* The unread count on the button's corner: a dark pill, never the only sign. */
 .sk-bar-badge {
   position: absolute;
@@ -111,13 +120,20 @@
   }
 
   .sk-bar-desktop,
-  .sk-bar-label {
+  .sk-bar-label,
+  .sk-game-bar .sk-back-words {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+
+  /* The arrow alone, a 44 px target; the words above are still the link's name. */
+  .sk-game-bar > .sk-back-link {
+    justify-content: center;
+    min-width: var(--hit-target);
   }
 
   .sk-bar-actions {

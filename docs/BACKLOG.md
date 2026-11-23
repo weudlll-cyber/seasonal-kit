@@ -12,31 +12,24 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **2. Sign-in helpers and the chat embed, client side.** The website sign-in route helpers
   (Mini Games `packages/ui/src/websiteSignIn.ts`), and the host side of the website chat's embed
   protocol (website `docs/EMBED.md`). Done when: both are in the kit with tests, and a game uses
-  them. The kit's part is in v0.3.0 (`websiteSignIn`, `chatEmbed`, `chatArrivals`). The item
-  stays open until a game uses them (item 5).
+  them. The kit's part is in v0.3.0 (`websiteSignIn`, `chatEmbed`, `chatArrivals`). Bingo
+  Royale's `master` (3a00729, pinning v0.11.1) uses the chat frame (`WebsiteChatFrame`); no game
+  on `master` uses the sign-in route helpers yet. The item stays open until one does (item 5).
 - **5. Adopt the kit in the games:** Mini Games first, then Bingo Royale, then Seasonal Party,
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
   game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21).
 - **8. The call view in the slot** (DECISIONS K6). Frame the website's `/embed/call/<id>` page
-  in the slot (`allow="autoplay; fullscreen"`, nothing more) once a game passes a call id. It
-  waits for the site: GAME-INTEGRATION §9 says the page is not built yet and that a game frames
-  nothing in the slot until it is. Done when: the site serves the page, the kit builds its
-  address and frames it only with a call id, and the kit's message layer (`connectCall`,
-  v0.3.0) has been checked against the site's real messages.
+  in the slot (`allow="autoplay; fullscreen"`, nothing more) once a game passes a call id. The
+  site serves the page now (website `master` e11b3eb, GAME-INTEGRATION §9 "Built"). Done when:
+  the kit builds its address and frames it only with a call id, and the kit's message layer
+  (`connectCall`, v0.3.0) has been checked against the site's real messages.
 - **9. React wrappers.** The hooks and components the games build on the kit's framework-free
   parts: the chat frame's link and its arrivals (Mini Games' `useHostChatFrame`, `ChatArrivals`,
   `HostChatSight`), and the call slot. Left for a later step by the owner's brief for v0.3.0.
   Done when: they are in the kit with tests, and a game uses them. The kit's part is in v0.4.0
   (`WebsiteChatFrame`, `ChatDock`, `DockedScreen`, `useDockArrivals`); open until a game uses
   them (item 5).
-- **10. Mini Games' bar and fit needs** (found while refreshing [ADOPTION.md](ADOPTION.md),
-  2026-11-23). Neither is built, since no task names them:
-  - a `prefs` icon in `GameBar`'s `BarIconName`, for its Pre-picks button (O117);
-  - `watchFit` fitting again once web fonts load (its T404: a WebKit wrap 32 px over the card).
-
-  Done when: the owner decides each, and what is decided is in the kit with a test.
-
 - **11. The token names take the prefix** (the race's adoption plan, 2026-11-22, its third
   point). `css/tokens.css` defines its 49 custom properties without the `sk-` prefix
   (`--color-text`, `--space-2`, `--gutter`, …), so they can clash with a game's own. Every game
@@ -44,6 +37,33 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Done when: each shared token is `--sk-` prefixed, tests/prefix.test.ts checks custom
   properties too, and the CHANGELOG has a migration note per game with the old and the new
   name.
+
+- **12. A middle part in `ResultFrame`** between the first part and "more" (Mini Games T417,
+  2026-11-23). Not in v0.12.0. To be decided after the idea is checked against Bingo's and
+  Cases' results, since a frame every game shares must fit all three. Done when: the owner
+  decides, and what is decided is in the kit with a test, or is recorded as not wanted.
+- **13. The dock bar's padding and field** (Mini Games T416 (3), 2026-11-23). Not in v0.12.0:
+  the 4 px padding of `.sk-chat-dock-row` in the bar's form `line`, and the writing field that
+  is hidden in the form `field`. Both would change what every game sees, so they are measured
+  first (padding in the three games' phone layouts, the field with a game's own field passed).
+  Done when: the measurement is recorded here and the owner decides.
+- **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
+  2026-11-23): not built, and not planned for a release until the owner takes it up. Today
+  `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
+  kit has it with a test and a security pass.
+
+- **15. The header folds always below a given width** (Bingo's wish of 2026-11-23, its
+  `apps/web/src/shell/header.css` lines 129–132: always folded below 960 px). An `AppHeader`
+  option, on top of the measured fold. Planned for v0.13.0 (DECISIONS K40). Done when: it is in
+  the kit with a test, opt-in.
+- **16. A default for `--sk-floor-text` outside `fit.css`** (Bingo's wish, same file: it loads
+  no `fit.css`, so the header's floor is unset). A default in `tokens.css`, planned for v0.13.0
+  (K41). Done when: header, bar and dock have a floor without `fit.css`, and `fit.css` still
+  wins where it is loaded.
+- **17. A one-column `ResultFrame`, or two cards only with a reveal** (Bingo's wish,
+  `css/frames.css` line 229, the 900 px two-column rule). To be decided together with item 12
+  after checking both against Bingo, Mini Games and Cases (K42). Done when: decided, and what
+  is decided is in the kit with a test.
 
 ## Part two — closed
 
@@ -74,3 +94,10 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   the recovery-code style, how `guest` and `invalid` are answered. Tested at 100 %. Three
   independent reviews ran; every confirmed finding is fixed, and the last was clean. A security
   pass is recorded (docs/security-pass.md). Closed by PR #13 and v0.8.0.
+- **10. Mini Games' bar and fit needs** (2026-11-23). A `prefs` icon in `GameBar`'s
+  `BarIconName` (O117), and `watchFit` / `useFitScale` fitting again once web fonts have loaded
+  (T404). Closed by PR #31 and v0.12.0.
+- **18. Header order: the theme toggle stays last** (Bingo's wish, 2026-11-23: its `header.css`
+  re-orders back link, brand, navigation, toggle, account). Decided K43: the kit keeps the toggle
+  last in the row, there is no configurable order, and Bingo aligns to the kit later. Closed as
+  decided; nothing to build.

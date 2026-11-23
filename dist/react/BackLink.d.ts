@@ -7,7 +7,8 @@
  *                 the game runs under `/games/<slug>/` on the website's origin: same tab, no
  *                 popup. Small and muted (../../css/shell.css `sk-back-link`), in light and dark,
  *                 on its own short first row at phone width. In standalone mode it renders
- *                 nothing.
+ *                 nothing. The words are a part of their own (`sk-back-words`), which
+ *                 ./GameBar's `back` uses to show the arrow alone on a phone (since v0.12.0).
  * Source:         seasonal-bingo-royale apps/web/src/shell/AppShell.tsx and shell.css
  *                 (`shell-back`) at a43209a; Mini Games has no back link yet (866df03).
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §8 (at e7b995c)

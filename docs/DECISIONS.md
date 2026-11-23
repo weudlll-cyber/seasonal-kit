@@ -142,3 +142,7 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
 - **K38 — Renovate never updates Node.** `engines.node` stays `>=22` and `.nvmrc` stays `22`;
   the two name the same major and change together, by hand, in a reviewed PR. Renovate's npm and
   nvm managers leave `node` alone (v0.11.1, [RELEASING.md](RELEASING.md)).
+- **K39 — The back link has a place in `GameBar` for focus mode** (decided 2026-11-23). A game
+  may pass `back` to its bar: the shell's back link (`BackLink`, reused) at the start of the row,
+  arrow and words on a desktop, the arrow alone on a phone with the words as its name, so it
+  fits beside the season pill. Without the prop the bar is unchanged (v0.12.0).

@@ -7,12 +7,31 @@ applies it.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-23
+
+Five additive answers to Seasonal Mini Games' adoption requests (its O143, T414, O144/T415,
+T416). Every change is opt-in: a game that changes nothing sees exactly today's behaviour.
+
+### Added
+
+- **A `prefs` icon for `GameBar`** (`BarIconName`): three vertical sliders on the same 24 × 24
+  grid and stroke as chat, players and host, for Mini Games' Pre-picks button (O117).
+- **A back link in `GameBar`** (`back`, K39): `back={{ websiteMode }}` puts the shell's
+  `BackLink` (reused, not a second link) at the start of the row. A desktop shows arrow and
+  words; a phone shows the arrow alone in a 44 px target, the words as its accessible name
+  (`sk-back-words`, visually hidden), so it fits beside the season pill. Without the prop, and in
+  standalone mode, the bar is unchanged. `BackLink`'s words are now their own `<span>`; its look
+  and text are the same.
+
 ### Changed
 
 - **The showcase's build** (`showcase/vite.config.ts`): its two pages are the input map of
   `build.rolldownOptions` instead of the deprecated `rollupOptions`, which Vite 8.3.8's types
-  flag for lint (Renovate #25). Only the showcase changes; `dist/` and everything a game uses
-  stay the same, so no release follows.
+  flag for lint (Renovate #25). Only the showcase changes; nothing a game uses.
+
+### Migration, per game
+
+- **Every game:** nothing to do. Each addition is a prop or an option a game must name.
 
 ## [0.11.1] - 2026-11-23
 
@@ -860,7 +879,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...v0.12.0
 [0.11.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1

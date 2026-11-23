@@ -13,7 +13,8 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  *                 back. In the bar's form `field` the game's
  *                 own writing field sits under it. The call slot is the 48 px strip directly
  *                 above the bar. The slot is hidden while no call id is set (../callSlot), and
- *                 nothing is framed in it: the site's call page does not exist yet (BACKLOG 8).
+ *                 nothing is framed in it: the site's call page exists, but the kit's link is not yet
+ *                 checked against its real messages (BACKLOG 8).
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the

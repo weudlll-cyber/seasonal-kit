@@ -59,6 +59,6 @@ export {
   type CallSlotForm,
   type CallSlotInput,
 } from './callSlot.js';
-export { MIN_POINTER_TARGET, type FitGame } from './fit.js';
+export { MIN_POINTER_TARGET, type FitGame, type FitOptions } from './fit.js';
 export type { FrameLink } from './frameMessages.js';
 export { clockText } from './clock.js';

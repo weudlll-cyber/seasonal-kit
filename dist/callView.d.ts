@@ -9,9 +9,10 @@
  *                 checked. Anything malformed or unknown is ignored, and so is a `ready` that
  *                 names another call than the one linked. It needs a call id, so nothing links
  *                 while a game has none (./callSlot hides the slot then). It frames and loads
- *                 nothing itself: the site's `/embed/call/<id>` page is not built yet, and until
- *                 it is, a game frames nothing in the slot. Nothing the page sends is secret:
- *                 flags and a theme name.
+ *                 nothing itself: the site serves `/embed/call/<id>` (website e11b3eb), but the
+ *                 kit has not yet been checked against its real messages (BACKLOG 8), so a game
+ *                 frames nothing in the slot. Nothing the page sends is secret: flags and a
+ *                 theme name.
  * Source:         new for the kit, built on the chat embed's link (./chatEmbed, from
  *                 seasonal-mini-games apps/web/src/chat/useHostChatFrame.ts at 91b23bc); no game
  *                 has a call view yet (Mini Games 91b23bc, Bingo c3b76c1).

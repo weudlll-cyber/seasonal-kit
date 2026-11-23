@@ -11,6 +11,8 @@
  *                 floor, and never shrinks a game whose floor is 1 (Bingo). Added: the box is the
  *                 nearest one that clips or scrolls; a part's hidden overflow counts; `watchFit`
  *                 fits again in the next frame only when the size changed, and stops cleanly.
+ *                 With `afterFonts` (v0.12.0) it also fits again after `loadingdone` and
+ *                 `fonts.ready`; without it, never.
  * Depends on:     vitest, jsdom
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -53,11 +55,12 @@ function screenOf(natural: number, fixed: number, room: number) {
   document.body.append(box);
   let reads = 0;
   let height = room;
+  let tall = natural;
   Object.defineProperty(box, 'clientHeight', { get: () => height });
   part.getBoundingClientRect = () => {
     reads += 1;
     const scale = parseFloat(root.style.getPropertyValue('--fit')) || 1;
-    return new DOMRect(0, 0, 100, fixed + natural * scale);
+    return new DOMRect(0, 0, 100, fixed + tall * scale);
   };
   return {
     box,
@@ -66,6 +69,10 @@ function screenOf(natural: number, fixed: number, room: number) {
     reads: () => reads,
     resize: (h: number) => {
       height = h;
+    },
+    // The part's height at scale 1 changes: its text wraps once a late font has loaded.
+    setNatural: (h: number) => {
+      tall = h;
     },
   };
 }
@@ -184,5 +191,85 @@ describe('watchFit', () => {
     const stop = watchFit(s.root, 'mini-games', true);
     expect(Number(s.root.dataset['skFitScale'])).toBeLessThan(1);
     stop();
+  });
+});
+
+// A font set that a test settles by hand: `loadingdone` as on the real one, `ready` a promise.
+function fakeFonts() {
+  const target = new EventTarget();
+  let ready: () => void = () => undefined;
+  const set = Object.assign(target, {
+    ready: new Promise<void>((resolve) => {
+      ready = resolve;
+    }),
+  });
+  Object.defineProperty(document, 'fonts', { value: set, configurable: true });
+  return {
+    target,
+    ready: () => {
+      ready();
+    },
+  };
+}
+
+// A screen that fits at 1 until its text wraps: the part grows after the first fitting.
+function lateScreen() {
+  const frames: FrameRequestCallback[] = [];
+  vi.stubGlobal('ResizeObserver', undefined);
+  vi.stubGlobal('requestAnimationFrame', (cb: FrameRequestCallback) => frames.push(cb));
+  vi.stubGlobal('cancelAnimationFrame', vi.fn());
+  const s = screenOf(300, 0, 400);
+  s.box.style.overflowY = 'auto';
+  return { s, frames };
+}
+
+describe('watchFit after web fonts (v0.12.0)', () => {
+  afterEach(() => {
+    Reflect.deleteProperty(document, 'fonts');
+  });
+
+  it('fits again on loadingdone and on fonts.ready, in the next frame, and stops listening', async () => {
+    const fonts = fakeFonts();
+    const { s, frames } = lateScreen();
+    const stop = watchFit(s.root, 'mini-games', false, { afterFonts: true });
+    expect(s.root.dataset['skFitScale']).toBe('1');
+    // The late font wraps the text: 500 px now, the box still 400 px.
+    s.setNatural(500);
+    fonts.target.dispatchEvent(new Event('loadingdone'));
+    expect(frames).toHaveLength(1);
+    frames[0]?.(0);
+    expect(Number(s.root.dataset['skFitScale'])).toBeLessThan(1);
+    s.setNatural(300);
+    fonts.ready();
+    await Promise.resolve();
+    expect(frames).toHaveLength(2);
+    frames[1]?.(0);
+    expect(s.root.dataset['skFitScale']).toBe('1');
+    stop();
+    fonts.target.dispatchEvent(new Event('loadingdone'));
+    expect(frames).toHaveLength(2);
+  });
+
+  it('does not fit again once stopped before the fonts were ready', async () => {
+    const fonts = fakeFonts();
+    const { s, frames } = lateScreen();
+    watchFit(s.root, 'mini-games', false, { afterFonts: true })();
+    fonts.ready();
+    await Promise.resolve();
+    expect(frames).toHaveLength(0);
+  });
+
+  it('does nothing with fonts by default, and nothing where there is no font set', () => {
+    const fonts = fakeFonts();
+    const off = lateScreen();
+    const stopOff = watchFit(off.s.root, 'mini-games');
+    fonts.target.dispatchEvent(new Event('loadingdone'));
+    expect(off.frames).toHaveLength(0);
+    stopOff();
+    Reflect.deleteProperty(document, 'fonts');
+    const none = lateScreen();
+    expect(() => {
+      watchFit(none.s.root, 'mini-games', false, { afterFonts: true })();
+    }).not.toThrow();
   });
 });

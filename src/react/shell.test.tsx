@@ -162,6 +162,29 @@ describe('the fit hook', () => {
     unmount();
   });
 
+  it('listens for web fonts only when asked (v0.12.0), and not again on a new options object', () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const fonts = {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      ready: new Promise(() => {}),
+    };
+    Object.defineProperty(document, 'fonts', { value: fonts, configurable: true });
+    const Fonts = (p: { readonly on: boolean }) => {
+      const ref = useFitScale<HTMLDivElement>('mini-games', 'a', true, { afterFonts: p.on });
+      return <div ref={ref} />;
+    };
+    const { rerender, unmount } = render(<Fonts on={false} />);
+    expect(fonts.addEventListener).not.toHaveBeenCalled();
+    rerender(<Fonts on />);
+    expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
+    rerender(<Fonts on />);
+    expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(fonts.removeEventListener).toHaveBeenCalledTimes(1);
+    Reflect.deleteProperty(document, 'fonts');
+  });
+
   it('does nothing without an element', () => {
     const { result } = renderHook(() => useFitScale('bingo', 'x'));
     expect(result.current.current).toBeNull();

@@ -23,8 +23,18 @@ T416). Every change is opt-in: a game that changes nothing sees exactly today's 
   standalone mode, the bar is unchanged. `BackLink`'s words are now their own `<span>`; its look
   and text are the same.
 
+- **A refit after web fonts** (`afterFonts`): `watchFit(root, game, self, { afterFonts: true })`
+  and `useFitScale(game, signature, self, { afterFonts: true })` fit again on `document.fonts`
+  `loadingdone` and once `fonts.ready` settles, in the next frame, as for a new size. Text set
+  in a late font changes height without the box changing size (Mini Games T404, a WebKit wrap
+  32 px over the card). Off by default; where there is no font set nothing is listened to.
+  `FitOptions` is exported from `@seasonal/kit`.
+
 ### Changed
 
+- **Stale lines about the call view** (`callView.ts`, `ChatDock.tsx`, the README): the site
+  serves `/embed/call/<id>` now (website e11b3eb); the kit still frames nothing until its link
+  is checked against the site's real messages (BACKLOG 8).
 - **The showcase's build** (`showcase/vite.config.ts`): its two pages are the input map of
   `build.rolldownOptions` instead of the deprecated `rollupOptions`, which Vite 8.3.8's types
   flag for lint (Renovate #25). Only the showcase changes; nothing a game uses.

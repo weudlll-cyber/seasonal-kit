@@ -9,8 +9,9 @@
  *                 the CSS custom property `--fit`, which the screen's sizes multiply, each with
  *                 its own readable floor (../css/fit.css), and as `data-sk-fit-scale` for tests.
  *                 Where there is room the scale is 1 and the screen looks as without it.
- *                 `watchFit` fits again when the box's size or the visual viewport changes, in
- *                 the next frame, never inside the observer's own delivery, so nothing loops.
+ *                 `watchFit` fits again when the box's size or the visual viewport changes, and,
+ *                 when asked (`afterFonts`, since v0.12.0), once web fonts have loaded, in the
+ *                 next frame, never inside the observer's own delivery, so nothing loops.
  *                 `FIT_FLOORS` holds each game's floors. They never go below what the game has
  *                 today (DECISIONS K14), and tests/fit-floors.test.ts enforces that and keeps
  *                 ../css/fit.css equal to them. `MIN_POINTER_TARGET` is the 24 px every pointer
@@ -135,31 +136,47 @@ export function settle(root, box, floor) {
 }
 const sizeOf = (box) => `${String(box.clientWidth)}x${String(box.clientHeight)}`;
 // Fits the screen now and again on each new size of its box or of the visual viewport (a
-// phone's keyboard); the scale's own change of the root's height is not watched. Returns the
-// stop. `self`: the root fills a height of its own, so its own box is the one to fit.
-export function watchFit(root, game, self = false) {
+// phone's keyboard), and, with `afterFonts`, once web fonts have loaded; the scale's own change
+// of the root's height is not watched. Returns the stop. `self`: the root fills a height of its
+// own, so its own box is the one to fit.
+export function watchFit(root, game, self = false, options = {}) {
     const floor = FIT_FLOORS[game].scale;
     const box = self ? root : boxOf(root);
     settle(root, box, floor);
     let size = sizeOf(box);
     let frame = 0;
-    const resized = () => {
-        const now = sizeOf(box);
-        if (now === size)
-            return;
-        size = now;
+    let live = true;
+    // Always in the next frame, never inside the observer's or the font set's own delivery.
+    const later = () => {
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
             settle(root, box, floor);
         });
     };
+    const resized = () => {
+        const now = sizeOf(box);
+        if (now === size)
+            return;
+        size = now;
+        later();
+    };
     // Browsers only; a test's DOM may have no ResizeObserver.
     const watch = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(resized);
     watch?.observe(box);
     window.visualViewport?.addEventListener('resize', resized);
+    // Undefined in a DOM without a font set; a late font changes the text, not the box's size, so
+    // this fits again whatever the size is.
+    const fonts = options.afterFonts === true ? document.fonts : undefined;
+    fonts?.addEventListener('loadingdone', later);
+    void fonts?.ready.then(() => {
+        if (live)
+            later();
+    });
     return () => {
+        live = false;
         cancelAnimationFrame(frame);
         watch?.disconnect();
         window.visualViewport?.removeEventListener('resize', resized);
+        fonts?.removeEventListener('loadingdone', later);
     };
 }

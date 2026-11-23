@@ -9,8 +9,9 @@
  *                 the CSS custom property `--fit`, which the screen's sizes multiply, each with
  *                 its own readable floor (../css/fit.css), and as `data-sk-fit-scale` for tests.
  *                 Where there is room the scale is 1 and the screen looks as without it.
- *                 `watchFit` fits again when the box's size or the visual viewport changes, in
- *                 the next frame, never inside the observer's own delivery, so nothing loops.
+ *                 `watchFit` fits again when the box's size or the visual viewport changes, and,
+ *                 when asked (`afterFonts`, since v0.12.0), once web fonts have loaded, in the
+ *                 next frame, never inside the observer's own delivery, so nothing loops.
  *                 `FIT_FLOORS` holds each game's floors. They never go below what the game has
  *                 today (DECISIONS K14), and tests/fit-floors.test.ts enforces that and keeps
  *                 ../css/fit.css equal to them. `MIN_POINTER_TARGET` is the 24 px every pointer
@@ -34,4 +35,7 @@ export declare const FIT_FLOORS: Readonly<Record<FitGame, FitFloors>>;
 export declare function nextScale(current: number, used: number, room: number, floor: number): number;
 export declare function boxOf(root: HTMLElement): HTMLElement;
 export declare function settle(root: HTMLElement, box: HTMLElement, floor: number): number;
-export declare function watchFit(root: HTMLElement, game: FitGame, self?: boolean): () => void;
+export interface FitOptions {
+    readonly afterFonts?: boolean;
+}
+export declare function watchFit(root: HTMLElement, game: FitGame, self?: boolean, options?: FitOptions): () => void;

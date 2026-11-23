@@ -30,8 +30,19 @@ it loads `fit.css`.
   the dock have a floor for a game that loads no `fit.css`. It has zero specificity, so where
   `fit.css` is loaded its values win in any import order. It is not one of the 49 shared tokens.
 
+- **A press action in `GameBar`** (`presses`, Cases 41): `presses={[{ id, icon: 'applaud', label,
+onPress, tip? }]}` adds a button that only sends a press, after the toggles and before the
+  panel buttons. It has the bar's button and icon parts, no `aria-expanded` and no
+  `aria-pressed`. `applaud` (two clapping hands) is its first icon (`BarPressIconName`).
+- **Opening the docked chat from the game** (`useOpenDockChat()`, Cases 43): inside a
+  `DockedScreen`, it returns a stable function that opens the dock's chat: the sheet on a phone
+  (which takes the focus), the focus into the strip on a desktop. It does nothing outside a
+  docked screen or in one `withoutChat`. `useDisclosure` gains `show` (open and stay open).
+
 ### Migration, per game
 
+- **Seasonal Cases:** delete `packages/ui/src/pending/BarPress.tsx` and `useChatHandOver.ts`; use
+  `GameBar`'s `presses` for "Applaud" and `useOpenDockChat()` for the Chat button.
 - **Bingo Royale:** pass `foldBelow={960}` to `AppHeader` and drop the `max-width: 959px` fold
   rules of `header.css`; the text floor now comes from `tokens.css`, so its own small-type
   overrides may stay or go.

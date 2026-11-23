@@ -24,6 +24,7 @@ export {
 export { BackLink, type BackLinkProps } from './BackLink.js';
 export { ChatDock, type ChatDockProps } from './ChatDock.js';
 export { DockedScreen, type DockedScreenProps } from './DockedScreen.js';
+export { useOpenDockChat } from './dockHandOver.js';
 export {
   useDockArrivals,
   useDockSight,
@@ -36,6 +37,8 @@ export {
   type BarAction,
   type BarFact,
   type BarIconName,
+  type BarPress,
+  type BarPressIconName,
   type BarToggle,
   type GameBarProps,
 } from './GameBar.js';

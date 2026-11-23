@@ -19,7 +19,9 @@
  *                 announced in a polite live region (role status, since v0.10.1), never on the
  *                 first render. `onUnread` hands each new count to the game, for its bar's chat
  *                 button (since v0.11.0). The same element holds
- *                 the chat in both layouts, so turning a phone does not reload it.
+ *                 the chat in both layouts, so turning a phone does not reload it. Inside a
+ *                 ./DockedScreen it tells the game what "open the chat" means (./dockHandOver,
+ *                 since v0.13.0).
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
  *                 (apps/web/src/shell/ChatDock.tsx at a43209a). Built on ../chatArrivals

@@ -8,7 +8,7 @@
  *                 it is, for a press outside or a focus already gone elsewhere. `onKeyDown` goes
  *                 on the element around button and panel, so Escape closes from anywhere inside;
  *                 with nested menus only the innermost open one closes. `toggle`, `close` and
- *                 `dismiss` keep their identity across renders (since v0.10.0, like
+ *                 `dismiss` and `show` (since v0.13.0, opens and stays open) keep their identity across renders (since v0.10.0, like
  *                 ./usePanels'), so a game can list them in an effect's dependencies. The docked
  *                 chat's phone sheet (./ChatDock), the dev sign-in menu (./dev/DevSignIn) and the
  *                 header's fold (./MenuFold) use it.
@@ -30,9 +30,13 @@ export function useDisclosure(initiallyOpen = false) {
     const toggle = useCallback(() => {
         setOpen((o) => !o);
     }, []);
+    const show = useCallback(() => {
+        setOpen(true);
+    }, []);
     return {
         open,
         toggle,
+        show,
         close,
         dismiss,
         panelId,

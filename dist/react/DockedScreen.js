@@ -20,8 +20,9 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).
  */
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ChatDock } from './ChatDock.js';
+import { DockHandOver } from './dockHandOver.js';
 import { useDockView } from './dockSight.js';
 const VISIBLE = '--sk-visible-height';
 // On a phone, the visible viewport's height on <html>: when the on-screen keyboard takes part
@@ -47,7 +48,9 @@ function useVisibleHeight(phone) {
 export function DockedScreen(p) {
     const view = useDockView();
     useVisibleHeight(view === 'phone');
+    // The dock puts "open the chat" here; the game's bar calls it (./dockHandOver, v0.13.0).
+    const openChat = useRef(null);
     // Narrowed here: what is left is the dock's own props (and `withoutChat`, which it ignores).
     const dock = p.withoutChat === true ? null : _jsx(ChatDock, { ...p, phone: view === 'phone' });
-    return (_jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", children: p.children }), dock] }));
+    return (_jsx(DockHandOver.Provider, { value: openChat, children: _jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", children: p.children }), dock] }) }));
 }

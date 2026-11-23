@@ -19,9 +19,10 @@
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).
  */
-import { useEffect, type ReactElement, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
 
 import { ChatDock, type ChatDockProps } from './ChatDock.js';
+import { DockHandOver, type OpenChat } from './dockHandOver.js';
 import { useDockView } from './dockSight.js';
 
 const VISIBLE = '--sk-visible-height';
@@ -56,12 +57,16 @@ export type DockedScreenProps = { readonly children: ReactNode } & (
 export function DockedScreen(p: DockedScreenProps): ReactElement {
   const view = useDockView();
   useVisibleHeight(view === 'phone');
+  // The dock puts "open the chat" here; the game's bar calls it (./dockHandOver, v0.13.0).
+  const openChat = useRef<OpenChat>(null);
   // Narrowed here: what is left is the dock's own props (and `withoutChat`, which it ignores).
   const dock = p.withoutChat === true ? null : <ChatDock {...p} phone={view === 'phone'} />;
   return (
-    <div className="sk-docked" data-sk-view={view} data-testid="docked-screen">
-      <div className="sk-docked-main">{p.children}</div>
-      {dock}
-    </div>
+    <DockHandOver.Provider value={openChat}>
+      <div className="sk-docked" data-sk-view={view} data-testid="docked-screen">
+        <div className="sk-docked-main">{p.children}</div>
+        {dock}
+      </div>
+    </DockHandOver.Provider>
   );
 }

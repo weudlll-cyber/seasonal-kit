@@ -13,7 +13,9 @@
  *                 icon and reads the words out. A button may carry an unread count, never the
  *                 only sign ("3 unread"). The full-screen toggle shows only where the browser
  *                 offers it (./useFullscreen). A toggle (the sound, since v0.11.0) switches a
- *                 setting in place, `aria-pressed` saying whether it is on. Which buttons there
+ *                 setting in place, `aria-pressed` saying whether it is on. A press button
+ *                 (`presses`, since v0.13.0, e.g. "Applaud") only sends a press: no panel, no
+ *                 state, the same button and icon parts. Which buttons there
  *                 are (chat, players, host, prefs since v0.12.0) is the game's: a game without a chat passes no chat
  *                 button; the chat button's unread count comes from the dock's `onUnread`
  *                 (./ChatDock, since v0.11.0). `buttonClassName`
@@ -33,7 +35,11 @@ declare const PANEL_PATHS: {
     readonly host: "M4 7h10M18 7h2M4 17h4M12 17h8M14 4.5v5M8 14.5v5";
     readonly prefs: "M6 4v6M6 14v6M3.5 12h5M12 4v2M12 10v10M9.5 8h5M18 4v10M18 18v2M15.5 16h5";
 };
+declare const PRESS_PATHS: {
+    readonly applaud: "M9 21l-3-6 4-8 2 1-2 5 4-7 2 1-3 6 3-4 2 1-4 7-2 4zM14 2v2M18 3l-1 2M20 7h-2";
+};
 export type BarIconName = keyof typeof PANEL_PATHS;
+export type BarPressIconName = keyof typeof PRESS_PATHS;
 export interface BarAction<Id extends string> {
     readonly id: Id;
     readonly icon: BarIconName;
@@ -47,6 +53,14 @@ export interface BarToggle {
     readonly label: string;
     readonly on: boolean;
     readonly onToggle: () => void;
+    readonly testId?: string;
+}
+export interface BarPress {
+    readonly id: string;
+    readonly icon: BarPressIconName;
+    readonly label: string;
+    readonly onPress: () => void;
+    readonly tip?: string;
     readonly testId?: string;
 }
 export interface BarFact {
@@ -63,6 +77,7 @@ export interface GameBarProps<Id extends string> {
     } | null;
     readonly actions: readonly BarAction<Id>[];
     readonly toggles?: readonly BarToggle[];
+    readonly presses?: readonly BarPress[];
     readonly panels: Panels<Id>;
     readonly fullscreen?: Fullscreen;
     readonly buttonClassName?: string;

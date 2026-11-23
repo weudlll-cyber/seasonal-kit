@@ -19,6 +19,7 @@ export { AppHeader, } from './AppHeader.js';
 export { BackLink } from './BackLink.js';
 export { ChatDock } from './ChatDock.js';
 export { DockedScreen } from './DockedScreen.js';
+export { useOpenDockChat } from './dockHandOver.js';
 export { useDockArrivals, useDockSight, useDockView, } from './dockSight.js';
 export { GameBar, } from './GameBar.js';
 export { PhaseStrip } from './PhaseStrip.js';

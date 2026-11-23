@@ -242,6 +242,29 @@ lockfile resolved the tag to the merge commit's tarball (`76bd872`, `version: 0.
 
 The consumer was deleted afterwards.
 
+## The v0.11.0 games' requests, season feed and open rounds (2026-11-23, the tag itself)
+
+A scratch consumer pinned `#v0.11.0`, with scripts off, the same toolchain as for v0.10.0. The
+lockfile resolved the tag to the merge commit's tarball (`ab03151`, `version: 0.11.0`).
+
+- `tsc` worked with the new names: `openRoundsPage`, `seasonFeedReader`, `RateRule` as a
+  function, `MIN_POINTER_TARGET`, `BarToggle`, `ResultFrame`'s `panel`, `useDockReserve`,
+  `OriginChatFrame`.
+- Seven tests passed. In Node:
+  - `openRoundsPage` kept the good round and left out the one with an `http` join URL;
+  - `seasonFeedReader` read the feed through the passed fetch, then kept it on a 503 and named
+    the failure;
+  - a rate rule given as a function applied its new limit at once;
+  - the shipped CSS has the two new floors, the back link's gap and the measured fold.
+
+  In jsdom:
+  - a `GameBar` toggle said `aria-pressed` and switched on a click;
+  - `ResultFrame` as a panel rendered an `h3` and no `h1`;
+  - `useDockReserve` gave 190 px at 1280 × 800;
+  - `OriginChatFrame` framed `http://localhost:5380` and nothing for a production origin.
+
+The consumer was deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

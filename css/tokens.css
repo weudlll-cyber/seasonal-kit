@@ -134,3 +134,12 @@
   /* Form controls and scrollbars follow the theme */
   color-scheme: dark;
 }
+
+/* The least text size of the header, the bar and the dock for a game that loads no fit.css
+   (since v0.13.0, Bingo's wish, DECISIONS K41): the strictest floor of all games. Zero
+   specificity (`:where`), so wherever ./fit.css is loaded its own values win whatever the
+   order, and a game's own value on any element above wins by inheritance. Not one of the 49
+   shared tokens (tests/tokens.test.ts): it is a floor, not a look. */
+:where(:root) {
+  --sk-floor-text: 14px;
+}

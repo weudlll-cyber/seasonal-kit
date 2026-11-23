@@ -8,7 +8,8 @@ import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-run
  *                 the items fit, the button is hidden and the panel lays its items into the bar
  *                 (display: contents, ../../css/header.css). When they would take a second row
  *                 (./useHeaderFold, measured before the paint; since v0.11.0, before it below a
- *                 fixed 960 px) the header is folded: one row (brand, Menu, theme toggle), and
+ *                 fixed 960 px), or the window is under the game's `foldBelow` (since v0.13.0),
+ *                 the header is folded: one row (brand, Menu, theme toggle), and
  *                 the button opens the panel under it. The
  *                 button reports aria-expanded and names the panel. Opening moves the focus to
  *                 the panel's first item. It closes:
@@ -75,7 +76,7 @@ export function MenuFold(p) {
     useOpenedPanel(menu, panel);
     useCloseOnKey(p.closeKey, menu, panel);
     // Folded whenever the header's items do not fit on one row (./useHeaderFold, since v0.11.0).
-    const folded = useHeaderFold(menu.button, p.closeKey);
+    const folded = useHeaderFold(menu.button, p.closeKey, p.foldBelow);
     useCloseOnUnfold(folded, menu);
     // The focus moved to an element outside panel and button: the menu closes where it is. A
     // blur to nowhere (relatedTarget null) is no such move: Safari focuses no link or button on a

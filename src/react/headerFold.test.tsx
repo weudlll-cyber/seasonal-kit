@@ -131,3 +131,30 @@ describe('the header fold, measured (v0.11.0, Bingo R1)', () => {
     expect(menu.getAttribute('aria-expanded')).toBe('false');
   });
 });
+
+describe('always folding below a width (v0.13.0, Bingo)', () => {
+  it('folds under the width though the items fit on one row, and not from it up', () => {
+    widen(800);
+    const { rerender } = render(<AppHeader {...admin} foldBelow={960} />);
+    expect(folded()).toBe('true');
+    act(() => {
+      widen(1200);
+    });
+    expect(folded()).toBe('false');
+    act(() => {
+      widen(900);
+    });
+    expect(folded()).toBe('true');
+    // Left out: the measure alone decides, so a one-row bar stays unfolded at 800 px.
+    widen(800);
+    rerender(<AppHeader {...admin} />);
+    expect(folded()).toBe('false');
+  });
+
+  it('keeps the measured fold on top of it: past the width a second row still folds', () => {
+    widen(1280);
+    secondRow = true;
+    render(<AppHeader {...admin} foldBelow={960} />);
+    expect(folded()).toBe('true');
+  });
+});

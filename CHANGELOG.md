@@ -14,6 +14,30 @@ applies it.
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
 
+## [0.13.0] - 2026-11-24
+
+Additions for Bingo Royale's and Seasonal Cases' requests (DECISIONS K40, K41 and the Cases
+items 41, 43 and the call view, BACKLOG 8). Every one is opt-in, or a default no game sees where
+it loads `fit.css`.
+
+### Added
+
+- **`AppHeader` `foldBelow`** (K40): `foldBelow={960}` folds the header into its Menu button
+  under that window width in px, whatever the items measure; from it up the measured fold
+  decides as before. Without it nothing changes.
+- **A default for `--sk-floor-text`** (K41): `css/tokens.css` has `:where(:root) {
+--sk-floor-text: 14px }`, the strictest text floor of all games, so the header, the bar and
+  the dock have a floor for a game that loads no `fit.css`. It has zero specificity, so where
+  `fit.css` is loaded its values win in any import order. It is not one of the 49 shared tokens.
+
+### Migration, per game
+
+- **Bingo Royale:** pass `foldBelow={960}` to `AppHeader` and drop the `max-width: 959px` fold
+  rules of `header.css`; the text floor now comes from `tokens.css`, so its own small-type
+  overrides may stay or go.
+- **Mini Games, Seasonal Party, Seasonal Cases:** nothing to do (they load `fit.css`, whose
+  floors win).
+
 ## [0.12.0] - 2026-11-23
 
 Five additive answers to Seasonal Mini Games' adoption requests (its O143, T414, O144/T415,
@@ -913,7 +937,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...v0.12.0
 [0.11.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0

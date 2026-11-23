@@ -52,14 +52,6 @@ RegistrationBoard.tsx` line 12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **15. The header folds always below a given width** (Bingo's wish of 2026-11-23, its
-  `apps/web/src/shell/header.css` lines 129–132: always folded below 960 px). An `AppHeader`
-  option, on top of the measured fold. Planned for v0.13.0 (DECISIONS K40). Done when: it is in
-  the kit with a test, opt-in.
-- **16. A default for `--sk-floor-text` outside `fit.css`** (Bingo's wish, same file: it loads
-  no `fit.css`, so the header's floor is unset). A default in `tokens.css`, planned for v0.13.0
-  (K41). Done when: header, bar and dock have a floor without `fit.css`, and `fit.css` still
-  wins where it is loaded.
 - **17. A one-column `ResultFrame`, or two cards only with a reveal** (Bingo's wish,
   `css/frames.css` line 229, the 900 px two-column rule). To be decided together with item 12
   after checking both against Bingo, Mini Games and Cases (K42). Done when: decided, and what
@@ -108,3 +100,7 @@ RegistrationBoard.tsx` line 12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's
 - **9a. The chat frame's link as a React part** (BACKLOG 9, 2026-11-24). The same use of
   `WebsiteChatFrame` in Bingo's `master` (`3a00729`, `apps/web/src/shell/ChatDock.tsx`). The
   rest of item 9 stays open.
+- **15. The header folds always below a given width** (Bingo's wish of 2026-11-23, K40).
+  `AppHeader`'s `foldBelow`, on top of the measured fold, opt-in. Closed by v0.13.0.
+- **16. A default for `--sk-floor-text` outside `fit.css`** (Bingo's wish, K41). A zero-
+  specificity default of 14 px in `tokens.css`; `fit.css` still wins. Closed by v0.13.0.

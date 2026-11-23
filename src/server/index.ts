@@ -6,9 +6,9 @@
  * Responsibility: name everything a game's server may import: the trust checks, the safe
  *                 return path and login hop, the identity headers and their decision, TOTP,
  *                 recovery codes, the rate limiter, the session-end notifier, and the website's
- *                 open-rounds page (since v0.11.0). Node only (node:crypto, node:net); never
- *                 imported by browser code. Accounts, sessions and every database statement stay
- *                 in the games.
+ *                 open-rounds page and season feed (since v0.11.0). Node only (node:crypto,
+ *                 node:net); never imported by browser code. Accounts, sessions and every
+ *                 database statement stay in the games.
  * Source:         new in the kit.
  */
 export {
@@ -42,6 +42,16 @@ export {
   type RecoveryStyle,
 } from './recoveryCodes.js';
 export { safeNext, websiteLoginLocation } from './returnPath.js';
+export {
+  parseSeasonFeed,
+  seasonFeedReader,
+  type Season,
+  type SeasonFeed,
+  type SeasonFeedOptions,
+  type SeasonFeedReader,
+  type SeasonFeedState,
+  type SeasonToken,
+} from './seasonFeed.js';
 export { SessionEnds, type SessionEndsListener } from './sessionEnds.js';
 export { type Ladder, type Step, type StepsMode } from './steps.js';
 export {

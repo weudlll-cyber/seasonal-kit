@@ -117,3 +117,7 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   phone touch-target floors of 40 px (Mini Games) and 44 px (the others) stay as they are. The
   kit holds it as `MIN_POINTER_TARGET` and `--sk-min-target`, and the showcase's axe run checks
   `target-size` (v0.11.0).
+- **K34 — The season feed gets a kit reader.** The website's `GET /api/public/season` (version 1:
+  `inSeason` and `halvingDays`) is read through one reader in the kit, `seasonFeedReader` in
+  `/server`, server to server and with the game's own guarded fetch, instead of each game reading
+  it its own way (v0.11.0).

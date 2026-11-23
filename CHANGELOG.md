@@ -26,6 +26,14 @@ The games' requests (DECISIONS K32), the season feed and the handbook.
   `onDrop` hears each round left out and why, with its id only. `OPEN_ROUNDS_CACHE_CONTROL` is
   the answer's header. It replaces the three games' own builders: Bingo, Mini Games and Cases.
 
+- **The season feed reader** (`/server`, DECISIONS K34). `seasonFeedReader({ origin, fetch,
+timeoutMs?, staleAfterMs? })` reads the website's `GET /api/public/season` server to server.
+  Its `refresh()` never throws and keeps the last good answer when a read fails. `state()` gives
+  that answer, when it came, `stale` (none yet, or older than 10 min by default) and `lastError`.
+  `parseSeasonFeed` checks version 1 strictly (`v: 1`, `inSeason` with season, token and since,
+  `halvingDays`) and keeps only the fields it knows. The kit has no guarded fetch, so the game
+  passes its own. The reader adds https only, no redirect followed, a 5 s timeout, 64 KiB at
+  most, and JSON.
 - **Fit floors for Seasonal Party and Seasonal Cases** (K14): `FitGame` gains `seasonal-party`
   and `cases`, with `[data-sk-game=…]` rules in `fit.css`, each with exactly what the game has
   today: 14 px text, 24 px display values, 22 px rows, 44 px targets, a 14 px badge and the

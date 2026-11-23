@@ -146,3 +146,14 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   may pass `back` to its bar: the shell's back link (`BackLink`, reused) at the start of the row,
   arrow and words on a desktop, the arrow alone on a phone with the words as its name, so it
   fits beside the season pill. Without the prop the bar is unchanged (v0.12.0).
+- **K40 — The header may always fold below a given width** (decided 2026-11-23, Bingo's wish,
+  [BACKLOG.md](BACKLOG.md) 15). An opt-in `AppHeader` option, on top of the measured fold,
+  planned for v0.13.0.
+- **K41 — `--sk-floor-text` has a default outside `fit.css`** (decided 2026-11-23, Bingo's wish,
+  BACKLOG 16). The kit's header, bar and dock get a text floor without loading `fit.css`; where
+  it is loaded its values win. Planned for v0.13.0.
+- **K42 — A one-column or reveal-only `ResultFrame` waits for the check** (decided 2026-11-23,
+  Bingo's wish, BACKLOG 17). It is decided together with the middle part (BACKLOG 12), after
+  both are checked against Bingo, Mini Games and Cases.
+- **K43 — The theme toggle stays last in the header's row** (decided 2026-11-23, Bingo's wish,
+  BACKLOG 18). The kit has no configurable order; Bingo aligns to the kit later.

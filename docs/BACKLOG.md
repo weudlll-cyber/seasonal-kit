@@ -52,6 +52,19 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
+- **15. The header folds always below a given width** (Bingo's wish of 2026-11-23, its
+  `apps/web/src/shell/header.css` lines 129–132: always folded below 960 px). An `AppHeader`
+  option, on top of the measured fold. Planned for v0.13.0 (DECISIONS K40). Done when: it is in
+  the kit with a test, opt-in.
+- **16. A default for `--sk-floor-text` outside `fit.css`** (Bingo's wish, same file: it loads
+  no `fit.css`, so the header's floor is unset). A default in `tokens.css`, planned for v0.13.0
+  (K41). Done when: header, bar and dock have a floor without `fit.css`, and `fit.css` still
+  wins where it is loaded.
+- **17. A one-column `ResultFrame`, or two cards only with a reveal** (Bingo's wish,
+  `css/frames.css` line 229, the 900 px two-column rule). To be decided together with item 12
+  after checking both against Bingo, Mini Games and Cases (K42). Done when: decided, and what
+  is decided is in the kit with a test.
+
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -84,3 +97,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **10. Mini Games' bar and fit needs** (2026-11-23). A `prefs` icon in `GameBar`'s
   `BarIconName` (O117), and `watchFit` / `useFitScale` fitting again once web fonts have loaded
   (T404). Closed by PR #31 and v0.12.0.
+- **18. Header order: the theme toggle stays last** (Bingo's wish, 2026-11-23: its `header.css`
+  re-orders back link, brand, navigation, toggle, account). Decided K43: the kit keeps the toggle
+  last in the row, there is no configurable order, and Bingo aligns to the kit later. Closed as
+  decided; nothing to build.

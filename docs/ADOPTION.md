@@ -318,17 +318,18 @@ adopts it.
 
 ## What v0.12.0 answers
 
-Mini Games' items 1, 2, 3, 6 and 7 (its O143, T414, O144/T415 and T416). Each is opt-in: a game
-that changes nothing sees today's behaviour.
+Five answers, each named by Mini Games' own record. Each is opt-in: a game that changes nothing
+sees today's behaviour.
 
-- **A `prefs` icon** in `GameBar`'s `BarIconName`, for the Pre-picks button.
+- **A `prefs` icon** in `GameBar`'s `BarIconName`, for the Pre-picks button (O143, T418).
 - **A back link in `GameBar`**: `back={{ websiteMode }}`; a desktop shows arrow and words, a
-  phone the arrow alone (K39).
-- **`watchFit` / `useFitScale` after web fonts**: the option `afterFonts` (T404).
+  phone the arrow alone (T414, K39).
+- **`watchFit` / `useFitScale` after web fonts**: the option `afterFonts` (O144, T415; the
+  refit of T404).
 - **`DockedScreen` without a chat**: the prop `withoutChat`, which still follows the on-screen
-  keyboard.
+  keyboard (T416 (1)).
 - **The dock's visibility signal**: `useDockSight()` from `@seasonal/kit/react`, for a game's own
-  frame inside the dock.
+  frame inside the dock (T416 (2)).
 
 Not in it, recorded in [BACKLOG.md](BACKLOG.md) part one: a middle part in `ResultFrame` (12,
 T417), the dock bar's padding and field (13, T416 (3)), a host chat from another https origin

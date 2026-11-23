@@ -53,6 +53,9 @@ T416). Every change is opt-in: a game that changes nothing sees exactly today's 
   `build.rolldownOptions` instead of the deprecated `rollupOptions`, which Vite 8.3.8's types
   flag for lint (Renovate #25). Only the showcase changes; nothing a game uses.
 
+- **Docs only:** Bingo's four kit wishes of 2026-11-23 are recorded (DECISIONS K40–K43,
+  BACKLOG 15–18), and docs/ADOPTION.md names each v0.12.0 answer by Mini Games' own record.
+
 ### Migration, per game
 
 - **Every game:** nothing to do. Each addition is a prop or an option a game must name.

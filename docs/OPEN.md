@@ -15,3 +15,6 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 13\. The dock bar's padding in form `line` and the hidden field in form `field` (T416 (3)): to
   be measured before any change.
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
+- 15\. The header folds always below a given width (Bingo): planned for v0.13.0 (K40).
+- 16\. A default for `--sk-floor-text` outside `fit.css` (Bingo): planned for v0.13.0 (K41).
+- 17\. A one-column or reveal-only `ResultFrame` (Bingo): decided together with 12 (K42).

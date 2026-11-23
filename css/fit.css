@@ -5,10 +5,12 @@
  * Responsibility: a screen's size is written `max(var(--sk-floor-text), calc(var(--fit, 1) *
  *                 18px))`: it follows the scale (src/fit.ts sets `--fit` on the screen's root)
  *                 and never goes below its floor. The game names itself on an element around its
- *                 screens with `data-sk-game` (`mini-games`, `bingo`). Without it the strictest
- *                 floor of all games applies, so no screen gets smaller than any game allows.
+ *                 screens with `data-sk-game` (`mini-games`, `bingo`, `seasonal-party`, `cases`).
+ *                 Without it the strictest floor of all games applies, so no screen gets smaller
+ *                 than any game allows.
  *                 The values are `FIT_FLOORS` in src/fit.ts; tests/fit-floors.test.ts keeps both
  *                 equal and never below what each game has today (DECISIONS K14).
+ *                 `--sk-min-target` is the 24 px every pointer target keeps (WCAG 2.5.8, K33).
  * Source:         seasonal-mini-games apps/web/src/round/roundIntro.css, closest.css,
  *                 resultClosest.css at 866df03 (O111's floors); seasonal-bingo-royale
  *                 apps/web/src/minTextSize.test.ts at a43209a (14 px)
@@ -21,6 +23,9 @@
   --sk-floor-row: 22px;
   --sk-floor-target: 44px;
   --sk-floor-badge: 14px;
+  /* Every pointer target in every game: 24 px at least (WCAG 2.5.8, DECISIONS K33). The phone
+     touch-target floors above and below stay; this is the least anywhere. */
+  --sk-min-target: 24px;
 }
 
 /* Seasonal Mini Games, O111: 13 px text, 24 px display values, 22 px rows, 40 px targets;
@@ -35,6 +40,25 @@
 
 /* Seasonal Bingo Royale: 14 px text (its fit audit), a badge too; targets stay 44 px. */
 [data-sk-game='bingo'] {
+  --sk-floor-text: 14px;
+  --sk-floor-display: 24px;
+  --sk-floor-row: 22px;
+  --sk-floor-target: 44px;
+  --sk-floor-badge: 14px;
+}
+
+/* Seasonal Party (since v0.11.0): 14 px text (owner, 2026-11-21), the strictest set otherwise,
+   as its result frame has today. */
+[data-sk-game='seasonal-party'] {
+  --sk-floor-text: 14px;
+  --sk-floor-display: 24px;
+  --sk-floor-row: 22px;
+  --sk-floor-target: 44px;
+  --sk-floor-badge: 14px;
+}
+
+/* Seasonal Cases (since v0.11.0): its CONCEPT §7, 14/24/22/44 px; the default badge. */
+[data-sk-game='cases'] {
   --sk-floor-text: 14px;
   --sk-floor-display: 24px;
   --sk-floor-row: 22px;

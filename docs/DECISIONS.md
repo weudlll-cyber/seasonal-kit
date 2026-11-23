@@ -112,3 +112,8 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
   not fit, a rate limiter whose rule can change at runtime, a result panel, the dock reserve
   without chat, the unread count on the bar's chat button, a bar toggle, and a local-only chat
   frame for another origin.
+- **K33 — 24 px is the least pointer target in every game.** WCAG 2.5.8's 24 × 24 CSS px (or
+  that much room around a target) is the minimum for every pointer target in every game; the
+  phone touch-target floors of 40 px (Mini Games) and 44 px (the others) stay as they are. The
+  kit holds it as `MIN_POINTER_TARGET` and `--sk-min-target`, and the showcase's axe run checks
+  `target-size` (v0.11.0).

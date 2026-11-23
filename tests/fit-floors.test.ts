@@ -6,7 +6,9 @@
  * Responsibility: `TODAY` is each game's floor as its own repository has it. Mini Games: O111,
  *                 13 px text, 24 px display values, 22 px rows, 40 px phone touch targets and the
  *                 scale floor 0.6. Bingo: 14 px text, no screen scale, 44 px targets. Its 24/22 px
- *                 have no rule of their own there, so they take Mini Games'. A kit floor lower
+ *                 have no rule of their own there, so they take Mini Games'. Seasonal Party and
+ *                 Seasonal Cases (since v0.11.0): 14 px text, the strictest set otherwise, 0.6.
+ *                 Every target floor and `--sk-min-target` keep WCAG 2.5.8's 24 px (K33). A kit floor lower
  *                 than today, a CSS value differing from `FIT_FLOORS`, or a default (no game
  *                 named) below any game fails here. Every scaled `font-size` of the kit's
  *                 stylesheets must be floored by a floor variable or by no less than the
@@ -19,12 +21,17 @@ import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-import { FIT_FLOORS, type FitFloors, type FitGame } from '../src/fit.js';
+import { FIT_FLOORS, MIN_POINTER_TARGET, type FitFloors, type FitGame } from '../src/fit.js';
 
 // Mini Games' badge: its round bar's unread count, 0.75rem (apps/web/src/round/focus.css).
 const TODAY: Readonly<Record<FitGame, FitFloors>> = {
   'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40, badge: 12 },
   bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44, badge: 14 },
+  // Seasonal Party: 14 px (owner, 2026-11-21), Mini Games' 0.6 on its result frame, the
+  // strictest set otherwise (spirits ResultCard.tsx at e907de9).
+  'seasonal-party': { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
+  // Cases: pending/fit-cases.css 14/24/22/44, useFitScale('mini-games') 0.6 (cc75504).
+  cases: { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
 };
 
 const KINDS = ['text', 'display', 'row', 'target', 'badge'] as const;
@@ -85,5 +92,14 @@ describe('the floor guard', () => {
         .map((first) => `${file}: ${first}`),
     );
     expect(low).toEqual([]);
+  });
+
+  it('keeps every pointer target at 24 px or more, in fit.css too (WCAG 2.5.8, K33)', () => {
+    expect(MIN_POINTER_TARGET).toBe(24);
+    const inCss = /--sk-min-target:\s*([\d.]+)px/.exec(css)?.[1];
+    expect(Number(inCss)).toBe(MIN_POINTER_TARGET);
+    for (const floors of Object.values(FIT_FLOORS)) {
+      expect(floors.target).toBeGreaterThanOrEqual(MIN_POINTER_TARGET);
+    }
   });
 });

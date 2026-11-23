@@ -9,6 +9,17 @@ applies it.
 
 The games' requests (DECISIONS K32), the season feed and the handbook.
 
+### Added
+
+- **Fit floors for Seasonal Party and Seasonal Cases** (K14): `FitGame` gains `seasonal-party`
+  and `cases`, with `[data-sk-game=…]` rules in `fit.css`, each with exactly what the game has
+  today: 14 px text, 24 px display values, 22 px rows, 44 px targets, a 14 px badge and the
+  scale floor 0.6. tests/fit-floors.test.ts holds them.
+- **`MIN_POINTER_TARGET` (24) and `--sk-min-target: 24px`:** WCAG 2.5.8's least pointer target,
+  for every target in every game (DECISIONS K33). The 40/44 px phone floors stay. The
+  showcase's axe run keeps `target-size` on, and a probe test proves it reports two 10 px
+  buttons side by side. Nothing in the kit was below it.
+
 ### Changed
 
 - **The app header folds whenever its items do not fit on one row** (Bingo R1: "the top bar

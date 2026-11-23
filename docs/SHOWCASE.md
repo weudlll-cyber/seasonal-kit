@@ -73,6 +73,8 @@ For each focus-ring screen, Tab reaches the header's brand, its outline is solid
 nothing serious. At 320 × 640 the page must not scroll sideways (WCAG 1.4.10). For each of the 4
 header-menu screens it opens the first header's Menu (axe again), then the third
 header's Menu and its Dev sign-in panel (axe again). Moderate axe findings do not fail the run.
+axe's `target-size` (WCAG 2.5.8, 24 px) is kept on (DECISIONS K33), and a probe proves it runs:
+two 10 px buttons put side by side on the page are reported.
 
 What only a browser's layout shows is measured in
 [`showcase/layout.spec.ts`](../showcase/layout.spec.ts) (since v0.11.0): the back link keeps a

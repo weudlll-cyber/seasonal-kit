@@ -13,18 +13,32 @@
  *                 the next frame, never inside the observer's own delivery, so nothing loops.
  *                 `FIT_FLOORS` holds each game's floors. They never go below what the game has
  *                 today (DECISIONS K14), and tests/fit-floors.test.ts enforces that and keeps
- *                 ../css/fit.css equal to them.
+ *                 ../css/fit.css equal to them. `MIN_POINTER_TARGET` is the 24 px every pointer
+ *                 target keeps in every game (WCAG 2.5.8, K33).
  * Source:         seasonal-mini-games apps/web/src/round/useFit.ts at 866df03 (O111: `nextScale`,
  *                 `settle`, the measuring, the effect's watching, without React); the Bingo
  *                 floors from seasonal-bingo-royale apps/web/src/minTextSize.test.ts at a43209a.
  * Spec:           Mini Games DECISIONS O111; Bingo docs/concepts/fit-audit.md; kit DECISIONS K14
  */
+// WCAG 2.5.8 (AA): every pointer target in every game is at least 24 × 24 CSS px, or has that
+// much room around it (DECISIONS K33, since v0.11.0). The phone touch-target floors below (40
+// and 44 px) stay; this is the least any target anywhere may be. ../css/fit.css has it as
+// `--sk-min-target`; the showcase's axe run checks it (`target-size`).
+export const MIN_POINTER_TARGET = 24;
 export const FIT_FLOORS = {
     // O111: 13 px body text, 24 px display values, 22 px rows, 40 px phone touch targets; its
     // round bar's unread badge is 12 px (focus.css).
     'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40, badge: 12 },
     // No screen scale today (its screens fit by layout, fit audit), 14 px text, 44 px targets.
     bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44, badge: 14 },
+    // Seasonal Party (since v0.11.0) has today: 14 px text (the owner, 2026-11-21) and Mini
+    // Games' 0.6 scale on its result frame, which names no game, so the strictest set holds
+    // for the rest (seasonal-spirits apps/client/src/frame/ResultCard.tsx at e907de9).
+    'seasonal-party': { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
+    // Seasonal Cases (since v0.11.0): 14/24/22/44 px (its CONCEPT §7, pending/fit-cases.css),
+    // the 0.6 scale its screens take from `useFitScale('mini-games')`, the default 14 px badge
+    // (seasonal-cases proto/cases-v1 at cc75504).
+    cases: { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
 };
 // The passes of one fitting after the first measurement: each halves the gap left.
 const PASSES = 7;

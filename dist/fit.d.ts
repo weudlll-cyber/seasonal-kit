@@ -13,13 +13,15 @@
  *                 the next frame, never inside the observer's own delivery, so nothing loops.
  *                 `FIT_FLOORS` holds each game's floors. They never go below what the game has
  *                 today (DECISIONS K14), and tests/fit-floors.test.ts enforces that and keeps
- *                 ../css/fit.css equal to them.
+ *                 ../css/fit.css equal to them. `MIN_POINTER_TARGET` is the 24 px every pointer
+ *                 target keeps in every game (WCAG 2.5.8, K33).
  * Source:         seasonal-mini-games apps/web/src/round/useFit.ts at 866df03 (O111: `nextScale`,
  *                 `settle`, the measuring, the effect's watching, without React); the Bingo
  *                 floors from seasonal-bingo-royale apps/web/src/minTextSize.test.ts at a43209a.
  * Spec:           Mini Games DECISIONS O111; Bingo docs/concepts/fit-audit.md; kit DECISIONS K14
  */
-export type FitGame = 'mini-games' | 'bingo';
+export type FitGame = 'mini-games' | 'bingo' | 'seasonal-party' | 'cases';
+export declare const MIN_POINTER_TARGET = 24;
 export interface FitFloors {
     readonly scale: number;
     readonly text: number;

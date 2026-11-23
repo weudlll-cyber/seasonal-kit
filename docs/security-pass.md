@@ -63,6 +63,43 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-23 — before v0.11.0 (branch `night/2026-11-23`)
+
+| Scan                         | Tool and command                                                                                  | Result                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 69 commits scanned.                          |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 262 packages. No dependency was added.    |
+| Code                         | CodeQL (javascript-typescript)                                                                    | `analyze` green on every push to the release PR (#24). |
+| Install behaviour            | pnpm 12.14.0, scratch consumer with `ignore-scripts=true`                                         | Proven on the tag v0.11.0 (docs/DELIVERY.md).          |
+
+**The independent review.** The brief named pieces 6 and 7, the two server parts that take
+outside input: the season feed reader and the rate limiter with a rule read per request. A
+fresh reviewer read only their code, tests and the feed's contract. It found nothing high, two
+medium and several low. Each was checked against the code and fixed, with a test that fails
+without its fix:
+
+1. **Medium:** the 64 KiB cap did not bound memory. A body without a length was read whole
+   first. The body is now counted in bytes as it streams, and cancelled past 64 KiB.
+2. **Medium:** the limiter kept the caller's rule object. A fixed rule changed in place, or the
+   same object broken by an admin, skipped the check, and `limit: Infinity` lifted the limit.
+   Each rule is now read once into a frozen copy, checked, and only the copy is kept.
+3. **Low:**
+   - A refused answer's body is now cancelled, never left open.
+   - The reader has its own timer over the whole read, so a wrapper that drops the signal still
+     times out.
+   - A redirected answer is refused.
+   - Overlapping reads now share one request.
+   - The reader's options must be whole milliseconds.
+   - A clock that gives no finite time makes the answer stale.
+   - Impossible dates (`02-30`) and days are refused, as are out-of-order halving days and more
+     than 64 of them.
+   - A window must be 1 ms or more, whole, so no denormal window can lock a key out.
+   - A source that gives `null` fails as a broken rule.
+4. **Low, not new:** a key's length is not bounded. The limiter's header now says that games
+   pass short, normalised keys.
+
+The sign-in, recovery-code and TOTP logic is unchanged.
+
 ### 2026-11-22 — before v0.10.0, focus and API (branch `night/2026-11-22-v0.10`)
 
 | Scan                         | Tool and command                                                                                  | Result                                                                                                |

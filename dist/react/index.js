@@ -28,5 +28,6 @@ export { ResultFrame } from './ResultFrame.js';
 export { StartCard } from './StartCard.js';
 export { ThemeToggle, useShownTheme, useTheme } from './theme.js';
 export { useDisclosure } from './useDisclosure.js';
+export { useDockReserve } from './useDockReserve.js';
 export { useFitScale } from './useFitScale.js';
-export { WebsiteChatFrame } from './WebsiteChatFrame.js';
+export { OriginChatFrame, WebsiteChatFrame, } from './WebsiteChatFrame.js';

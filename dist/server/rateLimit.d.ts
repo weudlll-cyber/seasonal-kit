@@ -12,13 +12,20 @@
  *                 scan. A flood of fresh keys therefore neither grows the map, nor costs a scan
  *                 per request, nor resets another key's bucket. The trade-off: someone who keeps
  *                 100 000 keys busy shuts out new ones. Games key by account and by IPv6 /64
- *                 (never a whole address), which makes that cost one address range per key. A
+ *                 (never a whole address), which makes that cost one address range per key. Keys
+ *                 are held as given, so a game passes short, normalised keys (an account id, an
+ *                 address range; never a raw login name before sign-in), or hashes long ones. A
  *                 clock that went back drains nothing; a time that is not finite touches
- *                 nothing. A rule must be a whole limit ≥ 1 over a finite window. The clock is
+ *                 nothing. A rule must be a whole limit ≥ 1 over a whole window of 1 ms or more,
+ *                 read once into a copy of its own (since v0.11.0). It may be a
+ *                 function that gives the rule, read on every request, so a limit a game's admin
+ *                 changes applies at once (since v0.11.0, Bingo R3); a broken rule it gives later
+ *                 keeps the last valid one, never lifting the limit or throwing. The clock is
  *                 passed in, so tests do not wait. The rules themselves are each game's (Mini
  *                 Games allows 10 two-factor codes in 15 minutes, Bingo 5).
  * Source:         seasonal-mini-games apps/server/src/auth/rateLimit.ts at 866df03, the same as
- *                 seasonal-bingo-royale's at a43209a; the rules stay in the games.
+ *                 seasonal-bingo-royale's at a43209a; the rule read per request from Bingo's at
+ *                 5c613c0 (feat/kit-adoption); the rules stay in the games.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §2; the games' 03 §13
  */
 export interface RateRule {
@@ -29,14 +36,17 @@ export interface RateDecision {
     readonly allowed: boolean;
     readonly retryAfterMs: number;
 }
+export type RateRuleSource = RateRule | (() => RateRule);
 export declare class RateLimiter {
-    private readonly rule;
+    private readonly source;
     private readonly now;
     private readonly maxKeys;
     private readonly buckets;
     private takes;
     private fullPrunedAt;
-    constructor(rule: RateRule, now?: () => number, maxKeys?: number);
+    private rule;
+    constructor(source: RateRuleSource, now?: () => number, maxKeys?: number);
+    private ruleNow;
     private bucketOf;
     take(key: string): RateDecision;
     get size(): number;

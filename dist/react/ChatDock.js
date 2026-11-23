@@ -17,7 +17,8 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the
- *                 first render. The same element holds
+ *                 first render. `onUnread` hands each new count to the game, for its bar's chat
+ *                 button (since v0.11.0). The same element holds
  *                 the chat in both layouts, so turning a phone does not reload it.
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
@@ -87,6 +88,11 @@ export function ChatDock(p) {
     const sheet = useDisclosure();
     const sight = useArrivals(!p.phone || sheet.open);
     const announced = useUnreadAnnouncement(sight.state.unread);
+    const { onUnread } = p;
+    const unread = sight.state.unread;
+    useEffect(() => {
+        onUnread?.(unread);
+    }, [onUnread, unread]);
     const value = useMemo(() => ({ visible: sight.visible, arrivals: sight.arrivals }), [sight.visible, sight.arrivals]);
     return (_jsx(DockSight.Provider, { value: value, children: _jsxs("section", { className: "sk-chat-dock", "aria-label": "Chat", "data-sk-view": p.phone ? 'phone' : 'desktop', "data-sk-bar": p.bar, "data-sk-open": sheet.open, "data-testid": "chat-dock", onKeyDown: sheet.onKeyDown, children: [_jsx("p", { className: "sk-visually-hidden", role: "status", "aria-live": "polite", "data-testid": "chat-announce", children: announced }), p.phone ? _jsx(CallSlotBox, { callId: p.callId, phone: true }) : null, _jsxs("div", { className: "sk-chat-dock-row", children: [p.phone ? (_jsx(PhoneBar, { sheet: sheet, state: sight.state, field: p.bar === 'field' ? (p.field ?? null) : null })) : null, _jsx(Body, { sheet: sheet, phone: p.phone, children: p.chat }), p.phone ? null : _jsx(CallSlotBox, { callId: p.callId, phone: false })] })] }) }));
 }

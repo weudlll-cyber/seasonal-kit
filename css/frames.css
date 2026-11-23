@@ -11,7 +11,9 @@
  *                 high under the game's bar (`--sk-result-top`, the bar's height and gaps, the
  *                 game's), the headline at most two lines, the reveal taking the free height,
  *                 the placings beside it on a desktop and under it on a phone; a list game's
- *                 first part as tall as its content. Inside the docked screen (./dock.css) both
+ *                 first part as tall as its content. A panel result (`data-sk-variant` panel,
+ *                 since v0.11.0) sits inside a screen: no one-screen part, names never broken
+ *                 inside. Inside the docked screen (./dock.css) both
  *                 fill the height above the chat. Every size that shrinks with the screen's
  *                 scale (`--fit`) keeps the game's floor (./fit.css). Colours only from
  *                 ./tokens.css, so light and dark both work.
@@ -149,6 +151,18 @@
   background: var(--color-card);
 }
 
+/* A panel inside a screen (since v0.11.0, Bingo R4): no page of its own, so no first part one
+   screen high, a board's neither; and a name is broken only at its own break points, never
+   inside ("dev-" / "player-2"), where a page breaks anywhere rather than run wide. */
+.sk-result[data-sk-variant='panel'] {
+  overflow-wrap: normal;
+}
+
+.sk-result[data-sk-variant='panel'] .sk-result-first {
+  height: auto;
+  align-content: start;
+}
+
 /* A list game's first part is as tall as its content; a board game's grid keeps the height. */
 .sk-result:not([data-sk-layout='board']) .sk-result-first {
   height: auto;
@@ -168,7 +182,7 @@
 }
 
 /* The headline at about half the page title's size, at most two lines (balanced). */
-.sk-result-head h1 {
+.sk-result-head > :is(h1, h2, h3, h4, h5, h6):first-child {
   margin: 0;
   font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * clamp(1.25rem, 1rem + 0.6vw, 1.5rem)));
   text-wrap: balance;

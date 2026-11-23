@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
 /**
  * @file   src/react/header.test.tsx
- * @brief  The shared app header: its order, signed in and out, website mode, the fold below
- *         960 px, and the dev tools only when passed; the dev sign-in menu.
+ * @brief  The shared app header: its order, signed in and out, website mode, the folded menu
+ *         (./headerFold.test.tsx for when it folds), and the dev tools only when passed; the dev
+ *         sign-in menu.
  *
  * Responsibility: the back link comes first and only in website mode; the brand leads to the
  *                 game's start with the emblem hidden from screen readers; links mark the

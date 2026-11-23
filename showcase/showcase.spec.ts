@@ -20,10 +20,14 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { SCREENS, SCREENS_SHOWN, THEMES, VIEWPORTS } from './screens.js';
 
-// Serious or critical axe violations of the page as it is now, as "rule: targets".
+// Serious or critical axe violations of the page as it is now, as "rule: targets". axe ships
+// WCAG 2.5.8's `target-size` (24 px) switched off by default. The `wcag22aa` tag already
+// selects it; the option keeps it on whatever the tags become (since v0.11.0, DECISIONS K33),
+// so a pointer target under 24 px fails here (the probe test below proves it runs).
 async function seriousViolations(page: Page): Promise<string[]> {
   const result = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    .options({ rules: { 'target-size': { enabled: true } } })
     .analyze();
   return result.violations
     .filter((v) => v.impact === 'serious' || v.impact === 'critical')
@@ -55,6 +59,25 @@ for (const at of [VIEWPORTS[0], VIEWPORTS[4]]) {
     });
   }
 }
+
+// The check of 24 px targets is really on: two 10 px buttons side by side are reported (one
+// alone, with room around it, would pass by WCAG 2.5.8's spacing exception).
+test('axe reports a pointer target under 24 px', async ({ page }) => {
+  await page.goto('/?theme=light');
+  await page.evaluate(() => {
+    const pair = document.createElement('div');
+    pair.style.cssText = 'display:flex;gap:0;';
+    for (const label of ['a', 'b']) {
+      const tiny = document.createElement('button');
+      tiny.textContent = label;
+      tiny.style.cssText = 'width:10px;height:10px;padding:0;border:0;font-size:8px;';
+      pair.append(tiny);
+    }
+    document.querySelector('main')?.prepend(pair);
+  });
+  const found = await seriousViolations(page);
+  expect(found.some((v) => v.startsWith('target-size:'))).toBe(true);
+});
 
 // 320 px, the narrowest width WCAG 1.4.10 asks for: nothing on the page scrolls sideways.
 test('no sideways scrolling at 320 px', async ({ page }) => {

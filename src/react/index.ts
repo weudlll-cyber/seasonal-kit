@@ -29,6 +29,7 @@ export {
   type BarAction,
   type BarFact,
   type BarIconName,
+  type BarToggle,
   type GameBarProps,
 } from './GameBar.js';
 export { PhaseStrip, type PhasePart, type PhaseStripProps } from './PhaseStrip.js';
@@ -39,5 +40,11 @@ export { ResultFrame, type ResultFrameProps } from './ResultFrame.js';
 export { StartCard, type Season, type StartCardProps } from './StartCard.js';
 export { ThemeToggle, useShownTheme, useTheme } from './theme.js';
 export { useDisclosure, type Disclosure } from './useDisclosure.js';
+export { useDockReserve } from './useDockReserve.js';
 export { useFitScale } from './useFitScale.js';
-export { WebsiteChatFrame, type WebsiteChatFrameProps } from './WebsiteChatFrame.js';
+export {
+  OriginChatFrame,
+  WebsiteChatFrame,
+  type OriginChatFrameProps,
+  type WebsiteChatFrameProps,
+} from './WebsiteChatFrame.js';

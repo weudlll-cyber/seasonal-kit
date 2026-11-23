@@ -1,11 +1,14 @@
 /**
  * @file   src/react/MenuFold.tsx
- * @brief  The header's navigation and account, folded into one menu button below 960 px.
+ * @brief  The header's navigation and account, folded into one menu button whenever they do
+ *         not fit on one row.
  *
- * Responsibility: wraps the header's items in a panel and puts a "Menu" button before it. On a
- *                 wide screen the button is hidden and the panel lays its items into the bar
- *                 (display: contents, ../../css/header.css). Below 960 px the bar is one row
- *                 (brand, Menu, theme toggle), and the button opens the panel under it. The
+ * Responsibility: wraps the header's items in a panel and puts a "Menu" button before it. While
+ *                 the items fit, the button is hidden and the panel lays its items into the bar
+ *                 (display: contents, ../../css/header.css). When they would take a second row
+ *                 (./useHeaderFold, measured before the paint; since v0.11.0, before it below a
+ *                 fixed 960 px) the header is folded: one row (brand, Menu, theme toggle), and
+ *                 the button opens the panel under it. The
  *                 button reports aria-expanded and names the panel. Opening moves the focus to
  *                 the panel's first item. It closes:
  *                 - on Escape, in the panel or on the button, with the focus on the button;
@@ -32,6 +35,7 @@ import {
 
 import { barButtonClass } from './barButtonClass.js';
 import { useDisclosure, type Disclosure } from './useDisclosure.js';
+import { useHeaderFold } from './useHeaderFold.js';
 import { usePressOutside, within } from './usePressOutside.js';
 
 export interface MenuFoldProps {
@@ -70,6 +74,17 @@ function useCloseOnKey(
   }, [closeKey, panel, close, dismiss]);
 }
 
+// Folded, then unfolded again: the items are back in the bar, and an open panel has nothing
+// left to show, so it closes where the focus is.
+function useCloseOnUnfold(folded: boolean, menu: Disclosure): void {
+  const { open, dismiss } = menu;
+  const wasFolded = useRef(folded);
+  useEffect(() => {
+    if (wasFolded.current && !folded && open) dismiss();
+    wasFolded.current = folded;
+  }, [folded, open, dismiss]);
+}
+
 export function MenuFold(p: MenuFoldProps): ReactElement {
   // Open state, panel id, the button's ref, Escape (focus back) and the stable callbacks:
   // ./useDisclosure, reused since v0.10.1.
@@ -77,6 +92,9 @@ export function MenuFold(p: MenuFoldProps): ReactElement {
   const panel = useRef<HTMLDivElement>(null);
   useOpenedPanel(menu, panel);
   useCloseOnKey(p.closeKey, menu, panel);
+  // Folded whenever the header's items do not fit on one row (./useHeaderFold, since v0.11.0).
+  const folded = useHeaderFold(menu.button, p.closeKey);
+  useCloseOnUnfold(folded, menu);
 
   // The focus moved to an element outside panel and button: the menu closes where it is. A
   // blur to nowhere (relatedTarget null) is no such move: Safari focuses no link or button on a

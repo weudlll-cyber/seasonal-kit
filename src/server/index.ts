@@ -5,9 +5,10 @@
  *
  * Responsibility: name everything a game's server may import: the trust checks, the safe
  *                 return path and login hop, the identity headers and their decision, TOTP,
- *                 recovery codes, the rate limiter and the session-end notifier. Node only
- *                 (node:crypto, node:net); never imported by browser code. Accounts, sessions and
- *                 every database statement stay in the games.
+ *                 recovery codes, the rate limiter, the session-end notifier, and the website's
+ *                 open-rounds page and season feed (since v0.11.0). Node only (node:crypto,
+ *                 node:net); never imported by browser code. Accounts, sessions and every
+ *                 database statement stay in the games.
  * Source:         new in the kit.
  */
 export {
@@ -22,7 +23,16 @@ export {
   type SignInDecision,
   type WebsiteIdentity,
 } from './identity.js';
-export { RateLimiter, type RateDecision, type RateRule } from './rateLimit.js';
+export {
+  OPEN_ROUNDS_CACHE_CONTROL,
+  openRoundsPage,
+  type OpenRound,
+  type OpenRoundDrop,
+  type OpenRoundInput,
+  type OpenRoundsOptions,
+  type OpenRoundsPage,
+} from './openRounds.js';
+export { RateLimiter, type RateDecision, type RateRule, type RateRuleSource } from './rateLimit.js';
 export {
   looksLikeRecoveryCode,
   newRecoveryCodes,
@@ -32,6 +42,16 @@ export {
   type RecoveryStyle,
 } from './recoveryCodes.js';
 export { safeNext, websiteLoginLocation } from './returnPath.js';
+export {
+  parseSeasonFeed,
+  seasonFeedReader,
+  type Season,
+  type SeasonFeed,
+  type SeasonFeedOptions,
+  type SeasonFeedReader,
+  type SeasonFeedState,
+  type SeasonToken,
+} from './seasonFeed.js';
 export { SessionEnds, type SessionEndsListener } from './sessionEnds.js';
 export { type Ladder, type Step, type StepsMode } from './steps.js';
 export {

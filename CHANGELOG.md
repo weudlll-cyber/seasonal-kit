@@ -7,6 +7,161 @@ applies it.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-23
+
+The games' requests (DECISIONS K32), the season feed (K34), 24 px pointer targets (K33) and the
+handbook (K35). Nothing changes for players until a game moves to it with the owner's word;
+released unattended with the owner's approval (K36).
+
+### Added
+
+- **docs/HANDBOOK.md** (DECISIONS K35): how we build a Seasonal game, one place for every new
+  game. It covers how we work, the repository and the kit pin, security, hygiene, tests, docs,
+  the kit parts every game uses, and embedding in the website. That last part links the
+  website's ADDING-A-GAME.md, GAME-INTEGRATION.md and OPEN-ROUNDS.md instead of copying them.
+  Every rule names where it is enforced. The README links it.
+- **The open-rounds publisher** (`/server`): `openRoundsPage(rounds, { origin, now?, onDrop? })`
+  builds version 1 of the website's open-rounds page from a game's own rounds, with the
+  website's checks applied here (docs/OPEN-ROUNDS.md, `openRoundsContract.js` at d4230af):
+  - id 1–64, never cut;
+  - title 1–80 and kind 0–40, cut to fit, never through an emoji;
+  - UTC times (a `Date` written as one) or null;
+  - whole counts;
+  - an https `joinUrl` on the game's origin;
+  - no closed sign-up;
+  - at most 20, counted after the check;
+  - no unknown field.
+
+  `onDrop` hears each round left out and why, with its id only. `OPEN_ROUNDS_CACHE_CONTROL` is
+  the answer's header. It replaces the three games' own builders: Bingo, Mini Games and Cases.
+
+- **Seasonal Cases' requests** (BACKLOG 20, 23, 24, 36 there):
+  - `useDockReserve()` (20): the height a screen without a chat keeps free at the bottom for
+    the dock. It is the strip's 190 px on a desktop and 150 px in a window under 760 px high
+    (`CALL_SLOT`), nothing on a phone (`useDockView`), and it follows the window;
+  - `ChatDock`/`DockedScreen` `onUnread` (24): hears each new unread count, so the game's bar
+    can show it on its chat button (`badge`);
+  - `GameBar` `toggles` (36, `BarToggle`): a setting switched in place, e.g. the sound, before
+    the panel buttons. Its words stay the same; `aria-pressed` and the icon (a speaker, crossed
+    out when off) show whether it is on;
+  - `OriginChatFrame({ origin, room })` (23): the website's chat from the website's dev server
+    on this PC, for local development. It shares the checked link and sandbox of
+    `WebsiteChatFrame`. Any origin that is not a loopback host (localhost, 127.0.0.1, [::1])
+    renders nothing, so no production origin is ever framed this way.
+- **`ResultFrame` as a panel inside a screen** (`panel={{ level }}`, Bingo R4): the headline is a
+  heading of the game's level (2–6) instead of the page's `h1`, and `data-sk-variant="panel"` gives
+  it no one-screen first part. Names break only at their own break points (`overflow-wrap:
+normal`) instead of anywhere. A frame without `panel` is the page it was
+  (`data-sk-variant="page"`).
+- **The season feed reader** (`/server`, DECISIONS K34). `seasonFeedReader({ origin, fetch,
+timeoutMs?, staleAfterMs? })` reads the website's `GET /api/public/season` server to server.
+  Its `refresh()` never throws and keeps the last good answer when a read fails. `state()` gives
+  that answer, when it came, `stale` (none yet, or older than 10 min by default) and `lastError`.
+  `parseSeasonFeed` checks version 1 strictly (`v: 1`, `inSeason` with season, token and since,
+  `halvingDays`) and keeps only the fields it knows. The kit has no guarded fetch, so the game
+  passes its own. The reader adds https only, no redirect followed, a 5 s timeout, 64 KiB at
+  most, and JSON.
+- **Fit floors for Seasonal Party and Seasonal Cases** (K14): `FitGame` gains `seasonal-party`
+  and `cases`, with `[data-sk-game=…]` rules in `fit.css`, each with exactly what the game has
+  today: 14 px text, 24 px display values, 22 px rows, 44 px targets, a 14 px badge and the
+  scale floor 0.6. tests/fit-floors.test.ts holds them.
+- **`MIN_POINTER_TARGET` (24) and `--sk-min-target: 24px`:** WCAG 2.5.8's least pointer target,
+  for every target in every game (DECISIONS K33). The 40/44 px phone floors stay. The
+  showcase's axe run keeps `target-size` on, and a probe test proves it reports two 10 px
+  buttons side by side. Nothing in the kit was below it.
+
+### Changed
+
+- **docs/ADOPTION.md, checked against the games of 2026-11-23:**
+  - Mini Games master `21434d8`: the Pre-picks button, per-account settings, open rounds, the
+    refit after fonts, comment-free production files, its audit;
+  - Bingo's adoption branch `5c613c0`, on v0.10.1 with R1–R4 kept until now;
+  - Seasonal Cases `cc75504`, on v0.8.0, its six stand-ins and what replaces them;
+  - Seasonal Party `e907de9`, with its new floors.
+
+  Two Mini Games needs the kit does not cover yet are listed for the owner.
+
+- **`RateLimiter` takes a rule or a function that gives it** (`RateRuleSource`, Bingo R3). A
+  function is read on every `take`, so a limit a game's admin changes at runtime applies at once.
+  A lowered limit caps the buckets now, a raised one refills them toward it, and a new window
+  counts for the refill and for forgetting idle keys. A broken rule given later, or a read that
+  throws, keeps the last valid rule: the limit never lifts and `take` never throws. A broken
+  first rule still fails at construction. A fixed rule works as before.
+- **The app header folds whenever its items do not fit on one row** (Bingo R1: "the top bar
+  never takes two rows"). Before the paint, `useHeaderFold` (new, inside `MenuFold`) checks
+  whether an item starts below another's bottom; if so the header folds into its Menu and says
+  so in `data-sk-folded`. It tries one row again on a new close key and in a window grown past
+  the width it folded at, and it checks again when the header changes size. There is no fixed
+  width any more: before, it folded below 960 px only. Now a website admin's long bar in website
+  mode folds at 1280 px, and a short bar stays in one row on a wide tablet. Folding again closes
+  nothing. Unfolding closes an open menu, since its items are back in the bar. A render never
+  reads the window: the first render is unfolded, and the layout effect decides before the
+  paint.
+
+### Fixed
+
+- **The back link's space.** "←" and "Seasonal Entertainment" no longer touch: in the link's
+  flex box the space after the arrow collapsed, so `.sk-back-link` keeps a `gap` of 0.35em
+  (Bingo R2, Seasonal Party). showcase/layout.spec.ts measures it in the browser.
+- **The game bar on narrow phones** (Cases 32). Its facts shrink and end in "…", and its
+  buttons wrap to a second row only when they alone do not fit, so a crowded bar no longer runs
+  past a 320–375 px screen. The time keeps its width, and every button keeps its 44 px target.
+  A phone bar is as high as its buttons; it was capped at 52 px, and is now taller only when the
+  buttons wrap. The time has the class `sk-bar-time`. Measured at 320, 360 and 375 px in
+  showcase/layout.spec.ts.
+
+### Security
+
+The pass before this version (docs/security-pass.md, 2026-11-23): gitleaks and osv-scanner found
+nothing, and a fresh reviewer read the season feed reader and the rate limiter. Each finding is
+fixed with a test:
+
+- **The season feed's 64 KiB cap** is counted in bytes as the body streams in. The stream is
+  cancelled past the cap; before, a body without a length was read whole first.
+- **The reader's own checks:**
+  - a refused answer's body is cancelled;
+  - a redirected answer is refused;
+  - a timer of its own covers the whole read, even when the game's fetch drops the signal;
+  - reads that overlap share one request;
+  - the options must be whole milliseconds;
+  - impossible dates, out-of-order days and more than 64 halving days are no feed.
+- **`RateLimiter` keeps a frozen copy of each rule it checked,** never the game's object. A rule
+  changed in place can no longer lift the limit. A window must be whole and at least 1 ms;
+  before, any finite window over 0 was taken.
+
+### Migration, per game
+
+Players see no change until a game takes these. In a game's code:
+
+- **Every game with `AppHeader`:** the fold is measured, so a short bar may stay in one row on
+  a tablet, and a long one folds on a desktop. A game's own CSS for the folded header keys on
+  `.sk-header[data-sk-folded='true']` instead of `@media (max-width: 959px)`.
+- **Every game with `GameBar`:** on a narrow phone its facts end in "…" and its buttons may
+  wrap. A phone bar with wrapped buttons grows past the 52 px it was capped at.
+- **Every game with `RateLimiter`:** a rule's window must be whole milliseconds, 1 or more.
+  Every game's rules are already whole.
+- **Seasonal Bingo Royale:** its kept parts can go:
+  - its header (`useBarFold`, `MenuFold`, `menu.css`) for `AppHeader` (R1);
+  - its `.shell-back` for `BackLink` (R2);
+  - its limiter, passing `liveRule`'s function to the kit's (R3);
+  - `FinalPlacement`'s section for `ResultFrame`'s `panel={{ level: 3 }}` (R4);
+  - its open-rounds answer for `openRoundsPage`.
+- **Seasonal Mini Games:** its open-rounds answer becomes `openRoundsPage`; a season read of its
+  own becomes `seasonFeedReader` with its guarded fetch.
+- **Seasonal Cases:** its stand-ins go:
+  - `fit-cases.css` → `data-sk-game="cases"` and `useFitScale('cases')`;
+  - `useDockReserve` → the kit's;
+  - `OriginChatFrame` → the kit's;
+  - `BarToggle` → `GameBar`'s `toggles`;
+  - the lead it hides up to 480 px (`moments.css`) can show again;
+  - `onUnread` feeds its chat button's `badge`;
+  - its open-rounds answer → `openRoundsPage`.
+
+  It also takes v0.10.x's notes: `data-sk-fit-fixed`, and no `sandboxed` prop.
+
+- **Seasonal Party:** `data-sk-game="seasonal-party"` in place of no game (the same floors).
+  The back link keeps its space.
+
 ## [0.10.1] - 2026-11-22
 
 The audit's noted items (docs/AUDIT-2026-11-22.md "Noted, not changed"). Nothing a player sees
@@ -672,7 +827,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.1...v0.11.0
 [0.10.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.9.0...v0.9.1

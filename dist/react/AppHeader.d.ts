@@ -16,10 +16,11 @@
  *                 5. the development tools, rendered only when the game passes them (its lazily
  *                    loaded ./dev DevSignIn, behind its dev flag);
  *                 6. the theme toggle (./theme).
- *                 Below 960 px the navigation and the account fold into one menu button
- *                 (./MenuFold). Its sizes keep the game's floors (../../css/header.css, K14). The
- *                 words of the links, the role and the routes are the game's; the header holds
- *                 only their places.
+ *                 When they would not fit on one row, the navigation and the account fold
+ *                 into one menu button (./MenuFold, ./useHeaderFold; since v0.11.0, measured
+ *                 before the paint, before it below 960 px). Its sizes keep the game's floors
+ *                 (../../css/header.css, K14). The words of the links, the role and the routes
+ *                 are the game's; the header holds only their places.
  * Source:         seasonal-bingo-royale apps/web/src/shell/AppShell.tsx (the bar, `Nav`,
  *                 `Account`) and shell.css at a43209a: Bingo's test server's header, which the
  *                 owner made every game's (D5, 2026-11-21). Built on ./BackLink, ./theme

@@ -10,6 +10,8 @@ coverage/
 showcase/dist/
 showcase/screens/
 test-results/
+# Long logs of a task (CLAUDE.md, "Working cheaply"); `*.log` above covers the files in it.
+logs/
 playwright-report/
 # Secrets never enter the repository, whoever runs `git add` (audit 2026-11-22).
 .env

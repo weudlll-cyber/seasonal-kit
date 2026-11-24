@@ -445,6 +445,25 @@ a `fitted` `ResultFrame` without `fit` does not listen for web fonts; with
 
 Both consumers were deleted afterwards.
 
+## The v0.19.0 step badges in the header, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.19.0` (merge commit `19f0208`), both with `ignore-scripts=true`,
+with the toolchain of the earlier proofs (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false` and `exactOptionalPropertyTypes`, Vitest 5.0.5 with jsdom 31.0.1). Each ran
+`tsc` and three tests in one file: the installed kit is `0.19.0`; a `Step[]` typed with
+`import type { Step } from '@seasonal/kit/server'` (the type the server entry still exports) is
+passed as `account.steps` to `AppHeader` from `@seasonal/kit/react`, and in jsdom the chip draws
+the website's icon with its step's name and drops the address on another host; the installed
+`dist/stepShape.js` holds no Node API, and the installed `dist/react/AppHeader.js` imports it, not
+anything under `/server/`.
+
+| Consumer                 | Install                                                                                                   | `tsc`  | Tests    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.5 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/19f0208…`).        | Worked | 3 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked. `npm ls` shows the kit `0.19.0` at `…seasonal-kit.git#19f0208…` with the consumer's `vite` 8.3.5. | Worked | 3 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

@@ -184,3 +184,8 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   [concepts/result-frame.md](concepts/result-frame.md) point 4). Bingo shows its result like the
   other games, the first part and "more" as the kit lays them out, and at its next kit adoption
   drops its own `results.css` overrides of the kit's result classes.
+- **K48 — `StartCard` passes the fit options through** (decided 2026-11-24, v0.16.0; Mini Games
+  T404 and T423). One optional prop, `fit`, of the existing `FitOptions` type, goes to
+  `useFitScale` as it is, so a game can ask the start card to fit again once web fonts have
+  loaded (`afterFonts`). Without it the card is as before. Mini Games drops its own font-load
+  counting on the start card at its next kit adoption.

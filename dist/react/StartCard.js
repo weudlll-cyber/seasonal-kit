@@ -11,7 +11,9 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                 docked chat, a small phone), every size shrinks with the screen's scale
  *                 (`--fit`, ./useFitScale) down to the game's floors (../../css/fit.css). A game
  *                 whose rounds show no season passes `season` null: no tint, no icon. The words
- *                 and icons are the game's; the frame holds only their places.
+ *                 and icons are the game's; the frame holds only their places. A game whose web
+ *                 fonts load late passes `fit={{ afterFonts: true }}` (v0.16.0) to fit again
+ *                 once they have loaded.
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
  *                 ./useFitScale.
@@ -21,7 +23,8 @@ import { useId } from 'react';
 import { useFitScale } from './useFitScale.js';
 export function StartCard(p) {
     const headingId = useId();
-    const fit = useFitScale(p.game, p.signature);
+    // `self` stays false as before; only the game's options are added (T404, T423).
+    const fit = useFitScale(p.game, p.signature, false, p.fit);
     const facts = p.facts ?? [];
     return (_jsxs("section", { ref: fit, className: "sk-start-card", "data-sk-season": p.season ?? undefined, "aria-labelledby": headingId, "data-testid": "start-card", children: [_jsxs("header", { className: "sk-start-head", children: [p.season === null || p.icon === undefined ? null : (_jsx("span", { className: "sk-start-icon", "aria-hidden": "true", children: p.icon })), _jsx("h1", { id: headingId, children: p.title }), p.badge] }), p.special === undefined ? null : _jsx("div", { className: "sk-start-special", children: p.special }), facts.length === 0 ? null : (_jsx("ul", { className: "sk-start-facts", children: facts.map((fact, i) => (_jsx("li", { children: fact }, String(i)))) })), _jsxs("p", { className: "sk-start-count", role: "timer", "aria-live": "off", "data-testid": "countdown", children: ["Opens in ", _jsx("strong", { children: Math.max(0, Math.ceil(p.opensIn)) }), " s"] })] }));
 }

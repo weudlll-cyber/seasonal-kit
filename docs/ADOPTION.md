@@ -139,6 +139,11 @@ Each step pins the newest tag; a step never mixes two tags.
 - **"Closest to winning"** (BACKLOG 12): `ResultFrame`'s `middle` slot takes its `Guesses` card
   between the first part and "more"; a game that passes none sees today's layout.
 
+### Since v0.16.0
+
+- **Fonts on the start card** (K48, T404, T423): pass `fit={{ afterFonts: true }}` to `StartCard`
+  and delete the start card's own font-load counting; without the prop the card is as before.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)

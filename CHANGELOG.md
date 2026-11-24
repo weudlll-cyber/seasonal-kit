@@ -9,6 +9,13 @@ applies it.
 
 ### Changed
 
+- **Night audit, piece 2** (internal, nothing a game sees; [docs/AUDIT-2026-11-25.md](docs/AUDIT-2026-11-25.md)):
+  `css/frames.css` writes the three result cards' chrome once; `css/motion.css`'s glow takes
+  `--sk-color-autumn` instead of the same colour as a literal, and its header no longer says the
+  timing comes from `tokens.css`; the showcase repeats no `actions` array; a new
+  `tests/css-literals.test.ts` fails on a colour literal in the kit's CSS outside two documented
+  ones.
+
 - **Working rules** (CLAUDE.md, docs only): a "Working cheaply" section (owner decision of
   2026-11-23: the saving rules apply to every Seasonal project), the test-file limit of 400
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a

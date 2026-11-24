@@ -44,7 +44,12 @@ describe('the result without a reveal', () => {
 });
 
 describe('the middle card', () => {
-  it('is styled with the more card', () => {
-    expect(css).toMatch(/\.sk-result-middle,\s*\.sk-result-more\s*\{[^}]*border-radius/);
+  it('is styled with the more card, and both with the first part: one card rule for the three', () => {
+    expect(css).toMatch(
+      /\.sk-result-first,\s*\.sk-result-middle,\s*\.sk-result-more\s*\{[^}]*border-radius/,
+    );
+    // The card's chrome is written once: no other rule of the three repeats it.
+    const result = css.slice(css.indexOf('.sk-result {'));
+    expect(result.match(/border-radius:\s*var\(--sk-radius-card\)/g)).toHaveLength(1);
   });
 });

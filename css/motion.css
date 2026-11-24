@@ -3,8 +3,9 @@
  * @brief  The shared key-moment animation and the reduced-motion rule, sk- prefixed.
  *
  * Responsibility: the win glow (a calm pulse in Autumn's colour) and, for every game, all
- *                 animation and transition switched off under prefers-reduced-motion. Timing
- *                 comes from ./tokens.css. A game's own moments (Bingo's ball rolling in, its
+ *                 animation and transition switched off under prefers-reduced-motion. The glow's
+ *                 colour is `--sk-color-autumn` of ./tokens.css; its 2.4 s pulse is its own (the
+ *                 `--sk-duration-*` tokens are a game's, none of them is 2.4 s). A game's own moments (Bingo's ball rolling in, its
  *                 mark and fade) stay in the game.
  * Source:         seasonal-mini-games packages/ui/src/motion.css at 93ed780 (smg- → sk-), equal
  *                 to seasonal-bingo-royale packages/ui/src/motion.css at c3b76c1 (sbr-); only
@@ -15,10 +16,10 @@
 @keyframes sk-glow {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgb(249 168 37 / 0%);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sk-color-autumn) 0%, transparent);
   }
   50% {
-    box-shadow: 0 0 32px 4px rgb(249 168 37 / 45%);
+    box-shadow: 0 0 32px 4px color-mix(in srgb, var(--sk-color-autumn) 45%, transparent);
   }
 }
 

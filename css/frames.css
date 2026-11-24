@@ -139,6 +139,15 @@
   overflow-wrap: anywhere;
 }
 
+/* Every card of the result looks alike: the first part, the middle card and "more". */
+.sk-result-first,
+.sk-result-middle,
+.sk-result-more {
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  background: var(--sk-color-card);
+}
+
 /* The first part: one screen under the game's bar. */
 .sk-result-first {
   display: grid;
@@ -149,9 +158,6 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas: 'head' 'reveal' 'places';
   padding: var(--sk-space-2) var(--sk-space-3);
-  border: 1px solid var(--sk-color-border);
-  border-radius: var(--sk-radius-card);
-  background: var(--sk-color-card);
 }
 
 /* A panel inside a screen (since v0.11.0, Bingo R4): no page of its own, so no first part one
@@ -223,9 +229,6 @@
   gap: var(--sk-space-2);
   align-content: start;
   padding: var(--sk-space-2) var(--sk-space-3);
-  border: 1px solid var(--sk-color-border);
-  border-radius: var(--sk-radius-card);
-  background: var(--sk-color-card);
 }
 
 /* A desktop: the reveal on the left at the part's full height, the placings on its right, the

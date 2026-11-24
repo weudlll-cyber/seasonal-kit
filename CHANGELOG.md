@@ -22,6 +22,36 @@ applies it.
 - **The website keeps its own sign-in brake** (docs only, DECISIONS K49): it does not move to
   `FailureBrake`. BACKLOG 19 is closed as decided.
 
+## [0.19.0] - 2026-11-24
+
+One addition (DECISIONS K56), opt-in: a header whose account has no `steps` is as before.
+
+### Added
+
+- **A member's step badges in `AppHeader`** (Seasonal Cases, decided 2026-11-24): `HeaderAccount`
+  has an optional `steps`, in the kit's `Step` shape (`ladder`, `name`, `icon`) that the server's
+  `identityFrom` already gives. The account chip draws each as a small icon (1.25rem, 20 px at the
+  default size, growing with the font) after the name, named by the step, at most three, and the
+  folded menu shows them beside the name too. An icon is drawn only if its address is exactly the
+  website's file, "/media/step-icons/<32 hex>.webp"; any other address, and a step with no icon,
+  is dropped. `css/header.css` has `.sk-header-steps`, `.sk-header-step` and `--sk-step-icon`. The
+  showcase has a header with three steps, measured at 1280, 1536, 1920 and 390 px in light and
+  dark (`showcase/steps.spec.ts`).
+
+### Changed
+
+- **The `Step` type, `MAX_STEPS` and the icon check moved** from `src/server/steps.ts` to
+  `src/stepShape.ts`, which holds no server code, so the header imports them without pulling
+  server code into a browser bundle. `@seasonal/kit/server` still exports `Ladder`, `Step` and
+  `StepsMode` unchanged; `stepsFrom` applies the same check as before (`isStepIcon`).
+
+### Migration, per game
+
+- **Seasonal Cases:** pass the member's steps as `account.steps` to `AppHeader`, and drop any
+  stand-in for the badges.
+- **Bingo Royale, Mini Games, Seasonal Party:** nothing to do; the field is available and
+  optional.
+
 ## [0.18.0] - 2026-11-24
 
 One addition (DECISIONS K55), opt-in: a game that changes nothing sees today's behaviour.

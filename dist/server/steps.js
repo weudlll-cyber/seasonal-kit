@@ -10,7 +10,8 @@
  *                 - a name of 1 to 40 characters after trimming;
  *                 - an icon that is null or exactly the contract's public file,
  *                   "/media/step-icons/<32 hex>.webp" (stricter than both games, after the
- *                   second independent review: no other route of the site can be named).
+ *                   second independent review: no other route of the site can be named); the
+ *                   check is `isStepIcon` of ../stepShape, shared with the header since v0.19.0.
  *                 A header over 2 KB, or that is no base64url of a JSON array, gives no steps.
  *                 `mode` is the game's: `each` keeps the steps that hold, at most three (Mini
  *                 Games), `all` gives none when one fails or there are more than three (Bingo).
@@ -24,13 +25,10 @@
  *                 shared with ./identity (since v0.10.1).
  * Spec:           Seasonal Entertainment docs/AUTH.md "Embedded games"; GAME-INTEGRATION.md §2
  */
+import { isStepIcon, MAX_STEPS } from '../stepShape.js';
 import { UTF8 } from './utf8.js';
 const LADDERS = ['holder', 'farmer', 'investor'];
-const MAX_STEPS = 3;
 const MAX_HEADER = 2_048;
-// The contract's icon, exactly: "/media/step-icons/<32 hex>.webp" (v0.8.0 pass, review 2, finding
-// 3).
-const ICON = /^\/media\/step-icons\/[0-9a-f]{32}\.webp$/;
 const KEYS = ['icon', 'ladder', 'name'];
 // The step's name trimmed, 1 to 40 characters, or null.
 function nameOf(name) {
@@ -49,7 +47,7 @@ function stepOf(value) {
     const name = nameOf(v['name']);
     if (typeof ladder !== 'string' || !LADDERS.includes(ladder) || name === null)
         return null;
-    if (icon !== null && (typeof icon !== 'string' || !ICON.test(icon)))
+    if (icon !== null && !isStepIcon(icon))
         return null;
     return { ladder: ladder, name, icon };
 }

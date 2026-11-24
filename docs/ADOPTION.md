@@ -150,6 +150,11 @@ Each step pins the newest tag; a step never mixes two tags.
   (with `fitted`) and delete `useFontLoads` from the result frame's signature; without the prop
   the frame is as before.
 
+### Since v0.19.0
+
+- **Step badges in the header** (K56): available and optional. Pass the member's steps as
+  `account.steps` to `AppHeader`; without it the header is as before.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -262,6 +267,11 @@ reachable on every phone.
   first part, head, places and "more", `display: none` on the reveal). With no reveal the frame
   renders none and lays the first part out in one column itself (v0.15.0).
 
+### Since v0.19.0
+
+- **Step badges in the header** (K56): available and optional. Pass the member's steps as
+  `account.steps` to `AppHeader`; without it the header is as before.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -304,6 +314,15 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
   stay in the game. One difference: when the map is full of active keys the kit refuses a new
   key (`braked` answers true) instead of evicting the oldest key, so a flood of new keys cannot
   lift an old key's brake.
+
+### Since v0.19.0
+
+- **Step badges in the header** (K56, decided 2026-11-24: no game-side stand-in): pass the
+  member's steps to `AppHeader` as `account.steps`, in the kit's `Step` shape (`ladder`, `name`,
+  `icon`; the shape `identityFrom` gives from the website's header, so a game that has the
+  identity passes its steps as they are). Each is drawn as a small icon beside the name in the
+  chip and in the folded menu; an icon address other than "/media/step-icons/<32 hex>.webp" is
+  not drawn. Leave the field out and the header is as before.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

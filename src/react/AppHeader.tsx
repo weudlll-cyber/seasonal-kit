@@ -12,7 +12,9 @@
  *                    then anything the game adds (its chat button, a Quick Test link);
  *                 4. the account: signed in, the chip "name (role)" to the account page and
  *                    "Sign out"; signed out, "Sign in" and "Register", or in website mode one
- *                    "Sign in" to the website;
+ *                    "Sign in" to the website; the member's step badges (`steps`, since
+ *                    v0.19.0) sit as small icons in the chip, drawn only for the website's own
+ *                    icon addresses (../stepShape), in the folded menu too;
  *                 5. the development tools, rendered only when the game passes them (its lazily
  *                    loaded ./dev DevSignIn, behind its dev flag);
  *                 6. the theme toggle (./theme).
@@ -29,6 +31,7 @@
  */
 import type { ReactElement, ReactNode } from 'react';
 
+import { isStepIcon, MAX_STEPS, type Step } from '../stepShape.js';
 import { BackLink } from './BackLink.js';
 import { MenuFold } from './MenuFold.js';
 import { ThemeToggle } from './theme.js';
@@ -46,6 +49,10 @@ export interface HeaderAccount {
   readonly role: string;
   readonly href: string;
   readonly onSignOut: () => void;
+  // The member's website step badges (since v0.19.0), in the shape of ./server's `Step`: each
+  // is drawn as a small icon beside the name, named by the step. Only the contract's own icon
+  // address is drawn (`isStepIcon`); at most three. Left out or empty: the chip is as before.
+  readonly steps?: readonly Step[];
 }
 
 export interface AppHeaderProps {
@@ -86,6 +93,24 @@ function Nav(p: Pick<AppHeaderProps, 'links' | 'navExtra'>): ReactElement {
   );
 }
 
+// The member's step badges: one small image each, named by the step. An icon is drawn only if it
+// is exactly the website's file ("/media/step-icons/<32 hex>.webp", the check the server applies
+// to the website's header); a step with another address, or none, is dropped, so a game cannot
+// make the header load any other URL. The images are not decorative: their names are read.
+function Steps(p: { readonly steps: readonly Step[] }): ReactElement | null {
+  const shown = p.steps
+    .slice(0, MAX_STEPS)
+    .flatMap((s) => (isStepIcon(s.icon) ? [{ key: s.ladder, name: s.name, src: s.icon }] : []));
+  if (shown.length === 0) return null;
+  return (
+    <span className="sk-header-steps">
+      {shown.map((s) => (
+        <img key={s.key} className="sk-header-step" src={s.src} alt={s.name} />
+      ))}
+    </span>
+  );
+}
+
 function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'closeKey'>) {
   const button = barButtonClass(p.buttonClassName);
   const { account, signIn } = p;
@@ -108,6 +133,7 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
             {/* Shown on wide screens, read out on narrower ones (../../css/header.css). */}
             <span className="sk-header-chip-prefix">Signed in as </span>
             {account.name} ({account.role})
+            {account.steps === undefined ? null : <Steps steps={account.steps} />}
           </a>
           <button
             type="button"

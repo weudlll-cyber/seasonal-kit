@@ -12,7 +12,8 @@
  *                 website mode one "Sign in"; the dev tools render only when passed. The fold
  *                 opens, moves the focus in, closes on Escape (focus back), a press outside and a
  *                 new close key. The dev menu lists the game's identities and signs in with one
- *                 click. Bingo's menuFold.test.tsx and AppShell (a43209a) for the rules.
+ *                 click. The step badges in the chip are ./headerSteps.test.tsx's. Bingo's
+ *                 menuFold.test.tsx and AppShell (a43209a) for the rules.
  * Depends on:     vitest, jsdom, @testing-library/react
  */
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';

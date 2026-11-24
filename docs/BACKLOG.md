@@ -30,12 +30,13 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **12. A middle part in `ResultFrame`** between the first part and "more" (Mini Games T417,
   2026-11-23). Not in v0.12.0. To be decided after the idea is checked against Bingo's and
   Cases' results, since a frame every game shares must fit all three. Done when: the owner
-  decides, and what is decided is in the kit with a test, or is recorded as not wanted.
+  decides, and what is decided is in the kit with a test, or is recorded as not wanted. The
+  check against the three games is [concepts/result-frame.md](concepts/result-frame.md) (2026-11-24).
 - **13. The dock bar's padding and field** (Mini Games T416 (3), 2026-11-23). Not in v0.12.0:
   the 4 px padding of `.sk-chat-dock-row` in the bar's form `line`, and the writing field that
   is hidden in the form `field`. Both would change what every game sees, so they are measured
   first (padding in the three games' phone layouts, the field with a game's own field passed).
-  Done when: the measurement is recorded here and the owner decides.
+  Done when: the owner decides. Measured 2026-11-24: [concepts/dock-bar.md](concepts/dock-bar.md).
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
@@ -44,7 +45,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **17. A one-column `ResultFrame`, or two cards only with a reveal** (Bingo's wish,
   `css/frames.css` line 229, the 900 px two-column rule). To be decided together with item 12
   after checking both against Bingo, Mini Games and Cases (K42). Done when: decided, and what
-  is decided is in the kit with a test.
+  is decided is in the kit with a test. Recommendation: [concepts/result-frame.md](concepts/result-frame.md).
 
 ## Part two — closed
 

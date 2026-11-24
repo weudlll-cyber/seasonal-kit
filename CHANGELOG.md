@@ -16,6 +16,36 @@ applies it.
 - **The website keeps its own sign-in brake** (docs only, DECISIONS K49): it does not move to
   `FailureBrake`. BACKLOG 19 is closed as decided.
 
+## [0.17.0] - 2026-11-24
+
+A bug fix (DECISIONS K50). No game has to change anything.
+
+### Fixed
+
+- **The open phone chat sheet is never taller than the space visibly left above the bar.** Found on
+  a real phone (Chrome on Android, large system font, Mini Games on v0.15.0): with the sheet open,
+  the keyboard pushed the sheet's head (title, Close) and its messages off the top of the screen,
+  and only the input stayed visible. `css/dock.css` gave the sheet `min(60dvh, 30rem)`; `dvh` does
+  not shrink for the on-screen keyboard there and `30rem` grows with the font, while
+  `DockedScreen` publishes `--sk-visible-height` from `visualViewport` and the bar moves up with
+  the keyboard. The sheet now also has a `max-height`: `--sk-visible-height` minus the dock's own
+  height (a call strip above the bar counts), its margin, the gap above it and the sheet's own
+  padding and border. The head with Close does not shrink; the messages shrink and scroll inside.
+  Where the space is enough the sheet is as before (60 % of the window, at most 30rem). Without
+  `DockedScreen` there is no `--sk-visible-height`, the fallback is `100dvh`, and the old height
+  decides. Three custom properties name the dock's margin (`--sk-dock-margin`), the sheet's gap
+  (`--sk-sheet-gap`) and its border (`--sk-sheet-border`), so the cap reuses the values the layout
+  uses. `showcase/sheet.spec.ts` measures it at 375 × 667 and 390 × 844 with a 200 % root font; a
+  real keyboard is not emulated.
+
+### Migration, per game that docks the chat
+
+- **Mini Games, Bingo Royale, Seasonal Cases (and Seasonal Party when it adopts the dock):**
+  nothing to change; take the version. The game's root must follow the visible height
+  (`height: var(--sk-visible-height, 100dvh)`, as ADOPTION.md says), because the cap counts from
+  its bottom. Whether to add `interactive-widget=resizes-content` to the viewport meta is answered
+  in [docs/concepts/dock-bar.md](docs/concepts/dock-bar.md): not needed.
+
 ## [0.16.0] - 2026-11-24
 
 One addition (DECISIONS K48), opt-in: a game that changes nothing sees today's behaviour.

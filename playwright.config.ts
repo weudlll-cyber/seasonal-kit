@@ -6,7 +6,8 @@
  * Responsibility: `pnpm showcase:test` builds the showcase, serves it on port 4317, and runs
  *                 showcase/showcase.spec.ts (a screenshot of every viewport and theme into
  *                 showcase/screens/ and axe on each) and showcase/layout.spec.ts (what only a
- *                 browser's layout shows, measured). ./showcase/global-setup.ts deletes the
+ *                 browser's layout shows, measured) and showcase/sheet.spec.ts (the phone chat
+ *                 sheet inside the visible height, v0.17.0). ./showcase/global-setup.ts deletes the
  *                 previous run's screens first, so they never pile up (DECISIONS K16); the
  *                 folder is git-ignored and never committed. CI runs it on every PR (job
  *                 `showcase`) and keeps no screens.

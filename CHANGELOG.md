@@ -31,9 +31,33 @@ changes nothing sees today's behaviour.
   a new key refused (`braked` is true) while every held key is active, a clock passed in. The
   rules and the keys stay in each game.
 
+- **`ResultFrame` without a reveal** (BACKLOG 17, K42): a null or missing `reveal` renders no
+  reveal box, and the frame sets `data-sk-reveal="none"`, on which `css/frames.css` lays the
+  first part out in one column at every width (the proof still beside the headline on a desktop).
+  The `reveal` prop is now optional. A game that passes a reveal sees exactly today's layout.
+- **`ResultFrame` `middle`** (BACKLOG 12, Mini Games T417): an optional card of its own between the
+  first part and `more` (`sk-result-middle`, styled as the "more" card), fixed in the fitting like
+  the first part. Without it the frame is as before.
+- **The showcase** has two more result states (no reveal, with a middle card), and
+  `layout.spec.ts` measures them at 1280, 1920 and 390 px.
+
+### Changed
+
+- **Decisions, no code:** no merged single-card result option (K47, BACKLOG 20): Bingo drops its
+  own `results.css` overrides at its next adoption. The dock bar's padding and field are measured
+  and left as they are (BACKLOG 13, concepts/dock-bar.md); Mini Games measures again in the real
+  game and reports back.
+- **BACKLOG:** item 9 is back in part one (the v0.13.0 edit had removed it by mistake).
+
 ### Migration, per game
 
-- **Seasonal Cases:** replace the `FailureBrake` class of `apps/server/src/auth/failureBrake.ts`
+- **Seasonal Mini Games:** pass its `Guesses` card (the "Closest to winning" card or its history
+  panel) as `middle`, and keep marking it as it does today; nothing else changes.
+- **Seasonal Bingo Royale:** at its next kit adoption load `frames.css` for the result, leave
+  `reveal` out, and drop the `display: contents` and `display: none` overrides of `results.css`
+  (K47).
+- **Seasonal Cases:** nothing for the result (it has a reveal and no middle part).
+- **Seasonal Cases (sign-in):** replace the `FailureBrake` class of `apps/server/src/auth/failureBrake.ts`
   with `import { FailureBrake } from '@seasonal/kit/server'`; keep `SignInBrake` (its three keys and
   limits). Difference: with a full map the kit refuses a new key and keeps every held key's count;
   Cases' copy evicted the oldest key.

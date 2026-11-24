@@ -180,3 +180,7 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   success is not counted. The rules and the keys (an account, an address range) stay in each
   game. Bingo moves its login limits onto it at its next kit adoption, and Cases replaces its own
   copy of the class with the kit's.
+- **K47 — There is no merged single-card `ResultFrame` option** (decided 2026-11-24, v0.15.0;
+  [concepts/result-frame.md](concepts/result-frame.md) point 4). Bingo shows its result like the
+  other games, the first part and "more" as the kit lays them out, and at its next kit adoption
+  drops its own `results.css` overrides of the kit's result classes.

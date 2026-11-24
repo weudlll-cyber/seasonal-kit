@@ -136,6 +136,8 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Sign-in failures** (K46): its failed sign-ins are braked with `FailureBrake`, the route asking
   `braked(key)` before the password check and calling `failed(key)` on a wrong one; the rules and
   the keys stay in the game.
+- **"Closest to winning"** (BACKLOG 12): `ResultFrame`'s `middle` slot takes its `Guesses` card
+  between the first part and "more"; a game that passes none sees today's layout.
 
 ## Seasonal Bingo Royale
 
@@ -243,6 +245,11 @@ reachable on every phone.
 - **Login limits** (K46): at its next kit adoption its login limits move onto `FailureBrake`: the
   route asks `braked(key)` before the password check and calls `failed(key)` on a wrong one. Its
   rules and keys stay in the game; the kit's `RateLimiter` keeps the limits that count every call.
+- **The result** (K47): there is no merged single-card option. Bingo shows its result like the
+  other games, the first part and "more" as the kit lays them out, and at its next kit adoption
+  drops its own `results.css` overrides of the kit's result classes (`display: contents` on the
+  first part, head, places and "more", `display: none` on the reveal). With no reveal the frame
+  renders none and lays the first part out in one column itself (v0.15.0).
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 

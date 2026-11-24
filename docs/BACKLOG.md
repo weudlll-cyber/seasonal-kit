@@ -19,25 +19,21 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
   game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21).
-- **12. A middle part in `ResultFrame`** between the first part and "more" (Mini Games T417,
-  2026-11-23). Not in v0.12.0. To be decided after the idea is checked against Bingo's and
-  Cases' results, since a frame every game shares must fit all three. Done when: the owner
-  decides, and what is decided is in the kit with a test, or is recorded as not wanted. The
-  check against the three games is [concepts/result-frame.md](concepts/result-frame.md) (2026-11-24).
-- **13. The dock bar's padding and field** (Mini Games T416 (3), 2026-11-23). Not in v0.12.0:
-  the 4 px padding of `.sk-chat-dock-row` in the bar's form `line`, and the writing field that
-  is hidden in the form `field`. Both would change what every game sees, so they are measured
-  first (padding in the three games' phone layouts, the field with a game's own field passed).
-  Done when: the owner decides. Measured 2026-11-24: [concepts/dock-bar.md](concepts/dock-bar.md).
+- **9. React wrappers.** What is left of it: the dock's arrivals (`useDockArrivals`, Mini Games'
+  `ChatArrivals`, `HostChatSight`), `ChatDock`, `DockedScreen` and the call slot. In the kit since
+  v0.4.0 with tests. Done when: a game uses them. Checked 2026-11-24: Seasonal Cases `073f9ad`
+  uses `useDockReserve` and `useFitScale` only (`apps/web/src/board/RegistrationBoard.tsx` line
+  12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's `master` has its own `ChatDock` around the
+  kit's frame. The chat frame's link is closed (part two, 9a).
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **17. A one-column `ResultFrame`, or two cards only with a reveal** (Bingo's wish,
-  `css/frames.css` line 229, the 900 px two-column rule). To be decided together with item 12
-  after checking both against Bingo, Mini Games and Cases (K42). Done when: decided, and what
-  is decided is in the kit with a test. Recommendation: [concepts/result-frame.md](concepts/result-frame.md).
+- **19. The website's own rate limiting** uses its own library, not the kit's `RateLimiter` or
+  `FailureBrake` (2026-11-24). Whether it moves onto the kit's is open; not planned for any
+  release. Done when: the owner decides, and the website's repository does what is decided (the
+  kit never touches it).
 
 ## Part two — closed
 
@@ -96,3 +92,19 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   tests/prefix.test.ts checks custom properties too (only `--fit`, which a game's element carries,
   is left), and the CHANGELOG has the old and new name of each. Closed by PR #37 and v0.14.0, which
   breaks every game (DECISIONS K45) and was released after the owner's review.
+- **12. A middle part in `ResultFrame`** (Mini Games T417, 2026-11-23). `ResultFrame`'s optional
+  `middle` slot: a card of its own between the first part and "more", fixed in the fitting, for
+  Mini Games' "Closest to winning". Chosen from [concepts/result-frame.md](concepts/result-frame.md)
+  (point 2). Closed by PR #39 and v0.15.0.
+- **17. A one-column `ResultFrame`, or two cards only with a reveal** (Bingo's wish, 2026-11-23,
+  K42). A null or missing `reveal` renders no reveal box and sets `data-sk-reveal="none"`, on
+  which `css/frames.css` lays the first part out in one column
+  ([concepts/result-frame.md](concepts/result-frame.md) point 1). Closed by PR #39 and v0.15.0.
+- **13. The dock bar's padding and field** (Mini Games T416 (3), 2026-11-23). Measured, no kit
+  change ([concepts/dock-bar.md](concepts/dock-bar.md)): the 4 px padding is 8 px of the row and
+  at most 2 % of the window, and the kit's field was visible in every measurement. Mini Games
+  measures again in the real game and reports back; a new item then. Closed by PR #39 and v0.15.0
+  without a change.
+- **20. A merged single-card `ResultFrame` option** (the concept's point 4, Bingo, 2026-11-24).
+  Decided no, K47: Bingo shows its result like the other games and drops its own `results.css`
+  overrides at its next kit adoption. Nothing to build.

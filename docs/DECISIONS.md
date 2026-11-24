@@ -189,3 +189,8 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   `useFitScale` as it is, so a game can ask the start card to fit again once web fonts have
   loaded (`afterFonts`). Without it the card is as before. Mini Games drops its own font-load
   counting on the start card at its next kit adoption.
+- **K49 — The website keeps its own sign-in brake and does not move to `FailureBrake`** (decided
+  2026-11-24; BACKLOG 19). `seasonal-entertainment` already counts only failed sign-ins and refuses
+  before the password check (`server/src/http/rateLimit.js`, `skipSuccessfulRequests`; limits in
+  `server/src/config.js`: 10 failures per address and 10 per username in 15 minutes), and it does
+  not depend on the kit at all. Revisit if the website ever takes the kit.

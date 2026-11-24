@@ -30,11 +30,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **19. The website's own rate limiting** uses its own library, not the kit's `RateLimiter` or
-  `FailureBrake` (2026-11-24). Whether it moves onto the kit's is open; not planned for any
-  release. Done when: the owner decides, and the website's repository does what is decided (the
-  kit never touches it).
-
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -111,3 +106,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **21. The start card fits again after web fonts load** (Mini Games T404 and T423, decided
   2026-11-24, K48). `StartCard`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to
   `useFitScale`. Closed by PR #41 and v0.16.0.
+- **19. The website keeps its own sign-in brake** (2026-11-24, K49). Decided: it does not move to
+  `FailureBrake`; nothing to build. Closed as decided.

@@ -372,6 +372,28 @@ This proof reads the shipped files and renders two components; it does not rende
 against the new names, which each game does in its own adoption PR (CHANGELOG [0.14.0], "Migration,
 per game"). Both consumers were deleted afterwards.
 
+## The v0.15.0 failure brake and result frame, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.15.0` (merge commit `e6943ad`), both with `ignore-scripts=true`,
+with the toolchain of the earlier proofs (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false`, Vitest 5.0.5 with jsdom 31.0.1). Each ran `tsc` and five tests in two files:
+
+- **In Node, no DOM** (`@seasonal/kit/server`): `FailureBrake` looks without counting or holding a
+  key, brakes at the third failure and not before, keeps another key free, and lifts once the
+  failures have aged out of the window; with a bound of two keys a third key is braked while the
+  held keys keep their counts; a broken rule throws `RangeError`; `RateLimiter` still works.
+- **In jsdom** (`@seasonal/kit/react`): the installed kit is `0.15.0` and its `frames.css` has the
+  `[data-sk-reveal='none']` rule; a `ResultFrame` with a reveal has its box and no
+  `data-sk-reveal`, one without has `data-sk-reveal="none"` and no reveal box; with `middle` and
+  `more` the children are `sk-result-first`, `sk-result-middle`, `sk-result-more` in that order.
+
+| Consumer                 | Install                                                                                                                                                                  | `tsc`  | Tests    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.8 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/e6943ad…`, `gitHosted: true`).                                                    | Worked | 5 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked, with no `ERESOLVE`. `npm ls` shows the kit `0.15.0` at `…seasonal-kit.git#e6943ad…` with its `vite` deduped to the consumer's 8.3.5 (8.3.8 is the newest 8.3.x). | Worked | 5 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

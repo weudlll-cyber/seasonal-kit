@@ -14,6 +14,22 @@ applies it.
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
 
+## [0.16.0] - 2026-11-24
+
+One addition (DECISIONS K48), opt-in: a game that changes nothing sees today's behaviour.
+
+### Added
+
+- **`StartCard` `fit`** (Mini Games T404 and T423): an optional prop of the existing `FitOptions`
+  type, passed to `useFitScale` as it is. `fit={{ afterFonts: true }}` fits the card again once
+  web fonts have loaded. Without the prop the card behaves exactly as before.
+
+### Migration
+
+- **Mini Games:** pass `fit={{ afterFonts: true }}` to `StartCard` and delete the start card's own
+  font-load counting at the next kit adoption.
+- **Bingo Royale, Seasonal Cases:** nothing.
+
 ## [0.15.0] - 2026-11-24
 
 Three additions from the games' requests (DECISIONS K46, K47). Every one is opt-in: a game that

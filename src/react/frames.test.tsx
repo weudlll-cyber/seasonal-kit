@@ -6,7 +6,8 @@
  *
  * Responsibility: the start card names its heading, tints by season or not at all, shows the
  *                 icon only with a season, the special and facts only when given, and counts
- *                 down in whole seconds never below 0 as a timer not read out. The result frame
+ *                 down in whole seconds never below 0 as a timer not read out, and listens for web
+ *                 fonts only when its `fit` option asks (v0.16.0). The result frame
  *                 holds headline, lines, proof, reveal, placings and more in their places, marks
  *                 its first part fixed, takes the board layout, and fits only when told. In a
  *                 docked screen the chat stays the same element from the start card to the
@@ -74,6 +75,26 @@ describe('the start card', () => {
     expect(screen.queryByRole('list')).toBeNull();
     expect(card.querySelector('.sk-start-special')).toBeNull();
     expect(screen.getByTestId('countdown').textContent).toBe('Opens in 0 s');
+  });
+});
+
+describe('the start card fitting', () => {
+  it('fits again after web fonts load only when its `fit` option asks (v0.16.0)', () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const fonts = {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      ready: new Promise(() => {}),
+    };
+    Object.defineProperty(document, 'fonts', { value: fonts, configurable: true });
+    // Props as an object, so "no `fit` at all" is tested as a game that leaves it out.
+    const base = { game: 'mini-games', season: 'spring', title: 'Spring', opensIn: 3 } as const;
+    const { rerender, unmount } = render(<StartCard {...base} signature="a" />);
+    expect(fonts.addEventListener).not.toHaveBeenCalled();
+    rerender(<StartCard {...base} signature="a" fit={{ afterFonts: true }} />);
+    expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
+    unmount();
+    Reflect.deleteProperty(document, 'fonts');
   });
 });
 

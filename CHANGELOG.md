@@ -22,6 +22,23 @@ applies it.
 - **The website keeps its own sign-in brake** (docs only, DECISIONS K49): it does not move to
   `FailureBrake`. BACKLOG 19 is closed as decided.
 
+## [0.18.0] - 2026-11-24
+
+One addition (DECISIONS K55), opt-in: a game that changes nothing sees today's behaviour.
+
+### Added
+
+- **`ResultFrame` `fit`** (Mini Games T423): an optional prop of the existing `FitOptions` type,
+  passed to `useFitScale` as it is, as `StartCard`'s since v0.16.0. `fit={{ afterFonts: true }}`
+  fits the frame again once web fonts have loaded; it matters where the frame is `fitted`, since
+  an unfitted frame is not watched. Without the prop the frame behaves exactly as before.
+
+### Migration
+
+- **Mini Games:** pass `fit={{ afterFonts: true }}` to `ResultFrame` and delete `useFontLoads`
+  from the result frame's signature at the next kit adoption.
+- **Bingo Royale, Seasonal Cases:** nothing.
+
 ## [0.17.0] - 2026-11-24
 
 A bug fix (DECISIONS K50). No game has to change anything.

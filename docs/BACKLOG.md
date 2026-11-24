@@ -116,3 +116,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **23. The handbook follows v0.12.0 to v0.17.0** (2026-11-24, K51, K52, K53, K54). `docs/HANDBOOK.md` has
   the new kit parts, "How a Seasonal game looks", "Before production", the working-cheaply rules,
   HSTS and `FailureBrake`; every release now updates it. Closed by PR #46.
+- **24. The result frame fits again after web fonts load** (Mini Games T423, decided 2026-11-24,
+  K55). `ResultFrame`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to `useFitScale`.
+  Closed by PR #47 and v0.18.0.

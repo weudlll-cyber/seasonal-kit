@@ -214,3 +214,7 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   carries the AGPL's text in `LICENSE` and `"license": "AGPL-3.0-or-later"` in `package.json`, as the
   kit does; the Luxora Grotesk font stays outside it (K8). On 2026-11-24 the kit, Mini Games,
   Bingo Royale, Cases, Seasonal Party and the website all carry it (read from their `master`).
+- **K55 — `ResultFrame` passes the fit options through** (decided 2026-11-24, v0.18.0; Mini Games
+  T423). The same optional prop as `StartCard`'s (K48): `fit`, of the existing `FitOptions` type,
+  goes to `useFitScale` as it is. Without it the frame is as before. Mini Games drops `useFontLoads`
+  from the result frame's signature at its next kit adoption.

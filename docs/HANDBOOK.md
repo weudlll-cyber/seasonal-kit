@@ -196,7 +196,7 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   no room.
 - **Fit floors:** `useFitScale` and `fit.css` with the game's `data-sk-game`; `MIN_POINTER_TARGET`;
   `afterFonts` fits again once web fonts have loaded, on `useFitScale` and, through its `fit`
-  prop, on `StartCard` (K48); a default text floor in `tokens.css` for a game with no `fit.css`
+  prop, on `StartCard` (K48) and on a `fitted` `ResultFrame` (K55); a default text floor in `tokens.css` for a game with no `fit.css`
   (K41).
 - **Result frame and start card:** `ResultFrame` (a page, or a `panel`) and `StartCard`
   (`frames.css`). With no `reveal` the frame has no reveal box and one column; an optional

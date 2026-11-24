@@ -144,6 +144,12 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Fonts on the start card** (K48, T404, T423): pass `fit={{ afterFonts: true }}` to `StartCard`
   and delete the start card's own font-load counting; without the prop the card is as before.
 
+### Since v0.18.0
+
+- **Fonts on the result frame** (K55, T423): pass `fit={{ afterFonts: true }}` to `ResultFrame`
+  (with `fitted`) and delete `useFontLoads` from the result frame's signature; without the prop
+  the frame is as before.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)

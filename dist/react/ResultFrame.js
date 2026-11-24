@@ -2,7 +2,8 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useFitScale } from './useFitScale.js';
 const HEADINGS = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5', 6: 'h6' };
 export function ResultFrame(p) {
-    const fit = useFitScale(p.game, p.signature);
+    // `self` stays false as before; only the game's options are added (T423, as StartCard).
+    const fit = useFitScale(p.game, p.signature, false, p.fit);
     // A page's headline is its h1; a panel's sits at the level the game gives it.
     const Heading = p.panel === undefined ? 'h1' : HEADINGS[p.panel.level];
     // No reveal to show: its box is not rendered, so the first part has no empty column.

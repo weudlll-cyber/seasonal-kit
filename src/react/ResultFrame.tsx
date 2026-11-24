@@ -11,7 +11,9 @@
  *                 is rendered and the first part is one column. `middle` (since v0.15.0) is a card
  *                 of its own between the first part and `more`, fixed in the fitting like the
  *                 first part (Mini Games' "Closest to winning"). `more` follows at its own
- *                 height (standings, team result).
+ *                 height (standings, team result). A game whose web fonts load late passes
+ *                 `fit={{ afterFonts: true }}` (v0.18.0, as StartCard's, K48) to fit again once
+ *                 they have loaded; it matters where the frame is `fitted`.
  *                 Inside a docked screen (./DockedScreen) the frame fills the height above the
  *                 chat. `fitted` shrinks the first part with the screen's scale (`--fit`) where
  *                 it has not the room; off by default, so a result that does not fit scrolls as
@@ -30,7 +32,7 @@
  */
 import type { ReactElement, ReactNode } from 'react';
 
-import type { FitGame } from '../fit.js';
+import type { FitGame, FitOptions } from '../fit.js';
 import { useFitScale } from './useFitScale.js';
 
 export interface ResultFrameProps {
@@ -53,6 +55,10 @@ export interface ResultFrameProps {
   readonly layout?: 'list' | 'board';
   // Shrink the first part to the screen where it has not the room.
   readonly fitted?: boolean;
+  // Options for the fitting, passed to useFitScale as they are (since v0.18.0, as StartCard's
+  // `fit`, K48): `afterFonts` fits again once web fonts have loaded. They matter only where the
+  // frame is `fitted`. Without it the frame fits as before.
+  readonly fit?: FitOptions;
   // Changes when the result's content does, so it fits again.
   readonly signature: string;
   // A panel inside a screen instead of a page of its own (since v0.11.0, Bingo R4): its
@@ -63,7 +69,8 @@ export interface ResultFrameProps {
 const HEADINGS = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5', 6: 'h6' } as const;
 
 export function ResultFrame(p: ResultFrameProps): ReactElement {
-  const fit = useFitScale<HTMLElement>(p.game, p.signature);
+  // `self` stays false as before; only the game's options are added (T423, as StartCard).
+  const fit = useFitScale<HTMLElement>(p.game, p.signature, false, p.fit);
   // A page's headline is its h1; a panel's sits at the level the game gives it.
   const Heading = p.panel === undefined ? 'h1' : HEADINGS[p.panel.level];
   // No reveal to show: its box is not rendered, so the first part has no empty column.

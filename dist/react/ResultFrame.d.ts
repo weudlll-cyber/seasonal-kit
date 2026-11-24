@@ -11,7 +11,9 @@
  *                 is rendered and the first part is one column. `middle` (since v0.15.0) is a card
  *                 of its own between the first part and `more`, fixed in the fitting like the
  *                 first part (Mini Games' "Closest to winning"). `more` follows at its own
- *                 height (standings, team result).
+ *                 height (standings, team result). A game whose web fonts load late passes
+ *                 `fit={{ afterFonts: true }}` (v0.18.0, as StartCard's, K48) to fit again once
+ *                 they have loaded; it matters where the frame is `fitted`.
  *                 Inside a docked screen (./DockedScreen) the frame fills the height above the
  *                 chat. `fitted` shrinks the first part with the screen's scale (`--fit`) where
  *                 it has not the room; off by default, so a result that does not fit scrolls as
@@ -29,7 +31,7 @@
  * Spec:           Mini Games DECISIONS T145, O111; kit DECISIONS K14
  */
 import type { ReactElement, ReactNode } from 'react';
-import type { FitGame } from '../fit.js';
+import type { FitGame, FitOptions } from '../fit.js';
 export interface ResultFrameProps {
     readonly game: FitGame;
     readonly headline: ReactNode;
@@ -41,6 +43,7 @@ export interface ResultFrameProps {
     readonly more?: ReactNode;
     readonly layout?: 'list' | 'board';
     readonly fitted?: boolean;
+    readonly fit?: FitOptions;
     readonly signature: string;
     readonly panel?: {
         readonly level: 2 | 3 | 4 | 5 | 6;

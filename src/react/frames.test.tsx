@@ -7,7 +7,8 @@
  * Responsibility: the start card names its heading, tints by season or not at all, shows the
  *                 icon only with a season, the special and facts only when given, and counts
  *                 down in whole seconds never below 0 as a timer not read out, and listens for web
- *                 fonts only when its `fit` option asks (v0.16.0). The result frame
+ *                 fonts only when its `fit` option asks (v0.16.0), and the result frame the same when it is
+ *                 fitted (v0.18.0). The result frame
  *                 holds headline, lines, proof, reveal, placings and more in their places, marks
  *                 its first part fixed, takes the board layout, and fits only when told. In a
  *                 docked screen the chat stays the same element from the start card to the
@@ -94,6 +95,31 @@ describe('the start card fitting', () => {
     rerender(<StartCard {...base} signature="a" fit={{ afterFonts: true }} />);
     expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
     unmount();
+    Reflect.deleteProperty(document, 'fonts');
+  });
+});
+
+describe('the result frame fitting', () => {
+  it('fits again after web fonts load only when its `fit` option asks (v0.18.0)', () => {
+    vi.stubGlobal('ResizeObserver', undefined);
+    const fonts = {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      ready: new Promise(() => {}),
+    };
+    Object.defineProperty(document, 'fonts', { value: fonts, configurable: true });
+    // Props as an object, so "no `fit` at all" is a game that leaves it out.
+    const base = { game: 'mini-games', headline: 'Done', placings: <ol />, fitted: true } as const;
+    const { rerender, unmount } = render(<ResultFrame {...base} signature="a" />);
+    expect(fonts.addEventListener).not.toHaveBeenCalled();
+    rerender(<ResultFrame {...base} signature="a" fit={{ afterFonts: true }} />);
+    expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(fonts.removeEventListener).toHaveBeenCalledTimes(1);
+    // A frame that is not fitted is never watched, so `fit` has nothing to ask of it.
+    const plain = { ...base, fitted: false };
+    render(<ResultFrame {...plain} signature="b" fit={{ afterFonts: true }} />);
+    expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
     Reflect.deleteProperty(document, 'fonts');
   });
 });

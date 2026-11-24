@@ -22,7 +22,7 @@
    at 3:1 or more against the page, the surfaces, the card and the header (WCAG 1.4.11). Drawn
    outside the control (offset), only for keyboard focus (:focus-visible). */
 :root {
-  --sk-focus-ring: var(--color-text);
+  --sk-focus-ring: var(--sk-color-text);
 }
 
 :where(
@@ -46,16 +46,16 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35em;
-  min-height: var(--hit-target);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-small);
+  min-height: var(--sk-hit-target);
+  color: var(--sk-color-text-muted);
+  font-size: var(--sk-font-size-small);
   text-decoration: none;
   white-space: nowrap;
 }
 
 .sk-back-link:hover,
 .sk-back-link:focus-visible {
-  color: var(--color-text);
+  color: var(--sk-color-text);
   text-decoration: underline;
 }
 
@@ -70,17 +70,17 @@
   display: inline-grid;
   place-items: center;
   flex: none;
-  width: var(--hit-target);
-  height: var(--hit-target);
-  border: 1px solid var(--color-border);
+  width: var(--sk-hit-target);
+  height: var(--sk-hit-target);
+  border: 1px solid var(--sk-color-border);
   border-radius: 50%;
-  background: var(--color-glass);
-  color: var(--color-text);
+  background: var(--sk-color-glass);
+  color: var(--sk-color-text);
   cursor: pointer;
 }
 
 .sk-theme-toggle:hover {
-  background: var(--color-active-bg);
+  background: var(--sk-color-active-bg);
 }
 
 /* Read out, not shown ("3 unread"): the dock's and the game bar's words (./dock.css,

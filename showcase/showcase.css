@@ -10,39 +10,39 @@
  */
 body {
   margin: 0;
-  background: var(--page-background);
-  color: var(--color-text);
-  font-family: var(--font-family);
+  background: var(--sk-page-background);
+  color: var(--sk-color-text);
+  font-family: var(--sk-font-family);
 }
 
 .showcase-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1) var(--space-2);
-  padding: var(--space-2) var(--gutter);
+  gap: var(--sk-space-1) var(--sk-space-2);
+  padding: var(--sk-space-2) var(--sk-gutter);
 }
 
 .showcase-head h1 {
   flex: 1;
   margin: 0;
-  font-size: var(--font-size-title);
+  font-size: var(--sk-font-size-title);
 }
 
 main {
   display: grid;
-  gap: var(--space-3);
-  padding: 0 var(--gutter) var(--space-4);
+  gap: var(--sk-space-3);
+  padding: 0 var(--sk-gutter) var(--sk-space-4);
 }
 
 .showcase-section {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--sk-space-2);
 }
 
 .showcase-section > h2 {
   margin: 0;
-  font-size: var(--font-size-lead);
+  font-size: var(--sk-font-size-lead);
 }
 
 /* A game's screen: a fixed height the docked screen shares out. */
@@ -52,12 +52,12 @@ main {
 
 .showcase-pill {
   padding: 0.2rem 0.6rem;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-pill);
-  font-weight: var(--font-weight-strong);
+  border: 1px solid var(--sk-color-border-strong);
+  border-radius: var(--sk-radius-pill);
+  font-weight: var(--sk-font-weight-strong);
 }
 
 .showcase-reveal {
   margin: 0;
-  font-size: var(--font-size-title);
+  font-size: var(--sk-font-size-title);
 }

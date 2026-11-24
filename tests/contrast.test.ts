@@ -29,15 +29,19 @@ describe('the contrast of the text tokens', () => {
   });
 
   it('fails on a deliberately bad colour, naming the pair and theme', () => {
-    const bad = css.replace('--color-text-muted: #b3bcd0;', '--color-text-muted: #3a4466;');
+    const bad = css.replace('--sk-color-text-muted: #b3bcd0;', '--sk-color-text-muted: #3a4466;');
     const failures = contrastFailures(readTokens(bad));
     expect(failures.length).toBeGreaterThan(0);
-    expect(failures.every((f) => f.theme === 'dark' && f.text === '--color-text-muted')).toBe(true);
+    expect(failures.every((f) => f.theme === 'dark' && f.text === '--sk-color-text-muted')).toBe(
+      true,
+    );
   });
 
   it('fails Summer when the text on the seasons turns grey', () => {
-    const bad = css.replace('--color-on-season: #14171c;', '--color-on-season: #5a5a5a;');
-    expect(contrastFailures(readTokens(bad)).map((f) => f.background)).toContain('--color-summer');
+    const bad = css.replace('--sk-color-on-season: #14171c;', '--sk-color-on-season: #5a5a5a;');
+    expect(contrastFailures(readTokens(bad)).map((f) => f.background)).toContain(
+      '--sk-color-summer',
+    );
   });
 });
 
@@ -55,7 +59,7 @@ describe('the header’s background and the focus ring (audit B7, DECISIONS K29)
 
   it('samples between stops, where a blend can be darker than both (v0.10.0 pass, finding 3)', () => {
     const two = readTokens(
-      ':root { --color-background: #ffffff; --sidebar-background: linear-gradient(90deg, #ff0000 0%, #00ff00 100%); }',
+      ':root { --sk-color-background: #ffffff; --sk-sidebar-background: linear-gradient(90deg, #ff0000 0%, #00ff00 100%); }',
     );
     expect(sidebarColours(two, 'light')[8]).toEqual([127.5, 127.5, 0, 1]);
   });
@@ -67,7 +71,7 @@ describe('the header’s background and the focus ring (audit B7, DECISIONS K29)
     ['no gradient', '#ffffff'],
   ])('refuses %s instead of skipping it (v0.10.0 pass, finding 2)', (_what, value) => {
     const odd = readTokens(
-      `:root { --color-background: #ffffff; --sidebar-background: ${value}; }`,
+      `:root { --sk-color-background: #ffffff; --sk-sidebar-background: ${value}; }`,
     );
     expect(() => sidebarColours(odd, 'light')).toThrow(/Not a/);
   });
@@ -76,16 +80,16 @@ describe('the header’s background and the focus ring (audit B7, DECISIONS K29)
     const bad = css.replace('#f8d9c2 35%', '#8a8f99 35%');
     const failures = contrastFailures(readTokens(bad));
     // The second stop is the 17th colour across the width.
-    expect(failures.map((f) => f.background)).toContain('--sidebar-background point 17');
+    expect(failures.map((f) => f.background)).toContain('--sk-sidebar-background point 17');
   });
 
   it('draws the focus ring at 3:1 or more on every background, light and dark', () => {
-    expect(ring).toBe('--color-text');
+    expect(ring).toBe('--sk-color-text');
     expect(focusRingFailures(readTokens(css), ring)).toEqual([]);
   });
 
   it('fails a ring as faint as the hairline border', () => {
-    const failures = focusRingFailures(readTokens(css), '--color-border-strong');
+    const failures = focusRingFailures(readTokens(css), '--sk-color-border-strong');
     expect(failures.length).toBeGreaterThan(0);
   });
 });

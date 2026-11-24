@@ -40,7 +40,7 @@ describe('the kit’s focus ring', () => {
   const shell = sheet('shell.css');
 
   it('is the text colour, defined once as --sk-focus-ring', () => {
-    expect(rule(shell, ':root')).toMatch(/--sk-focus-ring:\s*var\(--color-text\)/);
+    expect(rule(shell, ':root')).toMatch(/--sk-focus-ring:\s*var\(--sk-color-text\)/);
   });
 
   it.each([
@@ -64,16 +64,18 @@ describe('the kit’s focus ring', () => {
 describe('the targets', () => {
   it('makes the bar’s buttons 44 px wide and high on every screen', () => {
     const button = rule(sheet('bar.css'), '.sk-bar-button');
-    expect(button).toMatch(/min-width:\s*var\(--hit-target\)/);
-    expect(button).toMatch(/min-height:\s*var\(--hit-target\)/);
+    expect(button).toMatch(/min-width:\s*var\(--sk-hit-target\)/);
+    expect(button).toMatch(/min-height:\s*var\(--sk-hit-target\)/);
   });
 
   it('makes the back link 44 px high', () => {
-    expect(rule(sheet('shell.css'), '.sk-back-link')).toMatch(/min-height:\s*var\(--hit-target\)/);
+    expect(rule(sheet('shell.css'), '.sk-back-link')).toMatch(
+      /min-height:\s*var\(--sk-hit-target\)/,
+    );
   });
 
   it('keeps the hit target at 44 px', () => {
-    expect(rule(sheet('tokens.css'), ':root')).toMatch(/--hit-target:\s*44px/);
+    expect(rule(sheet('tokens.css'), ':root')).toMatch(/--sk-hit-target:\s*44px/);
   });
 });
 

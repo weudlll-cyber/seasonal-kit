@@ -1,6 +1,7 @@
 /**
  * @file   tests/prefix.test.ts
- * @brief  Every class and keyframe the kit's CSS defines is `sk-` prefixed (DECISIONS K7).
+ * @brief  Every class, keyframe, data attribute and custom property the kit's CSS defines or reads
+ *         is `sk-` prefixed (DECISIONS K7, K31; custom properties since v0.14.0, BACKLOG 11).
  *
  * Responsibility: a shared name never collides with a game's own `sbr-`/`smg-` names; the rule
  *                 holds for every file in css/, present and future.
@@ -82,5 +83,32 @@ describe('the data-sk- prefix (since v0.10.1)', () => {
     expect(attributes(`<div data-view="phone"> [data-open='true'] el.dataset['fitScale']`)).toEqual(
       ['view', 'open', 'fit-scale'],
     );
+  });
+});
+
+// Custom properties: every one the kit's CSS declares or reads is `--sk-…` (since v0.14.0). The
+// one exception is `--fit`, the screen's scale, which src/fit.ts sets on a game's element and
+// the CSS only reads.
+const properties = (css: string): string[] => {
+  const text = css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/'[^']*'|"[^"]*"/g, '');
+  return [...text.matchAll(/(--[\w-]+)\s*:/g), ...text.matchAll(/var\(\s*(--[\w-]+)/g)].map(
+    (m) => m[1] ?? '',
+  );
+};
+
+describe('the --sk- prefix on custom properties (since v0.14.0)', () => {
+  it.each(files)('%s declares and reads only --sk-… custom properties', (file) => {
+    const found = properties(readFileSync(new URL(file, dir), 'utf8'));
+    expect(found.filter((n) => !n.startsWith('--sk-') && n !== '--fit')).toEqual([]);
+  });
+
+  it('catches an unprefixed declaration and an unprefixed read, and not --fit', () => {
+    expect(
+      properties(':root { --color-text: red; } a { color: var(--space-1); scale: var(--fit, 1); }'),
+    ).toEqual(['--color-text', '--space-1', '--fit']);
+  });
+
+  it('reads no property out of a comment or a quoted string', () => {
+    expect(properties('/* --old: 1 */ a { content: "--x: 1"; }')).toEqual([]);
   });
 });

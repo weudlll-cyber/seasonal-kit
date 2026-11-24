@@ -3,7 +3,8 @@
  * @brief  CI's season colour check: the kit's copy must equal the website's master.
  *
  * Responsibility: the website is the single source of the season colours (docs/DECISIONS.md
- *                 K3). Run as `node scripts/season-check.mjs`, it fetches the site's public
+ *                 K3). Its names are `--color-…`, the kit's copies `--sk-color-…` (v0.14.0).
+ *                 Run as `node scripts/season-check.mjs`, it fetches the site's public
  *                 tokens.css from master and fails (exit 1) on any difference in the four season
  *                 colours or the text colour on them; exit 2 when the site cannot be read, so a
  *                 network failure is never a pass. `seasonDiff` is the comparison
@@ -37,7 +38,13 @@ export const SEASON_TOKENS = [
 export function seasonDiff(kitCss, siteCss) {
   const kit = readTokens(kitCss).light;
   const site = readTokens(siteCss).light;
-  return SEASON_TOKENS.map((name) => ({ name, kit: kit.get(name), site: site.get(name) })).filter(
+  // The website names them `--color-spring`; the kit's copy has them as `--sk-color-spring`
+  // (since v0.14.0), so the kit is read under its own name and reported under the site's.
+  return SEASON_TOKENS.map((name) => ({
+    name,
+    kit: kit.get(`--sk-${name.slice(2)}`),
+    site: site.get(name),
+  })).filter(
     (d) =>
       d.kit === undefined || d.site === undefined || d.kit.toLowerCase() !== d.site.toLowerCase(),
   );

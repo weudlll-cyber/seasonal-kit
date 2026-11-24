@@ -23,7 +23,7 @@
 .sk-game-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-1) var(--space-2);
+  gap: var(--sk-space-1) var(--sk-space-2);
   min-width: 0;
   max-height: 44px;
   font-size: max(var(--sk-floor-text), 0.875rem);
@@ -38,7 +38,7 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-weight: var(--font-weight-strong);
+  font-weight: var(--sk-font-weight-strong);
 }
 
 .sk-bar-time {
@@ -52,7 +52,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--space-1);
+  gap: var(--sk-space-1);
   min-width: 0;
   margin-left: auto;
 }
@@ -63,13 +63,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  min-width: var(--hit-target);
-  min-height: var(--hit-target);
+  min-width: var(--sk-hit-target);
+  min-height: var(--sk-hit-target);
   padding-inline: 0.65rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-glass);
-  color: var(--color-text);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-glass);
+  color: var(--sk-color-text);
   font: inherit;
   font-size: inherit;
   box-shadow: none;
@@ -78,7 +78,7 @@
 
 .sk-bar-button[aria-expanded='true'],
 .sk-bar-button[aria-pressed='true'] {
-  background: var(--color-active-bg);
+  background: var(--sk-color-active-bg);
 }
 
 .sk-bar-icon {
@@ -103,9 +103,9 @@
   min-width: 1.2rem;
   height: 1.2rem;
   padding-inline: 0.3rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-solid);
-  color: var(--color-on-solid);
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-solid);
+  color: var(--sk-color-on-solid);
   font-size: var(--sk-floor-badge);
   line-height: 1;
 }
@@ -133,7 +133,7 @@
   /* The arrow alone, a 44 px target; the words above are still the link's name. */
   .sk-game-bar > .sk-back-link {
     justify-content: center;
-    min-width: var(--hit-target);
+    min-width: var(--sk-hit-target);
   }
 
   .sk-bar-actions {
@@ -142,9 +142,9 @@
 
   .sk-bar-button {
     justify-content: center;
-    width: var(--hit-target);
-    min-width: var(--hit-target);
-    min-height: var(--hit-target);
+    width: var(--sk-hit-target);
+    min-width: var(--sk-hit-target);
+    min-height: var(--sk-hit-target);
     padding: 0;
   }
 }
@@ -164,7 +164,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: max(var(--sk-floor-text), var(--font-size-small));
+  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
 }
 
 .sk-phase {
@@ -174,18 +174,18 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-1);
+  gap: var(--sk-space-1);
   padding: 0.3rem 0.6rem;
   overflow: hidden;
-  background: var(--color-surface-2);
+  background: var(--sk-color-surface-2);
   border: 3px solid transparent;
-  border-radius: var(--radius);
+  border-radius: var(--sk-radius);
 }
 
 /* The part the round is in now: a strong frame, a fill as it runs and "· now". */
 .sk-phase[data-sk-current='true'] {
-  background: var(--color-surface);
-  border-color: var(--color-solid);
+  background: var(--sk-color-surface);
+  border-color: var(--sk-color-solid);
 }
 
 .sk-phase-fill {
@@ -193,7 +193,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  background: color-mix(in srgb, var(--color-solid) 14%, transparent);
+  background: color-mix(in srgb, var(--sk-color-solid) 14%, transparent);
 }
 
 .sk-phase-name,
@@ -202,18 +202,18 @@
 }
 
 .sk-phase-name {
-  font-weight: var(--font-weight-strong);
+  font-weight: var(--sk-font-weight-strong);
 }
 
 /* The last part still to come: dashed; once ended it is plain like the others. */
 .sk-phase:last-child[data-sk-current='false'][data-sk-done='false'] {
-  background: var(--color-surface);
-  border: 2px dashed var(--color-border-strong);
+  background: var(--sk-color-surface);
+  border: 2px dashed var(--sk-color-border-strong);
 }
 
 .sk-phase-line {
   margin: 0;
-  font-size: max(var(--sk-floor-text), var(--font-size-small));
+  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
 }
 
 @media (max-width: 899px), (orientation: portrait) {

@@ -7,7 +7,6 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 2\. Sign-in helpers, client side: in the kit since v0.3.0; no game's `master` uses them yet.
 - 9\. React wrappers: the dock, its arrivals and the call slot are in the kit since v0.4.0, open
   until a game uses them (the chat frame's link is closed).
-- 11\. The token names take the `sk-` prefix: the next minor, with a migration note per game.
 - 12\. A middle part in `ResultFrame` (Mini Games T417): to be decided after a check against
   Bingo and Cases.
 - 13\. The dock bar's padding in form `line` and the hidden field in form `field` (T416 (3)): to

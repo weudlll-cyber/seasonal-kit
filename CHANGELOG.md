@@ -13,6 +13,10 @@ applies it.
   2026-11-23: the saving rules apply to every Seasonal project), the test-file limit of 400
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
+- **The handbook is current** (docs only, DECISIONS K51, K52): `docs/HANDBOOK.md` follows
+  v0.12.0 to v0.17.0, has the sections "How a Seasonal game looks" and "Before production", the
+  working-cheaply rules, HSTS and `FailureBrake` in Security, and each rule names its check.
+  RELEASING step 1 now updates it with every release.
 - **The website keeps its own sign-in brake** (docs only, DECISIONS K49): it does not move to
   `FailureBrake`. BACKLOG 19 is closed as decided.
 

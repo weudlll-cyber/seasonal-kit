@@ -113,3 +113,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   dock, its margin and the gap; the head and the bar stay visible, the messages scroll inside.
   `showcase/sheet.spec.ts` measures it at 375 × 667 and 390 × 844 with a 200 % root font. A real
   keyboard is not emulated. Closed by PR #44 and v0.17.0.
+- **23. The handbook follows v0.12.0 to v0.17.0** (2026-11-24, K51, K52). `docs/HANDBOOK.md` has
+  the new kit parts, "How a Seasonal game looks", "Before production", the working-cheaply rules,
+  HSTS and `FailureBrake`; every release now updates it. Closed by PR #46.

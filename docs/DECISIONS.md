@@ -201,3 +201,10 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   and the gap (`css/dock.css`). The head with Close and the bar stay visible; the messages shrink
   and scroll inside. Without `DockedScreen` there is no such property and the wish decides as
   before. No game needs to change.
+- **K51 — Every kit release updates `HANDBOOK.md`** (decided 2026-11-24). A release whose parts or
+  rules change updates [HANDBOOK.md](HANDBOOK.md) in the same PR; [RELEASING.md](RELEASING.md)
+  step 1 says so.
+- **K52 — Every handbook rule names its check** (decided 2026-11-24). We work economically, but
+  everything that can sensibly be proven by a test is. A row of the handbook names the test or
+  CI job that holds its rule; where a test makes no sense, the row says why and that review
+  checks it.

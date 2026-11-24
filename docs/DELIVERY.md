@@ -394,6 +394,22 @@ with the toolchain of the earlier proofs (React 19.3.1, TypeScript 5.9.3 NodeNex
 
 Both consumers were deleted afterwards.
 
+## The v0.16.0 start card fit option, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.16.0` (merge commit `6801202`), both with `ignore-scripts=true`,
+with the toolchain of the earlier proofs (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false` and `exactOptionalPropertyTypes`, Vitest 5.0.5 with jsdom 31.0.1). Each ran
+`tsc` and three tests in one file, in jsdom (`@seasonal/kit/react`): the installed kit is `0.16.0`;
+a `StartCard` without `fit` does not listen for web fonts; with `fit={{ afterFonts: true }}` it
+listens once and lets go on unmount.
+
+| Consumer                 | Install                                                                                                   | `tsc`  | Tests    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.5 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/6801202…`).        | Worked | 3 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked. `npm ls` shows the kit `0.16.0` at `…seasonal-kit.git#6801202…` with the consumer's `vite` 8.3.5. | Worked | 3 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

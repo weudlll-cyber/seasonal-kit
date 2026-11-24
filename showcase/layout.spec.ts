@@ -9,7 +9,8 @@
  *                 Seasonal Party; v0.11.0). A crowded game bar ends inside 320, 360 and 375 px,
  *                 each button still 44 px wide (Cases 32; v0.11.0). The bar's back link shows
  *                 arrow and words on a desktop and the arrow alone, 44 px wide, on a phone, with
- *                 the words as its name (v0.12.0).
+ *                 the words as its name (v0.12.0). The result frame without a reveal is one column
+ *                 and with a middle card keeps it between the first part and "more" (v0.15.0).
  * Depends on:     @playwright/test
  * Source:         new in the kit.
  */
@@ -101,6 +102,50 @@ for (const [width, alone] of [
     }
     expect(seen.itemsEnd).toBeLessThanOrEqual(seen.right + 0.5);
     expect(seen.right).toBeLessThanOrEqual(width);
+  });
+}
+
+// What the result's first part keeps for its padding and border on both sides, in CSS px.
+const PADDING_PX = 64;
+
+// The result frame (v0.15.0): with a reveal it is today's two columns on a desktop; without one it
+// renders no reveal box and is one column at every width; a middle card sits between the first
+// part and "more", in the page's width.
+for (const width of [1280, 1920, 390]) {
+  test(`the result frame without a reveal and with a middle card at ${String(width)} px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?theme=light');
+    const box = (testId: string, part: string) =>
+      page
+        .getByTestId(testId)
+        .locator(part)
+        .first()
+        .evaluate((e) => {
+          const r = e.getBoundingClientRect();
+          return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width };
+        });
+    // Without a reveal: no box for it, the placings as wide as the first part.
+    await expect(page.getByTestId('result-no-reveal').locator('.sk-result-reveal')).toHaveCount(0);
+    await expect(page.getByTestId('result-no-reveal').getByTestId('result')).toHaveAttribute(
+      'data-sk-reveal',
+      'none',
+    );
+    const first = await box('result-no-reveal', '.sk-result-first');
+    const places = await box('result-no-reveal', '.sk-result-places');
+    // One column: the placings span the first part inside its padding and border (≤ 64 px).
+    expect(places.width).toBeGreaterThan(first.width - PADDING_PX);
+    // With a reveal and a middle card: the two columns stay on a desktop, the card is in order.
+    const withFirst = await box('result-with-middle', '.sk-result-first');
+    const withPlaces = await box('result-with-middle', '.sk-result-places');
+    if (width >= 900) expect(withPlaces.width).toBeLessThan(withFirst.width * 0.6);
+    else expect(withPlaces.width).toBeGreaterThan(withFirst.width - PADDING_PX);
+    const middle = await box('result-with-middle', '.sk-result-middle');
+    const more = await box('result-with-middle', '.sk-result-more');
+    expect(middle.top).toBeGreaterThanOrEqual(withFirst.bottom);
+    expect(more.top).toBeGreaterThanOrEqual(middle.bottom);
+    expect(Math.abs(middle.width - withFirst.width)).toBeLessThanOrEqual(1);
   });
 }
 

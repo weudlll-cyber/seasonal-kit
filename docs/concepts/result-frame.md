@@ -4,6 +4,10 @@ An investigation for BACKLOG 12 (a middle part, Mini Games T417) and 17 (a one-c
 two cards only with a reveal, Bingo), decided together (DECISIONS K42). Nothing in the kit
 changes with this page; it recommends, and the owner decides.
 
+**Decided 2026-11-24 (v0.15.0):** points 1 and 2 are built (`reveal` optional, `middle` slot,
+BACKLOG 12 and 17); point 4, a merged single card, is decided no (K47, BACKLOG 20); point 3 stays
+unbuilt.
+
 Read on 2026-11-24, read-only, from each game's `origin/master`: Mini Games `721761f`, Bingo
 Royale `3b8a58e`, Seasonal Cases `073f9ad`; kit `master` `97b8238`. Mini Games' own T417 entry
 is not on its `master` (a search of the tree finds none), so what it asks for is taken from the

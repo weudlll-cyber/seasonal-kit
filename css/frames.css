@@ -13,7 +13,10 @@
  *                 the placings beside it on a desktop and under it on a phone; a list game's
  *                 first part as tall as its content. A panel result (`data-sk-variant` panel,
  *                 since v0.11.0) sits inside a screen: no one-screen part, names never broken
- *                 inside. Inside the docked screen (./dock.css) both
+ *                 inside. Without a reveal (`data-sk-reveal` none, since v0.15.0) the first part is
+ *                 one column at every width; `.sk-result-middle` (since v0.15.0) is a card of its
+ *                 own between the first part and `.sk-result-more`. Inside the docked screen
+ *                 (./dock.css) both
  *                 fill the height above the chat. Every size that shrinks with the screen's
  *                 scale (`--fit`) keeps the game's floor (./fit.css). Colours only from
  *                 ./tokens.css, so light and dark both work.
@@ -214,6 +217,7 @@
   gap: var(--sk-space-1);
 }
 
+.sk-result-middle,
 .sk-result-more {
   display: grid;
   gap: var(--sk-space-2);
@@ -252,6 +256,15 @@
     grid-row: 1 / span 3;
     max-width: 24rem;
   }
+}
+
+/* No reveal (since v0.15.0, BACKLOG 17): the frame renders no reveal box, and the first part is
+   one column at every width, the placings under the head (the head keeps its proof beside the
+   headline). After the two-column rule above, with the same specificity, so it wins. */
+.sk-result[data-sk-reveal='none'] .sk-result-first {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas: 'head' 'places';
 }
 
 /* Inside the docked screen: both frames fill the height above the chat. */

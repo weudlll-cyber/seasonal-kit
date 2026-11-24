@@ -4,6 +4,9 @@ An investigation for BACKLOG 13 (Mini Games T416 (3)): the 4 px padding of the d
 form `line`, and the writing field in the form `field`. **Measured only; `css/dock.css` is
 unchanged.** Nothing here is a decision.
 
+**Outcome (v0.15.0):** no kit change (BACKLOG 13). Mini Games measures the bar again in the real
+game and reports back; a new item follows if it shows a real overflow.
+
 ## How it was measured (2026-11-24)
 
 The kit's showcase (`pnpm showcase:build`, served by Vite's preview) in Chromium, with a throwaway

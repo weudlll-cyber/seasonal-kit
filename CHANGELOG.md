@@ -14,6 +14,58 @@ applies it.
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
 
+## [0.15.0] - 2026-11-24
+
+Three additions from the games' requests (DECISIONS K46, K47). Every one is opt-in: a game that
+changes nothing sees today's behaviour.
+
+### Added
+
+- **`FailureBrake`** in `@seasonal/kit/server` (K46, Seasonal Cases BACKLOG 49): `braked(key)`
+  looks without counting, so a route refuses before the password check; `failed(key)` counts one
+  wrong password; a success is not counted. A key holds at most `limit` failure times inside a
+  sliding `windowMs`, and the brake lifts as the oldest ages out. It takes the rate limiter's rule
+  (a whole limit ≥ 1 over a whole window, read once into a copy) and conventions: short,
+  normalised keys the game passes (an account id, an IPv6 /64; never a raw login), a map of at
+  most 100 000 keys with idle keys forgotten every 1000 failures and a throttled scan when full,
+  a new key refused (`braked` is true) while every held key is active, a clock passed in. The
+  rules and the keys stay in each game.
+
+- **`ResultFrame` without a reveal** (BACKLOG 17, K42): a null or missing `reveal` renders no
+  reveal box, and the frame sets `data-sk-reveal="none"`, on which `css/frames.css` lays the
+  first part out in one column at every width (the proof still beside the headline on a desktop).
+  The `reveal` prop is now optional. A game that passes a reveal sees exactly today's layout.
+- **`ResultFrame` `middle`** (BACKLOG 12, Mini Games T417): an optional card of its own between the
+  first part and `more` (`sk-result-middle`, styled as the "more" card), fixed in the fitting like
+  the first part. Without it the frame is as before.
+- **The showcase** has two more result states (no reveal, with a middle card), and
+  `layout.spec.ts` measures them at 1280, 1920 and 390 px.
+
+### Changed
+
+- **Decisions, no code:** no merged single-card result option (K47, BACKLOG 20): Bingo drops its
+  own `results.css` overrides at its next adoption. The dock bar's padding and field are measured
+  and left as they are (BACKLOG 13, concepts/dock-bar.md); Mini Games measures again in the real
+  game and reports back.
+- **BACKLOG:** item 9 is back in part one (the v0.13.0 edit had removed it by mistake).
+
+### Migration, per game
+
+- **Seasonal Mini Games:** pass its `Guesses` card (the "Closest to winning" card or its history
+  panel) as `middle`, and keep marking it as it does today; nothing else changes.
+- **Seasonal Bingo Royale:** at its next kit adoption load `frames.css` for the result, leave
+  `reveal` out, and drop the `display: contents` and `display: none` overrides of `results.css`
+  (K47).
+- **Seasonal Cases:** nothing for the result (it has a reveal and no middle part).
+- **Seasonal Cases (sign-in):** replace the `FailureBrake` class of `apps/server/src/auth/failureBrake.ts`
+  with `import { FailureBrake } from '@seasonal/kit/server'`; keep `SignInBrake` (its three keys and
+  limits). Difference: with a full map the kit refuses a new key and keeps every held key's count;
+  Cases' copy evicted the oldest key.
+- **Bingo Royale:** at its next kit adoption, move its login limits onto `FailureBrake`: ask
+  `braked(key)` before the password check, call `failed(key)` on a wrong one.
+- **Mini Games, Seasonal Party:** use it for the failed sign-ins of their own login when they adopt
+  the server entry; nothing changes until they do.
+
 ## [0.14.0] - 2026-11-24
 
 **A breaking change for every game** (DECISIONS K45, BACKLOG 11): the 49 shared custom properties
@@ -1048,7 +1100,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...v0.12.0

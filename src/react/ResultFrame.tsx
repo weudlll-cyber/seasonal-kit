@@ -7,7 +7,11 @@
  *                 under it (the margin, the closest miss), its proof's disclosure beside them on
  *                 a desktop, the game's reveal taking the free height, and the game's placings
  *                 (Mini Games' table, Bingo's podium) beside the reveal on a desktop and under
- *                 it on a phone. `more` follows at its own height (standings, team result).
+ *                 it on a phone. Without a reveal (null or left out, since v0.15.0) no reveal box
+ *                 is rendered and the first part is one column. `middle` (since v0.15.0) is a card
+ *                 of its own between the first part and `more`, fixed in the fitting like the
+ *                 first part (Mini Games' "Closest to winning"). `more` follows at its own
+ *                 height (standings, team result).
  *                 Inside a docked screen (./DockedScreen) the frame fills the height above the
  *                 chat. `fitted` shrinks the first part with the screen's scale (`--fit`) where
  *                 it has not the room; off by default, so a result that does not fit scrolls as
@@ -36,11 +40,15 @@ export interface ResultFrameProps {
   readonly lines?: ReactNode;
   // The proof's disclosure, beside the headline on a desktop.
   readonly proof?: ReactNode;
-  // The game's reveal: the secret, a board's grid.
-  readonly reveal: ReactNode;
+  // The game's reveal: the secret, a board's grid. Left out or null (since v0.15.0): no reveal
+  // box is rendered, and the first part is one column (`data-sk-reveal="none"`).
+  readonly reveal?: ReactNode;
   // The game's top places: a table, a podium.
   readonly placings: ReactNode;
-  // What follows the first part at its own height.
+  // Between the first part and `more`, a card of its own (since v0.15.0), e.g. Mini Games'
+  // "Closest to winning". Part of the fitting like the first part.
+  readonly middle?: ReactNode;
+  // What follows at its own height.
   readonly more?: ReactNode;
   readonly layout?: 'list' | 'board';
   // Shrink the first part to the screen where it has not the room.
@@ -58,12 +66,15 @@ export function ResultFrame(p: ResultFrameProps): ReactElement {
   const fit = useFitScale<HTMLElement>(p.game, p.signature);
   // A page's headline is its h1; a panel's sits at the level the game gives it.
   const Heading = p.panel === undefined ? 'h1' : HEADINGS[p.panel.level];
+  // No reveal to show: its box is not rendered, so the first part has no empty column.
+  const hasReveal = p.reveal !== undefined && p.reveal !== null;
   return (
     <section
       ref={p.fitted === true ? fit : undefined}
       className="sk-result"
       data-sk-layout={p.layout ?? 'list'}
       data-sk-variant={p.panel === undefined ? 'page' : 'panel'}
+      data-sk-reveal={hasReveal ? undefined : 'none'}
       data-testid="result"
     >
       <div className="sk-result-first" data-sk-fit-fixed="" data-testid="result-first">
@@ -72,9 +83,14 @@ export function ResultFrame(p: ResultFrameProps): ReactElement {
           {p.lines}
           {p.proof === undefined ? null : <div className="sk-result-proof">{p.proof}</div>}
         </header>
-        <div className="sk-result-reveal">{p.reveal}</div>
+        {hasReveal ? <div className="sk-result-reveal">{p.reveal}</div> : null}
         <div className="sk-result-places">{p.placings}</div>
       </div>
+      {p.middle === undefined ? null : (
+        <div className="sk-result-middle" data-sk-fit-fixed="" data-testid="result-middle">
+          {p.middle}
+        </div>
+      )}
       {p.more === undefined ? null : <div className="sk-result-more">{p.more}</div>}
     </section>
   );

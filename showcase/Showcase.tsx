@@ -11,7 +11,8 @@
  *                 - the game bar: with the phase strip;
  *                 - the docked screen: the start card or the result (`?screen=result`), the
  *                   website's chat frame (a stub page here) and the call slot with a call id;
- *                 - the result frame as it stands alone.
+ *                 - the result frame as it stands alone, without a reveal and with a middle card
+ *                   (since v0.15.0).
  *                 Everything shows what a game would pass, with sample words.
  * Source:         new in the kit.
  */
@@ -121,6 +122,44 @@ function Result(p: { readonly fitted: boolean }): ReactElement {
   );
 }
 
+// Two more states of the result (since v0.15.0): no reveal (Bingo's podium), and a middle card
+// (Mini Games' "Closest to winning") between the first part and "more".
+function ResultStates(): ReactElement {
+  return (
+    <>
+      <div data-testid="result-no-reveal">
+        <ResultFrame
+          game="bingo"
+          panel={{ level: 3 }}
+          headline="Final placement"
+          lines={<p>You finished #2 of 8</p>}
+          placings={
+            <ol aria-label="Podium">
+              <li>Walter</li>
+              <li>Anna</li>
+              <li>Kai</li>
+            </ol>
+          }
+          more={<p>Places 4 and on follow here.</p>}
+          signature="no-reveal"
+        />
+      </div>
+      <div data-testid="result-with-middle">
+        <ResultFrame
+          game="mini-games"
+          panel={{ level: 3 }}
+          headline="Walter found it first"
+          reveal={<p className="showcase-reveal">The number was 42.</p>}
+          placings={<p>Walter, Anna, Kai</p>}
+          middle={<p>Closest to winning: 41, 43, 40.</p>}
+          more={<p>Standings follow here.</p>}
+          signature="with-middle"
+        />
+      </div>
+    </>
+  );
+}
+
 function Docked(p: { readonly result: boolean }): ReactElement {
   return (
     <section aria-labelledby="docked-title" className="showcase-section showcase-docked">
@@ -172,6 +211,7 @@ export function Showcase(p: { readonly result: boolean }): ReactElement {
         <section aria-labelledby="result-title" className="showcase-section">
           <h2 id="result-title">Result frame</h2>
           <Result fitted={false} />
+          <ResultStates />
         </section>
       </main>
     </div>

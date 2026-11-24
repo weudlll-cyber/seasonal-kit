@@ -51,7 +51,8 @@ const MAX_KEYS = 100_000;
 // The rule read once into a frozen copy of its own, or null when it is no valid rule: a whole
 // limit ≥ 1 over a whole window of 1 ms or more. A copy, because a rule the game changes in
 // place (or a getter) would otherwise skip this check (v0.11.0 pass, findings 9, 10 and 12).
-function ruleOf(read: unknown): RateRule | null {
+// Exported for ./failureBrake, which takes the same rule (since v0.15.0); not part of the entry.
+export function ruleOf(read: unknown): RateRule | null {
   if (typeof read !== 'object' || read === null) return null;
   const { limit, windowMs } = read as Record<string, unknown>;
   if (!Number.isSafeInteger(limit) || (limit as number) < 1) return null;

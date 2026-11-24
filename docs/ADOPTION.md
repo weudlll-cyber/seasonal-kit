@@ -131,6 +131,14 @@ Each step pins the newest tag; a step never mixes two tags.
 - **The dev tools:** the production bundle must still have no dev marker. Run
   `productionBundle.test.ts` after `pnpm build`.
 
+### Since v0.15.0
+
+- **Sign-in failures** (K46): its failed sign-ins are braked with `FailureBrake`, the route asking
+  `braked(key)` before the password check and calling `failed(key)` on a wrong one; the rules and
+  the keys stay in the game.
+- **"Closest to winning"** (BACKLOG 12): `ResultFrame`'s `middle` slot takes its `Guesses` card
+  between the first part and "more"; a game that passes none sees today's layout.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -232,6 +240,17 @@ reachable on every phone.
   `websiteLogin.integration.test.ts`, `websiteRules.integration.test.ts` and
   `twoFactor.integration.test.ts`.
 
+### Since v0.15.0
+
+- **Login limits** (K46): at its next kit adoption its login limits move onto `FailureBrake`: the
+  route asks `braked(key)` before the password check and calls `failed(key)` on a wrong one. Its
+  rules and keys stay in the game; the kit's `RateLimiter` keeps the limits that count every call.
+- **The result** (K47): there is no merged single-card option. Bingo shows its result like the
+  other games, the first part and "more" as the kit lays them out, and at its next kit adoption
+  drops its own `results.css` overrides of the kit's result classes (`display: contents` on the
+  first part, head, places and "more", `display: none` on the reveal). With no reveal the frame
+  renders none and lays the first part out in one column itself (v0.15.0).
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -265,6 +284,15 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
   (K17).
 - **Tests to run:** its e2e screens and its fit tests at 320–375 px. The bar's lead may show
   again where it now fits.
+
+### Since v0.15.0
+
+- **`FailureBrake`** (K46, its BACKLOG 49): `apps/server/src/auth/failureBrake.ts` replaces its own
+  `FailureBrake` class with the kit's from `@seasonal/kit/server`; its `SignInBrake` (D55: 20
+  failures per account and address, 100 per account, 20 per address, 15 minutes) and its keys
+  stay in the game. One difference: when the map is full of active keys the kit refuses a new
+  key (`braked` answers true) instead of evicting the oldest key, so a flood of new keys cannot
+  lift an old key's brake.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
@@ -317,6 +345,11 @@ adopts it.
   instead of its own (`#ffc23c`, `#4cc2ff`, …). This is a visible change that K4 asks for, so the
   owner sees it at the first step.
 - **No React:** the plan uses only the framework-free entry and the CSS.
+
+### Since v0.15.0
+
+- **Sign-in failures** (K46): its failed sign-ins are braked with `FailureBrake` when it adopts
+  the server entry; the rules and keys stay in the game.
 
 ## What v0.12.0 answers
 

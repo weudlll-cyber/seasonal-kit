@@ -20,7 +20,8 @@ Before 1.0.0, minor versions may break. Each break is still named in the CHANGEL
    - set `package.json` `"version"` to `X.Y.Z`;
    - turn the CHANGELOG's "Unreleased" into `## [X.Y.Z] - YYYY-MM-DD`, with its compare link;
    - run `pnpm build` and commit `dist/` (CI fails if it differs from the source);
-   - update `docs/BACKLOG.md` and `docs/OPEN.md`.
+   - update `docs/BACKLOG.md` and `docs/OPEN.md`;
+   - update `docs/HANDBOOK.md` when the release changes a part or a rule a game follows (K51).
 2. Before a minor or major version, a security pass ([security-pass.md](security-pass.md)).
 3. Open the PR. Every required check must be green: `verify`, `osv-scanner`, `gitleaks`, `docs`,
    `analyze` (CodeQL), `showcase` (DECISIONS K19).

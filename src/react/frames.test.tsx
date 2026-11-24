@@ -87,19 +87,11 @@ describe('the start card fitting', () => {
       ready: new Promise(() => {}),
     };
     Object.defineProperty(document, 'fonts', { value: fonts, configurable: true });
-    const card = (fit?: { readonly afterFonts: boolean }) => (
-      <StartCard
-        game="mini-games"
-        season="spring"
-        title="Spring"
-        opensIn={3}
-        signature="a"
-        fit={fit}
-      />
-    );
-    const { rerender, unmount } = render(card());
+    // Props as an object, so "no `fit` at all" is tested as a game that leaves it out.
+    const base = { game: 'mini-games', season: 'spring', title: 'Spring', opensIn: 3 } as const;
+    const { rerender, unmount } = render(<StartCard {...base} signature="a" />);
     expect(fonts.addEventListener).not.toHaveBeenCalled();
-    rerender(card({ afterFonts: true }));
+    rerender(<StartCard {...base} signature="a" fit={{ afterFonts: true }} />);
     expect(fonts.addEventListener).toHaveBeenCalledTimes(1);
     unmount();
     Reflect.deleteProperty(document, 'fonts');

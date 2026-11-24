@@ -349,6 +349,29 @@ expected `theme=auto` in the frame's address, but the page's shown theme was `li
 test had stubbed `matchMedia` (the kit's `useShownTheme`, as for the chat frame). The assertion
 now accepts `light` or `auto`; nothing in the kit changed. Both consumers were deleted afterwards.
 
+## The v0.14.0 token prefix, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.14.0` (merge commit `8eb1018`), both with `ignore-scripts=true`,
+with the toolchain of the v0.12.0 and v0.13.0 proofs (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false`, Vitest 5.0.5 with jsdom 31.0.1). Each ran `tsc` and four tests:
+
+- the installed kit is `0.14.0`;
+- the ten shipped stylesheets (`tokens`, `shell`, `bar`, `dock`, `frames`, `header`, `fit`, `call`,
+  `motion`, `fonts`) declare and read only `--sk-…` custom properties, apart from `--fit`;
+- the new names are in the installed `tokens.css` (`--sk-color-spring`, `--sk-color-text`,
+  `--sk-space-2`, `--sk-hit-target`, `--sk-gutter`), `--color-text` is not declared, and `shell.css`
+  and `bar.css` read `var(--sk-color-text)` and `var(--sk-hit-target)`;
+- `GameBar` and `ThemeToggle` still render, `MIN_POINTER_TARGET` is 24.
+
+| Consumer                 | Install                                                                                                                                                                  | `tsc`  | Tests    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.8 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/8eb1018…`, `gitHosted: true`, an `integrity` hash).                               | Worked | 4 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked, with no `ERESOLVE`. `npm ls` shows the kit `0.14.0` at `…seasonal-kit.git#8eb1018…` with its `vite` deduped to the consumer's 8.3.5 (8.3.8 is the newest 8.3.x). | Worked | 4 passed |
+
+This proof reads the shipped files and renders two components; it does not render a game's own CSS
+against the new names, which each game does in its own adoption PR (CHANGELOG [0.14.0], "Migration,
+per game"). Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

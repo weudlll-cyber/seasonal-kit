@@ -17,7 +17,7 @@ applies it.
 ## [0.14.0] - 2026-11-24
 
 **A breaking change for every game** (DECISIONS K45, BACKLOG 11): the 49 shared custom properties
-take the `--sk-` prefix. Not merged, tagged or published until the owner has reviewed it.
+take the `--sk-` prefix. Released after the owner's review.
 
 ### Changed
 

@@ -211,9 +211,11 @@ reachable on every phone.
 
 ### Risks and the tests to run
 
-- **The token override.** If Bingo's `--gutter` / `--panel-padding` are not loaded after the
-  kit's, a 320 px phone gets 16 px margins instead of 14.4 px. Run `minTextSize.test.ts` and the
-  fit audit (`e2e/acceptance/fitAudit.spec.ts`).
+- **The token override.** Since v0.14.0 the kit's tokens are `--sk-…` (`--sk-gutter`), so Bingo's
+  own `--gutter` / `--panel-padding` no longer meet the kit's by name. A game that wants the kit's
+  value for its own name writes `--gutter: var(--sk-gutter)`; a 320 px phone must still get
+  14.4 px, not 16 px. Run `minTextSize.test.ts` and the fit audit
+  (`e2e/acceptance/fitAudit.spec.ts`).
 - **The chat frame now sends `strict-origin`,** as GAME-INTEGRATION §5 requires, and is
   sandboxed (K17): scripts, its own origin, forms and popups are allowed, nothing else (no
   top navigation). Run `chatDock.test.tsx` and `e2e/chatEmbed.spec.ts`, and send, report and

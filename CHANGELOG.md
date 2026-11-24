@@ -14,6 +14,92 @@ applies it.
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
 
+## [0.14.0] - 2026-11-24
+
+**A breaking change for every game** (DECISIONS K45, BACKLOG 11): the 49 shared custom properties
+take the `--sk-` prefix. Not merged, tagged or published until the owner has reviewed it.
+
+### Changed
+
+- **Every custom property of `css/tokens.css` is `--sk-` prefixed**, and every use in the kit's
+  CSS (`bar`, `dock`, `fonts`, `frames`, `header`, `shell`) follows. `--sk-floor-text` and the
+  other `--sk-` properties are as they were. `--fit` (the screen's scale, set on a game's own
+  element by `src/fit.ts`) keeps its name.
+- **tests/prefix.test.ts checks custom properties too**: every one a stylesheet declares or reads
+  is `--sk-…`, except `--fit`.
+- **The season check** reads the kit's `--sk-color-spring` … `--sk-color-on-season` against the
+  website's `--color-spring` … `--color-on-season` (the website's names do not change).
+
+### Migration, per game
+
+The names are the same for every game; this table is each game's list. A game's own tokens
+(arena colours, marks, its own `--gutter` where it differs) are not the kit's and keep their
+names unless the game wants the kit's value: `--gutter: var(--sk-gutter)`.
+
+| Old name                  | New name                     |
+| ------------------------- | ---------------------------- |
+| `--color-warning-surface` | `--sk-color-warning-surface` |
+| `--color-border-strong`   | `--sk-color-border-strong`   |
+| `--font-weight-heading`   | `--sk-font-weight-heading`   |
+| `--sidebar-background`    | `--sk-sidebar-background`    |
+| `--font-weight-strong`    | `--sk-font-weight-strong`    |
+| `--color-background`      | `--sk-color-background`      |
+| `--color-text-muted`      | `--sk-color-text-muted`      |
+| `--font-weight-body`      | `--sk-font-weight-body`      |
+| `--color-on-season`       | `--sk-color-on-season`       |
+| `--page-background`       | `--sk-page-background`       |
+| `--color-surface-2`       | `--sk-color-surface-2`       |
+| `--color-active-bg`       | `--sk-color-active-bg`       |
+| `--font-size-small`       | `--sk-font-size-small`       |
+| `--font-size-title`       | `--sk-font-size-title`       |
+| `--color-on-solid`        | `--sk-color-on-solid`        |
+| `--font-size-body`        | `--sk-font-size-body`        |
+| `--font-size-lead`        | `--sk-font-size-lead`        |
+| `--color-on-live`         | `--sk-color-on-live`         |
+| `--color-surface`         | `--sk-color-surface`         |
+| `--color-success`         | `--sk-color-success`         |
+| `--shadow-raised`         | `--sk-shadow-raised`         |
+| `--content-width`         | `--sk-content-width`         |
+| `--duration-fast`         | `--sk-duration-fast`         |
+| `--duration-base`         | `--sk-duration-base`         |
+| `--duration-slow`         | `--sk-duration-slow`         |
+| `--color-spring`          | `--sk-color-spring`          |
+| `--color-summer`          | `--sk-color-summer`          |
+| `--color-autumn`          | `--sk-color-autumn`          |
+| `--color-winter`          | `--sk-color-winter`          |
+| `--color-border`          | `--sk-color-border`          |
+| `--color-danger`          | `--sk-color-danger`          |
+| `--color-accent`          | `--sk-color-accent`          |
+| `--color-glass`           | `--sk-color-glass`           |
+| `--color-solid`           | `--sk-color-solid`           |
+| `--color-scrim`           | `--sk-color-scrim`           |
+| `--font-family`           | `--sk-font-family`           |
+| `--radius-card`           | `--sk-radius-card`           |
+| `--radius-pill`           | `--sk-radius-pill`           |
+| `--color-live`            | `--sk-color-live`            |
+| `--color-card`            | `--sk-color-card`            |
+| `--color-text`            | `--sk-color-text`            |
+| `--hit-target`            | `--sk-hit-target`            |
+| `--ease-out`              | `--sk-ease-out`              |
+| `--space-1`               | `--sk-space-1`               |
+| `--space-2`               | `--sk-space-2`               |
+| `--space-3`               | `--sk-space-3`               |
+| `--space-4`               | `--sk-space-4`               |
+| `--radius`                | `--sk-radius`                |
+| `--gutter`                | `--sk-gutter`                |
+
+- **Seasonal Mini Games:** replace each old name in its CSS and TSX (`var(--color-text)` becomes
+  `var(--sk-color-text)`); its own tokens (`--font-size-ball`, arena, marks) stay.
+- **Seasonal Bingo Royale:** the same replacement in `header.css`, `results.css` and its other
+  files that read the kit's names; its own `--gutter` and `--panel-padding` stay as its own, and
+  may read `var(--sk-gutter)`.
+- **Seasonal Party (Seasonal Spirits):** the same replacement in the frame's CSS that reads the
+  kit's tokens.
+- **Seasonal Cases:** the same replacement in `packages/ui` and `apps/web`; its `pending/` CSS
+  too.
+- **Every game:** search the game for each old name as `var(--old` and as `--old:`; a game that
+  defines a token of the same name for itself no longer collides with the kit's.
+
 ## [0.13.0] - 2026-11-24
 
 Additions for Bingo Royale's and Seasonal Cases' requests (DECISIONS K40, K41 and the Cases
@@ -962,7 +1048,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.1...v0.12.0
 [0.11.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.11.0...v0.11.1

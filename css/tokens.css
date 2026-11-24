@@ -2,7 +2,8 @@
  * @file   css/tokens.css
  * @brief  The design tokens every Seasonal game shares: the website's look (the SE style).
  *
- * Responsibility: one source of the colours, type, shape, spacing, layout and motion timing that
+ * Responsibility: since v0.14.0 every custom property here is `--sk-` prefixed (K45), so none
+ *                 clashes with a game's own (tests/prefix.test.ts). One source of the colours, type, shape, spacing, layout and motion timing that
  *                 Bingo Royale and Mini Games both define with equal values and both use. Light is
  *                 the default on :root; :root[data-theme='dark'] replaces the colours (set before
  *                 the first paint by ../browser/theme-init.js). Each game adds its own arena
@@ -20,94 +21,100 @@
 :root {
   /* The season colours, exactly these wherever a season is shown, in both themes — copied from
      the website, never changed here (owner decision 2026-11-20, docs/DECISIONS.md). */
-  --color-spring: #afb84e;
-  --color-summer: #e06e22;
-  --color-autumn: #f9a825;
-  --color-winter: #04aaf7;
+  --sk-color-spring: #afb84e;
+  --sk-color-summer: #e06e22;
+  --sk-color-autumn: #f9a825;
+  --sk-color-winter: #04aaf7;
   /* Text and icons on a season colour: 5.5:1 (Summer) to 9.1:1 (Autumn), measured */
-  --color-on-season: #14171c;
+  --sk-color-on-season: #14171c;
   /* The LIVE badge: the same red in both themes, white text 6.6:1 */
-  --color-live: #b42318;
-  --color-on-live: #ffffff;
+  --sk-color-live: #b42318;
+  --sk-color-on-live: #ffffff;
 
   /* The page: the four season colours as soft glows over a warm white */
-  --color-background: #fbfaf6;
-  --page-background:
+  --sk-color-background: #fbfaf6;
+  --sk-page-background:
     radial-gradient(circle at 15% 0%, rgb(175 184 78 / 26%), transparent 40%),
     radial-gradient(circle at 95% 15%, rgb(4 170 247 / 22%), transparent 45%),
     radial-gradient(circle at 85% 100%, rgb(224 110 34 / 20%), transparent 45%),
     radial-gradient(circle at 30% 100%, rgb(249 168 37 / 22%), transparent 40%), #fbfaf6;
   /* A game's top bar: the website's sidebar tints, run left to right (90°; the website's own
      sidebar runs top to bottom, 180°) */
-  --sidebar-background: linear-gradient(90deg, #e7edc2 0%, #f8d9c2 35%, #fce7ba 65%, #c9e9fb 100%);
+  --sk-sidebar-background: linear-gradient(
+    90deg,
+    #e7edc2 0%,
+    #f8d9c2 35%,
+    #fce7ba 65%,
+    #c9e9fb 100%
+  );
   /* Cards on the page (translucent, the glow shows through); surfaces that cover the page
      (menus, fields) stay opaque */
-  --color-card: rgb(255 255 255 / 78%);
-  --color-surface: #ffffff;
-  --color-surface-2: #f1f3f6;
+  --sk-color-card: rgb(255 255 255 / 78%);
+  --sk-color-surface: #ffffff;
+  --sk-color-surface-2: #f1f3f6;
   /* Light controls on a card (secondary buttons, the theme toggle) */
-  --color-glass: rgb(255 255 255 / 60%);
-  --color-active-bg: rgb(20 23 28 / 6%);
-  --color-text: #14171c;
-  --color-text-muted: #4f5663;
-  --color-border: rgb(20 23 28 / 10%);
-  --color-border-strong: #a9b0ba;
-  --color-danger: #b42318;
-  --color-success: #1d7a46;
-  --color-warning-surface: #fff4d6;
+  --sk-color-glass: rgb(255 255 255 / 60%);
+  --sk-color-active-bg: rgb(20 23 28 / 6%);
+  --sk-color-text: #14171c;
+  --sk-color-text-muted: #4f5663;
+  --sk-color-border: rgb(20 23 28 / 10%);
+  --sk-color-border-strong: #a9b0ba;
+  --sk-color-danger: #b42318;
+  --sk-color-success: #1d7a46;
+  --sk-color-warning-surface: #fff4d6;
   /* The solid pill: the current navigation item and primary buttons */
-  --color-solid: #14171c;
-  --color-on-solid: #ffffff;
+  --sk-color-solid: #14171c;
+  --sk-color-on-solid: #ffffff;
   /* Accent for focus marks; text links stay in the text colour for contrast */
-  --color-accent: var(--color-winter);
-  --shadow-raised: 0 8px 24px rgb(18 22 28 / 14%);
+  --sk-color-accent: var(--sk-color-winter);
+  --sk-shadow-raised: 0 8px 24px rgb(18 22 28 / 14%);
   /* Dims the page behind a sheet or dialog opened over it */
-  --color-scrim: rgb(0 0 0 / 40%);
+  --sk-color-scrim: rgb(0 0 0 / 40%);
   color-scheme: light;
 
   /* Typography: Bold for headings, Book for body (faces in ./fonts.css, DECISIONS K8) */
-  --font-family: 'Luxora Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-weight-body: 400;
-  --font-weight-strong: 700;
-  --font-weight-heading: 700;
-  --font-size-small: 0.875rem;
-  --font-size-body: 1rem;
-  --font-size-lead: clamp(1.05rem, 0.95rem + 0.5vw, 1.25rem);
-  --font-size-title: clamp(1.8rem, 1.2rem + 1.8vw, 2.75rem);
+  --sk-font-family: 'Luxora Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sk-font-weight-body: 400;
+  --sk-font-weight-strong: 700;
+  --sk-font-weight-heading: 700;
+  --sk-font-size-small: 0.875rem;
+  --sk-font-size-body: 1rem;
+  --sk-font-size-lead: clamp(1.05rem, 0.95rem + 0.5vw, 1.25rem);
+  --sk-font-size-title: clamp(1.8rem, 1.2rem + 1.8vw, 2.75rem);
 
   /* Shape: fields, cards and pills (buttons, navigation items, badges); every control at least
      the hit target high */
-  --radius: 14px;
-  --radius-card: 28px;
-  --radius-pill: 999px;
-  --hit-target: 44px;
+  --sk-radius: 14px;
+  --sk-radius-card: 28px;
+  --sk-radius-pill: 999px;
+  --sk-hit-target: 44px;
 
   /* Spacing */
-  --space-1: 0.5rem;
-  --space-2: 1rem;
-  --space-3: 1.5rem;
-  --space-4: 2.5rem;
+  --sk-space-1: 0.5rem;
+  --sk-space-2: 1rem;
+  --sk-space-3: 1.5rem;
+  --sk-space-4: 2.5rem;
 
   /* Layout */
-  --content-width: 72rem;
-  --gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
+  --sk-content-width: 72rem;
+  --sk-gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
 
   /* Motion (off under prefers-reduced-motion, ./motion.css) */
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --duration-fast: 160ms;
-  --duration-base: 320ms;
-  --duration-slow: 700ms;
+  --sk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --sk-duration-fast: 160ms;
+  --sk-duration-base: 320ms;
+  --sk-duration-slow: 700ms;
 }
 
 :root[data-theme='dark'] {
   /* Night blue, not black, with the same glows a little stronger on the dark */
-  --color-background: #0a1233;
-  --page-background:
+  --sk-color-background: #0a1233;
+  --sk-page-background:
     radial-gradient(circle at 15% 0%, rgb(175 184 78 / 22%), transparent 40%),
     radial-gradient(circle at 95% 15%, rgb(4 170 247 / 24%), transparent 45%),
     radial-gradient(circle at 85% 100%, rgb(224 110 34 / 20%), transparent 45%),
     radial-gradient(circle at 30% 100%, rgb(249 168 37 / 16%), transparent 40%), #0a1233;
-  --sidebar-background:
+  --sk-sidebar-background:
     linear-gradient(
       90deg,
       rgb(175 184 78 / 30%) 0%,
@@ -116,21 +123,21 @@
       rgb(4 170 247 / 30%) 100%
     ),
     #0c1538;
-  --color-card: rgb(16 26 66 / 72%);
-  --color-surface: #101a42;
-  --color-surface-2: #17224f;
-  --color-glass: rgb(255 255 255 / 6%);
-  --color-active-bg: rgb(255 255 255 / 10%);
-  --color-text: #f1f4fa;
-  --color-text-muted: #b3bcd0;
-  --color-border: rgb(255 255 255 / 12%);
-  --color-border-strong: #5b6788;
-  --color-danger: #ff8a80;
-  --color-success: #4acb8a;
-  --color-warning-surface: #3a2e10;
-  --color-solid: #f1f4fa;
-  --color-on-solid: #0a1233;
-  --shadow-raised: 0 8px 28px rgb(0 0 0 / 55%);
+  --sk-color-card: rgb(16 26 66 / 72%);
+  --sk-color-surface: #101a42;
+  --sk-color-surface-2: #17224f;
+  --sk-color-glass: rgb(255 255 255 / 6%);
+  --sk-color-active-bg: rgb(255 255 255 / 10%);
+  --sk-color-text: #f1f4fa;
+  --sk-color-text-muted: #b3bcd0;
+  --sk-color-border: rgb(255 255 255 / 12%);
+  --sk-color-border-strong: #5b6788;
+  --sk-color-danger: #ff8a80;
+  --sk-color-success: #4acb8a;
+  --sk-color-warning-surface: #3a2e10;
+  --sk-color-solid: #f1f4fa;
+  --sk-color-on-solid: #0a1233;
+  --sk-shadow-raised: 0 8px 28px rgb(0 0 0 / 55%);
   /* Form controls and scrollbars follow the theme */
   color-scheme: dark;
 }

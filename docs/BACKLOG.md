@@ -19,14 +19,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
   game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21).
-- **11. The token names take the prefix** (the race's adoption plan, 2026-11-22, its third
-  point). `css/tokens.css` defines its 49 custom properties without the `sk-` prefix
-  (`--color-text`, `--space-2`, `--gutter`, …), so they can clash with a game's own. Every game
-  reads them, so renaming them breaks every game: it goes into the next minor, not into v0.11.1.
-  Done when: each shared token is `--sk-` prefixed, tests/prefix.test.ts checks custom
-  properties too, and the CHANGELOG has a migration note per game with the old and the new
-  name.
-
 - **12. A middle part in `ResultFrame`** between the first part and "more" (Mini Games T417,
   2026-11-23). Not in v0.12.0. To be decided after the idea is checked against Bingo's and
   Cases' results, since a frame every game shares must fit all three. Done when: the owner
@@ -99,3 +91,8 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   (`allow="autoplay; fullscreen"`, nothing more) and follows it (`resize`, `ended`), and its
   message layer was checked against the website's own sender on 2026-11-24: nothing differed.
   Closed by v0.13.0. No game passes a call id yet.
+- **11. The token names take the prefix** (the race's adoption plan, 2026-11-22). All 49 custom
+  properties of `css/tokens.css` are `--sk-` prefixed, every use in the kit follows,
+  tests/prefix.test.ts checks custom properties too (only `--fit`, which a game's element carries,
+  is left), and the CHANGELOG has the old and new name of each. Closed by v0.14.0 (PR review
+  pending: it breaks every game, DECISIONS K45).

@@ -64,13 +64,23 @@ export function contrast(a, b) {
   return ((hi ?? 0) + 0.05) / ((lo ?? 0) + 0.05);
 }
 
-const SEASONS = ['--color-spring', '--color-summer', '--color-autumn', '--color-winter'];
-const BACKGROUNDS = ['--color-background', '--color-surface', '--color-surface-2', '--color-card'];
+const SEASONS = [
+  '--sk-color-spring',
+  '--sk-color-summer',
+  '--sk-color-autumn',
+  '--sk-color-winter',
+];
+const BACKGROUNDS = [
+  '--sk-color-background',
+  '--sk-color-surface',
+  '--sk-color-surface-2',
+  '--sk-color-card',
+];
 // Text token → the backgrounds it is read on.
 const PAIRS = [
-  ...SEASONS.map((s) => ['--color-on-season', s]),
-  ...['--color-text', '--color-text-muted'].flatMap((t) => BACKGROUNDS.map((b) => [t, b])),
-  ['--color-on-solid', '--color-solid'],
+  ...SEASONS.map((s) => ['--sk-color-on-season', s]),
+  ...['--sk-color-text', '--sk-color-text-muted'].flatMap((t) => BACKGROUNDS.map((b) => [t, b])),
+  ['--sk-color-on-solid', '--sk-color-solid'],
 ];
 
 // Non-text contrast (WCAG 1.4.11): a focus ring against what is next to it.
@@ -110,7 +120,7 @@ const mix = (a, b, t) => [
 ];
 
 /**
- * The header's background, `--sidebar-background`: `linear-gradient(<direction>, <stops>)`,
+ * The header's background, `--sk-sidebar-background`: `linear-gradient(<direction>, <stops>)`,
  * optionally followed by the base colour it is laid over (else the page). Each stop must be a
  * colour the check reads, or it throws: a stop it skipped would pass unchecked (finding 2).
  * Returns the colours seen across the whole width: every stop and 15 points between each two,
@@ -120,7 +130,8 @@ const mix = (a, b, t) => [
  * @returns {Rgba[]}
  */
 export function sidebarColours(tokens, theme) {
-  const value = tokenValue(tokens, theme, '--sidebar-background') ?? 'missing --sidebar-background';
+  const value =
+    tokenValue(tokens, theme, '--sk-sidebar-background') ?? 'missing --sk-sidebar-background';
   const [gradient = '', base, ...more] = splitTop(value);
   const inner = /^linear-gradient\((.*)\)$/.exec(gradient)?.[1];
   if (inner === undefined || more.length > 0) {
@@ -130,7 +141,7 @@ export function sidebarColours(tokens, theme) {
   const stops = (/^(?:to |-?[\d.]+(?:deg|turn|rad))/.test(first) ? rest : [first, ...rest]).map(
     (stop) => parseColour(stop.replace(/\s+-?[\d.]+%$/, '')),
   );
-  const under = parseColour(base ?? tokenValue(tokens, theme, '--color-background') ?? '');
+  const under = parseColour(base ?? tokenValue(tokens, theme, '--sk-color-background') ?? '');
   const seen = stops.flatMap((stop, i) => {
     const next = stops[i + 1];
     if (next === undefined) return [stop];
@@ -150,12 +161,12 @@ export function sidebarColours(tokens, theme) {
 function backgroundsOf(tokens, theme, names) {
   /** @type {(name: string) => Rgba} */
   const colour = (name) => parseColour(tokenValue(tokens, theme, name) ?? `missing ${name}`);
-  const page = colour('--color-background');
+  const page = colour('--sk-color-background');
   return [
     ...names.map((name) => /** @type {[string, Rgba]} */ ([name, over(colour(name), page)])),
     ...sidebarColours(tokens, theme).map(
       (stop, i) =>
-        /** @type {[string, Rgba]} */ ([`--sidebar-background point ${String(i + 1)}`, stop]),
+        /** @type {[string, Rgba]} */ ([`--sk-sidebar-background point ${String(i + 1)}`, stop]),
     ),
   ];
 }
@@ -170,7 +181,7 @@ export function contrastFailures(tokens) {
   /** @type {(theme: 'light' | 'dark', name: string) => Rgba} */
   const colour = (theme, name) => parseColour(tokenValue(tokens, theme, name) ?? `missing ${name}`);
   return /** @type {const} */ (['light', 'dark']).flatMap((theme) => {
-    const page = colour(theme, '--color-background');
+    const page = colour(theme, '--sk-color-background');
     const pairs = PAIRS.map(([text = '', background = '']) => ({
       theme,
       text,
@@ -178,11 +189,11 @@ export function contrastFailures(tokens) {
       // A translucent background (the card) is seen over the page's base colour.
       ratio: contrast(colour(theme, text), over(colour(theme, background), page)),
     }));
-    const header = ['--color-text', '--color-text-muted'].flatMap((text) =>
+    const header = ['--sk-color-text', '--sk-color-text-muted'].flatMap((text) =>
       sidebarColours(tokens, theme).map((stop, i) => ({
         theme,
         text,
-        background: `--sidebar-background point ${String(i + 1)}`,
+        background: `--sk-sidebar-background point ${String(i + 1)}`,
         ratio: contrast(colour(theme, text), stop),
       })),
     );

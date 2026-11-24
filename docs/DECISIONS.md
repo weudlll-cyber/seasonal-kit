@@ -164,3 +164,13 @@ one is a new dated entry here, in the same commit as the work it governs ([CLAUD
 sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page of the site in
   a new tab. The extra token is the one point beyond the chat's sandbox and is open to the
   owner's review.
+
+## 2026-11-24
+
+- **K45 — The shared tokens are `--sk-` prefixed** (v0.14.0, BACKLOG 11). All 49 custom
+  properties of `css/tokens.css` take the prefix (`--color-text` is `--sk-color-text`), as K7 has
+  it for classes and K31 for data attributes, so they cannot clash with a game's own. `--fit` is
+  the one unprefixed property the CSS reads: a game's element carries it, set by `src/fit.ts`.
+  The season colours keep the website's names on the website's side: the season check compares
+  the kit's `--sk-color-spring` with the site's `--color-spring`. A break for every game, so it
+  is released only after the owner's review.

@@ -29,10 +29,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1) var(--space-2);
-  padding: 0.6rem var(--gutter);
-  background: var(--sidebar-background);
-  border-bottom: 1px solid var(--color-border);
+  gap: var(--sk-space-1) var(--sk-space-2);
+  padding: 0.6rem var(--sk-gutter);
+  background: var(--sk-sidebar-background);
+  border-bottom: 1px solid var(--sk-color-border);
 }
 
 /* Sticky from 640 px: on a phone the bar would take a large part of the screen. Keyboard focus
@@ -58,7 +58,7 @@
   margin-right: auto;
   color: inherit;
   text-decoration: none;
-  font-weight: var(--font-weight-heading);
+  font-weight: var(--sk-font-weight-heading);
   letter-spacing: 0.02em;
 }
 
@@ -74,9 +74,9 @@
 
 .sk-header-brand small {
   display: block;
-  color: var(--color-text-muted);
-  font-weight: var(--font-weight-body);
-  font-size: max(var(--sk-floor-text), var(--font-size-small));
+  color: var(--sk-color-text-muted);
+  font-weight: var(--sk-font-weight-body);
+  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -93,23 +93,23 @@
 .sk-header-nav a {
   display: inline-flex;
   align-items: center;
-  min-height: var(--hit-target);
+  min-height: var(--sk-hit-target);
   padding: 0 0.95rem;
-  border-radius: var(--radius-pill);
-  color: var(--color-text);
+  border-radius: var(--sk-radius-pill);
+  color: var(--sk-color-text);
   text-decoration: none;
-  font-weight: var(--font-weight-strong);
+  font-weight: var(--sk-font-weight-strong);
   white-space: nowrap;
 }
 
 .sk-header-nav a:hover {
-  background: var(--color-active-bg);
+  background: var(--sk-color-active-bg);
 }
 
 /* The current page is the solid pill, as on the website. */
 .sk-header-nav a[aria-current='page'] {
-  background: var(--color-solid);
-  color: var(--color-on-solid);
+  background: var(--sk-color-solid);
+  color: var(--sk-color-on-solid);
 }
 
 .sk-header-account {
@@ -128,7 +128,7 @@
    square, so here they keep their width and padding, at least the 44 px target. */
 .sk-header .sk-bar-button {
   width: auto;
-  min-height: var(--hit-target);
+  min-height: var(--sk-hit-target);
   padding-inline: 0.65rem;
   white-space: nowrap;
 }
@@ -137,18 +137,18 @@
 .sk-header-chip {
   display: inline-flex;
   align-items: center;
-  min-height: var(--hit-target);
+  min-height: var(--sk-hit-target);
   padding: 0 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-glass);
-  color: var(--color-text);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-glass);
+  color: var(--sk-color-text);
   text-decoration: none;
   white-space: nowrap;
 }
 
 .sk-header-chip:hover {
-  background: var(--color-active-bg);
+  background: var(--sk-color-active-bg);
 }
 
 /* "Signed in as" is read out, not shown, up to wide screens (a host's bar stays one row). */
@@ -174,20 +174,20 @@
   right: 0;
   z-index: 20;
   display: grid;
-  gap: var(--space-1);
+  gap: var(--sk-space-1);
   box-sizing: border-box;
-  width: min(18rem, calc(100vw - 2 * var(--gutter)));
-  padding: var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  width: min(18rem, calc(100vw - 2 * var(--sk-gutter)));
+  padding: var(--sk-space-2);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  background: var(--sk-color-surface);
+  box-shadow: var(--sk-shadow-raised);
 }
 
 .sk-dev-menu-hint {
   margin: 0;
-  color: var(--color-text-muted);
-  font-size: max(var(--sk-floor-text), var(--font-size-small));
+  color: var(--sk-color-text-muted);
+  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
 }
 
 /* The fold: on a wide screen no button and no box of its own. */
@@ -222,13 +222,13 @@
   left: 0;
   z-index: 30;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--sk-space-2);
   max-height: calc(100dvh - 4rem);
   overflow-y: auto;
-  padding: var(--space-2) var(--gutter);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-raised);
+  padding: var(--sk-space-2) var(--sk-gutter);
+  border-bottom: 1px solid var(--sk-color-border);
+  background: var(--sk-color-surface);
+  box-shadow: var(--sk-shadow-raised);
 }
 
 .sk-header[data-sk-folded='true'] .sk-menu .sk-header-nav {
@@ -244,7 +244,7 @@
 .sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu-panel {
   position: static;
   width: 100%;
-  margin-top: var(--space-1);
+  margin-top: var(--sk-space-1);
 }
 
 .sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu {

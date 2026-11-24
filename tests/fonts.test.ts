@@ -6,7 +6,7 @@
  * Responsibility: a game that imports `@seasonal/kit/fonts.css` gets every face it declares:
  *                 each `url()` resolves to a file inside a folder package.json ships ("files"),
  *                 no woff2 sits unused in fonts/, the @font-face family is the first family of
- *                 `--font-family`, and the files are the ones the owner approved (fonts/README.md).
+ *                 `--sk-font-family`, and the files are the ones the owner approved (fonts/README.md).
  * Source:         new in the kit.
  */
 import { createHash } from 'node:crypto';
@@ -47,8 +47,8 @@ describe('css/fonts.css', () => {
     expect(sources.map(relative).sort()).toEqual(files.map((f) => `fonts/${f}`).sort());
   });
 
-  it('names the family that --font-family puts first', () => {
-    const token = readTokens(read('css/tokens.css')).light.get('--font-family') ?? '';
+  it('names the family that --sk-font-family puts first', () => {
+    const token = readTokens(read('css/tokens.css')).light.get('--sk-font-family') ?? '';
     const first = token.split(',')[0]?.trim();
     const families = new Set(faces.map((f) => /font-family:\s*([^;]+);/.exec(f)?.[1]?.trim()));
     expect([...families]).toEqual([first]);

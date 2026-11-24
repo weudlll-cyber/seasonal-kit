@@ -7,7 +7,7 @@
  *                 Light Italic (300), as the website declares them, so all five shipped files are
  *                 selectable; a browser downloads a face only when a style uses it. Each is woff2
  *                 with swap, so text shows at once in the fallback font. ./tokens.css names the
- *                 family in --font-family. The files are used as delivered; their licence is in
+ *                 family in --sk-font-family. The files are used as delivered; their licence is in
  *                 ../fonts/README.md (not the kit's AGPL; DECISIONS K8).
  * Source:         seasonal-mini-games packages/ui/src/fonts.css at 91b23bc (Book, Bold), plus
  *                 seasonal-entertainment client/src/styles/fonts.css at e7b995c (Regular,

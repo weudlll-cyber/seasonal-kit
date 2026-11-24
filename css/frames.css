@@ -31,7 +31,7 @@
 /* The start card. */
 .sk-start-card {
   --sk-start-title: clamp(3rem, 2rem + 6vw, 5.5rem);
-  --sk-season: var(--color-border-strong);
+  --sk-season: var(--sk-color-border-strong);
   min-height: 0;
   overflow: hidden;
   display: flex;
@@ -39,39 +39,39 @@
   align-items: center;
   justify-content: center;
   gap: calc(var(--fit, 1) * clamp(0.5rem, 2.5vmin, 1.5rem));
-  padding: calc(var(--fit, 1) * var(--space-3)) var(--space-3);
+  padding: calc(var(--fit, 1) * var(--sk-space-3)) var(--sk-space-3);
   border: 3px solid var(--sk-season);
-  border-radius: var(--radius-card);
-  background: color-mix(in srgb, var(--sk-season) 16%, var(--color-surface));
+  border-radius: var(--sk-radius-card);
+  background: color-mix(in srgb, var(--sk-season) 16%, var(--sk-color-surface));
   text-align: center;
 }
 
 .sk-start-card[data-sk-season='spring'] {
-  --sk-season: var(--color-spring);
+  --sk-season: var(--sk-color-spring);
 }
 
 .sk-start-card[data-sk-season='summer'] {
-  --sk-season: var(--color-summer);
+  --sk-season: var(--sk-color-summer);
 }
 
 .sk-start-card[data-sk-season='autumn'] {
-  --sk-season: var(--color-autumn);
+  --sk-season: var(--sk-color-autumn);
 }
 
 .sk-start-card[data-sk-season='winter'] {
-  --sk-season: var(--color-winter);
+  --sk-season: var(--sk-color-winter);
 }
 
 /* A game whose rounds show no season: the card on the surface, with a hairline. */
 .sk-start-card:not([data-sk-season]) {
   border-width: 1px;
-  background: var(--color-surface);
+  background: var(--sk-color-surface);
 }
 
 .sk-start-head {
   display: grid;
   justify-items: center;
-  gap: calc(var(--fit, 1) * var(--space-1));
+  gap: calc(var(--fit, 1) * var(--sk-space-1));
 }
 
 /* The season's icon on a disc of the page colour. */
@@ -83,7 +83,7 @@
   padding: calc(var(--fit, 1) * 0.6rem);
   border: 3px solid var(--sk-season);
   border-radius: 50%;
-  background: var(--color-surface);
+  background: var(--sk-color-surface);
 }
 
 .sk-start-head h1 {
@@ -100,12 +100,12 @@
 
 .sk-start-special h2 {
   margin: 0;
-  font-size: max(16px, calc(var(--fit, 1) * var(--font-size-title)));
+  font-size: max(16px, calc(var(--fit, 1) * var(--sk-font-size-title)));
 }
 
 .sk-start-special p {
   margin: 0;
-  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--font-size-lead)));
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--sk-font-size-lead)));
 }
 
 .sk-start-facts {
@@ -115,23 +115,23 @@
   display: grid;
   gap: 0.15rem;
   font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * 1rem));
-  font-weight: var(--font-weight-strong);
+  font-weight: var(--sk-font-weight-strong);
 }
 
 .sk-start-count {
   margin: 0;
-  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--font-size-lead)));
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--sk-font-size-lead)));
 }
 
 .sk-start-count strong {
-  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--font-size-title)));
+  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--sk-font-size-title)));
   font-variant-numeric: tabular-nums;
 }
 
 /* The result. */
 .sk-result {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--sk-space-2);
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -139,16 +139,16 @@
 /* The first part: one screen under the game's bar. */
 .sk-result-first {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--sk-space-2);
   height: calc(100dvh - var(--sk-result-top));
   min-height: 0;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas: 'head' 'reveal' 'places';
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  background: var(--color-card);
+  padding: var(--sk-space-2) var(--sk-space-3);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  background: var(--sk-color-card);
 }
 
 /* A panel inside a screen (since v0.11.0, Bingo R4): no page of its own, so no first part one
@@ -211,17 +211,17 @@
   min-width: 0;
   display: grid;
   align-content: start;
-  gap: var(--space-1);
+  gap: var(--sk-space-1);
 }
 
 .sk-result-more {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--sk-space-2);
   align-content: start;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  background: var(--color-card);
+  padding: var(--sk-space-2) var(--sk-space-3);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  background: var(--sk-color-card);
 }
 
 /* A desktop: the reveal on the left at the part's full height, the placings on its right, the

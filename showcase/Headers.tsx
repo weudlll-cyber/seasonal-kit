@@ -20,7 +20,7 @@ import { AppHeader, type AppHeaderProps } from '../src/react/index.js';
 // A placeholder emblem: a disc in the winter colour, decorative like the games' own.
 const EMBLEM = (
   <svg width="42" height="37" viewBox="0 0 42 37" role="img" aria-hidden="true">
-    <circle cx="21" cy="18.5" r="16" fill="var(--color-winter)" />
+    <circle cx="21" cy="18.5" r="16" fill="var(--sk-color-winter)" />
   </svg>
 );
 

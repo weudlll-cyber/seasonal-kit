@@ -94,5 +94,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **11. The token names take the prefix** (the race's adoption plan, 2026-11-22). All 49 custom
   properties of `css/tokens.css` are `--sk-` prefixed, every use in the kit follows,
   tests/prefix.test.ts checks custom properties too (only `--fit`, which a game's element carries,
-  is left), and the CHANGELOG has the old and new name of each. Closed by v0.14.0 (PR review
-  pending: it breaks every game, DECISIONS K45).
+  is left), and the CHANGELOG has the old and new name of each. Closed by PR #37 and v0.14.0, which
+  breaks every game (DECISIONS K45) and was released after the owner's review.

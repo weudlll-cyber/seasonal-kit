@@ -410,6 +410,25 @@ listens once and lets go on unmount.
 
 Both consumers were deleted afterwards.
 
+## The v0.17.0 phone sheet cap, with pnpm and with npm (2026-11-24, the tag itself)
+
+Two scratch consumers pinned `#v0.17.0` (merge commit `72ec78d`), both with `ignore-scripts=true`,
+with the toolchain of the earlier proofs (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false` and `exactOptionalPropertyTypes`, Vitest 5.0.5). Each ran `tsc` and two tests
+in one file, in Node: the installed kit is `0.17.0` and `DockedScreen` imports from
+`@seasonal/kit/react`; the installed `@seasonal/kit/dock.css` (resolved through the package's
+`exports`) has the sheet's `max-height` reading `--sk-visible-height` with `100dvh` as the
+fallback, the unchanged `height: min(60dvh, 30rem)`, and the three names the cap shares with the
+layout. The consumers read the shipped file; the layout itself is measured in the kit's own
+showcase (`showcase/sheet.spec.ts`), which no game's install runs.
+
+| Consumer                 | Install                                                                                                   | `tsc`  | Tests    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.5 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/72ec78d…`).        | Worked | 2 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked. `npm ls` shows the kit `0.17.0` at `…seasonal-kit.git#72ec78d…` with the consumer's `vite` 8.3.5. | Worked | 2 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

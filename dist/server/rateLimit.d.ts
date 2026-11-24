@@ -36,6 +36,7 @@ export interface RateDecision {
     readonly allowed: boolean;
     readonly retryAfterMs: number;
 }
+export declare function ruleOf(read: unknown): RateRule | null;
 export type RateRuleSource = RateRule | (() => RateRule);
 export declare class RateLimiter {
     private readonly source;

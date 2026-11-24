@@ -174,3 +174,9 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   The season colours keep the website's names on the website's side: the season check compares
   the kit's `--sk-color-spring` with the site's `--color-spring`. A break for every game, so it
   is released only after the owner's review.
+- **K46 — Sign-in failures are braked with `FailureBrake` in every game** (decided 2026-11-24,
+  v0.15.0; Seasonal Cases BACKLOG 49, its D51 and D55). `braked(key)` looks without counting,
+  so a route refuses before the password check, and `failed(key)` counts one wrong password; a
+  success is not counted. The rules and the keys (an account, an address range) stay in each
+  game. Bingo moves its login limits onto it at its next kit adoption, and Cases replaces its own
+  copy of the class with the kit's.

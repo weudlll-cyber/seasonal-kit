@@ -10,7 +10,8 @@
  *                 - a name of 1 to 40 characters after trimming;
  *                 - an icon that is null or exactly the contract's public file,
  *                   "/media/step-icons/<32 hex>.webp" (stricter than both games, after the
- *                   second independent review: no other route of the site can be named).
+ *                   second independent review: no other route of the site can be named); the
+ *                   check is `isStepIcon` of ../stepShape, shared with the header since v0.19.0.
  *                 A header over 2 KB, or that is no base64url of a JSON array, gives no steps.
  *                 `mode` is the game's: `each` keeps the steps that hold, at most three (Mini
  *                 Games), `all` gives none when one fails or there are more than three (Bingo).
@@ -24,12 +25,8 @@
  *                 shared with ./identity (since v0.10.1).
  * Spec:           Seasonal Entertainment docs/AUTH.md "Embedded games"; GAME-INTEGRATION.md §2
  */
-export type Ladder = 'holder' | 'farmer' | 'investor';
-export interface Step {
-    readonly ladder: Ladder;
-    readonly name: string;
-    readonly icon: string | null;
-}
+import { type Ladder, type Step } from '../stepShape.js';
+export type { Ladder, Step };
 export type StepsMode = 'each' | 'all';
 export declare function stepsFrom(header: string | undefined, mode: StepsMode): {
     readonly steps: readonly Step[];

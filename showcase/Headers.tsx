@@ -6,7 +6,8 @@
  * Responsibility: four `AppHeader`s with sample words, as Seasonal Bingo Royale passes them
  *                 (its emblem stays in the game: this page draws a placeholder). The third passes
  *                 the dev tools slot with the kit's `DevSignIn` and a Quick Test link; the fourth
- *                 is a website admin's long bar in website mode (Bingo R1). Each folds into its
+ *                 is a website admin's long bar in website mode (Bingo R1); a member's header with
+ *                 three step badges comes last (v0.19.0). Each folds into its
  *                 menu whenever its items do not fit one row; the Playwright run opens the first
  *                 one on phones (./showcase.spec.ts) and measures the rows (./layout.spec.ts).
  *                 Never shipped.
@@ -16,6 +17,7 @@ import type { ReactElement } from 'react';
 
 import { DevSignIn } from '../src/react/dev/index.js';
 import { AppHeader, type AppHeaderProps } from '../src/react/index.js';
+import type { Step } from '../src/stepShape.js';
 
 // A placeholder emblem: a disc in the winter colour, decorative like the games' own.
 const EMBLEM = (
@@ -36,6 +38,26 @@ const base: AppHeaderProps = {
   signIn: { href: '#/sign-in', registerHref: '#/register' },
   closeKey: 'showcase',
 };
+
+// A member's three steps, as the website sends them; the files are the showcase's own
+// (showcase/public/media/step-icons/), at the address the contract names.
+const STEPS: readonly Step[] = [
+  {
+    ladder: 'holder',
+    name: 'Diamond holder',
+    icon: '/media/step-icons/00000000000000000000000000000001.webp',
+  },
+  {
+    ladder: 'farmer',
+    name: 'Golden farmer',
+    icon: '/media/step-icons/00000000000000000000000000000002.webp',
+  },
+  {
+    ladder: 'investor',
+    name: 'Early investor',
+    icon: '/media/step-icons/00000000000000000000000000000003.webp',
+  },
+];
 
 const account = { name: 'Walter', role: 'host', href: '#/account', onSignOut: () => undefined };
 
@@ -80,6 +102,17 @@ export function Headers(): ReactElement {
             { href: '#/admin', label: 'Admin', active: false },
           ]}
           account={{ ...account, name: 'Walter Weudl-Admin', role: 'website admin' }}
+          signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
+        />
+      </div>
+      <h3>Signed in with step badges, website mode</h3>
+      {/* Seasonal Cases (v0.19.0): the member's three step icons beside the name, in the chip.
+          Last, so no open menu of the headers above reaches over it. */}
+      <div data-testid="steps-header">
+        <AppHeader
+          {...base}
+          websiteMode
+          account={{ ...account, role: 'player', steps: STEPS }}
           signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
         />
       </div>

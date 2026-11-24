@@ -12,7 +12,9 @@
  *                    then anything the game adds (its chat button, a Quick Test link);
  *                 4. the account: signed in, the chip "name (role)" to the account page and
  *                    "Sign out"; signed out, "Sign in" and "Register", or in website mode one
- *                    "Sign in" to the website;
+ *                    "Sign in" to the website; the member's step badges (`steps`, since
+ *                    v0.19.0) sit as small icons in the chip, drawn only for the website's own
+ *                    icon addresses (../stepShape), in the folded menu too;
  *                 5. the development tools, rendered only when the game passes them (its lazily
  *                    loaded ./dev DevSignIn, behind its dev flag);
  *                 6. the theme toggle (./theme).
@@ -28,6 +30,7 @@
  *                 (ThemeToggle) and ./MenuFold.
  */
 import type { ReactElement, ReactNode } from 'react';
+import { type Step } from '../stepShape.js';
 export interface HeaderLink {
     readonly href: string;
     readonly label: string;
@@ -38,6 +41,7 @@ export interface HeaderAccount {
     readonly role: string;
     readonly href: string;
     readonly onSignOut: () => void;
+    readonly steps?: readonly Step[];
 }
 export interface AppHeaderProps {
     readonly websiteMode: boolean;

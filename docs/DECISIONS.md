@@ -218,3 +218,11 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   T423). The same optional prop as `StartCard`'s (K48): `fit`, of the existing `FitOptions` type,
   goes to `useFitScale` as it is. Without it the frame is as before. Mini Games drops `useFontLoads`
   from the result frame's signature at its next kit adoption.
+- **K56 — The header shows a member's step badges, in the kit's `Step` shape** (decided 2026-11-24,
+  v0.19.0; Seasonal Cases: no game-side stand-in). `HeaderAccount` has an optional `steps`, a list
+  of the `Step` the server's `identityFrom` already gives (`ladder`, `name`, `icon`); the shape and
+  the one check of the icon address, "/media/step-icons/<32 hex>.webp", moved to `src/stepShape.ts`
+  (no server code), which the server and the header both import, and the server entry exports
+  the types unchanged. The chip draws at most three icons, 1.25rem square, each named by its
+  step, only for an address that passes the check; any other address is dropped. Empty or
+  missing: the header is as before.

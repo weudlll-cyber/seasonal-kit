@@ -119,3 +119,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **24. The result frame fits again after web fonts load** (Mini Games T423, decided 2026-11-24,
   K55). `ResultFrame`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to `useFitScale`.
   Closed by PR #47 and v0.18.0.
+- **25. Step badges in the header** (Seasonal Cases, decided 2026-11-24, K56). `HeaderAccount.steps`
+  takes the member's steps in the kit's `Step` shape; the header draws them as small icons beside
+  the name, in the chip and the folded menu, only for the website's own icon addresses. Closed by
+  PR #49 and v0.19.0.

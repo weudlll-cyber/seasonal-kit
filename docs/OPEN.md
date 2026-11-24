@@ -8,4 +8,3 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 9\. React wrappers: the dock, its arrivals and the call slot are in the kit since v0.4.0, open
   until a game uses them (the chat frame's link is closed).
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
-- 19\. The website's own rate limiting uses its own library, not the kit's: whether it moves is open, not planned.

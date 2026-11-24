@@ -13,6 +13,8 @@ applies it.
   2026-11-23: the saving rules apply to every Seasonal project), the test-file limit of 400
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
+- **The website keeps its own sign-in brake** (docs only, DECISIONS K49): it does not move to
+  `FailureBrake`. BACKLOG 19 is closed as decided.
 
 ## [0.16.0] - 2026-11-24
 

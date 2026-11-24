@@ -15,7 +15,9 @@ applies it.
   game's `master` uses (Bingo's `WebsiteChatFrame`). `logs/` is git-ignored.
 - **The handbook is current** (docs only, DECISIONS K51, K52): `docs/HANDBOOK.md` follows
   v0.12.0 to v0.17.0, has the sections "How a Seasonal game looks" and "Before production", the
-  working-cheaply rules, HSTS and `FailureBrake` in Security, and each rule names its check.
+  working-cheaply rules, HSTS and `FailureBrake` in Security, privacy from the first commit,
+  "The first day", the load target, a glossary, and each rule names its check. Decisions K53
+  (English to players) and K54 (AGPL-3.0-or-later) are recorded.
   RELEASING step 1 now updates it with every release.
 - **The website keeps its own sign-in brake** (docs only, DECISIONS K49): it does not move to
   `FailureBrake`. BACKLOG 19 is closed as decided.

@@ -208,3 +208,9 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   everything that can sensibly be proven by a test is. A row of the handbook names the test or
   CI job that holds its rule; where a test makes no sense, the row says why and that review
   checks it.
+- **K53 — Every game speaks English to its players** (decided 2026-11-24). Every text a player
+  reads is English, in every game of the kit; the handbook says so.
+- **K54 — Every game is licensed AGPL-3.0-or-later** (decided 2026-11-24). Each game's repository
+  carries the AGPL's text in `LICENSE` and `"license": "AGPL-3.0-or-later"` in `package.json`, as the
+  kit does; the Luxora Grotesk font stays outside it (K8). On 2026-11-24 the kit, Mini Games,
+  Bingo Royale, Cases, Seasonal Party and the website all carry it (read from their `master`).

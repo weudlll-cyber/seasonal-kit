@@ -11,7 +11,8 @@
  *                 in the layout, never over the page. Its line "Chat · <newest message>" gives
  *                 way with an ellipsis, beside the unread count. The open chat is a sheet above
  *                 the bar, opaque. The call's 48 px strip sits directly above the bar. Colours
- *                 come only from ./tokens.css; "3 unread" is read out by ./shell.css
+ *                 come only from ./tokens.css; the sheet is never taller than the space left above
+ *                 the bar (`--sk-visible-height`, v0.17.0); "3 unread" is read out by ./shell.css
  *                 `sk-visually-hidden`, which a game imports with this file.
  * Source:         seasonal-mini-games apps/web/src/match/chatDock.css and docked.css at 866df03
  *                 (the 190/150 px strip, the bar, the sheet; the 760 px query without its 900 px
@@ -103,11 +104,16 @@
 }
 
 .sk-chat-dock[data-sk-view='phone'] {
+  /* The dock's distance to the screen's bottom edge and the open sheet's distance above the dock:
+     named once, because the sheet's height cap below subtracts both. */
+  --sk-dock-margin: 10px;
+  --sk-sheet-gap: 8px;
+  --sk-sheet-border: 1px;
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin: 0 10px 10px;
+  margin: 0 10px var(--sk-dock-margin);
 }
 
 .sk-chat-dock[data-sk-view='phone'] .sk-chat-dock-row {
@@ -161,17 +167,30 @@
   font-weight: var(--sk-font-weight-strong);
 }
 
-/* The open sheet: above the bar, never over it. */
+/* The open sheet: above the bar, never over it, and never taller than the space visibly left
+   above it (v0.17.0). `dvh` does not shrink for a phone's on-screen keyboard (Chrome on Android)
+   and 30rem grows with the system font, so the height is only a wish; `max-height` is the rule.
+   The game's screen is `--sk-visible-height` high (DockedScreen follows visualViewport) and the
+   dock sits at its bottom, so what is left above the dock is that height minus the dock's own
+   (`100%`: an absolutely placed box's percentage is its containing block, the dock, and it
+   counts a call strip above the bar too), its margin and the gap, and the sheet's own padding and
+   border, which `max-height` (a content box) does not include. Without DockedScreen there is
+   no `--sk-visible-height`: `100dvh`, and the wish decides as before. The head (title, Close)
+   does not shrink, so the messages are what shrinks and scrolls inside. */
 .sk-chat-dock[data-sk-view='phone'] .sk-chat-dock-body {
   position: absolute;
   z-index: 40;
   left: 0;
   right: 0;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + var(--sk-sheet-gap));
   height: min(60dvh, 30rem);
+  max-height: calc(
+    var(--sk-visible-height, 100dvh) - 100% - var(--sk-dock-margin) - var(--sk-sheet-gap) -
+      var(--sk-space-2) - 2 * var(--sk-sheet-border)
+  );
   gap: var(--sk-space-1);
   padding: 0 var(--sk-space-2) var(--sk-space-2);
-  border: 1px solid var(--sk-color-border);
+  border: var(--sk-sheet-border) solid var(--sk-color-border);
   border-radius: var(--sk-radius-card);
   background: var(--sk-color-surface);
   box-shadow: var(--sk-shadow-raised);

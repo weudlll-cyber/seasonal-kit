@@ -194,3 +194,10 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   before the password check (`server/src/http/rateLimit.js`, `skipSuccessfulRequests`; limits in
   `server/src/config.js`: 10 failures per address and 10 per username in 15 minutes), and it does
   not depend on the kit at all. Revisit if the website ever takes the kit.
+- **K50 — The open phone sheet is never taller than the space visibly left above the bar** (decided
+  2026-11-24, v0.17.0; Mini Games on Chrome Android with a large system font). `dvh` does not
+  shrink for the on-screen keyboard and `rem` grows with the font, so the sheet's wished height
+  (`min(60dvh, 30rem)`) is capped by `--sk-visible-height` minus the dock's own height, its margin
+  and the gap (`css/dock.css`). The head with Close and the bar stay visible; the messages shrink
+  and scroll inside. Without `DockedScreen` there is no such property and the wish decides as
+  before. No game needs to change.

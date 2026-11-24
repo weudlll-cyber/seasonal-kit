@@ -108,3 +108,8 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `useFitScale`. Closed by PR #41 and v0.16.0.
 - **19. The website keeps its own sign-in brake** (2026-11-24, K49). Decided: it does not move to
   `FailureBrake`; nothing to build. Closed as decided.
+- **22. The open phone sheet is capped by the visible height** (Mini Games on Chrome Android, large
+  system font, 2026-11-24, K50). `css/dock.css` caps its height by `--sk-visible-height` minus the
+  dock, its margin and the gap; the head and the bar stay visible, the messages scroll inside.
+  `showcase/sheet.spec.ts` measures it at 375 × 667 and 390 × 844 with a 200 % root font. A real
+  keyboard is not emulated. Closed by PR #44 and v0.17.0.

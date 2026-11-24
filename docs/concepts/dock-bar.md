@@ -7,6 +7,9 @@ unchanged.** Nothing here is a decision.
 **Outcome (v0.15.0):** no kit change (BACKLOG 13). Mini Games measures the bar again in the real
 game and reports back; a new item follows if it shows a real overflow.
 
+**Outcome (v0.17.0):** the phone sheet's height is now capped by `--sk-visible-height` (BACKLOG 22,
+K50); the last section answers whether to add `interactive-widget=resizes-content`.
+
 ## How it was measured (2026-11-24)
 
 The kit's showcase (`pnpm showcase:build`, served by Vite's preview) in Chromium, with a throwaway
@@ -71,3 +74,28 @@ here.
    needs its own showcase state and a measurement of that overflow first.
 3. **For the hidden field, ask Mini Games for the page** (its CSS height chain and the keyboard
    case) before any change in the kit. The kit's side shows the field.
+
+## The keyboard and the open sheet: `interactive-widget=resizes-content` (v0.17.0)
+
+**Question.** Should games add `interactive-widget=resizes-content` to their viewport meta next to
+the v0.17.0 cap of the phone sheet, given that `DockedScreen` already follows `visualViewport`?
+
+**What it would change.** Chrome on Android defaults to `resizes-visual`: the keyboard shrinks only
+the visual viewport, the layout viewport and `dvh` stay as they were (which is why the sheet's
+`60dvh` did not shrink). With `resizes-content` the keyboard shrinks the layout viewport too, so
+`100dvh`, `dvh` rules and fixed boxes follow the keyboard as well, and the whole page reflows while
+a player types. iOS Safari does not honour it, so the kit's `visualViewport` path is needed there
+in any case.
+
+**Can it double the adjustment?** Not in the kit: `DockedScreen` only publishes a height
+(`visualViewport.height`, `src/react/DockedScreen.tsx` line 39), it never adds an offset, and the
+game's root sets its height to that value, so the visual and the layout height are the same number
+and nothing is subtracted twice. A game that itself subtracts the keyboard's height from a
+`dvh`-based value would double it. This is reasoning from the specification and the code; it
+was not tried on a device.
+
+**Recommendation.** Do not add it. v0.17.0 fixes the sheet through `--sk-visible-height`, which
+works on every browser; `resizes-content` would change the layout of every screen of a game while
+typing, for a gain the kit does not need, and only on Chrome. If a game wants it for another
+reason, it can add it without a change in the kit, and should then check it has no own keyboard
+offset.

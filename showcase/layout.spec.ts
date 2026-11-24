@@ -105,6 +105,9 @@ for (const [width, alone] of [
   });
 }
 
+// What the result's first part keeps for its padding and border on both sides, in CSS px.
+const PADDING_PX = 64;
+
 // The result frame (v0.15.0): with a reveal it is today's two columns on a desktop; without one it
 // renders no reveal box and is one column at every width; a middle card sits between the first
 // part and "more", in the page's width.
@@ -131,12 +134,13 @@ for (const width of [1280, 1920, 390]) {
     );
     const first = await box('result-no-reveal', '.sk-result-first');
     const places = await box('result-no-reveal', '.sk-result-places');
-    expect(places.width).toBeGreaterThan(first.width * 0.9);
+    // One column: the placings span the first part inside its padding and border (≤ 64 px).
+    expect(places.width).toBeGreaterThan(first.width - PADDING_PX);
     // With a reveal and a middle card: the two columns stay on a desktop, the card is in order.
     const withFirst = await box('result-with-middle', '.sk-result-first');
     const withPlaces = await box('result-with-middle', '.sk-result-places');
     if (width >= 900) expect(withPlaces.width).toBeLessThan(withFirst.width * 0.6);
-    else expect(withPlaces.width).toBeGreaterThan(withFirst.width * 0.8);
+    else expect(withPlaces.width).toBeGreaterThan(withFirst.width - PADDING_PX);
     const middle = await box('result-with-middle', '.sk-result-middle');
     const more = await box('result-with-middle', '.sk-result-more');
     expect(middle.top).toBeGreaterThanOrEqual(withFirst.bottom);

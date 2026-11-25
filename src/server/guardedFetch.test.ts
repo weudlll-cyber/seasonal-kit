@@ -72,6 +72,13 @@ describe('the exchange', () => {
     expect(await r.text()).toBe('hello');
   });
 
+  it('opens a connection of its own for every call', async () => {
+    const before = connections;
+    await local(`${base}/ok`);
+    await local(`${base}/ok`);
+    expect(connections - before).toBe(2);
+  });
+
   it('refuses a redirect and does not follow it', async () => {
     await expect(local(`${base}/redirect`)).rejects.toThrow(FetchRefused);
   });

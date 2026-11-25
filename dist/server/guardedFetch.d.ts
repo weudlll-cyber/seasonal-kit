@@ -12,6 +12,8 @@
  *                   then uses, so a name that answers differently a second time (DNS rebinding)
  *                   cannot slip past; an address literal is checked before any connection;
  *                 - a redirect is refused, never followed;
+ *                 - every call opens its own connection (since v0.27.0), so none rides on a
+ *                   socket the check never saw;
  *                 - the whole exchange, body included, ends within `timeoutMs` (5 s), and an
  *                   answer larger than `maxBytes` (64 KiB) is cut off and refused as it arrives;
  *                 - the answer is a `Response` with the status and headers, so `response.ok`

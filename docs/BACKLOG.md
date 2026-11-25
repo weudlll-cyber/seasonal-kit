@@ -174,3 +174,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   (`securityHeaderSet`, its test).
 - **45. Whether a website-mode game may be framed elsewhere** (Mini Games, 2026-11-25). Decided
   no (K81); nothing to build.
+- **46. A pooled socket could skip the guarded fetch’s address check** (security pass before
+  v0.27.0). Closed in v0.27.0 (`agent: false`, `guardedFetch.test.ts`).

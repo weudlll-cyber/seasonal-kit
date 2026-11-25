@@ -7,53 +7,60 @@ applies it.
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-11-26
+
+Fixes for what Seasonal Cases and Mini Games reported on v0.22.0.
+
 ### Added
 
-- **`securityHeaderSet`’s `frames`** also takes an https origin followed by a path.
-- **`writeCheck({ crossOrigin })`**: named writes another site's page may make, by method, exact
-  path and exact origins; the request passes its `url`.
 - **`guardedFetch({ localOrigins })`**: exact origins from a game's server configuration that may
   be reached over plain http and at a private or container address; every other rule stays.
+- **`writeCheck({ crossOrigin })`**: named writes another site's page may make, by method, exact
+  path and exact origins; the request passes its `url`.
+- **`securityHeaderSet`**: `frames` also takes an https origin followed by a path; `secure: true`
+  adds `upgrade-insecure-requests`.
+- **`--sk-bar-gutter`**: the game bar's inline padding at every width, for a game to set; unset, the
+  bar looks as before.
 
-### Migration, per game
+### Changed
 
-- **Mini Games:** pass `mode: 'website'` in website mode (today `'standalone'` in both); the admin's
-  embed allowlist stays for standalone installs (K81).
-- **Mini Games:** pass `https://<website public host>/embed/chat` in `frames` and drop its own
-  `frame-src` override (`headersFor`).
-- **Mini Games:** list `POST /api/v1/auth/handoff` with its embed origins, pass `url: request.url`,
-  and drop the path exemption in `auth/sessionPlugin.ts`. **Seasonal Cases and Bingo Royale:**
-  nothing.
-- **Mini Games:** read `SMG_WEBSITE_LOCAL_URL` through `localOrigins` and drop the plain fetch and
-  `readLimited` of `integration/accountFeed.ts`. **Seasonal Cases:** move its account feed's plain
-  fetch onto it. **Bingo Royale:** nothing.
-- **Mini Games:** set `--sk-bar-gutter: 0` where the page already has a gutter. **Seasonal Cases and
-  Bingo Royale:** nothing.
-- A game that uses `securityHeaderSet`: pass `secure: true` where it is served over https; an inline
-  event handler in a page (`onclick="…"`) stops running.
-- **Mini Games and Seasonal Cases:** set `push.branches` to `[master]` in
-  `.github/workflows/ci.yml` (K80).
-- **Bingo Royale:** nothing for K80.
+- **The security headers** add `script-src-attr 'none'`.
+- **`guardedFetch` opens a connection of its own for every call**, so no pooled socket is used that
+  its address check never saw (security pass).
 
 ### Fixed
 
-- **The game bar's inline padding is a token**, `--sk-bar-gutter`; unset, the bar looks as before.
-- **The security headers** add `script-src-attr 'none'`, and `upgrade-insecure-requests` when
-  `securityHeaderSet` is told `secure: true`.
-- **Docs:** Mini Games' backups from before the kit's script are not readable as they are (ADOPTION.md).
-- **Docs:** ADOPTION.md says how Cases reads the season feed now.
-- **Docs:** `backup` needs Linux; a Windows drill runs in a Linux container (OPERATIONS.md).
-- **The plain-http session cookie takes the base path** (development): it had `Path=/` whatever
-  `basePath` said.
-- **A docked screen's content is reachable by keyboard.** `DockedScreen`'s scrolling box is a Tab
-  stop, the region "Game screen" (axe `scrollable-region-focusable`).
-- **The Menu button no longer depends on the order of the kit's CSS files.** With `bar.css` after
-  `header.css` it showed in an unfolded header.
-- **The backup units no longer point into the pnpm store.** `print-units` writes the path the
-  script was called by, and refuses one inside `.pnpm`.
 - **The header's fold no longer depends on how the page got there** (K79). A header folded once
   stayed folded until the window grew past that width. Now it is measured again on a new window
   width, a change of its own size and loaded web fonts, always from the unfolded layout.
+- **The backup units no longer point into the pnpm store.** `print-units` writes the path the
+  script was called by, and refuses one inside `.pnpm`.
+- **The Menu button no longer depends on the order of the kit's CSS files.** With `bar.css` after
+  `header.css` it showed in an unfolded header.
+- **A docked screen's content is reachable by keyboard.** `DockedScreen`'s scrolling box is a Tab
+  stop, the region "Game screen" (axe `scrollable-region-focusable`).
+- **The plain-http session cookie takes the base path** (development): it had `Path=/` whatever
+  `basePath` said.
+- **Docs:** `backup` needs Linux, a Windows drill runs in a Linux container (OPERATIONS.md); how
+  Cases reads the season feed and what Mini Games' old backups need (ADOPTION.md); one CI run per
+  push (HANDBOOK.md, K80); a website-mode game is framed by the website only (K81).
+
+### Migration, per game
+
+- **Bingo Royale:** if it uses `securityHeaderSet`, pass `secure: true` where served over https and
+  check no page has an inline event handler (`onclick="…"`). Nothing else.
+- **Mini Games:** with `securityHeaderSet`: `secure: true` over https, `mode: 'website'` in website
+  mode (K81), `https://<website public host>/embed/chat` in `frames` in place of its own
+  `frame-src` override, no inline event handler. `writeCheck`: list `POST /api/v1/auth/handoff`
+  with the embed origins, pass `url: request.url`, drop the path exemption. Read
+  `SMG_WEBSITE_LOCAL_URL` through `guardedFetch({ localOrigins })` and drop the account feed's
+  plain fetch and `readLimited`. Set `--sk-bar-gutter: 0` where the page already has a gutter. Set
+  `push.branches` to `[master]` in `.github/workflows/ci.yml`.
+- **Seasonal Cases:** remove its own workarounds for the header fold, the Menu button and the
+  docked content if it has any; call `node_modules/@seasonal/kit/ops/backup.sh print-units` when it
+  takes the backup; move its account feed's plain fetch onto `guardedFetch({ localOrigins })`; with
+  `securityHeaderSet`, `secure: true` over https; set `push.branches` to `[master]` in
+  `.github/workflows/ci.yml`.
 
 ## [0.26.0] - 2026-11-26
 
@@ -1455,7 +1462,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...HEAD
+[0.27.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.23.0...v0.24.0

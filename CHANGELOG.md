@@ -7,8 +7,24 @@ applies it.
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-11-25
+
+The night's clean-up (DECISIONS K57): nothing in the public API changed (the shipped `dist/` is
+byte for byte the one of v0.19.0), and no game has to do anything.
+
 ### Changed
 
+- **Night audit** (2026-11-25; [docs/AUDIT-2026-11-25.md](docs/AUDIT-2026-11-25.md); nothing a game
+  sees changes in its API): `css/frames.css` writes the three result cards' chrome once;
+  `css/motion.css`'s glow takes `--sk-color-autumn` instead of the same colour as a literal; in the
+  folded header menu a long account chip now wraps inside the panel instead of running up to 130 px
+  past a 320 to 375 px phone (it did so before the steps too); README names ten exported values it
+  left out; the CI jobs have time limits. New tests: property tests of every parser of outside
+  input (fast-check 4.11.0, a new exact devDependency), tests for the edges that mutation testing
+  found unguarded (the mutation score of 16 security-critical modules rose from 88.5 % to 94.7 %),
+  a leak test for every React part, a literal-colour test for the kit's CSS, a test of the workflow
+  rules, and browser specs for the keyboard, focus, reduced motion and the longest account chip.
+  `docs/concepts/shared-server-parts.md` compares what the three games each built.
 - **Working rules** (CLAUDE.md, docs only): a "Working cheaply" section (owner decision of
   2026-11-23: the saving rules apply to every Seasonal project), the test-file limit of 400
   lines, and the `data-sk-` prefix next to the class rule. BACKLOG 2 and 9 close the parts a
@@ -1201,7 +1217,12 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...HEAD
+[0.19.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.0...v0.19.1
+[0.19.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.18.0...v0.19.0
+[0.18.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.17.0...v0.18.0
+[0.17.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.16.0...v0.17.0
+[0.16.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...v0.13.0

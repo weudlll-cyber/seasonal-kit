@@ -9,26 +9,33 @@ it, and keeps its number. [OPEN.md](OPEN.md) is the short page over part one.
 Each item keeps its number for good, so the lists are bullets with the number in bold: a
 numbered Markdown list would be renumbered by the formatter once an item closes.
 
-- **2. Sign-in helpers, client side.** The website sign-in route helpers (Mini Games
-  `packages/ui/src/websiteSignIn.ts`: `websiteSignInHref`, `signInAgain`, `signInAgainAfter`).
-  Done when: a game uses them. They are in the kit since v0.3.0 with tests. No game's `master`
-  uses them yet (checked 2026-11-24: Bingo Royale `3a00729`, Seasonal Cases `073f9ad`; Mini
-  Games `721761f` and Seasonal Party `a09f803` pin no kit). The host side of the chat embed,
-  the other half of this item, is closed (part two, 2a).
 - **5. Adopt the kit in the games:** Mini Games first, then Bingo Royale, then Seasonal Party,
   each in its own PR with the owner's approval, following the CHANGELOG's migration notes. Done
   when: each game pins a kit tag and has removed its own copies of the moved parts. The plan per
-  game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21).
-- **9. React wrappers.** What is left of it: the dock's arrivals (`useDockArrivals`, Mini Games'
-  `ChatArrivals`, `HostChatSight`), `ChatDock`, `DockedScreen` and the call slot. In the kit since
-  v0.4.0 with tests. Done when: a game uses them. Checked 2026-11-24: Seasonal Cases `073f9ad`
-  uses `useDockReserve` and `useFitScale` only (`apps/web/src/board/RegistrationBoard.tsx` line
-  12, `apps/web/src/stage/Stage.tsx` line 18); Bingo's `master` has its own `ChatDock` around the
-  kit's frame. The chat frame's link is closed (part two, 9a).
+  game, with paths, order, risks and tests, is [ADOPTION.md](ADOPTION.md) (2026-11-21). State
+  (checked 2026-11-25 on each `master`): Mini Games `1988346` pins v0.18.0 (PRs #53 to #55) and is
+  adopted; Bingo Royale `2380ea7` and Seasonal Cases `073f9ad` pin v0.11.1; Seasonal Party
+  `a09f803` pins none.
+- **9. React wrappers.** What is left of it: `ChatDock` and the call slot. In the kit since v0.4.0
+  with tests. Done when: a game uses them. Checked 2026-11-25: Mini Games `1988346` uses
+  `DockedScreen` with `withoutChat` (`apps/web/src/match/DockedMatch.tsx` line 54), so no dock and
+  no call slot; Seasonal Cases `073f9ad` uses `useDockReserve` and `useFitScale` only; Bingo's
+  `master` has its own `ChatDock` around the kit's frame. The chat frame's link (9a) and the
+  dock's arrivals and `DockedScreen` (9b) are closed (part two).
+
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
+
+- **26. The owner's word on the night audit's proposals** (2026-11-25, K57). Each is a change a
+  game could see, so none was made: A-01 name the woff2's copyright holder in `fonts/README.md`;
+  A-02 an optional `controls` id on the game bar's panel actions (`aria-controls`); A-03 the
+  positional arguments of `useFitScale` and `watchFit` (breaking to fix); A-17
+  `referrerPolicy="strict-origin"` on the call frame; A-29 a `sideEffects` field in `package.json`;
+  A-05 the stale local `worktree-agent-…` branch and `.claude/worktrees/` (never on origin). Details
+  and the smallest fix of each are in [AUDIT-2026-11-25.md](AUDIT-2026-11-25.md). Done when: the
+  owner has answered each; what is accepted becomes its own item.
 
 ## Part two — closed
 
@@ -123,3 +130,10 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   takes the member's steps in the kit's `Step` shape; the header draws them as small icons beside
   the name, in the chip and the folded menu, only for the website's own icon addresses. Closed by
   PR #49 and v0.19.0.
+- **2b. The sign-in helpers, client side** (BACKLOG 2, 2026-11-25). Seasonal Mini Games `master`
+  `1988346` uses `websiteSignInHref` (`apps/web/src/account/SignIn.tsx` line 17) and
+  `signInAgainAfter` (`apps/admin/src/http.ts` line 24). Closed by that use.
+- **9b. The dock's arrivals and `DockedScreen`** (BACKLOG 9, 2026-11-25). Mini Games `1988346` uses
+  `useDockArrivals`, `useDockSight` and `useDockView` (`apps/web/src/chat/ChatRoom.tsx` line 26) and
+  `DockedScreen` (`apps/web/src/match/DockedMatch.tsx` line 28). Closed by that use; `ChatDock`
+  and the call slot stay in item 9.

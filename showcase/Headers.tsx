@@ -61,6 +61,42 @@ const STEPS: readonly Step[] = [
 
 const account = { name: 'Walter', role: 'host', href: '#/account', onSignOut: () => undefined };
 
+// A member's step badges (Seasonal Cases, v0.19.0), last on the page so no open menu of the headers
+// above reaches over them: three steps, and the longest chip the narrow phones have to hold.
+function StepHeaders(): ReactElement {
+  return (
+    <>
+      <h3>Signed in with step badges, website mode</h3>
+      {/* Seasonal Cases (v0.19.0): the member's three step icons beside the name, in the chip.
+          Last, so no open menu of the headers above reaches over it. */}
+      <div data-testid="steps-header">
+        <AppHeader
+          {...base}
+          websiteMode
+          account={{ ...account, role: 'player', steps: STEPS }}
+          signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
+        />
+      </div>
+      <h3>The longest account chip: a long name, a long role, three steps</h3>
+      {/* The worst case for the narrow phones (320 to 375 px; night audit 2026-11-25): the name is
+          the website's longest (the admin's), the role two words, and all three steps. */}
+      <div data-testid="steps-long-header">
+        <AppHeader
+          {...base}
+          websiteMode
+          account={{
+            ...account,
+            name: 'Walter Weudl-Administrator',
+            role: 'website admin',
+            steps: STEPS,
+          }}
+          signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
+        />
+      </div>
+    </>
+  );
+}
+
 export function Headers(): ReactElement {
   return (
     <section aria-labelledby="header-title" className="showcase-section">
@@ -105,17 +141,7 @@ export function Headers(): ReactElement {
           signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
         />
       </div>
-      <h3>Signed in with step badges, website mode</h3>
-      {/* Seasonal Cases (v0.19.0): the member's three step icons beside the name, in the chip.
-          Last, so no open menu of the headers above reaches over it. */}
-      <div data-testid="steps-header">
-        <AppHeader
-          {...base}
-          websiteMode
-          account={{ ...account, role: 'player', steps: STEPS }}
-          signIn={{ href: '/games/bingo/auth/website/login?next=%2Fgames%2Fbingo%2F' }}
-        />
-      </div>
+      <StepHeaders />
     </section>
   );
 }

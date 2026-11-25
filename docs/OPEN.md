@@ -2,9 +2,10 @@
 
 The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 
-- 5\. Adopt the kit: Mini Games, then Bingo Royale, then Seasonal Party, as
-  [ADOPTION.md](ADOPTION.md) plans it.
-- 2\. Sign-in helpers, client side: in the kit since v0.3.0; no game's `master` uses them yet.
-- 9\. React wrappers: the dock, its arrivals and the call slot are in the kit since v0.4.0, open
-  until a game uses them (the chat frame's link is closed).
+- 5\. Adopt the kit: Mini Games is adopted (v0.18.0); Bingo Royale and Seasonal Cases pin v0.11.1,
+  Seasonal Party none, as [ADOPTION.md](ADOPTION.md) plans it.
+- 9\. React wrappers: `ChatDock` and the call slot are in the kit since v0.4.0, open until a game
+  uses them (the chat frame's link, the dock's arrivals and `DockedScreen` are closed).
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
+- 26\. The owner's word on the night audit's proposals (A-01, A-02, A-03, A-17, A-29, A-05): see
+  [AUDIT-2026-11-25.md](AUDIT-2026-11-25.md).

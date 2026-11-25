@@ -226,3 +226,8 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   the types unchanged. The chip draws at most three icons, 1.25rem square, each named by its
   step, only for an address that passes the check; any other address is dropped. Empty or
   missing: the header is as before.
+- **K57 — The kit is held to the strictest standard of every Seasonal project** (decided
+  2026-11-24). A deep audit ran in the night of 2026-11-24/25 ([AUDIT-2026-11-25.md](AUDIT-2026-11-25.md),
+  [NIGHT-2026-11-25.md](NIGHT-2026-11-25.md)): what changes nothing a game sees is fixed with a test that
+  fails first; what would change behaviour, a public name or a default is recorded with a proposal
+  for the owner (BACKLOG 26), never changed. The result is released as v0.19.1.

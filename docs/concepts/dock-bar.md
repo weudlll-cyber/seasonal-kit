@@ -29,7 +29,7 @@ docked screen has the bar form `line` and call id 7, so its call strip (48 px) i
 ## The numbers
 
 CSS px. `row` is `.sk-chat-dock-row` (border 1 px, padding 4 px 10 px, gap 6 px); the dock section
-adds a bottom margin of 10 px (`dock.css` line 110); the share is of the window's height.
+adds a bottom margin of 10 px (`dock.css` line 110 then; `--sk-dock-margin` at line 116 since v0.17.0); the share is of the window's height.
 
 | Window     | Form    | Bar button | Row | Row + margin | Row + margin + call strip | Share of the window (no call)              |
 | ---------- | ------- | ---------- | --- | ------------ | ------------------------- | ------------------------------------------ |

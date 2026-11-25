@@ -28,6 +28,7 @@ import {
   ThemeToggle,
   usePanels,
   WebsiteChatFrame,
+  type BarAction,
 } from '../src/react/index.js';
 import { Headers } from './Headers.js';
 
@@ -39,6 +40,13 @@ const PARTS = [
   { id: 'reveal', name: 'Reveal', from: 70_000, to: 85_000 },
 ];
 
+// The three panel buttons both of the first bars show.
+const ACTIONS: readonly BarAction<'chat' | 'players' | 'host' | 'prefs'>[] = [
+  { id: 'chat', icon: 'chat', label: 'Chat', badge: 3 },
+  { id: 'players', icon: 'players', label: 'Players' },
+  { id: 'host', icon: 'host', label: 'Host' },
+];
+
 function Bar(): ReactElement {
   const panels = usePanels<'chat' | 'players' | 'host' | 'prefs'>();
   return (
@@ -48,11 +56,7 @@ function Bar(): ReactElement {
         lead={<span className="showcase-pill">Winter</span>}
         facts={[{ text: 'Shared', desktopOnly: true }]}
         time={{ text: '9:50', left: true }}
-        actions={[
-          { id: 'chat', icon: 'chat', label: 'Chat', badge: 3 },
-          { id: 'players', icon: 'players', label: 'Players' },
-          { id: 'host', icon: 'host', label: 'Host' },
-        ]}
+        actions={ACTIONS}
         panels={panels}
       />
       {/* A crowded bar, as Seasonal Cases has it: a lead, two long facts and the time beside
@@ -62,11 +66,7 @@ function Bar(): ReactElement {
           lead={<span className="showcase-pill">Seasonal Cases</span>}
           facts={[{ text: '12 cases left' }, { text: '5 prizes left' }]}
           time={{ text: '9:50', left: true }}
-          actions={[
-            { id: 'chat', icon: 'chat', label: 'Chat', badge: 3 },
-            { id: 'players', icon: 'players', label: 'Players' },
-            { id: 'host', icon: 'host', label: 'Host' },
-          ]}
+          actions={ACTIONS}
           panels={panels}
         />
       </div>

@@ -10,7 +10,8 @@
  *                 display capture: the view listens only, GAME-INTEGRATION §9). It is sandboxed
  *                 as the chat's frame is (K17), and its popups may leave the sandbox, because
  *                 "Open the call page" opens `/calls/<id>` in a new tab as an ordinary page of
- *                 the site (K44). `connectCall` hears the view: `ended` and a `resize` to its
+ *                 the site (K44). Its `referrerPolicy` is `strict-origin`, as the chat frame's: the
+ *                 site learns the origin, not the game's path (v0.20.0). `connectCall` hears the view: `ended` and a `resize` to its
  *                 other form are handed on, so the slot can follow; every other message is
  *                 heard and dropped, because the game needs nothing of it today.
  * Source:         new for the kit; built on ../callView (reused: callEmbedUrl, connectCall) and
@@ -62,6 +63,8 @@ export function CallFrame(p: CallFrameProps): ReactElement {
       src={callEmbedUrl(callId, theme, p.path)}
       sandbox={SANDBOX}
       allow="autoplay; fullscreen"
+      // As the chat frame: the site learns the origin, not the path of the game's page (v0.20.0).
+      referrerPolicy="strict-origin"
       data-testid="call-frame"
     />
   );

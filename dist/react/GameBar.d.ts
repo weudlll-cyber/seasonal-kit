@@ -10,7 +10,8 @@
  *                 fact is read out on a phone), the time ("9:50 left"; a phone shows "9:50" and
  *                 reads " left" out), then the buttons of the panels on demand (./usePanels).
  *                 Each button has its icon and words: a desktop shows both, a phone shows the
- *                 icon and reads the words out. A button may carry an unread count, never the
+ *                 icon and reads the words out. A button may name the panel it opens (`controls`,
+ *                 its `aria-controls`, since v0.20.0). A button may carry an unread count, never the
  *                 only sign ("3 unread"). The full-screen toggle shows only where the browser
  *                 offers it (./useFullscreen). A toggle (the sound, since v0.11.0) switches a
  *                 setting in place, `aria-pressed` saying whether it is on. A press button
@@ -46,6 +47,7 @@ export interface BarAction<Id extends string> {
     readonly label: string;
     readonly testId?: string;
     readonly badge?: number;
+    readonly controls?: string;
 }
 export interface BarToggle {
     readonly id: string;

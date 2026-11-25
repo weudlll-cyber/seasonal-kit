@@ -35,7 +35,7 @@ function BarIcon({ name }) {
 function BarButton(p) {
     const { action, panels } = p;
     const badge = action.badge ?? 0;
-    return (_jsxs("button", { ref: panels.button(action.id), type: "button", className: p.className, "aria-expanded": panels.open === action.id, "data-testid": action.testId, onClick: () => {
+    return (_jsxs("button", { ref: panels.button(action.id), type: "button", className: p.className, "aria-expanded": panels.open === action.id, "aria-controls": action.controls, "data-testid": action.testId, onClick: () => {
             panels.toggle(action.id);
         }, children: [_jsx(BarIcon, { name: action.icon }), _jsx("span", { className: "sk-bar-label", children: action.label }), badge === 0 ? null : (_jsxs("span", { className: "sk-bar-badge", "data-testid": "bar-unread", children: [badge, _jsx("span", { className: "sk-visually-hidden", children: " unread" })] }))] }));
 }

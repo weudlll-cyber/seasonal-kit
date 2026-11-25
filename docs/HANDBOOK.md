@@ -91,6 +91,9 @@ The website is a different stack (JavaScript on Node `v26.13.1`, npm), pinned in
   lockfile pins the tag's commit and its hash, so a moved tag would fail the install. Tags never
   move ([RELEASING.md](RELEASING.md)). A game moves to a new version in its own PR, with the
   owner's word (K1), following the CHANGELOG's "Migration, per game".
+- **The package says what it may drop.** `"sideEffects": ["**/*.css"]`: a bundler may drop unused
+  JavaScript and always keeps a stylesheet a game imports (K58, `tests/package.test.ts`, and the
+  delivery proof bundles a consumer).
 - **No install scripts.** The kit ships its compiled `dist/`; a game installs with scripts off
   (`ignore-scripts=true`) ([DELIVERY.md](DELIVERY.md)). Enforced: CI `verify` ("dist/ matches
   the source") and the delivery proof on every tag.
@@ -186,7 +189,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   (K56).
 - **Game bar:** `GameBar` with `usePanels`, `useFullscreen`, `useFocusMode`, its toggles
   (`bar.css`); `back` puts the back link first (K39); the `prefs` icon; `presses` for a button
-  that only sends a press (`applaud`).
+  that only sends a press (`applaud`); a panel button may name its panel with `controls`
+  (`aria-controls`, K58).
 - **Dock and chat:** `DockedScreen`, `ChatDock`, `WebsiteChatFrame` (`dock.css`); `withoutChat`
   for a screen with no dock (it still follows the keyboard); `useDockSight` for a game's own
   frame in the dock; `useOpenDockChat` to open the chat from the game; `useDockReserve` without a

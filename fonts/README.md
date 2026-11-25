@@ -23,3 +23,14 @@ Sources, read on 2026-11-20:
 
 `tests/fonts.test.ts` checks that every file still has its hash and that `css/fonts.css` points
 only at files that are here.
+
+## Copyright holder, as the files record it
+
+Read on 2026-11-25 (decision A-01 of the 2026-11-25 audit) from each file's own `name` table,
+decompressed from the woff2 container: all five files carry **"Copyright © 2021 by Fontastica. All
+rights reserved."** (name id 0), and name Fontastica as manufacturer (id 8) and designer (id 9),
+in both the Macintosh and the Windows records. The family is "Luxora Grotesk" (id 1); the
+Windows records add the weight (Book, Bold, Light) to it. The files carry no licence description
+(id 13) and no licence URL (id 14). The hashes above pin this content, so the table cannot change
+unnoticed (`tests/fonts.test.ts`). The licence the Seasonal Tokens project bought, and the owner's
+approval to ship the files here (K8), are as stated at the top of this page.

@@ -7,5 +7,3 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 9\. React wrappers: `ChatDock` and the call slot are in the kit since v0.4.0, open until a game
   uses them (the chat frame's link, the dock's arrivals and `DockedScreen` are closed).
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
-- 26\. The owner's word on the night audit's proposals (A-01, A-02, A-03, A-17, A-29, A-05): see
-  [AUDIT-2026-11-25.md](AUDIT-2026-11-25.md).

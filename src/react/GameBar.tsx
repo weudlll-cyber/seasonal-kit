@@ -10,7 +10,8 @@
  *                 fact is read out on a phone), the time ("9:50 left"; a phone shows "9:50" and
  *                 reads " left" out), then the buttons of the panels on demand (./usePanels).
  *                 Each button has its icon and words: a desktop shows both, a phone shows the
- *                 icon and reads the words out. A button may carry an unread count, never the
+ *                 icon and reads the words out. A button may name the panel it opens (`controls`,
+ *                 its `aria-controls`, since v0.20.0). A button may carry an unread count, never the
  *                 only sign ("3 unread"). The full-screen toggle shows only where the browser
  *                 offers it (./useFullscreen). A toggle (the sound, since v0.11.0) switches a
  *                 setting in place, `aria-pressed` saying whether it is on. A press button
@@ -101,6 +102,10 @@ export interface BarAction<Id extends string> {
   readonly testId?: string;
   // An unread count on the button's corner; nothing at 0.
   readonly badge?: number;
+  // The id of the element this button opens, written as its `aria-controls` (since v0.20.0, the
+  // 2026-11-22 audit B7, 2026-11-25 A-02). The bar cannot know the game's panel, so the game
+  // names it; left out, the button has none, as before.
+  readonly controls?: string;
 }
 
 // A setting the bar switches on and off in place, e.g. the sound (since v0.11.0, Cases 36): its
@@ -165,6 +170,7 @@ function BarButton<Id extends string>(p: {
       type="button"
       className={p.className}
       aria-expanded={panels.open === action.id}
+      aria-controls={action.controls}
       data-testid={action.testId}
       onClick={() => {
         panels.toggle(action.id);

@@ -534,6 +534,31 @@ script does not print); the consumer was corrected, not the package. The two scr
 left in the session's scratch directory, outside every repository: deleting them was refused by the
 session's permission mode.
 
+## The v0.22.0 phone layout fixes, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.22.0` (merge commit `2e8ed41`), both with `ignore-scripts=true`
+(React and React DOM 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5), ran `tsc` and four tests on
+the installed package:
+
+- it is `0.22.0`;
+- the installed `css/header.css` has the folded brand's `flex: 1 1 0; min-width: min-content` and
+  `css/shell.css` the back link's `white-space: normal` on a phone;
+- the installed `css/bar.css` has the bar's own padding (the gutter token, the smallest spacing on a
+  phone, half of it at 400 px and under) and the wrapping facts;
+- **a `StartCard` rendered from the installed package without `opensIn` has no countdown**, and with
+  `opensIn={0}` shows "Opens in 0 s".
+
+| Consumer     | Install                                                                                            | `tsc`  | Tests    |
+| ------------ | -------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/2e8ed41…`). | Worked | 4 passed |
+| npm 11.19.0  | Worked. `npm ls` shows the kit `0.22.0` at `…seasonal-kit.git#2e8ed41…`.                           | Worked | 4 passed |
+
+CI on the merge commit `2e8ed41`: `CI` passed. The layout itself is proved in the browser by
+`showcase/cases.spec.ts` (60 tests, in the pull request's `showcase` job), not by this proof, which
+shows that the files a game installs carry the change. The two scratch folders were left in the
+session's scratch directory, outside every repository: deleting them was refused by the session's
+permission mode.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

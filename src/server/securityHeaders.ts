@@ -6,8 +6,11 @@
  *                 and the other headers as plain objects, so a test reads each one and a game
  *                 hands them to any server. The policy is Bingo's strict one, with Mini Games'
  *                 configurable ancestors and its admin rules:
- *                 - `script-src 'self'`, never `'unsafe-inline'`; `style-src 'self'` unless the
- *                   game says `inlineStyles` (a development page; a finding in a scan);
+ *                 - `script-src 'self'`, never `'unsafe-inline'`, and `script-src-attr 'none'`
+ *                   (no inline event handler, v0.27.0); `style-src 'self'` unless the game says
+ *                   `inlineStyles` (a development page; a finding in a scan);
+ *                 - `upgrade-insecure-requests` only when the game says it is served over https
+ *                   (`secure`, v0.27.0): on plain-http development it would break every request;
  *                 - `frame-ancestors`: in website mode (`mode: 'website'`) the game's own origin,
  *                   which is the website's, and the `websiteOrigin` when it is another origin,
  *                   nobody else, and `ancestors` is refused there; standalone, its own origin and
@@ -42,6 +45,9 @@ export interface SecurityHeaderOptions {
   readonly ancestors?: Sources;
   // What the game may frame: plain origins or `'self'`; default `['self']`; empty is none.
   readonly frames?: Sources;
+  // Served over https (as `sessionCookie` is told): browsers then upgrade http addresses.
+  // Left out or false: no upgrade, for plain-http development.
+  readonly secure?: boolean;
   // Allow inline styles (a development page). Never scripts.
   readonly inlineStyles?: boolean;
   // Allow blob: images (a canvas the game draws and shows).
@@ -94,9 +100,12 @@ export function securityHeaderSet(options: SecurityHeaderOptions): SecurityHeade
     'font-src': [SELF],
     'style-src': [SELF, ...(options.inlineStyles === true ? ["'unsafe-inline'"] : [])],
     'script-src': [SELF],
+    'script-src-attr': ["'none'"],
     'connect-src': [SELF],
     'frame-src': frames.length === 0 ? ["'none'"] : frames,
     'frame-ancestors': ancestors,
+    // A directive without a value.
+    ...(options.secure === true ? { 'upgrade-insecure-requests': [] } : {}),
     ...(options.admin === true ? { 'require-trusted-types-for': ["'script'"] } : {}),
   };
   // X-Frame-Options has no list: with another site allowed, frame-ancestors decides alone.

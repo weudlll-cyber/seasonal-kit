@@ -162,3 +162,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   (HANDBOOK; the two games' own files are theirs to change).
 - **39. ADOPTION.md said Mini Games' old backups stay readable** (Mini Games, 2026-11-25).
   Closed in v0.27.0.
+- **40. The security headers had no `script-src-attr` and no upgrade of http requests** (Mini
+  Games, 2026-11-25). Closed in v0.27.0 (`securityHeaderSet`, its test).

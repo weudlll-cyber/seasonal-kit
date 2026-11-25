@@ -6,8 +6,11 @@
  *                 and the other headers as plain objects, so a test reads each one and a game
  *                 hands them to any server. The policy is Bingo's strict one, with Mini Games'
  *                 configurable ancestors and its admin rules:
- *                 - `script-src 'self'`, never `'unsafe-inline'`; `style-src 'self'` unless the
- *                   game says `inlineStyles` (a development page; a finding in a scan);
+ *                 - `script-src 'self'`, never `'unsafe-inline'`, and `script-src-attr 'none'`
+ *                   (no inline event handler, v0.27.0); `style-src 'self'` unless the game says
+ *                   `inlineStyles` (a development page; a finding in a scan);
+ *                 - `upgrade-insecure-requests` only when the game says it is served over https
+ *                   (`secure`, v0.27.0): on plain-http development it would break every request;
  *                 - `frame-ancestors`: in website mode (`mode: 'website'`) the game's own origin,
  *                   which is the website's, and the `websiteOrigin` when it is another origin,
  *                   nobody else, and `ancestors` is refused there; standalone, its own origin and
@@ -38,6 +41,7 @@ export interface SecurityHeaderOptions {
     readonly websiteOrigin?: string;
     readonly ancestors?: Sources;
     readonly frames?: Sources;
+    readonly secure?: boolean;
     readonly inlineStyles?: boolean;
     readonly blobImages?: boolean;
     readonly admin?: boolean;

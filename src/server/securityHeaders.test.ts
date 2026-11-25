@@ -2,7 +2,8 @@
  * @file   src/server/securityHeaders.test.ts
  * @brief  Each directive and header of the security set, its modes, and the Fastify hook (K63).
  *
- * Responsibility: every directive of the policy by name; scripts never `'unsafe-inline'` under
+ * Responsibility: every directive of the policy by name; `upgrade-insecure-requests` only over
+ *                 https; scripts never `'unsafe-inline'` under
  *                 any option; styles only with `inlineStyles`; `frame-ancestors` in website mode
  *                 (own origin, the website's origin if another, `ancestors` refused), standalone
  *                 (own origin and the allowlist) and admin (none, `DENY`, Trusted Types);
@@ -40,6 +41,7 @@ describe('the policy', () => {
       'font-src': ["'self'"],
       'style-src': ["'self'"],
       'script-src': ["'self'"],
+      'script-src-attr': ["'none'"],
       'connect-src': ["'self'"],
       'frame-src': ["'self'"],
       'frame-ancestors': ["'self'"],
@@ -62,6 +64,15 @@ describe('the policy', () => {
     expect(open.directives['style-src']).toEqual(["'self'", "'unsafe-inline'"]);
     expect(open.directives['img-src']).toEqual(["'self'", 'data:', 'blob:']);
     expect(standalone.directives['style-src']).toEqual(["'self'"]);
+  });
+
+  it('upgrades insecure requests only for a game served over https', () => {
+    const https = securityHeaderSet({ mode: 'website', secure: true });
+    expect(https.directives['upgrade-insecure-requests']).toEqual([]);
+    expect(renderPolicy(https.directives)).toMatch(/; upgrade-insecure-requests$/);
+    for (const plain of [website, securityHeaderSet({ mode: 'website', secure: false })]) {
+      expect(plain.directives).not.toHaveProperty('upgrade-insecure-requests');
+    }
   });
 
   it('frames what it is told to, or nothing', () => {

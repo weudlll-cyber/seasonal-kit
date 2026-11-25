@@ -34,9 +34,12 @@ export function securityHeaderSet(options) {
         'font-src': [SELF],
         'style-src': [SELF, ...(options.inlineStyles === true ? ["'unsafe-inline'"] : [])],
         'script-src': [SELF],
+        'script-src-attr': ["'none'"],
         'connect-src': [SELF],
         'frame-src': frames.length === 0 ? ["'none'"] : frames,
         'frame-ancestors': ancestors,
+        // A directive without a value.
+        ...(options.secure === true ? { 'upgrade-insecure-requests': [] } : {}),
         ...(options.admin === true ? { 'require-trusted-types-for': ["'script'"] } : {}),
     };
     // X-Frame-Options has no list: with another site allowed, frame-ancestors decides alone.

@@ -9,12 +9,16 @@ applies it.
 
 ### Migration, per game
 
+- A game that uses `securityHeaderSet`: pass `secure: true` where it is served over https; an inline
+  event handler in a page (`onclick="…"`) stops running.
 - **Mini Games and Seasonal Cases:** set `push.branches` to `[master]` in
   `.github/workflows/ci.yml` (K80).
 - **Bingo Royale:** nothing for K80.
 
 ### Fixed
 
+- **The security headers** add `script-src-attr 'none'`, and `upgrade-insecure-requests` when
+  `securityHeaderSet` is told `secure: true`.
 - **Docs:** Mini Games' backups from before the kit's script are not readable as they are (ADOPTION.md).
 - **Docs:** ADOPTION.md says how Cases reads the season feed now.
 - **Docs:** `backup` needs Linux; a Windows drill runs in a Linux container (OPERATIONS.md).

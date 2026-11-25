@@ -24,6 +24,14 @@ export {
   systemTheme,
   type Theme,
 } from './theme.js';
+export {
+  ApiError,
+  basePathOf,
+  createApiClient,
+  type Api,
+  type ApiCall,
+  type ApiClientOptions,
+} from './apiClient.js';
 export { clockOffset, type ClockSample } from './serverClock.js';
 export {
   signInAgain,

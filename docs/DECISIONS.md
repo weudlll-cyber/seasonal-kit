@@ -340,3 +340,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   `useCountdown(at, offsetMs)` (React) counts the seconds to a server time and shows nothing until
   both are known, so a visitor's wrong clock is never trusted; `StartCard` takes `opensAt` (opt-in),
   `opensIn` unchanged. How a server time is asked for stays in each game (Mini Games' `time.sync`).
+- **K70 — The client's API calls have one error shape** (decided 2026-11-25 on sections 6 and 7,
+  built 2026-11-26, v0.24.0). The shape is Bingo Royale's and Mini Games', two of the three games:
+  `ApiError(status, code, reason, body)`, with `ERROR` when the server names no code and status 0,
+  `NO_ANSWER`, when there is no answer (Mini Games' hook already did that; Bingo's client let the
+  fetch's own error through). Seasonal Cases' server answers a sentence in `error` instead of a code,
+  so it maps at adoption; the kit does not carry its shape. `createApiClient` sends the CSRF token on
+  writes and gives `onAnswer` every answer, so a game keeps its own rule for a lost session.
+  `useApiGet` gives idle, loading, ready or failed with the whole error, tied to its path.

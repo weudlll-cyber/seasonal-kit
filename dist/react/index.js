@@ -26,6 +26,7 @@ export { PhaseStrip } from './PhaseStrip.js';
 export { useFocusMode } from './useFocusMode.js';
 export { useFullscreen } from './useFullscreen.js';
 export { StepBadges } from './StepBadges.js';
+export { useApiGet } from './useApiGet.js';
 export { useCountdown } from './useCountdown.js';
 export { usePanels } from './usePanels.js';
 export { ResultFrame } from './ResultFrame.js';

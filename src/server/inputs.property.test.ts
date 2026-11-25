@@ -108,7 +108,9 @@ const feed = fc
   })
   .map((f) => f as unknown);
 
-describe('parseSeasonFeed', () => {
+// 400 generated feeds under coverage take longer than Vitest's 5 s on a loaded machine (it timed
+// out once with other suites running beside it), so this one has a limit of its own.
+describe('parseSeasonFeed', { timeout: 30_000 }, () => {
   it('never throws, and passes no field the contract does not name', () => {
     let accepted = 0;
     fc.assert(

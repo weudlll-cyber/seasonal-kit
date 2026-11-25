@@ -14,12 +14,20 @@ behaviour.
 
 ### Added
 
+- **`createApiClient`, `ApiError`, `basePathOf`** (main entry) and **`useApiGet`** (React) (K70): one
+  client for a game's own server calls with one error shape, and a hook for one GET answer. From
+  Bingo Royale's and Mini Games' `shell/http.ts` and their loading hooks.
 - **`clockOffset`, `useCountdown` and `StartCard`'s `opensAt`** (K69): a countdown on the server's clock,
   the visitor's offset measured from answers that carry the server's time; nothing shows until it is
   measured. From Mini Games' clock sync and Bingo Royale's countdown.
 - **`StepBadges`** and `steps.css` (K68): the header's step badges beside any name, for boards, player
   lists and lower thirds. The header uses it; `header.css` brings `steps.css` along, and the header
   looks as before. From the three games' own badge components.
+
+### Migration, per game
+
+- **All three games:** nothing is required; each part is listed in
+  [docs/ADOPTION.md](docs/ADOPTION.md) under "Since v0.24.0".
 
 ## [0.23.0] - 2026-11-26
 

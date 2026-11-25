@@ -57,8 +57,10 @@ Every setting is an environment variable; put them in one env file, mode 0600, r
 1. Install `age` on the server and generate the operator's key **on the operator's own computer**
    (`age-keygen -o key.txt`); give the server only the public key (`age-keygen -y key.txt`).
 2. Write the env file with the settings above.
-3. Print the units and install them, then enable the timer:
-   `ops/backup.sh print-units` writes a `…-backup@.service`, a `…-backup-failed@.service` (it logs
+3. Print the units and install them, then enable the timer. Call the script through the package's
+   link, `node_modules/@seasonal/kit/ops/backup.sh print-units`: the service runs it by the path
+   you called, and a path inside the pnpm store is refused, because it changes with every kit
+   update. It writes a `…-backup@.service`, a `…-backup-failed@.service` (it logs
    a failed backup) and a `…-backup@.timer` for 03:30. Put them in `/etc/systemd/system/`, then
    `systemctl daemon-reload` and `systemctl enable --now <prefix>-backup@<env>.timer`.
 4. Run one by hand first: `ops/backup.sh backup`.

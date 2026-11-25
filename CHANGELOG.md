@@ -9,6 +9,8 @@ applies it.
 
 ### Fixed
 
+- **The backup units no longer point into the pnpm store.** `print-units` writes the path the
+  script was called by, and refuses one inside `.pnpm`.
 - **The header's fold no longer depends on how the page got there** (K79). A header folded once
   stayed folded until the window grew past that width. Now it is measured again on a new window
   width, a change of its own size and loaded web fonts, always from the unfolded layout.

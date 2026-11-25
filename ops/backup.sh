@@ -21,7 +21,8 @@
 #                 - `drill <file>`: restores the database into a throw-away PostgreSQL container
 #                   and compares, table by table, the rows it holds with the rows the dump
 #                   carries (read from the dump itself, not from a live database that has moved);
-#                 - `print-units`: the systemd service, failure and 03:30 timer units;
+#                 - `print-units`: the systemd service, failure and 03:30 timer units, which run
+#                   this file by the path it was called by (never one inside the pnpm store);
 #                 - `help`.
 #                 No secret, key or dump is ever printed: only file names, table names and
 #                 counts. Source with SK_BACKUP_SOURCE_ONLY=1 to use the functions (the tests do).
@@ -40,8 +41,11 @@
 
 set -euo pipefail
 
-# This file, resolved: the libraries lie beside it, and the timer's service runs it by this path.
+# This file, resolved: the libraries lie beside it.
 SK_SELF=$(readlink -f "${BASH_SOURCE[0]}")
+# This file as invoked, absolute but with its links kept: what the timer's service runs. Through a
+# game's node_modules/@seasonal/kit link it survives a kit update; the resolved path does not.
+SK_INVOKED=$(realpath -s "${BASH_SOURCE[0]}")
 # shellcheck source=SCRIPTDIR/lib/backup-core.sh
 source "${SK_SELF%/*}/lib/backup-core.sh"
 # shellcheck source=SCRIPTDIR/lib/backup-restore.sh

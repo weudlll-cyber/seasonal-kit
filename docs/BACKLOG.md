@@ -146,3 +146,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **31. The header fold depended on history** (Seasonal Cases on v0.22.0, 2026-11-25, K79): folded
   after a fresh load at 1536 px, unfolded after a resize to it. Closed in v0.27.0
   (`src/react/useHeaderFold.ts`, `headerFold.test.tsx`, `showcase/cases.spec.ts`).
+- **32. The backup units named a path in the pnpm store** (Seasonal Cases, 2026-11-25): it changes
+  with every kit update. Closed in v0.27.0 (`ops/backup.sh`, `print_units`,
+  `ops/test/backup-units.test.sh`).

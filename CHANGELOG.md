@@ -7,6 +7,17 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- **`ops/backup.sh`, `ops/pull-backups.sh`, `ops/pull-backups.ps1`** (DECISIONS K61, shipped in the
+  package, [docs/OPERATIONS.md](docs/OPERATIONS.md)): encrypted backups of a game's PostgreSQL, its
+  uploads volumes and its secret files (age, to the operator's public key; 14 newest and 8 weekly
+  kept), a restore that refuses another environment's backup (by name and by manifest) and runs in one
+  transaction, a restore drill in a throw-away PostgreSQL container that compares each table with the
+  dump, and the systemd units for the nightly timer. Taken from Bingo Royale's `ops/lib/backup.sh`
+  (the rehearsed one) and Mini Games' drill; settings are `SK_BACKUP_*` variables. No secret, key or
+  dump is printed. Tested on a real PostgreSQL container in CI (job `ops`, not a required check).
+
 ## [0.20.0] - 2026-11-26
 
 The owner's answers on four proposals of the night audit of 2026-11-25 (DECISIONS K58, K59). Every

@@ -164,6 +164,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **Game bar panel buttons** (K58): its bar may pass `controls` (the id of the panel a button opens) so the button carries `aria-controls`; the call frame now sends `strict-origin` as its referrer, as the chat frame does. Optional, no change needed.
 
+### Since v0.21.0
+
+- **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word; the existing backups stay readable (the same tar of dump and uploads, age).
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -285,6 +289,10 @@ reachable on every phone.
 
 - **Nothing to do** (K58). Bingo has no game bar and no call slot; the package's `sideEffects` field lets its bundler drop unused kit JavaScript.
 
+### Since v0.21.0
+
+- **Backups** (K61): `ops/lib/backup.sh` (248 lines) is the kit's script's source: it moves to `ops/backup.sh` with `SK_BACKUP_PREFIX=sbr`, its seed and recovery keys as `SK_BACKUP_SECRET_FILES`, its schema as `SK_BACKUP_DB_SCHEMA=sbr`. What stays in Bingo: the compose calls, `apply_db_roles` after a restore, and the seed-key check of its drill (run after the kit's drill, or in `SK_BACKUP_START_CMD`). Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -340,6 +348,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.20.0
 
 - **Game bar panel buttons** (K58): its bar may pass `controls` on a `BarAction` for `aria-controls`; optional. The call frame's referrer policy and the `sideEffects` field need nothing from the game.
+
+### Since v0.21.0
+
+- **Backups** (K61): **Cases has no backup today** (no `backup`, `restore` or `pg_dump` outside its docs and route files, `git grep` over `073f9ad`), and holds accounts and results. It takes the kit's `ops/backup.sh` first, before the other shared parts: its installer is native (a local PostgreSQL), so it sets `SK_BACKUP_DB_URL` (no password in it) instead of a container, runs a systemd timer from `print-units`, and has no volumes unless it keeps uploads. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

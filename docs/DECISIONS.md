@@ -249,3 +249,11 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   not the request's own host as the game sees it behind the website's proxy (a forwarded host is trusted
   only from the configured proxy). This covers what Cases' `sameSiteWrites` does (`app.ts:125-136`) and
   is stricter on the missing `Origin`.
+- **K61 — The kit ships a backup and restore script** (decided 2026-11-25, v0.21.0; the night chain, from
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) section 1). `ops/backup.sh`,
+  `ops/pull-backups.sh` and `ops/pull-backups.ps1` are in the package: Bingo Royale's rehearsed backup
+  made to take its settings from `SK_BACKUP_*` variables, with Mini Games' restore drill. Encrypted with
+  age to the operator's public key, 14 newest and 8 weekly kept, a restore that refuses another
+  environment's backup, in one transaction. No secret, key or dump is printed. It runs only when a game
+  runs it; no game changes until it adopts. Seasonal Cases has no backup today and takes this first
+  ([OPERATIONS.md](OPERATIONS.md)).

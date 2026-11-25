@@ -374,3 +374,12 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   own server and client checks. Where the website's document and code differ, the code decides (an
   open round's `kind` may be empty; the authorize route's origin rule is taken in its strict form).
   Databases, ports and nginx containers stay in the games; the account-changes feed is not in it.
+- **K75 — A database URL's password goes to the clients through their environment** (decided
+  2026-11-25, v0.26.0). `ops/backup.sh` takes a game's `DATABASE_URL` as `SK_BACKUP_DB_URL`, splits it
+  into the address and the percent-decoded password, passes the password as `PGPASSWORD` and never on
+  a command line; a `password=` in the query is refused.
+- **K76 — Every Seasonal game runs in Docker on the server** (decided 2026-11-25), as the website,
+  Bingo Royale and Mini Games do; Seasonal Cases moves to Docker before production. So the kit's
+  backup stays as it is for the server side: the units `print-units` writes keep requiring
+  `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
+  paths. Cases moves to Docker first, then takes the kit's backup unchanged.

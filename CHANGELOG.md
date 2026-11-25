@@ -11,6 +11,12 @@ applies it.
 
 The website's stand-in for the games' browser tests (DECISIONS K74). Opt-in, test code only.
 
+### Changed
+
+- **`ops/backup.sh` takes a database URL with its password** (K75): `SK_BACKUP_DB_URL` is split into
+  the address and the percent-decoded password, passed as `PGPASSWORD`, never on a command line; a
+  `password=` in the query is refused. A URL without a password works as before.
+
 ### Added
 
 - **`startWebsiteStandIn`** in `@seasonal/kit/testing`: one local server that answers as the website
@@ -22,6 +28,7 @@ The website's stand-in for the games' browser tests (DECISIONS K74). Opt-in, tes
 ### Migration, per game
 
 - **All three games:** nothing is required; see [docs/ADOPTION.md](docs/ADOPTION.md) "Since v0.26.0".
+- **Seasonal Cases:** moves to Docker before production, then takes the kit's backup unchanged (K76).
 
 ## [0.25.0] - 2026-11-26
 

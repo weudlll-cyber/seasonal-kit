@@ -37,7 +37,7 @@ Every setting is an environment variable; put them in one env file, mode 0600, r
 | `SK_BACKUP_DB_CONTAINER`    | the database      | The Docker container that runs PostgreSQL; the client commands run inside it. Use this or `SK_BACKUP_DB_URL`.                                          |
 | `SK_BACKUP_DB_USER`         | with a container  | The database user for `pg_dump` and `psql`.                                                                                                            |
 | `SK_BACKUP_DB_NAME`         | with a container  | The database name.                                                                                                                                     |
-| `SK_BACKUP_DB_URL`          | the database      | A connection string for clients on the host, **without a password** (put it in `PGPASSWORD` or a pgpass file, so it is not on a command line).         |
+| `SK_BACKUP_DB_URL`          | the database      | A connection string for clients on the host (a game's `DATABASE_URL`). A password in it is passed on as `PGPASSWORD`, never on a command line (K75).   |
 | `SK_BACKUP_DB_SCHEMA`       | restore, optional | A schema to drop before the restore, inside the same transaction (Bingo's `sbr`); without it `pg_restore --clean --if-exists` drops what it recreates. |
 | `SK_BACKUP_VOLUMES`         | optional          | Docker volume names to include, separated by spaces.                                                                                                   |
 | `SK_BACKUP_VOLUME_EXCLUDES` | optional          | Live-state files to leave out of a volume and to leave alone on restore, as `./name`, separated by spaces.                                             |

@@ -464,6 +464,24 @@ anything under `/server/`.
 
 Both consumers were deleted afterwards.
 
+## The v0.19.1 clean-up, with pnpm and with npm (2026-11-25, the tag itself)
+
+Two scratch consumers pinned `#v0.19.1` (merge commit `1dd81a6`), both with `ignore-scripts=true`,
+with the toolchain of the earlier proofs (React 19.3.1, TypeScript 5.9.3 NodeNext with
+`skipLibCheck: false` and `exactOptionalPropertyTypes`, Vitest 5.0.5). Each ran `tsc` and three
+tests in one file: the installed kit is `0.19.1`; **every one of the 112 files of the installed
+`dist/` has the sha256 of the same file in v0.19.0** (a manifest taken from the v0.19.0 tag's
+build before the night's work), so the public API is unchanged by construction; the installed
+`css/header.css` has the folded chip's wrapping rule; `AppHeader` and the server entry's `Step`
+type still import and compile.
+
+| Consumer                 | Install                                                                                                   | `tsc`  | Tests    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0, Vite 8.3.5 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/1dd81a6…`).        | Worked | 3 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked. `npm ls` shows the kit `0.19.1` at `…seasonal-kit.git#1dd81a6…` with the consumer's `vite` 8.3.5. | Worked | 3 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

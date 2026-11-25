@@ -9,6 +9,8 @@ applies it.
 
 ### Fixed
 
+- **The plain-http session cookie takes the base path** (development): it had `Path=/` whatever
+  `basePath` said.
 - **A docked screen's content is reachable by keyboard.** `DockedScreen`'s scrolling box is a Tab
   stop, the region "Game screen" (axe `scrollable-region-focusable`).
 - **The Menu button no longer depends on the order of the kit's CSS files.** With `bar.css` after

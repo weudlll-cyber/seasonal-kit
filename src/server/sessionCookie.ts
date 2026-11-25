@@ -2,10 +2,10 @@
  * @file   src/server/sessionCookie.ts
  * @brief  The session cookie's name, attributes and lifetime, the same in every game.
  *
- * Responsibility: `sessionCookie` gives the cookie's name, `Secure` flag and path: plain on http
- *                 (development); `__Host-<name>` at the root of its own host (the prefix requires
- *                 `Path=/`); `__Secure-<name>` with `Path=<base path>` when the game is served
- *                 under a path of the website's host. `sessionCookieOptions` gives the
+ * Responsibility: `sessionCookie` gives the cookie's name, `Secure` flag and path: the base path
+ *                 in every case (since v0.27.0 also on plain http, development), with a plain name
+ *                 on http, `__Host-<name>` at the root of its own host (the prefix requires
+ *                 `Path=/`) and `__Secure-<name>` under a path of the website's host. `sessionCookieOptions` gives the
  *                 attributes a cookie plugin sets: `HttpOnly`, `SameSite=Lax`, `Secure` and the
  *                 path, and, when given the session's absolute length in days, a `Max-Age` of
  *                 exactly that length, so the browser never keeps a cookie the server has already
@@ -49,9 +49,10 @@ export function sessionCookie(input: SessionCookieInput): SessionCookie {
   if (!/^\/[\w./-]*$/.test(basePath) || basePath.includes('..')) {
     throw new RangeError('The base path is a plain path starting with /');
   }
-  if (!input.secure) return { name: input.name, secure: false, path: '/' };
-  if (basePath === '/') return { name: `__Host-${input.name}`, secure: true, path: '/' };
-  return { name: `__Secure-${input.name}`, secure: true, path: basePath.replace(/\/$/, '') };
+  const path = basePath === '/' ? basePath : basePath.replace(/\/$/, '');
+  if (!input.secure) return { name: input.name, secure: false, path };
+  const prefix = path === '/' ? '__Host-' : '__Secure-';
+  return { name: `${prefix}${input.name}`, secure: true, path };
 }
 
 export function sessionCookieOptions(

@@ -178,6 +178,7 @@ Each step pins the newest tag; a step never mixes two tags.
 ### Since v0.23.0
 
 - **Test tools** (K66): `e2e/screens.ts` is replaced by `setTheme`, `captureLook` and the sizes of `@seasonal/kit/testing` (its focus-mode fallback is in the kit's); `noFixedColours.test.ts` and `designTokens.test.ts` become calls of `findFixedColours` and `findLowContrast` with its own pairs. Only on the owner's word.
+- **Sweep** (K67): a spec calls `sweep` over its screens with `axeFinder(AxeBuilder)`; it gains the 200 % font and the 320 px sizes it does not run today. `e2e/contrast.ts` stays. Only on the owner's word.
 
 ## Seasonal Bingo Royale
 
@@ -314,6 +315,7 @@ reachable on every phone.
 ### Since v0.23.0
 
 - **Test tools** (K66): `e2e/screens.ts` is replaced by the kit's; `noFixedColours.test.ts`, `minTextSize.test.ts` (its card-number and podium rules stay) and `designTokens.test.ts` call the kit's guards with its own folders and pairs. Only on the owner's word.
+- **Sweep** (K67): the size and font loop pasted into its admin, host and start-match specs becomes `sweep`; `fitProbe`'s text floor, card cells and overlap check stay. Only on the owner's word.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
@@ -385,6 +387,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.23.0
 
 - **Test tools** (K66): it gains the guards it lacks (`findFixedColours`, `findSmallText`, `findLowContrast` over its client) and uses `setTheme` in `e2e/screens.spec.ts`. Only on the owner's word.
+- **Sweep** (K67): its `e2e/screens.spec.ts` measurements move onto `sweep`, which adds axe and the 200 % run. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

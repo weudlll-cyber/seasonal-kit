@@ -18,6 +18,10 @@ no other entry imports it and no game changes until it uses it.
   the screenshots of a look in a browser test, from Bingo Royale's and Mini Games' `e2e/screens.ts`.
 - **`findFixedColours`, `findSmallText` and `findLowContrast`**: static guards a game calls from its own
   Vitest test, from Bingo Royale's `noFixedColours`, `minTextSize` and `designTokens` tests.
+- **`probe`, `sweep` and `axeFinder`** (K67): one call that walks a game's screens at seven sizes, 100 %
+  and 200 % root font, light and dark, with axe, and fails on sideways scroll, a box past the window,
+  cut text, a control under 44 px or a fitted root that cuts a part. From Bingo Royale's fit probe and
+  the size loop pasted into its specs. Proved on the kit's own screens in `showcase/testing.spec.ts`.
 - **`@playwright/test`** is an optional peer, for the entry's types.
 
 ## [0.22.0] - 2026-11-26

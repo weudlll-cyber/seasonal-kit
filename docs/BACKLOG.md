@@ -175,3 +175,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **30. The header's brand link was under 44 px** (found by the sweep, 2026-11-26; decided
   2026-11-25, K84). Closed in v0.28.0 (`css/header.css`, `showcase/testing.spec.ts`, which no
   longer accepts the finding).
+- **47. The account chip showed "Signed in asOlga" above 1440 px** (Seasonal Cases, 2026-11-25).
+  Closed in v0.28.0 (`AppHeader`, `showcase/steps.spec.ts`).

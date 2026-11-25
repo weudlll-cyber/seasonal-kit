@@ -14,6 +14,11 @@ applies it.
 - **The season icons** (K83): the website's four drawings in `seasons/`, `seasons.css` and
   `SeasonIcon`. Not under the AGPL ([seasons/README.md](seasons/README.md)).
 
+### Fixed
+
+- **The account chip read "Signed in asOlga"** above 1440 px: the space was lost between two
+  parts of the chip. Nothing for a game to do.
+
 ### Changed
 
 - **The header's brand link is a 44 px target** (K84): its box grows (19–38 px before), the logo and

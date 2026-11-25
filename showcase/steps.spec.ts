@@ -12,7 +12,8 @@
  *                 icons are measured in the opened menu, beside the name. The one-row rule for
  *                 every header is layout.spec.ts's; axe over these headers in both themes is
  *                 showcase.spec.ts's. A name in a board's row and in a lower third shows the same
- *                 20 px badges (v0.24.0, K68).
+ *                 20 px badges (v0.24.0, K68). The chip shows "Signed in as <name>" with one space
+ *                 on a wide screen and is read so on a narrower one (v0.28.0).
  * Depends on:     @playwright/test
  * Source:         new in the kit.
  */
@@ -95,6 +96,19 @@ for (const theme of ['light', 'dark']) {
     });
   }
 }
+
+// The chip's words (v0.28.0): where the prefix shows, one space before the name; where it is
+// only read out, the name of the link still begins with it.
+test('the chip shows one space after "Signed in as" on a wide screen', async ({ page }) => {
+  const chip = await openChip(page, 1920, 'light', 'steps-header');
+  await expect(chip.locator('.sk-header-chip-prefix')).toBeVisible();
+  expect(await chip.innerText()).toMatch(/^Signed in as Walter \(player\)/);
+});
+
+test('the chip is read as "Signed in as <name>" where the prefix is hidden', async ({ page }) => {
+  const chip = await openChip(page, 1280, 'light', 'steps-header');
+  await expect(chip).toHaveAccessibleName(/^Signed in as Walter \(player\)/);
+});
 
 // Away from the header (K68): a board's row and a lower third show the same badges.
 for (const width of [1280, 360]) {

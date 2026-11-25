@@ -9,6 +9,8 @@ applies it.
 
 ### Added
 
+- **`ops/lib/operator.sh`** (K85): `sk_operator_email`, the operator's contact address from one
+  file on the server.
 - **The season icons** (K83): the website's four drawings in `seasons/`, `seasons.css` and
   `SeasonIcon`. Not under the AGPL ([seasons/README.md](seasons/README.md)).
 
@@ -29,6 +31,9 @@ applies it.
 - **Mini Games:** the same; its four optimized files differ, so it then shows the website's
   current drawings.
 - **Seasonal Cases:** if it shows season icons, the same; else nothing.
+- **Bingo Royale and Mini Games:** their installers call `sk_operator_email` in place of their own
+  `--email` handling (the flag keeps working). **Seasonal Cases:** uses it in its Docker installer
+  when it moves. **Website:** may read the same file in its installer (its own decision).
 
 ## [0.27.0] - 2026-11-26
 

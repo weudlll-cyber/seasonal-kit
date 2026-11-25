@@ -413,3 +413,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   grows, the logo and the header's height do not: measured on the kit's headers at seven widths, the
   link went from 19–38 px to 44–46 px at 100 % text (55 px and more at 200 %), with every header as
   high as before.
+- **K85 — One operator contact address per server** (decided 2026-11-25). Every Seasonal installer
+  takes it from `/etc/seasonal/operator.env` (`SK_OPERATOR_EMAIL`, root's, mode 0644) through the
+  kit's `sk_operator_email`; an explicit `--email` still wins and fills an empty file. No address is
+  in the kit, in a game's repository or in a log beyond the installer's "using <address> from <file>".

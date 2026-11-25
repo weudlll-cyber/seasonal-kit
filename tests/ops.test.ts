@@ -21,7 +21,13 @@ const read = (path: string): string => readFileSync(new URL(`../${path}`, import
 const pkg = JSON.parse(read('package.json')) as { files: string[] };
 const BACKUP = ['ops/backup.sh', 'ops/lib/backup-core.sh', 'ops/lib/backup-restore.sh'];
 const ROUTE = 'ops/lib/website-route.sh';
-const SHIPPED = [...BACKUP, ROUTE, 'ops/pull-backups.sh', 'ops/pull-backups.ps1'];
+const SHIPPED = [
+  ...BACKUP,
+  ROUTE,
+  'ops/lib/operator.sh',
+  'ops/pull-backups.sh',
+  'ops/pull-backups.ps1',
+];
 // The entry and its libraries are one script to the shell, so they are read as one.
 const script = BACKUP.map(read).join('\n');
 const docs = read('docs/OPERATIONS.md');

@@ -115,6 +115,7 @@
     "ops/backup.sh",
     "ops/lib/backup-core.sh",
     "ops/lib/backup-restore.sh",
+    "ops/lib/operator.sh",
     "ops/lib/website-route.sh",
     "ops/pull-backups.sh",
     "ops/pull-backups.ps1",

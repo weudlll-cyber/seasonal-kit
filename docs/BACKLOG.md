@@ -160,3 +160,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **37. ADOPTION.md said Cases had no outward fetch** (2026-11-25). Closed in v0.27.0.
 - **38. A game copied from Cases would run CI twice per push** (2026-11-25, K80). Closed in v0.27.0
   (HANDBOOK; the two games' own files are theirs to change).
+- **39. ADOPTION.md said Mini Games' old backups stay readable** (Mini Games, 2026-11-25).
+  Closed in v0.27.0.

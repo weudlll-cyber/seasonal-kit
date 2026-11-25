@@ -15,6 +15,7 @@ applies it.
 
 ### Fixed
 
+- **Docs:** Mini Games' backups from before the kit's script are not readable as they are (ADOPTION.md).
 - **Docs:** ADOPTION.md says how Cases reads the season feed now.
 - **Docs:** `backup` needs Linux; a Windows drill runs in a Linux container (OPERATIONS.md).
 - **The plain-http session cookie takes the base path** (development): it had `Path=/` whatever

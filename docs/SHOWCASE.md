@@ -88,4 +88,13 @@ Since v0.12.0 Mini Games' bar (the back link first, the Pre-picks button with th
 on the page too: at 1280 px the link shows arrow and words, at 390 and 320 px the arrow alone in a
 target 44 px wide with the words as its accessible name, and the bar ends inside the screen.
 
+Three more specs measure what a layout or a keyboard does:
+[`showcase/sheet.spec.ts`](../showcase/sheet.spec.ts) (v0.17.0) holds the open phone chat sheet
+inside the visible height; [`showcase/steps.spec.ts`](../showcase/steps.spec.ts) (v0.19.0, widened
+on 2026-11-25) holds the account chip with three step icons inside the window and its folded menu at
+320 to 375 and 390 to 1920 px, light and dark; [`showcase/keyboard.spec.ts`](../showcase/keyboard.spec.ts)
+(2026-11-25) checks that Tab reaches every control in order with a seen focus ring and a name, that
+focus comes back after the menu and the sheet close, and that reduced motion switches the glow and
+the transitions off.
+
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

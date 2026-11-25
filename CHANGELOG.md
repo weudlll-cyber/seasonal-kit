@@ -7,6 +7,11 @@ applies it.
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-11-25
+
+The night's clean-up (DECISIONS K57): nothing in the public API changed (the shipped `dist/` is
+byte for byte the one of v0.19.0), and no game has to do anything.
+
 ### Changed
 
 - **Night audit** (2026-11-25; [docs/AUDIT-2026-11-25.md](docs/AUDIT-2026-11-25.md); nothing a game
@@ -1212,7 +1217,12 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...HEAD
+[0.19.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.0...v0.19.1
+[0.19.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.18.0...v0.19.0
+[0.18.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.17.0...v0.18.0
+[0.17.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.16.0...v0.17.0
+[0.16.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.12.0...v0.13.0

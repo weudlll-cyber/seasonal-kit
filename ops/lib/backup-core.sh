@@ -189,9 +189,10 @@ do_backup() {
 print_units() {
   need SK_BACKUP_PREFIX
   need SK_BACKUP_ENV_FILE
-  local self p=$SK_BACKUP_PREFIX
-  self=$SK_SELF
-  printf '# ---- /etc/systemd/system/%s-backup@.service\n[Unit]\nDescription=%s backup (%%i)\nAfter=docker.service\nRequires=docker.service\nOnFailure=%s-backup-failed@%%i.service\n\n[Service]\nType=oneshot\nEnvironmentFile=%s\nEnvironment=SK_BACKUP_ENV=%%i\nExecStart=%s backup\n\n' "$p" "$p" "$p" "$SK_BACKUP_ENV_FILE" "$self"
+  local p=$SK_BACKUP_PREFIX
+  [[ $SK_INVOKED != */.pnpm/* ]] ||
+    die "print-units would write a path inside the pnpm store, which changes with every kit update: call node_modules/@seasonal/kit/ops/backup.sh instead"
+  printf '# ---- /etc/systemd/system/%s-backup@.service\n[Unit]\nDescription=%s backup (%%i)\nAfter=docker.service\nRequires=docker.service\nOnFailure=%s-backup-failed@%%i.service\n\n[Service]\nType=oneshot\nEnvironmentFile=%s\nEnvironment=SK_BACKUP_ENV=%%i\nExecStart=%s backup\n\n' "$p" "$p" "$p" "$SK_BACKUP_ENV_FILE" "$SK_INVOKED"
   printf '# ---- /etc/systemd/system/%s-backup-failed@.service\n[Unit]\nDescription=%s backup (%%i) failed\n\n[Service]\nType=oneshot\nExecStart=/usr/bin/logger -p user.err -t %s "the backup of %%i failed: journalctl -u %s-backup@%%i"\n\n' "$p" "$p" "$p" "$p"
   printf '# ---- /etc/systemd/system/%s-backup@.timer\n[Unit]\nDescription=%s backup (%%i) every night at 03:30\n\n[Timer]\nOnCalendar=*-*-* 03:30:00\nPersistent=true\n\n[Install]\nWantedBy=timers.target\n' "$p" "$p"
 }

@@ -169,7 +169,7 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Health routes** (K64): `http/routes/health.ts` registers `HEALTH_PATHS` and answers with `readiness(pingDatabase, { extra: feed time })`; names unchanged. Only on the owner's word.
 - **Session cookie, CSRF, headers** (K63): `auth/sessionPlugin.ts` takes `sessionCookie` and `sessionCookieOptions` with `Max-Age` from the session's length (the cookie is 30 days today, a website session 7: it outlives it by 23); its CSRF token stays and `writeCheck` is added as a second layer, with its own host behind the website's proxy; `http/plugins/securityHeaders.ts` takes `securityHeaderSet` with its `ancestors` and `admin` rules and drops `'unsafe-inline'` from `style-src` once its inline styles move. Only on the owner's word.
 - **Guarded fetch** (K62): `apps/server/src/seasons/safeFetch.ts` (99 lines) and `integration/safePost.ts` (87 lines) are replaced by the kit's `guardedFetch` and `isPublicAddress`; its feed reader gets `guardedFetch({ allowedHosts: [the website's host] })`. Its `readLimited` is also used by the account feed: that stays until the kit's fetch serves it. Only on the owner's word; its own address check misses a literal written `[::ffff:7f00:1]`, which the kit's catches.
-- **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word; the existing backups stay readable (the same tar of dump and uploads, age).
+- **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word. The kit's restore refuses the existing backups as they are (they hold `uploads.tar` and no manifest, `ops/lib/backup-restore.sh`): rewrite one before restoring it, as Mini Games' `docs/operator-guide.md` section 5 describes (branch `feat/kit-0.22`, `a483d81`); the old files age out with the retention.
 
 ### Since v0.22.0
 
@@ -195,6 +195,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **Website stand-in** (K74): the contract half of `e2e/websiteStub.ts` (authorize, identity, login, chat page) becomes `startWebsiteStandIn`; its nginx stack with the game's real route file, the database and the account-changes feed stay. Only on the owner's word.
 - **Shared call** (K77, not released): its call slot becomes `SharedCallSlot` with `BackToCall` on the result screen; no call-id field. Only on the owner's word, once released.
+
+### Since v0.27.0
+
+- **The fix release** (CHANGELOG, "Migration, per game"): the headers, the named cross-origin write, the local origin, the bar gutter and the CI triggers. Only on the owner’s word.
 
 ## Seasonal Bingo Royale
 
@@ -349,6 +353,10 @@ reachable on every phone.
 - **Website stand-in** (K74): the stand-in proxy of `e2e/websiteStack.ts` becomes `startWebsiteStandIn` (its `stub_user` cookie becomes `se.sid` from `sessionCookie`); the database per worker and `expireSessions` stay. Only on the owner's word.
 - **Shared call** (K77, not released): render `SharedCallSlot` in the docked chat and `BackToCall` after a round. Only on the owner's word, once released.
 
+### Since v0.27.0
+
+- **The fix release** (CHANGELOG, "Migration, per game"): only the headers’ two new directives, if it takes `securityHeaderSet`.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -409,7 +417,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Health routes** (K64): `/api/health` and `/api/ready` become `/healthz` and `/readyz` with `readiness`; its installer's probe moves with them. Only on the owner's word.
 - **Session cookie, CSRF, headers** (K63, K60): `sameSiteWrites` and `sameOrigin` (`app.ts` 110-136) are replaced by `writeCheck({ trustedProxies })` (it also refuses a write with neither header, which Cases lets pass); its `helmetOptions` (`web.ts`) by `securityHeaderSet({ mode: 'website', frames: [the chat origin] })` in `securityHeadersHook`. Only on the owner's word.
-- **Guarded fetch** (K62): Cases has none today (`git grep` over `073f9ad` finds no address block list, no `redirect: 'error'` and no season feed read in `apps/`). When it reads the website's season feed or calls an outside address, it passes `guardedFetch({ allowedHosts: [the website's host] })`. Only on the owner's word.
+- **Guarded fetch** (K62): done on the way. Cases reads the website's season feed through `guardedFetch` with only the website's host allowed (`apps/server/src/seasonSource.ts`, commit `e54ec31` on branch `kit/v0.17-adoption`; its `master` `073f9ad` has no outward fetch yet).
 - **Backups** (K61): **Cases has no backup today** (no `backup`, `restore` or `pg_dump` outside its docs and route files, `git grep` over `073f9ad`), and holds accounts and results. **It moves to Docker first, then takes the kit's backup unchanged** (K76): the database container as `SK_BACKUP_DB_CONTAINER`, the systemd timer from `print-units`, no volumes unless it keeps uploads. The backup comes before its other shared parts. Only on the owner's word.
 
 ### Since v0.22.0
@@ -436,6 +444,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Website stand-in** (K74): `e2e/websiteStub.ts`'s contract half becomes `startWebsiteStandIn`; its Vite middleware serves the client as the stand-in's app. Only on the owner's word.
 - **Shared call** (K77, not released): `SharedCallSlot` where its show leaves room and `BackToCall` on the result. Only on the owner's word, once released.
+
+### Since v0.27.0
+
+- **The fix release** (CHANGELOG, "Migration, per game"): its header, Menu and docked-screen findings are fixed in the kit; the backup path, the local origin and the CI triggers. Only on the owner’s word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

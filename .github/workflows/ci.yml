@@ -125,11 +125,13 @@ jobs:
           # The job token stays off the disk: no step pushes (audit 2026-11-22).
           persist-credentials: false
       - name: shellcheck
-        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/backup-url.test.sh ops/test/website-route.test.sh
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/backup-url.test.sh ops/test/backup-units.test.sh ops/test/website-route.test.sh
       - name: age
         run: sudo apt-get install -y -q age
       - name: A database URL's password stays off the command lines
         run: bash ops/test/backup-url.test.sh
+      - name: The timer's units name the backup by a path that survives a kit update
+        run: bash ops/test/backup-units.test.sh
       - name: Back up, drill and restore on a real PostgreSQL
         run: bash ops/test/backup.test.sh
       - name: The route file in the real nginx and Caddy

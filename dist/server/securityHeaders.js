@@ -1,12 +1,18 @@
 const SELF = "'self'";
 // Only a plain origin reaches a header, so no stored value can add a directive.
 const PLAIN_ORIGIN = /^https?:\/\/[A-Za-z0-9.-]+(:\d{1,5})?$/;
+// An https origin and a path of plain characters: nothing that ends a source or a directive.
+const HTTPS_PATH = /^https:\/\/[A-Za-z0-9.-]+(:\d{1,5})?(\/(?:[\w.~-]|%[0-9A-Fa-f]{2})*)+$/;
 const PERMISSIONS = 'camera=(), microphone=(), geolocation=(), payment=()';
-function origins(list, what, allowSelf) {
-    for (const o of list) {
-        if (!PLAIN_ORIGIN.test(o) && !(allowSelf && o === SELF)) {
-            throw new RangeError(`${what} must be plain origins`);
-        }
+function origins(list, what) {
+    if (!list.every((o) => PLAIN_ORIGIN.test(o))) {
+        throw new RangeError(`${what} must be plain origins`);
+    }
+    return list;
+}
+function frameSources(list) {
+    if (!list.every((s) => s === SELF || PLAIN_ORIGIN.test(s) || HTTPS_PATH.test(s))) {
+        throw new RangeError('frames must be plain origins or https addresses with a path');
     }
     return list;
 }
@@ -18,12 +24,12 @@ function ancestorsOf(options) {
             throw new RangeError('A website install is framed by the website only: no ancestors');
         }
         const site = options.websiteOrigin === undefined ? [] : [options.websiteOrigin];
-        return [SELF, ...origins(site, 'The website origin', false)];
+        return [SELF, ...origins(site, 'The website origin')];
     }
-    return [SELF, ...origins(options.ancestors ?? [], 'ancestors', false)];
+    return [SELF, ...origins(options.ancestors ?? [], 'ancestors')];
 }
 export function securityHeaderSet(options) {
-    const frames = origins(options.frames ?? [SELF], 'frames', true);
+    const frames = frameSources(options.frames ?? [SELF]);
     const ancestors = ancestorsOf(options);
     const directives = {
         'default-src': [SELF],
@@ -34,9 +40,12 @@ export function securityHeaderSet(options) {
         'font-src': [SELF],
         'style-src': [SELF, ...(options.inlineStyles === true ? ["'unsafe-inline'"] : [])],
         'script-src': [SELF],
+        'script-src-attr': ["'none'"],
         'connect-src': [SELF],
         'frame-src': frames.length === 0 ? ["'none'"] : frames,
         'frame-ancestors': ancestors,
+        // A directive without a value.
+        ...(options.secure === true ? { 'upgrade-insecure-requests': [] } : {}),
         ...(options.admin === true ? { 'require-trusted-types-for': ["'script'"] } : {}),
     };
     // X-Frame-Options has no list: with another site allowed, frame-ancestors decides alone.

@@ -13,14 +13,21 @@
  *                   checks believe their headers (a header from anyone else is ignored);
  *                 - a write that names neither `Origin` nor `Sec-Fetch-Site` is refused (K60);
  *                 - a repeated or malformed header, `Origin: null` and a missing host are refused.
+ *                 `crossOrigin` (since v0.27.0) names the writes another site's page may make: a
+ *                 method, an exact path (the request's `url` without its query) and exact origins.
+ *                 Such a write passes with an `Origin` from that list, whatever `Sec-Fetch-Site`
+ *                 says. The option only adds: without that `Origin` the rules above decide, so a
+ *                 missing `Origin` or a cross-site `Sec-Fetch-Site` alone is refused as ever, and
+ *                 the game's own pages keep writing to the same path.
  *                 It needs no token and no state. A game with a CSRF token keeps it as a second
  *                 layer: both must pass. The answer names the reason, never a header's value.
- * Depends on:     ./trust (trustedPeers, HeaderValue)
+ * Depends on:     ./trust (trustedPeers, HeaderValue), ./exactOrigins
  * Source:         seasonal-cases apps/server/src/app.ts (`sameOrigin`, `sameSiteWrites`) at
  *                 073f9ad. Changed: a write with neither header is refused (Cases lets it pass),
  *                 the forwarded host is read behind a trusted proxy (K60).
  * Spec:           docs/concepts/shared-server-parts.md §3; docs/DECISIONS.md K60
  */
+import { exactOrigins } from './exactOrigins.js';
 import { trustedPeers } from './trust.js';
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS']);
 const REFUSED = (reason) => ({ ok: false, reason });
@@ -54,8 +61,23 @@ function originDecision(request, origin, isProxy) {
         return REFUSED('bad-header');
     return sameHost(origin, host) === true ? { ok: true } : REFUSED('origin-mismatch');
 }
+// Whether the request is one of the named writes, from one of its origins. The list is read
+// once, so a bad entry fails at start-up.
+function namedWrites(list) {
+    const writes = list.map(({ method, path, origins }) => {
+        if (!/^\/[^?#*]*$/.test(path))
+            throw new RangeError('A cross-origin path is an exact path');
+        return { method: method.toUpperCase(), path, from: exactOrigins(origins, 'crossOrigin') };
+    });
+    return (request, origin) => {
+        const method = request.method.toUpperCase();
+        const path = request.url?.split('?')[0];
+        return writes.some((w) => w.method === method && w.path === path && w.from.has(origin));
+    };
+}
 export function writeCheck(options = {}) {
     const isProxy = trustedPeers(options.trustedProxies ?? []);
+    const named = namedWrites(options.crossOrigin ?? []);
     return (request) => {
         if (SAFE.has(request.method.toUpperCase()))
             return { ok: true };
@@ -63,6 +85,8 @@ export function writeCheck(options = {}) {
         const origin = single(request.headers['origin']);
         if (site === null || origin === null)
             return REFUSED('bad-header');
+        if (origin !== undefined && named(request, origin))
+            return { ok: true };
         if (site === undefined && origin === undefined)
             return REFUSED('no-origin');
         if (site !== undefined && site !== 'same-origin' && site !== 'none') {

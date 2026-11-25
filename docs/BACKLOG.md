@@ -23,19 +23,17 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `master` has its own `ChatDock` around the kit's frame. The chat frame's link (9a) and the
   dock's arrivals and `DockedScreen` (9b) are closed (part two).
 
-- **27. Shared client parts and test tools** (2026-11-26). The comparison of what the three games
-  built on the client side and for their browser tests is written:
-  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) (Bingo `8d20904`, Mini Games
-  `9e3c6f3`, Cases `073f9ad`). It recommends eight candidates in an order (the screenshot and theme
-  helper and the static guards first, then the fit probe and size sweep, steps in lists, the countdown,
-  the API client, the website stand-in, base components CSS, the socket client and season icons) and
-  names what stays in the games. Nothing is built. Done when: the owner says which parts to build, each
-  then becomes its own item.
-
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
+
+- **29. The socket client and the season icons** (2026-11-26). Compared and costed, nothing built
+  ([concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14): a socket client
+  is recommended later, the season icons in the kit now. Done when: the owner says yes or no.
+- **30. The header's brand link is under 44 px** (found by the sweep, 2026-11-26: 36 px on a
+  desktop, 19 px on a phone; K29 asks 44 px). Done when: the link is 44 px high, or the owner
+  accepts it as it is.
 
 ## Part two — closed
 
@@ -141,3 +139,40 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   A-29 are built: the font's copyright holder is in `fonts/README.md`, `BarAction` takes `controls`, the
   call frame has `referrerPolicy="strict-origin"`, `package.json` has `sideEffects`. A-03 is declined and
   A-05 stays as it is. Closed by v0.20.0.
+- **27. Shared client parts and test tools** (2026-11-26, K66 to K70 and K73 to K76). The
+  comparison's parts are built and released: v0.23.0 (PR #61), v0.24.0 (PR #63), v0.25.0 (PR #65)
+  and v0.26.0 (PR #67). The shared call slot (draft PR #68) and the base components (draft PR #70)
+  wait for review; what was only compared is item 29.
+- **31. The header fold depended on history** (Seasonal Cases on v0.22.0, 2026-11-25, K79): folded
+  after a fresh load at 1536 px, unfolded after a resize to it. Closed in v0.27.0
+  (`src/react/useHeaderFold.ts`, `headerFold.test.tsx`, `showcase/cases.spec.ts`).
+- **32. The backup units named a path in the pnpm store** (Seasonal Cases, 2026-11-25): it changes
+  with every kit update. Closed in v0.27.0 (`ops/backup.sh`, `print_units`,
+  `ops/test/backup-units.test.sh`).
+- **33. The Menu button showed when `bar.css` came after `header.css`** (Seasonal Cases,
+  2026-11-25). Closed in v0.27.0 (`css/header.css`, `showcase/layout.spec.ts`).
+- **34. A docked screen's scrolling content had no keyboard access** (Seasonal Cases, result page,
+  2026-11-25). Closed in v0.27.0 (`DockedScreen`, `dockless.test.tsx`, `showcase/layout.spec.ts`).
+- **35. The plain-http session cookie ignored `basePath`** (Seasonal Cases, 2026-11-25). Closed in
+  v0.27.0 (`src/server/sessionCookie.ts` and its test).
+- **36. The operations doc did not say that `backup` needs Linux** (Seasonal Cases, 2026-11-25).
+  Closed in v0.27.0 (OPERATIONS.md).
+- **37. ADOPTION.md said Cases had no outward fetch** (2026-11-25). Closed in v0.27.0.
+- **38. A game copied from Cases would run CI twice per push** (2026-11-25, K80). Closed in v0.27.0
+  (HANDBOOK; the two games' own files are theirs to change).
+- **39. ADOPTION.md said Mini Games' old backups stay readable** (Mini Games, 2026-11-25).
+  Closed in v0.27.0.
+- **40. The security headers had no `script-src-attr` and no upgrade of http requests** (Mini
+  Games, 2026-11-25). Closed in v0.27.0 (`securityHeaderSet`, its test).
+- **41. The game bar indented twice inside a page with a gutter** (Mini Games, 2026-11-25).
+  Closed in v0.27.0 (`--sk-bar-gutter`, `showcase/layout.spec.ts`).
+- **42. No way to call a configured local address through the guarded fetch** (Mini Games,
+  2026-11-25). Closed in v0.27.0 (`localOrigins`, `guardedFetch.test.ts`).
+- **43. `writeCheck` had no named cross-origin write** (Mini Games, 2026-11-25). Closed in
+  v0.27.0 (`crossOrigin`, `writeCheck.test.ts`).
+- **44. `frames` took origins only** (Mini Games, 2026-11-25). Closed in v0.27.0
+  (`securityHeaderSet`, its test).
+- **45. Whether a website-mode game may be framed elsewhere** (Mini Games, 2026-11-25). Decided
+  no (K81); nothing to build.
+- **46. A pooled socket could skip the guarded fetch’s address check** (security pass before
+  v0.27.0). Closed in v0.27.0 (`agent: false`, `guardedFetch.test.ts`).

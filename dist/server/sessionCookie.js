@@ -5,11 +5,11 @@ export function sessionCookie(input) {
     if (!/^\/[\w./-]*$/.test(basePath) || basePath.includes('..')) {
         throw new RangeError('The base path is a plain path starting with /');
     }
+    const path = basePath === '/' ? basePath : basePath.replace(/\/$/, '');
     if (!input.secure)
-        return { name: input.name, secure: false, path: '/' };
-    if (basePath === '/')
-        return { name: `__Host-${input.name}`, secure: true, path: '/' };
-    return { name: `__Secure-${input.name}`, secure: true, path: basePath.replace(/\/$/, '') };
+        return { name: input.name, secure: false, path };
+    const prefix = path === '/' ? '__Host-' : '__Secure-';
+    return { name: `${prefix}${input.name}`, secure: true, path };
 }
 export function sessionCookieOptions(cookie, absoluteDays) {
     const base = {

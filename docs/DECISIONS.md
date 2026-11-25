@@ -390,3 +390,18 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   (no picture), there is only ever one shared call, and every organiser and admin may share one.
   `SharedCallSlot` frames `/embed/call/shared` with no call number and shows only while a call is
   live; `BackToCall` links to it. The note and who may share are the website's.
+- **K79 — The header's fold depends only on the width and the items** (2026-11-26, Seasonal Cases'
+  finding on v0.22.0). Every decision measures the unfolded layout; a folded header is measured
+  again on a new window width, a change of its own size (not by the fold itself) and loaded web
+  fonts. Measured first, with a long organiser header in a throwaway page (Chromium on Windows, the
+  faces under a name no system has): the first decision comes after the stylesheets apply (the
+  header is `display: flex`) and before the fonts do (at 673 ms, no face loaded). There the header
+  needed 1228 px in the fallback font and 1230 px in Luxora, so the font swap alone does not explain
+  Cases' fold at 1536 px, which was not reproduced; it stayed because only a wider window unfolded.
+- **K80 — One CI run per push** (2026-11-26). CI runs on push only for `master` and on pull
+  requests against `master`; a work branch has a draft PR from its first push. Mini Games
+  (`branches: ['**', '!shots/**']`) and Seasonal Cases (`branches: ['**']`) ran two identical runs
+  per push; the kit, the website and Bingo Royale already follow the rule.
+- **K81 — In website mode a game is framed by the website only** (confirmed 2026-11-25).
+  `securityHeaderSet({ mode: 'website' })` refuses `ancestors`, as before. A game that must be framed
+  elsewhere uses a standalone install with its `ancestors` list.

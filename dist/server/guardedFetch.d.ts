@@ -12,14 +12,20 @@
  *                   then uses, so a name that answers differently a second time (DNS rebinding)
  *                   cannot slip past; an address literal is checked before any connection;
  *                 - a redirect is refused, never followed;
+ *                 - every call opens its own connection (since v0.27.0), so none rides on a
+ *                   socket the check never saw;
  *                 - the whole exchange, body included, ends within `timeoutMs` (5 s), and an
  *                   answer larger than `maxBytes` (64 KiB) is cut off and refused as it arrives;
  *                 - the answer is a `Response` with the status and headers, so `response.ok`
  *                   and `response.json()` work; the caller's `init.signal` also aborts it.
- *                 `allowLocal` (development and tests only) also allows plain http and private
- *                 addresses. Nothing here logs; a refusal is a `FetchRefused` whose message
+ *                 `localOrigins` (since v0.27.0) names exact origins from the game's server
+ *                 configuration, never from a user's or an admin's input, that may be reached
+ *                 over plain http and at a private or container address; every other rule holds
+ *                 for them too (`allowedHosts`, no redirect, the time and the size), and every
+ *                 other address is judged as without the option. `allowLocal` (development and
+ *                 tests only) allows plain http and private addresses for all. Nothing here logs; a refusal is a `FetchRefused` whose message
  *                 names the rule, never the address or a header.
- * Depends on:     node:http, node:https, node:dns, node:net, ./guardedAddress
+ * Depends on:     node:http, node:https, node:dns, node:net, ./guardedAddress, ./exactOrigins
  * Source:         seasonal-mini-games apps/server/src/seasons/safeFetch.ts (`readLimited`, the
  *                 https and redirect rules, 5 s and 64 KiB) and
  *                 apps/server/src/integration/safePost.ts (the checked lookup) at 9e3c6f3.
@@ -37,6 +43,7 @@ export interface GuardedFetchOptions {
     readonly allowedHosts?: readonly string[];
     readonly timeoutMs?: number;
     readonly maxBytes?: number;
+    readonly localOrigins?: readonly string[];
     readonly allowLocal?: boolean;
     readonly resolver?: typeof dnsLookup;
 }

@@ -63,6 +63,27 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.27.0 (branch `fix/cases-findings`, PR #72)
+
+| Scan                         | Tool and command                                                                                  | Result                                              |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 164 commits scanned.                      |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 258 packages. No dependency was added. |
+| Code                         | CodeQL (javascript-typescript)                                                                    | No open alert on the pull request's merge ref.      |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true`                                        | Proven on the tag (docs/DELIVERY.md).               |
+
+**Review of the new relaxations** (by the session that wrote them, not an independent reader):
+`localOrigins`, `crossOrigin`, the frame source with a path, the cookie's path and the units' path.
+
+1. **Medium, fixed:** `guardedFetch` used Node's shared connection pool, so a socket opened by any
+   caller to the same host and port, for example to a local origin, could carry a guarded call
+   without the guarded lookup. Every call now opens its own connection, with a test that fails
+   without it.
+2. Kept as designed: a local origin's name is trusted to resolve anywhere (it comes from the
+   server's configuration); `allowedHosts` and the redirect refusal hold for it too.
+3. Kept as designed: a named cross-origin write passes without the same-site checks, so the game's
+   own token or the route's own origin list remains its second layer.
+
 ### 2026-11-23 — before v0.11.0 (branch `night/2026-11-23`)
 
 | Scan                         | Tool and command                                                                                  | Result                                                 |

@@ -122,7 +122,7 @@ jobs:
           # The job token stays off the disk: no step pushes (audit 2026-11-22).
           persist-credentials: false
       - name: shellcheck
-        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" ops/backup.sh ops/pull-backups.sh ops/test/backup.test.sh
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/pull-backups.sh ops/test/backup.test.sh
       - name: age
         run: sudo apt-get install -y -q age
       - name: Back up, drill and restore on a real PostgreSQL

@@ -7,6 +7,15 @@ applies it.
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-11-26
+
+Operations parts (DECISIONS K71 onwards). Opt-in; nothing runs unless a game runs it.
+
+### Changed
+
+- **`ops/backup.sh` is split** (K71): the entry sources `ops/lib/backup-core.sh` and
+  `ops/lib/backup-restore.sh`, which ship in the package. Same commands, variables and behaviour.
+
 ## [0.24.0] - 2026-11-26
 
 Client parts (DECISIONS K68 to K70). Every one is opt-in; a game that changes nothing sees today's
@@ -1361,7 +1370,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...HEAD
+[0.25.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...v0.22.0

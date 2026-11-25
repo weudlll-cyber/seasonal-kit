@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -111,6 +111,8 @@
     "dist",
     "fonts",
     "ops/backup.sh",
+    "ops/lib/backup-core.sh",
+    "ops/lib/backup-restore.sh",
     "ops/pull-backups.sh",
     "ops/pull-backups.ps1"
   ]

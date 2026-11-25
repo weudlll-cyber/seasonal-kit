@@ -348,3 +348,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   so it maps at adoption; the kit does not carry its shape. `createApiClient` sends the CSRF token on
   writes and gives `onAnswer` every answer, so a game keeps its own rule for a lost session.
   `useApiGet` gives idle, loading, ready or failed with the whole error, tied to its path.
+- **K71 — The backup script is split under the 300-line rule** (decided 2026-11-25, built
+  2026-11-26, v0.25.0). `ops/backup.sh` is the entry (94 lines) and sources `ops/lib/backup-core.sh`
+  and `ops/lib/backup-restore.sh`, which ship beside it: the same functions, commands and variables;
+  the drill test passes unchanged. A game keeps calling `ops/backup.sh`.

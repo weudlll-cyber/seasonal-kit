@@ -244,6 +244,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   and never `allowLocal` in production.
 - **A write from another site** (v0.27.0): named in `writeCheck({ crossOrigin })`, never skipped by
   a path exemption.
+- **Who may frame a game** (K81): in website mode the website only (`securityHeaderSet({ mode:
+'website' })`); anywhere else needs a standalone install with its `ancestors`.
 - **Game bar gutter** (v0.27.0): a game whose page has its own gutter sets `--sk-bar-gutter: 0`
   instead of overriding the bar's padding.
 - **Phone layouts** (K65): the folded header's brand keeps its longest word, the back link's words wrap,

@@ -395,3 +395,6 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   requests against `master`; a work branch has a draft PR from its first push. Mini Games
   (`branches: ['**', '!shots/**']`) and Seasonal Cases (`branches: ['**']`) ran two identical runs
   per push; the kit, the website and Bingo Royale already follow the rule.
+- **K81 — In website mode a game is framed by the website only** (confirmed 2026-11-25).
+  `securityHeaderSet({ mode: 'website' })` refuses `ancestors`, as before. A game that must be framed
+  elsewhere uses a standalone install with its `ancestors` list.

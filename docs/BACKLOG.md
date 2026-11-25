@@ -172,3 +172,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.27.0 (`crossOrigin`, `writeCheck.test.ts`).
 - **44. `frames` took origins only** (Mini Games, 2026-11-25). Closed in v0.27.0
   (`securityHeaderSet`, its test).
+- **45. Whether a website-mode game may be framed elsewhere** (Mini Games, 2026-11-25). Decided
+  no (K81); nothing to build.

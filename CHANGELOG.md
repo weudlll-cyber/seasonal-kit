@@ -17,6 +17,8 @@ applies it.
 
 ### Migration, per game
 
+- **Mini Games:** pass `mode: 'website'` in website mode (today `'standalone'` in both); the admin's
+  embed allowlist stays for standalone installs (K81).
 - **Mini Games:** pass `https://<website public host>/embed/chat` in `frames` and drop its own
   `frame-src` override (`headersFor`).
 - **Mini Games:** list `POST /api/v1/auth/handoff` with its embed origins, pass `url: request.url`,

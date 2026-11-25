@@ -7,6 +7,11 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- **The season icons** (K83): the website's four drawings in `seasons/`, `seasons.css` and
+  `SeasonIcon`. Not under the AGPL ([seasons/README.md](seasons/README.md)).
+
 ### Changed
 
 - **The working rule for checks** (K82; HANDBOOK, CLAUDE.md): one browser spec file locally where a
@@ -16,6 +21,12 @@ applies it.
 
 - **Website** (seasonal-entertainment): add the `cancel-in-progress` concurrency to its `ci.yml`
   (it has none today). **The games:** nothing for K82.
+- **Bingo Royale:** its eight season files equal the website's: delete its copies of the four
+  optimized ones and use the kit's (`seasons.css`, `SeasonIcon` or the package paths); the
+  `source/` files are not in the kit.
+- **Mini Games:** the same; its four optimized files differ, so it then shows the website's
+  current drawings.
+- **Seasonal Cases:** if it shows season icons, the same; else nothing.
 
 ## [0.27.0] - 2026-11-26
 

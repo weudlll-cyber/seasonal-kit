@@ -403,3 +403,9 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   spec file in one browser; the full checks on GitHub through the draft PR; no waiting for CI between
   pieces, one look at the end and before a merge; CI cancels a replaced run of a work branch; no
   re-run on an unchanged tree.
+- **K83 — The season icons ship in the kit** (decided 2026-11-25, BACKLOG 29; the socket client
+  stays out, as [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14
+  recommends). The website's four optimized files, byte for byte, compared with its `master` on
+  every pull request and daily, as the season colours are. They belong to the Seasonal Tokens
+  project and are not under the AGPL. A stylesheet draws them, so a bundler finds the files as it
+  finds the fonts.

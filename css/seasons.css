@@ -1,0 +1,46 @@
+/**
+ * @file   css/seasons.css
+ * @brief  The four season icons as a background of one element, its size the game's.
+ *
+ * Responsibility: `.sk-season-icon` with `data-sk-season` shows the website's drawing of that
+ *                 season (../seasons/, byte for byte), whole and centred, 1.5rem square unless
+ *                 `--sk-season-icon-size` or the element's own width and height say otherwise;
+ *                 printed too. A stylesheet, so a bundler finds the files as it finds the fonts,
+ *                 and a page without React uses it the same way. The files' colours only. The
+ *                 element's name is the markup's (`role="img"`, `aria-label`).
+ * Source:         new in the kit (K83); the files from seasonal-entertainment
+ *                 client/src/assets/seasons/ at cc743b9 (../seasons/README.md).
+ */
+
+.sk-season-icon {
+  display: inline-block;
+  flex: none;
+  width: var(--sk-season-icon-size, 1.5rem);
+  height: var(--sk-season-icon-size, 1.5rem);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  vertical-align: middle;
+  print-color-adjust: exact;
+}
+
+.sk-season-icon[data-sk-season='spring'] {
+  background-image: url('../seasons/spring.svg');
+}
+
+.sk-season-icon[data-sk-season='summer'] {
+  background-image: url('../seasons/summer.svg');
+}
+
+.sk-season-icon[data-sk-season='autumn'] {
+  background-image: url('../seasons/autumn.svg');
+}
+
+.sk-season-icon[data-sk-season='winter'] {
+  background-image: url('../seasons/winter.svg');
+}
+
+/* `--sk-season-icon-size` is a game's to set; `initial` leaves the fallback above. */
+:where(:root) {
+  --sk-season-icon-size: initial;
+}

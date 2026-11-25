@@ -28,9 +28,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **29. The socket client and the season icons** (2026-11-26). Compared and costed, nothing built
-  ([concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14): a socket client
-  is recommended later, the season icons in the kit now. Done when: the owner says yes or no.
 - **30. The header's brand link is under 44 px** (found by the sweep, 2026-11-26: 36 px on a
   desktop, 19 px on a phone; K29 asks 44 px). Done when: the link is 44 px high, or the owner
   accepts it as it is.
@@ -176,3 +173,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   no (K81); nothing to build.
 - **46. A pooled socket could skip the guarded fetch’s address check** (security pass before
   v0.27.0). Closed in v0.27.0 (`agent: false`, `guardedFetch.test.ts`).
+- **29. The socket client and the season icons** (compared 2026-11-26; decided 2026-11-25, K83).
+  The season icons ship in the kit (`seasons/`, `SeasonIcon`, the daily comparison). The socket
+  client is not built. Closed in v0.28.0.

@@ -28,6 +28,12 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
+- **49. Shared ops parts for every game** (owner, 2026-11-26): install, operate and secure alike.
+  Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Being built: the admin
+  command with uninstall, the host baseline, the container hardening check and the database roles
+  (its items a to e). Items f to k wait for the owner's word. Done when: a to e are released and f to
+  k are decided.
+
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no

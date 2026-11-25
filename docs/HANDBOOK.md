@@ -233,6 +233,9 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Backups:** `ops/backup.sh` (backup, restore, drill, the nightly timer's units) and the pull scripts,
   shipped in the package and set by `SK_BACKUP_*` variables (K61, [OPERATIONS.md](OPERATIONS.md)); the
   game wires them and keeps its own compose files and key checks.
+- **The admin command** (K87): the game's command sources `ops/lib/admin.sh`, so `status`, `update`,
+  `confirm`, `rollback`, `backup`, `restore`, `logs` and `uninstall` mean the same in every game; the
+  game adds its own verbs ([OPERATIONS.md](OPERATIONS.md)).
 - **The operator's address** (K85): an installer takes it from `sk_operator_email`
   (`ops/lib/operator.sh`, [OPERATIONS.md](OPERATIONS.md)) and keeps no address of its own.
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.

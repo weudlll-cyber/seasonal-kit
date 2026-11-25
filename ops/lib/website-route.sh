@@ -4,7 +4,9 @@
 # @brief  The installer's route-file step of a website install: a game's own route file in the
 #         website's proxy (nginx or Caddy), checked, put back when refused, then reloaded.
 #
-# Responsibility: sourced by a game's installer. `sk_route_install` writes the file the website's
+# Responsibility: sourced by a game's installer. `sk_route_remove` (since v0.29.0) takes the file
+#                 away again and reloads, for an uninstall. `sk_route_install` writes the file the
+#                 website's
 #                 proxy already imports (nginx: `include …/routes/*.conf;` in its server block;
 #                 Caddy: `import /etc/caddy/routes/*.caddy` in its site block), mode 0600 because
 #                 it holds the proxy secret, then runs the game's check command: a failure puts the
@@ -179,13 +181,33 @@ $clear		@sk_${slug}_signin path $signin
 EOF
 }
 
+# The settings both the install and the removal need.
+sk_route_target_settings() {
+  sk_route_match SK_ROUTE_MODE '^(nginx|caddy)$' || return 1
+  sk_route_match SK_ROUTE_FILE '^/.+\.(conf|caddy)$' || return 1
+  [[ -n ${SK_ROUTE_CHECK_CMD:-} && -n ${SK_ROUTE_RELOAD_CMD:-} ]] || sk_route_die "SK_ROUTE_CHECK_CMD and SK_ROUTE_RELOAD_CMD are needed"
+}
+
+# sk_route_remove: the game's route file gone and the website's proxy reloaded; a proxy whose
+# check fails (for a reason of its own) is said and not reloaded. Settings as for the install.
+sk_route_remove() {
+  sk_route_target_settings || return 1
+  rm -f "$SK_ROUTE_FILE"
+  if ! bash -c "$SK_ROUTE_CHECK_CMD"; then
+    # Said, not stopped: the game's file is gone either way.
+    printf 'website route: %s is removed, but the %s check fails: check it, then reload it\n' \
+      "$SK_ROUTE_FILE" "$SK_ROUTE_MODE" >&2
+    return 0
+  fi
+  bash -c "$SK_ROUTE_RELOAD_CMD" || { sk_route_die "the route file is removed, but the reload failed"; return 1; }
+  printf 'route: %s removed, the website'\''s %s reloaded\n' "$SK_ROUTE_FILE" "$SK_ROUTE_MODE"
+}
+
 # sk_route_install: SK_ROUTE_MODE (nginx or caddy), SK_ROUTE_FILE, SK_ROUTE_CHECK_CMD and
 # SK_ROUTE_RELOAD_CMD (each run with `bash -c`).
 sk_route_install() {
   local file new old
-  sk_route_match SK_ROUTE_MODE '^(nginx|caddy)$' || return 1
-  sk_route_match SK_ROUTE_FILE '^/.+\.(conf|caddy)$' || return 1
-  [[ -n ${SK_ROUTE_CHECK_CMD:-} && -n ${SK_ROUTE_RELOAD_CMD:-} ]] || { sk_route_die "SK_ROUTE_CHECK_CMD and SK_ROUTE_RELOAD_CMD are needed"; return 1; }
+  sk_route_target_settings || return 1
   file=$SK_ROUTE_FILE
   new="$file.new"
   old="$file.old"

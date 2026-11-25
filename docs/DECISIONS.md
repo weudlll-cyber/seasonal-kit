@@ -422,3 +422,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   check through `/readyz`, using the kit's ops parts) and `docs/operator-guide.md` for an owner who
   is not technical, with fixed sections. Held by review and by the rehearsal before production
   ([HANDBOOK.md](HANDBOOK.md)).
+- **K87 — One admin command's verbs in every game** (2026-11-26). `ops/lib/admin.sh`, from Bingo
+  Royale's `sbr`, with update, confirm and rollback, and an uninstall of exactly one environment
+  that asks for its name. The backups stay unless `--purge-backups` is given, because a backup cannot
+  be made again; an unknown option of uninstall stops it.

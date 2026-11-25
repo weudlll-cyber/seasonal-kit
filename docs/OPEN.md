@@ -10,3 +10,5 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 27\. Shared client parts and test tools: the comparison is written
   ([concepts/shared-client-parts.md](concepts/shared-client-parts.md)); it waits for the owner's word
   on what to build.
+- 28\. Base components: built on `feat/base-components` (draft PR), waiting for the owner's look
+  review.

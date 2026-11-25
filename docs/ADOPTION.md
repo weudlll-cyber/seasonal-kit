@@ -195,6 +195,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **Website stand-in** (K74): the contract half of `e2e/websiteStub.ts` (authorize, identity, login, chat page) becomes `startWebsiteStandIn`; its nginx stack with the game's real route file, the database and the account-changes feed stay. Only on the owner's word.
 
+### Since the base components’ release
+
+- **Base components** (K78): `packages/ui/src/base.css`’s button, panel, field, input, select, chip and badge rules are replaced by `components.css` and the `sk-` class names; the field lock and the signed field stay. No look change intended. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -347,6 +351,10 @@ reachable on every phone.
 
 - **Website stand-in** (K74): the stand-in proxy of `e2e/websiteStack.ts` becomes `startWebsiteStandIn` (its `stub_user` cookie becomes `se.sid` from `sessionCookie`); the database per worker and `expireSessions` stay. Only on the owner's word.
 
+### Since the base components’ release
+
+- **Base components** (K78): `packages/ui/src/base.css`’s button, panel, field, input, select, chip and badge rules are replaced by `components.css`. Visible changes: a disabled button is muted on the second surface instead of faded, a disabled field looks locked. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -433,6 +441,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.26.0
 
 - **Website stand-in** (K74): `e2e/websiteStub.ts`'s contract half becomes `startWebsiteStandIn`; its Vite middleware serves the client as the stand-in's app. Only on the owner's word.
+
+### Since the base components’ release
+
+- **Base components** (K78): `shell.css`’s `.button`, `.card` and bare input rules give way to `sk-btn`, `sk-panel`, `sk-input` and `sk-select`. Visible changes: bolder, larger button text, a danger button, the locked look of disabled controls. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

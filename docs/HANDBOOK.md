@@ -233,6 +233,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   measures; never the page's clock alone.
 - **Steps beside a name** (K68): `StepBadges` with `steps.css`, in every list of names, the header's
   look; a game draws no step badge of its own.
+- **Buttons, panels, fields** (K78): `components.css`'s classes, imported after `tokens.css`,
+  `shell.css` and `fit.css`; a game keeps its own rules only for what the classes lack.
 - **Test tools** (K66): `@seasonal/kit/testing`, for a game's own suites only: `setTheme`,
   `captureLook`, the sizes, the guards `findFixedColours`, `findSmallText` and `findLowContrast`, and
   `sweep` (every screen at seven sizes, 100 % and 200 %, light and dark, with axe; K67).

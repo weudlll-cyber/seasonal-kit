@@ -97,4 +97,11 @@ on 2026-11-25) holds the account chip with three step icons inside the window an
 focus comes back after the menu and the sheet close, and that reduced motion switches the glow and
 the transitions off.
 
+## The base components' review page (K78)
+
+`pnpm showcase`, then <http://localhost:5173/components/> (`?theme=light` or `?theme=dark`, or the
+toggle): the kit's `components.css` beside Bingo Royale's, Mini Games' and Seasonal Cases' rules
+as they are today. [`showcase/components.spec.ts`](../showcase/components.spec.ts) checks the kit's
+column (44 px controls, axe) and saves one picture per theme to `showcase/screens/`.
+
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

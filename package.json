@@ -49,7 +49,8 @@
     "./frames.css": "./css/frames.css",
     "./bar.css": "./css/bar.css",
     "./header.css": "./css/header.css",
-    "./steps.css": "./css/steps.css"
+    "./steps.css": "./css/steps.css",
+    "./components.css": "./css/components.css"
   },
   "sideEffects": [
     "**/*.css"

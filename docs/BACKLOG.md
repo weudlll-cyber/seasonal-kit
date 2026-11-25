@@ -32,6 +32,11 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   names what stays in the games. Nothing is built. Done when: the owner says which parts to build, each
   then becomes its own item.
 
+- **28. Base components: the owner's look review** (2026-11-26, K78). `components.css` and the page
+  that shows it beside the three games' looks are built on `feat/base-components`, not merged. Open
+  question: a field's input takes its label's strong weight, as in Mini Games and Bingo. Done when:
+  the owner approves the look, and a release with a game that uses it carries it.
+
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the

@@ -383,3 +383,8 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   backup stays as it is for the server side: the units `print-units` writes keep requiring
   `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
   paths. Cases moves to Docker first, then takes the kit's backup unchanged.
+- **K78 — Base components are opt-in classes, held for the owner's look review** (2026-11-26, built,
+  not merged). `components.css` draws buttons, panels, fields and chips as `sk-` classes only, so a
+  game that imports it changes nothing until it uses one. Where the games differ, Mini Games' version
+  is proposed (its disabled button and locked field keep their text readable). Released only after
+  the owner has looked at the review page. (K77 is the shared call slot's, on its own branch.)

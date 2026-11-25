@@ -40,7 +40,7 @@ docs on embedding a game are.
 | `@seasonal/kit/devtools`   | the development tools' server recipe, Node only: `devSignInAccount`, `devStubPlugin` (the production bundle's stub), `devMarkersIn` and `KIT_DEV_MARKERS` for the bundle test                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 A game imports the kit's CSS (`fonts.css`, `tokens.css`, `motion.css`, `shell.css`, and
-`fit.css`, `dock.css`, `frames.css`, `bar.css`, `header.css` and `call.css` for the parts it uses; `header.css` needs `bar.css`) before its
+`fit.css`, `dock.css`, `frames.css`, `bar.css`, `header.css`, `call.css` and `components.css`, the opt-in `sk-` classes for buttons, panels and fields, for the parts it uses; `header.css` needs `bar.css`) before its
 own, and adds only its own arena tokens and animations.
 
 ## How a game pins it

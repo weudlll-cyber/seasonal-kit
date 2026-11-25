@@ -7,6 +7,17 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- **`components.css`** (K78): opt-in classes `sk-btn` (`--primary`, `--danger`, `--big`),
+  `sk-panel` (`--inset`), `sk-field`, `sk-input`, `sk-select`, `sk-field-help--error`, `sk-chip`
+  and `sk-badge-live`. From the base styles of Mini Games and Bingo Royale.
+
+### Migration, per game
+
+- **All three games:** nothing is required; see [docs/ADOPTION.md](docs/ADOPTION.md) "Since the base
+  components' release".
+
 ## [0.26.0] - 2026-11-26
 
 The website's stand-in for the games' browser tests (DECISIONS K74). Opt-in, test code only.

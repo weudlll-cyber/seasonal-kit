@@ -63,6 +63,19 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.28.0 (branch `feat/checks-icons-link-operator`, PR #74)
+
+| Scan                         | Tool and command                                                                                  | Result                                              |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| Secrets in the whole history | gitleaks 8.30.1 (CI's image), `git /repo --log-opts=--all --redact`                               | No leaks. 173 commits scanned.                      |
+| Dependencies                 | osv-scanner 2.7.0 (CI's image), `scan source --config=osv-scanner.toml --lockfile=pnpm-lock.yaml` | No issues in 258 packages. No dependency was added. |
+| Code                         | CodeQL (javascript-typescript)                                                                    | Read on the pull request before the merge.          |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true`                                        | Proven on the tag (docs/DELIVERY.md).               |
+
+**Read by the session that wrote them:** `ops/lib/operator.sh` reads its file as text and never
+runs it, accepts only a plain address and says it only in "using … from …"; the four icon files
+carry no script, event handler or outside address. No finding.
+
 ### 2026-11-26 — before v0.27.0 (branch `fix/cases-findings`, PR #72)
 
 | Scan                         | Tool and command                                                                                  | Result                                              |

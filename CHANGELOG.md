@@ -9,6 +9,7 @@ applies it.
 
 ### Fixed
 
+- **Docs:** ADOPTION.md says how Cases reads the season feed now.
 - **Docs:** `backup` needs Linux; a Windows drill runs in a Linux container (OPERATIONS.md).
 - **The plain-http session cookie takes the base path** (development): it had `Path=/` whatever
   `basePath` said.

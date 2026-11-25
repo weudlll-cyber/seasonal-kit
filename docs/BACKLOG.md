@@ -157,3 +157,4 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.27.0 (`src/server/sessionCookie.ts` and its test).
 - **36. The operations doc did not say that `backup` needs Linux** (Seasonal Cases, 2026-11-25).
   Closed in v0.27.0 (OPERATIONS.md).
+- **37. ADOPTION.md said Cases had no outward fetch** (2026-11-25). Closed in v0.27.0.

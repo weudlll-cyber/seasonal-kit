@@ -365,3 +365,12 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   Bingo Royale's nearest-rank percentiles (Mini Games' rounded one rank up) and its metrics sampler
   with Mini Games' summary, the metric prefix a parameter. Scenarios, targets and sign-in stay in
   each game.
+- **K74 — The kit ships a stand-in of the website for the games' browser tests** (decided
+  2026-11-25 on [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 8, built
+  2026-11-26, v0.26.0). `startWebsiteStandIn` in the testing entry is one local server that is the
+  website and its proxy as the website's contract (master `cc743b9`) describes them: the authorize
+  route, the proxy's sign-in rules (WebSockets too), the login hop, the season feed, the open-rounds
+  check, step icons and the chat and call frames' messages. Contract tests judge it with the kit's
+  own server and client checks. Where the website's document and code differ, the code decides (an
+  open round's `kind` may be empty; the authorize route's origin rule is taken in its strict form).
+  Databases, ports and nginx containers stay in the games; the account-changes feed is not in it.

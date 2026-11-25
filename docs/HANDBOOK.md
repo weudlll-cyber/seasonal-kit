@@ -213,6 +213,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); the
   rules and keys stay in the game.
 - **Rate limiter:** `RateLimiter` with the game's own rules, for the routes other than sign-in.
+- **Website stand-in:** `startWebsiteStandIn` of the testing entry for the browser tests of sign-in,
+  chat and call in website mode (K74); no game writes its own half of the website's contract.
 - **Load checks:** `latencies`, `inBatches` and `watchServer` of the testing entry (K73); the scenarios
   and targets stay in the game.
 - **Route file:** `ops/lib/website-route.sh` writes a website install's route file for nginx or Caddy

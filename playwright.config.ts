@@ -10,7 +10,8 @@
  *                 sheet inside the visible height, v0.17.0) and showcase/steps.spec.ts (the
  *                 header's step badges, v0.19.0) and showcase/cases.spec.ts (what Seasonal Cases measured: the
  *                 header's fold and brand, the folded chip and the game bar on phones, v0.22.0) and showcase/testing.spec.ts (the testing
- *                 entry proved on the kit's own screens, v0.23.0). ./showcase/global-setup.ts deletes the
+ *                 entry proved on the kit's own screens, v0.23.0) and showcase/standin.spec.ts (the website's
+ *                 stand-in in a browser, v0.26.0). ./showcase/global-setup.ts deletes the
  *                 previous run's screens first, so they never pile up (DECISIONS K16); the
  *                 folder is git-ignored and never committed. CI runs it on every PR (job
  *                 `showcase`) and keeps no screens.

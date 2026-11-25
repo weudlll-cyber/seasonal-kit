@@ -3,7 +3,7 @@
  * @brief  The `@seasonal/kit/testing` entry: what a game's own Vitest and Playwright suites use.
  *
  * Responsibility: name the test tools: the sizes, the theme switch, the screenshots of a look,
- *                 the probe and the sweep, the load check's measuring helpers, and the static guards for colours, token contrast and text size. Test code only:
+ *                 the probe and the sweep, the load check's measuring helpers, the website's stand-in, and the static guards for colours, token contrast and text size. Test code only:
  *                 no other entry of the kit imports it, so it never reaches a game's bundle
  *                 (tests/package.test.ts), and it imports nothing at run time but Node's own
  *                 modules (Playwright is a type here, and an optional peer for that).
@@ -30,4 +30,7 @@ export {
   type Theme,
 } from './screens.js';
 export { probe, type Probe } from './probe.js';
+export type { OpenRoundsRead, StandInMember } from './standInContract.js';
+export type { StandInGame } from './standInProxy.js';
+export { startWebsiteStandIn, type StandInOptions, type WebsiteStandIn } from './websiteStandIn.js';
 export { axeFinder, sweep, type AxeFinder, type SweepOptions, type SweepScreen } from './sweep.js';

@@ -191,6 +191,10 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Backup split and route file** (K71, K72): nothing to do for the split (it calls `ops/backup.sh`); `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
 - **Load helpers** (K73): `load/measure.mjs`'s `spread` and `metricsSampler` become `latencies` and `watchServer({ prefix: 'smg_' })`; its percentiles move one rank down (nearest rank). Only on the owner's word.
 
+### Since v0.26.0
+
+- **Website stand-in** (K74): the contract half of `e2e/websiteStub.ts` (authorize, identity, login, chat page) becomes `startWebsiteStandIn`; its nginx stack with the game's real route file, the database and the account-changes feed stay. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -339,6 +343,10 @@ reachable on every phone.
 - **Backup split and route file** (K71, K72): its `write_nginx_route` / `write_caddy_route` and `apply_route_file` become `sk_route_install` with `SK_ROUTE_SECRET_HEADER=X-Sbr-Proxy-Secret`; its final checks stay. Only on the owner's word.
 - **Load helpers** (K73): `load/common.mjs`'s percentiles, `inBatches` and `watchServer` become the kit's with `prefix: 'sbr_'`; the CPU is reported in cores, not percent. Only on the owner's word.
 
+### Since v0.26.0
+
+- **Website stand-in** (K74): the stand-in proxy of `e2e/websiteStack.ts` becomes `startWebsiteStandIn` (its `stub_user` cookie becomes `se.sid` from `sessionCookie`); the database per worker and `expireSessions` stay. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -421,6 +429,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Backup split and route file** (K71, K72): its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
 - **Load helpers** (K73): none today; its first load check starts from `latencies` and `watchServer`. Only on the owner's word.
+
+### Since v0.26.0
+
+- **Website stand-in** (K74): `e2e/websiteStub.ts`'s contract half becomes `startWebsiteStandIn`; its Vite middleware serves the client as the stand-in's app. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

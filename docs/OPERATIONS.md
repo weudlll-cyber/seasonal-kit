@@ -3,8 +3,13 @@
 How a game wires the kit's `ops/backup.sh` (since v0.21.0, DECISIONS K61). The script is shipped in
 the package (`node_modules/@seasonal/kit/ops/backup.sh`), changes nothing on install, and runs only
 when the game's server runs it. Since v0.25.0 its functions are in `ops/lib/` beside it (K71), so a
-game calls the script from the package and never copies it alone. It is Bingo Royale's rehearsed backup, made to take its settings
+game calls the script from the package, or copies the kit's whole `ops/` folder, keeping its
+layout. It is Bingo Royale's rehearsed backup, made to take its settings
 from variables, with Mini Games' restore drill; what stays in a game is listed at the end.
+
+**Copying it elsewhere** (out of an image to the server, say): copy the kit's whole `ops/` folder,
+keeping its layout. `ops/backup.sh` loads `ops/lib/backup-core.sh` and `ops/lib/backup-restore.sh`
+from beside itself, so a copy of `backup.sh` alone fails.
 
 ## What a backup is
 

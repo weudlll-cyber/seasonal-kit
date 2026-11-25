@@ -188,7 +188,7 @@ Each step pins the newest tag; a step never mixes two tags.
 
 ### Since v0.25.0
 
-- **Backup split and route file** (K71, K72): nothing to do for the split (it calls `ops/backup.sh`); `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
+- **Backup split and route file** (K71, K72): its copy at `$SMG_ROOT/kit/backup.sh` (`ops/lib/backup.sh` line 21) becomes a copy of the kit's whole `ops/` folder, keeping the layout, since `ops/backup.sh` loads `ops/lib/` from beside itself; `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
 - **Load helpers** (K73): `load/measure.mjs`'s `spread` and `metricsSampler` become `latencies` and `watchServer({ prefix: 'smg_' })`; its percentiles move one rank down (nearest rank). Only on the owner's word.
 
 ### Since v0.26.0
@@ -435,7 +435,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 ### Since v0.25.0
 
-- **Backup split and route file** (K71, K72): its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
+- **Backup split and route file** (K71, K72): its Docker installer (branch `kit/v0.17-adoption`) copies `ops/backup.sh` alone out of the image (`deploy/lib/backup.sh`); it copies the kit's whole `ops/` folder instead, keeping the layout, or the script fails. Its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
 - **Load helpers** (K73): none today; its first load check starts from `latencies` and `watchServer`. Only on the owner's word.
 
 ### Since v0.26.0

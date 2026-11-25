@@ -177,3 +177,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   longer accepts the finding).
 - **47. The account chip showed "Signed in asOlga" above 1440 px** (Seasonal Cases, 2026-11-25).
   Closed in v0.28.0 (`AppHeader`, `showcase/steps.spec.ts`).
+- **48. The docs let an installer copy `ops/backup.sh` alone** (Seasonal Cases, 2026-11-25): it
+  loads `ops/lib/`. Closed in v0.28.0 (OPERATIONS.md, ADOPTION.md).

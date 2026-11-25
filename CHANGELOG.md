@@ -39,6 +39,9 @@ applies it.
 - **Bingo Royale and Mini Games:** their installers call `sk_operator_email` in place of their own
   `--email` handling (the flag keeps working). **Seasonal Cases:** uses it in its Docker installer
   when it moves. **Website:** may read the same file in its installer (its own decision).
+- **Mini Games and Seasonal Cases, backup:** an installer that copies `ops/backup.sh` out of the
+  package copies the kit's whole `ops/` folder, keeping the layout (OPERATIONS.md); since v0.25.0
+  the script alone fails.
 
 ## [0.27.0] - 2026-11-26
 

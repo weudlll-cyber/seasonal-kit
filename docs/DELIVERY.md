@@ -504,6 +504,36 @@ build wrote:
 
 Both consumers were deleted afterwards.
 
+## The v0.21.0 server parts and the shipped backup script, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.21.0` (merge commit `f8ae818`), both with `ignore-scripts=true`
+(React 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5, `@types/node` 22.20.5), ran `tsc` and five
+tests on the installed package:
+
+- it is `0.21.0`, `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` are in it and `ops/test/`
+  is not;
+- **`ops/backup.sh` is sourced from the installed package** (`SK_BACKUP_SOURCE_ONLY=1 source … && usage`)
+  and prints its help text (`backup`, `restore`, `drill`); run as a script, `help` prints "Usage:
+  ops/backup.sh";
+- `guardedFetch()` refuses `http://` and an IPv4-mapped loopback written `[::ffff:7f00:1]`, and
+  `isPublicAddress` judges `::ffff:10.0.0.1` private;
+- `sessionCookie` gives `__Host-x_session` and a `Max-Age` of 604800 for 7 days; `writeCheck` refuses a
+  write naming neither `Origin` nor `Sec-Fetch-Site`; `securityHeaderSet` has `script-src 'self'` and no
+  HSTS; `readiness` answers 200 and `HEALTH_PATHS.ready` is `/readyz`.
+
+| Consumer     | Install                                                                                            | `tsc`  | Tests    |
+| ------------ | -------------------------------------------------------------------------------------------------- | ------ | -------- |
+| pnpm 12.14.0 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/f8ae818…`). | Worked | 5 passed |
+| npm 11.19.0  | Worked. `npm ls` shows the kit `0.21.0` at `…seasonal-kit.git#f8ae818…`.                           | Worked | 5 passed |
+
+CI on the merge commit `f8ae818`: `CI` and `CodeQL` passed. The backup script's behaviour on a real
+PostgreSQL is proved by CI's `ops` job (and on the pull request), not by this proof, which shows only
+that the installed file is whole and runs. The first run of the consumer's tests failed on its own
+mistakes (it resolved `package.json`, which `exports` does not name, and matched a help text the
+script does not print); the consumer was corrected, not the package. The two scratch folders were
+left in the session's scratch directory, outside every repository: deleting them was refused by the
+session's permission mode.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

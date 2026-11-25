@@ -208,6 +208,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **The admin command** (K87): its command moves onto `ops/lib/admin.sh` (CHANGELOG, "Migration, per game"); rehearse update, rollback and uninstall on a test machine. Only on the owner's word.
 
+### Since v0.30.0
+
+- **Host baseline** (K88): the installer calls `sk_host_baseline` with its mode; rehearse on a test server, SSH on its own port included. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -373,6 +377,10 @@ reachable on every phone.
 
 - **The admin command** (K87): its command moves onto `ops/lib/admin.sh` (CHANGELOG, "Migration, per game"); rehearse update, rollback and uninstall on a test machine. Only on the owner's word.
 
+### Since v0.30.0
+
+- **Host baseline** (K88): the installer calls `sk_host_baseline` with its mode; rehearse on a test server, SSH on its own port included. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -472,6 +480,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.29.0
 
 - **The admin command** (K87): its command moves onto `ops/lib/admin.sh` (CHANGELOG, "Migration, per game"); rehearse update, rollback and uninstall on a test machine. Only on the owner's word.
+
+### Since v0.30.0
+
+- **Host baseline** (K88): the installer calls `sk_host_baseline` with its mode; rehearse on a test server, SSH on its own port included. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

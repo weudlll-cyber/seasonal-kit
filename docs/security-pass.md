@@ -63,6 +63,20 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.30.0 (branch `feat/ops-host-baseline`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+**Read by the session that wrote it** (it changes a server): SSH ports come from `sshd -T`, never
+assumed, and are allowed before the firewall is on; the SSH configuration is only read; nothing is
+removed or upgraded. Proven with stand-ins only: a rehearsal on a real Ubuntu 24.04 server is each
+game's adoption.
+
 ### 2026-11-26 — before v0.29.0 (branch `feat/ops-admin`, PR #76)
 
 | Scan                         | Tool and command                                           | Result                                     |

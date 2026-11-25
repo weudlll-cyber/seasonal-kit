@@ -28,6 +28,7 @@ const SHIPPED = [
   'ops/lib/admin.sh',
   'ops/lib/admin-update.sh',
   'ops/lib/admin-uninstall.sh',
+  'ops/lib/host-baseline.sh',
   'ops/pull-backups.sh',
   'ops/pull-backups.ps1',
 ];

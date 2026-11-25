@@ -32,6 +32,7 @@ import {
   type Panels,
 } from '../src/react/index.js';
 import { Headers } from './Headers.js';
+import { StepLists } from './StepLists.js';
 
 // Four parts, one with a longer name: the strip's worst case at 320 px (it wraps, DECISIONS K29).
 const PARTS = [
@@ -235,6 +236,7 @@ export function Showcase(p: { readonly result: boolean }): ReactElement {
       </header>
       <main>
         <Headers />
+        <StepLists />
         <Bar />
         <Docked result={p.result} />
         <section aria-labelledby="result-title" className="showcase-section">

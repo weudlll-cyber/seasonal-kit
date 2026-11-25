@@ -14,6 +14,8 @@
  * Source:         new in the kit (the entry point).
  */
 export { applyTheme, onShownThemeChange, onSystemThemeChange, resolveTheme, shownTheme, storedTheme, storeTheme, systemTheme, type Theme, } from './theme.js';
+export { ApiError, basePathOf, createApiClient, type Api, type ApiCall, type ApiClientOptions, } from './apiClient.js';
+export { clockOffset, type ClockSample } from './serverClock.js';
 export { signInAgain, signInAgainAfter, websiteLoginHref, websiteSignInHref, } from './websiteSignIn.js';
 export { chatEmbedUrl, connectChat, type ChatLinkOptions, type EmbedTheme, type FromChat, type ToChat, } from './chatEmbed.js';
 export { chatBarText, createChatArrivals, type ChatArrival, type ChatArrivals, type ChatArrivalsState, } from './chatArrivals.js';

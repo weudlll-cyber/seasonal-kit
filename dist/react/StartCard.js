@@ -13,18 +13,28 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                 whose rounds show no season passes `season` null: no tint, no icon. The words
  *                 and icons are the game's; the frame holds only their places. A game whose web
  *                 fonts load late passes `fit={{ afterFonts: true }}` (v0.16.0) to fit again
- *                 once they have loaded.
+ *                 once they have loaded. With `opensAt` (v0.24.0) the card counts down itself on the
+ *                 server's clock (./useCountdown).
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
  *                 ./useFitScale.
  * Spec:           Mini Games DECISIONS O36, O93, O111; kit DECISIONS K14
  */
 import { useId } from 'react';
+import { useCountdown } from './useCountdown.js';
 import { useFitScale } from './useFitScale.js';
+// The countdown line: the game's seconds, or counted here to `opensAt`; nothing without either.
+function Countdown(p) {
+    const counted = useCountdown(p.opensAt?.at ?? null, p.opensAt?.offsetMs ?? null);
+    const seconds = p.opensAt === undefined ? p.opensIn : (counted ?? undefined);
+    if (seconds === undefined)
+        return null;
+    return (_jsxs("p", { className: "sk-start-count", role: "timer", "aria-live": "off", "data-testid": "countdown", children: ["Opens in ", _jsx("strong", { children: Math.max(0, Math.ceil(seconds)) }), " s"] }));
+}
 export function StartCard(p) {
     const headingId = useId();
     // `self` stays false as before; only the game's options are added (T404, T423).
     const fit = useFitScale(p.game, p.signature, false, p.fit);
     const facts = p.facts ?? [];
-    return (_jsxs("section", { ref: fit, className: "sk-start-card", "data-sk-season": p.season ?? undefined, "aria-labelledby": headingId, "data-testid": "start-card", children: [_jsxs("header", { className: "sk-start-head", children: [p.season === null || p.icon === undefined ? null : (_jsx("span", { className: "sk-start-icon", "aria-hidden": "true", children: p.icon })), _jsx("h1", { id: headingId, children: p.title }), p.badge] }), p.special === undefined ? null : _jsx("div", { className: "sk-start-special", children: p.special }), facts.length === 0 ? null : (_jsx("ul", { className: "sk-start-facts", children: facts.map((fact, i) => (_jsx("li", { children: fact }, String(i)))) })), p.opensIn === undefined ? null : (_jsxs("p", { className: "sk-start-count", role: "timer", "aria-live": "off", "data-testid": "countdown", children: ["Opens in ", _jsx("strong", { children: Math.max(0, Math.ceil(p.opensIn)) }), " s"] }))] }));
+    return (_jsxs("section", { ref: fit, className: "sk-start-card", "data-sk-season": p.season ?? undefined, "aria-labelledby": headingId, "data-testid": "start-card", children: [_jsxs("header", { className: "sk-start-head", children: [p.season === null || p.icon === undefined ? null : (_jsx("span", { className: "sk-start-icon", "aria-hidden": "true", children: p.icon })), _jsx("h1", { id: headingId, children: p.title }), p.badge] }), p.special === undefined ? null : _jsx("div", { className: "sk-start-special", children: p.special }), facts.length === 0 ? null : (_jsx("ul", { className: "sk-start-facts", children: facts.map((fact, i) => (_jsx("li", { children: fact }, String(i)))) })), _jsx(Countdown, { opensIn: p.opensIn, opensAt: p.opensAt })] }));
 }

@@ -25,6 +25,9 @@
  *                 account, chip prefix) and menu.css at a43209a
  */
 
+/* The account chip's step badges, shared with every list of names (since v0.24.0). */
+@import './steps.css';
+
 .sk-header {
   position: relative;
   z-index: 10;
@@ -149,26 +152,9 @@
   white-space: nowrap;
 }
 
-/* The member's step badges (since v0.19.0): up to three small icons after the name, inside the
-   chip, so the folded menu shows them beside the name too. The kit has no floor for decorative
-   images, and these are named, informational ones, so the size is chosen here: 1.25rem (20 px at
-   the default size, growing with the player's font), well inside the chip's 44 px height. */
+/* The step badges' size in the chip (./steps.css); a game may set its own here. */
 .sk-header-chip {
   --sk-step-icon: 1.25rem;
-}
-
-.sk-header-steps {
-  display: inline-flex;
-  align-items: center;
-  gap: calc(var(--sk-space-1) / 2);
-  margin-inline-start: var(--sk-space-1);
-}
-
-.sk-header-step {
-  flex: none;
-  width: var(--sk-step-icon);
-  height: var(--sk-step-icon);
-  object-fit: contain;
 }
 
 .sk-header-chip:hover {

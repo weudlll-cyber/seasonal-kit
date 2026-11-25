@@ -11,7 +11,8 @@
  *                 inside the folded menu's own panel. Where the header folds (the phone), the
  *                 icons are measured in the opened menu, beside the name. The one-row rule for
  *                 every header is layout.spec.ts's; axe over these headers in both themes is
- *                 showcase.spec.ts's.
+ *                 showcase.spec.ts's. A name in a board's row and in a lower third shows the same
+ *                 20 px badges (v0.24.0, K68).
  * Depends on:     @playwright/test
  * Source:         new in the kit.
  */
@@ -93,4 +94,23 @@ for (const theme of ['light', 'dark']) {
       if (seen.menuRight !== null) expect(seen.chipRight).toBeLessThanOrEqual(seen.menuRight);
     });
   }
+}
+
+// Away from the header (K68): a board's row and a lower third show the same badges.
+for (const width of [1280, 360]) {
+  test(`a name in a list shows the same badges at ${String(width)} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto('/?theme=light');
+    for (const place of ['step-board', 'step-lower-third']) {
+      const badges = page.getByTestId(place).getByRole('img');
+      await expect(badges.first()).toBeVisible();
+      for (const image of await badges.all()) {
+        const box = await image.boundingBox();
+        expect(box?.width, place).toBeCloseTo(ICON_PX, 0);
+        expect(box?.height, place).toBeCloseTo(ICON_PX, 0);
+        expect((box?.x ?? width) + (box?.width ?? 0)).toBeLessThanOrEqual(width);
+      }
+    }
+    await expect(page.getByTestId('step-board').getByTestId('steps')).toHaveCount(1);
+  });
 }

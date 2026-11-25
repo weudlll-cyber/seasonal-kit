@@ -328,3 +328,23 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   cuts a part. The game passes its own axe (`axeFinder(AxeBuilder)`, or `false` by name), so the kit
   depends on nothing new. A screen may name findings it accepts (`allow`). Bingo's text floor, card
   cells and overlap check, and Mini Games' pixel contrast, stay in the games.
+- **K68 — Steps beside a name: one look in every game, the header's** (decided 2026-11-25 on
+  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 4, built 2026-11-26,
+  v0.24.0). `StepBadges` (`@seasonal/kit/react`, `steps.css`) is the account chip's badges as a
+  component for boards, player lists and lower thirds: the kit's `Step` shape, only an icon
+  `isStepIcon` accepts, at most three, 1.25rem, named by the step. A step without a drawable icon is
+  left out, as in the header, although Mini Games writes its name as text today.
+- **K69 — A countdown runs on the server's clock** (decided 2026-11-25 on section 5, built
+  2026-11-26, v0.24.0). `clockOffset` (main entry) measures the visitor's offset from answers that
+  carry the server's time, the shortest round trip winning, and is null without a usable one;
+  `useCountdown(at, offsetMs)` (React) counts the seconds to a server time and shows nothing until
+  both are known, so a visitor's wrong clock is never trusted; `StartCard` takes `opensAt` (opt-in),
+  `opensIn` unchanged. How a server time is asked for stays in each game (Mini Games' `time.sync`).
+- **K70 — The client's API calls have one error shape** (decided 2026-11-25 on sections 6 and 7,
+  built 2026-11-26, v0.24.0). The shape is Bingo Royale's and Mini Games', two of the three games:
+  `ApiError(status, code, reason, body)`, with `ERROR` when the server names no code and status 0,
+  `NO_ANSWER`, when there is no answer (Mini Games' hook already did that; Bingo's client let the
+  fetch's own error through). Seasonal Cases' server answers a sentence in `error` instead of a code,
+  so it maps at adoption; the kit does not carry its shape. `createApiClient` sends the CSRF token on
+  writes and gives `onAnswer` every answer, so a game keeps its own rule for a lost session.
+  `useApiGet` gives idle, loading, ready or failed with the whole error, tied to its path.

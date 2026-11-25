@@ -431,3 +431,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   fail2ban SSH jail, only adding. It never changes the SSH configuration, only reports it, because a
   wrong change locks the owner out. In website mode it does nothing: the website's installer owns
   the host.
+- **K89 — Every game's containers are hardened alike** (2026-11-26). App and database run with a
+  read-only root, `no-new-privileges` and all capabilities dropped; the database adds back only
+  CHOWN, DAC_OVERRIDE, SETGID and SETUID, measured on `postgres:17-alpine`. A game's own test holds
+  its Compose file to it with `findWeakContainers`; the kit adds no CI guard.

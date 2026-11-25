@@ -259,3 +259,43 @@ through Docker bypass ufw, so a game publishes its app on loopback only.
 | ------------------ | ---------- | ----------------------------------------------- |
 | `SK_HOST_APT_CONF` | optional   | Default `/etc/apt/apt.conf.d` (for the tests).  |
 | `SK_HOST_JAIL_DIR` | optional   | Default `/etc/fail2ban/jail.d` (for the tests). |
+
+## Container hardening
+
+Every game's app and database containers carry these settings (K89). The app's are Bingo Royale's
+and Mini Games'; the database's capabilities were measured on `postgres:17-alpine` (first start and
+restart with everything else dropped, 2026-11-26): without any one of the four it does not start.
+
+```yaml
+services:
+  app: # and every service that runs the game's code, such as a migration
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ['no-new-privileges:true']
+    cap_drop: [ALL]
+  postgres:
+    read_only: true
+    tmpfs: [/tmp, /var/run/postgresql]
+    security_opt: ['no-new-privileges:true']
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, SETGID, SETUID]
+    volumes: ['pgdata:/var/lib/postgresql/data']
+```
+
+A game holds its file to this with a test of its own:
+
+```ts
+import { execFileSync } from 'node:child_process';
+import { findWeakContainers } from '@seasonal/kit/testing';
+
+const compose = JSON.parse(
+  execFileSync('docker', ['compose', '-f', 'ops/compose.yml', 'config', '--format', 'json'], {
+    encoding: 'utf8',
+  }),
+) as unknown;
+expect(findWeakContainers(compose, { services: { app: 'app', postgres: 'database' } })).toEqual([]);
+```
+
+Every service of the file is named: `app`, `database` or `{ unchecked: 'why' }`. A capability a
+service is shown to need beyond its role's goes into `capabilities`, with the reason in a comment.
+A parsed YAML file works in place of `docker compose config`.

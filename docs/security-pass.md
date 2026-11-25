@@ -63,6 +63,19 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.31.0 (branch `feat/ops-hardening`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+Test code only: it reads an object and runs nothing. The database's capabilities were measured in
+throw-away containers (a fresh volume: first start and restart); an upgrade over existing data was
+not measured.
+
 ### 2026-11-26 — before v0.30.0 (branch `feat/ops-host-baseline`)
 
 | Scan                         | Tool and command                                           | Result                                     |

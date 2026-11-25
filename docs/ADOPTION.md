@@ -175,6 +175,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **Game bar** (K65): its focus bar's facts wrap on a phone instead of ending in "…" and the bar has padding of its own from the gutter tokens: the look of the bar changes on adoption, so check its round screen at 360 px. Any padding of its own on the bar goes (`round/focus.css`). Only on the owner's word.
 
+### Since v0.23.0
+
+- **Test tools** (K66): `e2e/screens.ts` is replaced by `setTheme`, `captureLook` and the sizes of `@seasonal/kit/testing` (its focus-mode fallback is in the kit's); `noFixedColours.test.ts` and `designTokens.test.ts` become calls of `findFixedColours` and `findLowContrast` with its own pairs. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -307,6 +311,10 @@ reachable on every phone.
 
 - **Header and start card** (K65): the folded brand keeps its longest word and the back link's words wrap on a phone; `StartCard` takes `opensIn` as before. Nothing to change; Bingo has no game bar. Only on the owner's word.
 
+### Since v0.23.0
+
+- **Test tools** (K66): `e2e/screens.ts` is replaced by the kit's; `noFixedColours.test.ts`, `minTextSize.test.ts` (its card-number and podium rules stay) and `designTokens.test.ts` call the kit's guards with its own folders and pairs. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -373,6 +381,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.22.0
 
 - **Four patches deleted** (K65): `shell.css` 195 (the brand rule: the kit's own now, with `flex-basis` 0 instead of auto, so the toggle keeps the Menu's row at 360 and 375 px) and 204 (the chip wrap: the kit has had it since v0.19.1), `moments.css` 27-56 (the bar's padding, the narrow-phone padding and the wrapped facts) and `screens.css` 41 (hides the start card's countdown: leave `opensIn` out instead). The bar looks as its stand-in did, with the buttons on a row of their own when the fact and the buttons do not share one. Only on the owner's word.
+
+### Since v0.23.0
+
+- **Test tools** (K66): it gains the guards it lacks (`findFixedColours`, `findSmallText`, `findLowContrast` over its client) and uses `setTheme` in `e2e/screens.spec.ts`. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

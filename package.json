@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -31,6 +31,10 @@
       "types": "./dist/devtools/index.d.ts",
       "default": "./dist/devtools/index.js"
     },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    },
     "./vite": {
       "types": "./dist/vite.d.ts",
       "default": "./dist/vite.js"
@@ -50,10 +54,14 @@
     "**/*.css"
   ],
   "peerDependencies": {
+    "@playwright/test": "^1.64.1",
     "react": "^19.3.1",
     "vite": "^8.3.4"
   },
   "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },

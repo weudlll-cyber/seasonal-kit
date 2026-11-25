@@ -218,6 +218,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   game wires them and keeps its own compose files and key checks.
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.
 - **Season feed:** `seasonFeedReader` with `guardedFetch({ allowedHosts })` or the game's own (K62).
+- **Test tools** (K66): `@seasonal/kit/testing`, for a game's own suites only: `setTheme`,
+  `captureLook`, the sizes, and the guards `findFixedColours`, `findSmallText` and `findLowContrast`.
 - **Phone layouts** (K65): the folded header's brand keeps its longest word, the back link's words wrap,
   the game bar's facts wrap and its buttons keep a row, with the gutter tokens' padding;
   `StartCard` without `opensIn` has no countdown. Measured in `showcase/cases.spec.ts`.

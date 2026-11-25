@@ -313,3 +313,10 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
      400 px and under). Every game's bar changes look when it adopts.
   5. **`StartCard`'s `opensIn` is optional**: without it no countdown, as Cases needs (its shows
      have no start time); with it, as before (0 is a time).
+- **K66 — The kit ships test tools in their own entry** (decided 2026-11-25 on
+  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) sections 1 to 3, built
+  2026-11-26, v0.23.0). `@seasonal/kit/testing` is for a game's own Vitest and Playwright suites:
+  sizes, the theme switch, screenshots of a look, and static guards (fixed colours, token contrast,
+  text size). No other entry imports it, so it never reaches a game's bundle; it imports nothing at
+  run time but Node's own modules. `@playwright/test` is an optional peer (`^1.64.1`, the oldest a
+  game pins), used for types only (K37).

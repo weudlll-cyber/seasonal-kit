@@ -143,3 +143,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   comparison's parts are built and released: v0.23.0 (PR #61), v0.24.0 (PR #63), v0.25.0 (PR #65)
   and v0.26.0 (PR #67). The shared call slot (draft PR #68) and the base components (draft PR #70)
   wait for review; what was only compared is item 29.
+- **31. The header fold depended on history** (Seasonal Cases on v0.22.0, 2026-11-25, K79): folded
+  after a fresh load at 1536 px, unfolded after a resize to it. Closed in v0.27.0
+  (`src/react/useHeaderFold.ts`, `headerFold.test.tsx`, `showcase/cases.spec.ts`).

@@ -186,7 +186,8 @@ The exports are in the [README](../README.md); what each replaces per game is in
 Each part is held by its own tests in `src/` and `tests/` and by the showcase (CI `showcase`).
 
 - **Header:** `AppHeader` with `BackLink` in website mode; folds into its Menu whenever its items
-  do not fit, or always under `foldBelow` px (K40, `header.css`). The theme toggle is always
+  do not fit (the same answer at a width however the page got there, K79), or always under
+  `foldBelow` px (K40, `header.css`). The theme toggle is always
   last in the row; there is no configurable order (K43). `account.steps` draws the member's
   website step badges as small icons in the chip, only for the website's own icon addresses
   (K56).

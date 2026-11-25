@@ -7,6 +7,12 @@ applies it.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The header's fold no longer depends on how the page got there** (K79). A header folded once
+  stayed folded until the window grew past that width. Now it is measured again on a new window
+  width, a change of its own size and loaded web fonts, always from the unfolded layout.
+
 ## [0.26.0] - 2026-11-26
 
 The website's stand-in for the games' browser tests (DECISIONS K74). Opt-in, test code only.

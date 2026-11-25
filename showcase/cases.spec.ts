@@ -8,6 +8,8 @@
  *                 - the header folds only where Cases' bar (back link, brand, six links, a member
  *                   with three steps) does not fit one row: forced open it takes two rows at 1280
  *                   and 1536 px and one at 1920 px; Cases' own brand rule changes no box there;
+ *                 - at one width every header folds alike, loaded there or resized to it
+ *                   (v0.27.0);
  *                 - the folded brand never lies under the Menu button, at any phone width and at
  *                   200 %: when the brand and the controls do not share a row, the controls take
  *                   a row of their own below it; the header ends inside the window;
@@ -40,6 +42,8 @@ async function open(page: Page, { width, height, theme, font = 16 }: Setting) {
   await page.setViewportSize({ width, height });
   await page.goto(`/?theme=${theme}`);
   await page.addStyleTag({ content: `html { font-size: ${String(font)}px; }` });
+  // Boxes measured while a web font is still on its way would move under the test.
+  await page.evaluate(() => document.fonts.ready);
 }
 
 const casesHeader = (page: Page) => page.getByTestId('cases-header').getByTestId('app-header');
@@ -90,6 +94,28 @@ for (const theme of THEMES) {
       expect(await brandBoxes(page)).toEqual(without);
     });
   }
+}
+
+// The same width gives the same answer however the page got there (v0.27.0): every header of
+// the page, loaded fresh, and loaded wide or narrow and then resized.
+for (const [width, height] of [
+  [1920, 1080],
+  [1536, 768],
+  [390, 844],
+] as const) {
+  test(`the fold does not depend on the way to ${String(width)} px`, async ({ page }) => {
+    const folds = () =>
+      page
+        .getByTestId('app-header')
+        .evaluateAll((all) => all.map((h) => h.getAttribute('data-sk-folded')));
+    await open(page, { width, height, theme: 'light' });
+    const fresh = await folds();
+    for (const from of [2400, 360]) {
+      await open(page, { width: from, height, theme: 'light' });
+      await page.setViewportSize({ width, height });
+      await expect.poll(folds).toEqual(fresh);
+    }
+  });
 }
 
 // The brand, the Menu button and the toggle, as the folded header lays them out.

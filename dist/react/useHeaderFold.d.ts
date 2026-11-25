@@ -5,11 +5,16 @@
  *
  * Responsibility: the header takes one row at every width (Bingo R1; "the top bar never takes
  *                 two rows"). Unfolded, its items show in the bar; when they would take a second
- *                 row (an item starts below another's bottom) it folds before the browser paints
- *                 and remembers the width it folded at. It tries one row again when the window
- *                 grows past that width and whenever its items change (a new route, another
- *                 sign-in, `items`), and checks again when the window or the header changes size
- *                 (a larger font). The header carries the answer as `data-sk-folded`
+ *                 row (an item starts below another's bottom) it folds before the browser paints.
+ *                 The answer depends only on the width and the items, never on how the page got
+ *                 there (since v0.27.0): every decision measures the unfolded layout, also of a
+ *                 folded header, and nothing is remembered from an earlier one. An unfolded
+ *                 header is measured on every render; a folded one again when its items or
+ *                 `foldBelow` change, when the window's width or the header's own size changes
+ *                 (not through the fold itself: the size is noted after each decision, so one
+ *                 change is one retry and nothing loops), and when web fonts have loaded
+ *                 (`document.fonts` `ready` and `loadingdone`), since text set in a late font
+ *                 changes its width. The header carries the answer as `data-sk-folded`
  *                 (../../css/header.css). No fixed width: what fits is measured, so a short bar
  *                 stays unfolded on a tablet and a long one (an admin's, the back link in website
  *                 mode) folds at 1280 px. A render never reads the window: the first one is
@@ -18,7 +23,8 @@
  *                 window width the header is always folded, on top of the measure; from it up
  *                 the measure decides. Without it nothing changes.
  * Source:         seasonal-bingo-royale apps/web/src/shell/useBarFold.ts at 5c613c0 (its
- *                 `wraps`, the fold before paint, `foldedAt`), without its fixed 960 px.
+ *                 `wraps`, the fold before paint), without its fixed 960 px; the fonts as
+ *                 ../fit.ts watches them.
  */
 import { type RefObject } from 'react';
 export declare function useHeaderFold(inside: RefObject<HTMLElement | null>, items: string, foldBelow?: number): boolean;

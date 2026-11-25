@@ -365,3 +365,21 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   Bingo Royale's nearest-rank percentiles (Mini Games' rounded one rank up) and its metrics sampler
   with Mini Games' summary, the metric prefix a parameter. Scenarios, targets and sign-in stay in
   each game.
+- **K74 — The kit ships a stand-in of the website for the games' browser tests** (decided
+  2026-11-25 on [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 8, built
+  2026-11-26, v0.26.0). `startWebsiteStandIn` in the testing entry is one local server that is the
+  website and its proxy as the website's contract (master `cc743b9`) describes them: the authorize
+  route, the proxy's sign-in rules (WebSockets too), the login hop, the season feed, the open-rounds
+  check, step icons and the chat and call frames' messages. Contract tests judge it with the kit's
+  own server and client checks. Where the website's document and code differ, the code decides (an
+  open round's `kind` may be empty; the authorize route's origin rule is taken in its strict form).
+  Databases, ports and nginx containers stay in the games; the account-changes feed is not in it.
+- **K75 — A database URL's password goes to the clients through their environment** (decided
+  2026-11-25, v0.26.0). `ops/backup.sh` takes a game's `DATABASE_URL` as `SK_BACKUP_DB_URL`, splits it
+  into the address and the percent-decoded password, passes the password as `PGPASSWORD` and never on
+  a command line; a `password=` in the query is refused.
+- **K76 — Every Seasonal game runs in Docker on the server** (decided 2026-11-25), as the website,
+  Bingo Royale and Mini Games do; Seasonal Cases moves to Docker before production. So the kit's
+  backup stays as it is for the server side: the units `print-units` writes keep requiring
+  `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
+  paths. Cases moves to Docker first, then takes the kit's backup unchanged.

@@ -80,6 +80,7 @@ restore_secrets() {
 # ends the input without COMMIT, and pipefail returns the failure.
 restore_database() {
   local target=()
+  split_db_url
   mapfile -t target < <(pg_target)
   [[ -z ${SK_BACKUP_DB_SCHEMA:-} || ${SK_BACKUP_DB_SCHEMA} =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] ||
     die "SK_BACKUP_DB_SCHEMA is not a plain schema name"

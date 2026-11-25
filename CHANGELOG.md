@@ -7,6 +7,29 @@ applies it.
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-11-26
+
+The website's stand-in for the games' browser tests (DECISIONS K74). Opt-in, test code only.
+
+### Changed
+
+- **`ops/backup.sh` takes a database URL with its password** (K75): `SK_BACKUP_DB_URL` is split into
+  the address and the percent-decoded password, passed as `PGPASSWORD`, never on a command line; a
+  `password=` in the query is refused. A URL without a password works as before.
+
+### Added
+
+- **`startWebsiteStandIn`** in `@seasonal/kit/testing`: one local server that answers as the website
+  and its proxy for a game: sign-in through the proxy with the identity headers and the game's secret,
+  `/login`, the season feed, the game's open rounds as the website reads them, step icons, and the
+  chat and call frames that speak the website's messages. From the website stand-ins of Mini Games,
+  Seasonal Cases and Bingo Royale.
+
+### Migration, per game
+
+- **All three games:** nothing is required; see [docs/ADOPTION.md](docs/ADOPTION.md) "Since v0.26.0".
+- **Seasonal Cases:** moves to Docker before production, then takes the kit's backup unchanged (K76).
+
 ## [0.25.0] - 2026-11-26
 
 Operations parts (DECISIONS K71 onwards). Opt-in; nothing runs unless a game runs it.
@@ -1384,7 +1407,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...HEAD
+[0.26.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.22.0...v0.23.0

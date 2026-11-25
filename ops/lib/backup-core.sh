@@ -44,15 +44,46 @@ pg() {
   if [[ -n ${SK_BACKUP_DB_CONTAINER:-} ]]; then docker exec -i "$SK_BACKUP_DB_CONTAINER" "$@"; else "$@"; fi
 }
 
-# pg_target: the arguments that name the database for pg_dump and psql.
+# percent_decode <text>: "%41" back to "A"; the text of a URL's password. Never says the text.
+percent_decode() {
+  [[ $1 =~ ^([^%]|%[0-9A-Fa-f]{2})*$ ]] || die "SK_BACKUP_DB_URL holds a % that is not followed by two hex digits"
+  local text=${1//\\/\\\\}
+  printf '%b' "${text//%/\\x}"
+}
+
+# split_db_url: SK_BACKUP_DB_URL (a game's DATABASE_URL) into DB_ADDRESS, the URL without its
+# password, and PGPASSWORD, the percent-decoded password, which the clients read from their
+# environment. A URL without a password is left as it is. Nothing to do with a container.
+DB_ADDRESS=''
+split_db_url() {
+  [[ -z ${SK_BACKUP_DB_CONTAINER:-} ]] || return 0
+  need SK_BACKUP_DB_URL
+  local scheme authority rest login password
+  DB_ADDRESS=$SK_BACKUP_DB_URL
+  # A password in the query would stay in the address, on the command line.
+  [[ ! $SK_BACKUP_DB_URL =~ [?\&]password= ]] ||
+    die "SK_BACKUP_DB_URL holds password= in its query: write it before the @, or set PGPASSWORD"
+  [[ $SK_BACKUP_DB_URL =~ ^(postgres(ql)?://)([^/?#]*)(.*)$ ]] || return 0
+  scheme=${BASH_REMATCH[1]} authority=${BASH_REMATCH[3]} rest=${BASH_REMATCH[4]}
+  [[ $authority == *@* ]] || return 0
+  # The host starts after the last @, the password after the first colon before it.
+  login=${authority%@*}
+  [[ $login == *:* ]] || return 0
+  password=$(percent_decode "${login#*:}")
+  export PGPASSWORD=$password
+  DB_ADDRESS="$scheme${login%%:*}@${authority##*@}$rest"
+}
+
+# pg_target: the arguments that name the database for pg_dump and psql. On the host, split_db_url
+# has run first (a password never stands on a command line).
 pg_target() {
   if [[ -n ${SK_BACKUP_DB_CONTAINER:-} ]]; then
     need SK_BACKUP_DB_USER
     need SK_BACKUP_DB_NAME
     printf '%s\n' -U "$SK_BACKUP_DB_USER" -d "$SK_BACKUP_DB_NAME"
   else
-    need SK_BACKUP_DB_URL
-    printf '%s\n' --dbname "$SK_BACKUP_DB_URL"
+    need DB_ADDRESS
+    printf '%s\n' --dbname "$DB_ADDRESS"
   fi
 }
 
@@ -126,6 +157,7 @@ do_backup() {
   need SK_BACKUP_DIR
   need SK_BACKUP_AGE_RECIPIENT
   command -v age >/dev/null || die "age is not installed (apt-get install age)"
+  split_db_url
   mapfile -t target < <(pg_target)
   dir=$SK_BACKUP_DIR
   new_work

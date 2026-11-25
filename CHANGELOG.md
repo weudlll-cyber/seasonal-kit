@@ -9,6 +9,12 @@ applies it.
 
 ### Added
 
+- **`guardedFetch` and `isPublicAddress`** in `@seasonal/kit/server` (DECISIONS K62): a fetch with
+  the shape `seasonFeedReader` takes, that connects only to public addresses (checked inside the
+  socket's lookup, so DNS rebinding cannot pass), https only, no redirects, a timeout over the whole
+  exchange and a body limit, `allowedHosts` and `allowLocal` (development) as options. Taken from
+  Mini Games' `safeFetch.ts` and `safePost.ts`; adds the hex form of an IPv4-mapped IPv6 address and
+  the reserved, benchmarking, documentation, 6to4 and NAT64 ranges. Property tests over addresses.
 - **`ops/backup.sh`, `ops/pull-backups.sh`, `ops/pull-backups.ps1`** (DECISIONS K61, shipped in the
   package, [docs/OPERATIONS.md](docs/OPERATIONS.md)): encrypted backups of a game's PostgreSQL, its
   uploads volumes and its secret files (age, to the operator's public key; 14 newest and 8 weekly

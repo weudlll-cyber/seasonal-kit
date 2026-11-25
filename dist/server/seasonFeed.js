@@ -11,8 +11,8 @@
  *                 never throws and keeps the last good answer when a read fails, saying why
  *                 (`lastError`) and whether that answer is older than `staleAfterMs` (`stale`).
  *                 Reads that overlap share one request, so an older answer never replaces a
- *                 newer one. The kit has no guarded fetch, so the game passes its own (`fetch`):
- *                 the one that refuses private addresses and other hosts. The reader adds what it
+ *                 newer one. The game passes the fetch (`fetch`): the kit's `guardedFetch({ allowedHosts })`
+ *                 (since v0.21.0), or its own, that refuses private addresses and other hosts. The reader adds what it
  *                 can hold itself: an https origin, `redirect: 'error'` and a refused redirected
  *                 answer, a timeout of its own over the whole read (also when a wrapper drops the
  *                 signal), at most 64 KiB counted in bytes as the body streams in (cancelled

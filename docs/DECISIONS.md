@@ -257,3 +257,14 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   environment's backup, in one transaction. No secret, key or dump is printed. It runs only when a game
   runs it; no game changes until it adopts. Seasonal Cases has no backup today and takes this first
   ([OPERATIONS.md](OPERATIONS.md)).
+- **K62 — The kit ships a guarded fetch** (decided 2026-11-26, v0.21.0; the night chain, from
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) section 2). `guardedFetch(options)`
+  and `isPublicAddress` are in `@seasonal/kit/server`, from Mini Games' `safeFetch` and `safePost`:
+  https only, every address the host resolves to must be public (IPv4 and IPv6, an IPv4-mapped one in
+  its dotted or hex form judged as its IPv4), checked inside the socket's own lookup so a second,
+  different DNS answer cannot pass, no redirects, a 5 s timeout over the whole exchange and a 64 KiB
+  limit, both options. `seasonFeedReader` keeps taking a fetch from the game and documents this one.
+  Found while generalising: Mini Games' mapped-address match sees only the dotted form, and the URL
+  parser writes `[::ffff:127.0.0.1]` as `[::ffff:7f00:1]`, so a literal in that form passes there; the
+  kit's check does not miss it (reported to the owner, Mini Games is read-only from here). No game
+  changes until it adopts.

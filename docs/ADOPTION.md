@@ -166,6 +166,7 @@ Each step pins the newest tag; a step never mixes two tags.
 
 ### Since v0.21.0
 
+- **Guarded fetch** (K62): `apps/server/src/seasons/safeFetch.ts` (99 lines) and `integration/safePost.ts` (87 lines) are replaced by the kit's `guardedFetch` and `isPublicAddress`; its feed reader gets `guardedFetch({ allowedHosts: [the website's host] })`. Its `readLimited` is also used by the account feed: that stays until the kit's fetch serves it. Only on the owner's word; its own address check misses a literal written `[::ffff:7f00:1]`, which the kit's catches.
 - **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word; the existing backups stay readable (the same tar of dump and uploads, age).
 
 ## Seasonal Bingo Royale
@@ -291,6 +292,7 @@ reachable on every phone.
 
 ### Since v0.21.0
 
+- **Guarded fetch** (K62): Bingo has no guarded fetch of its own today (`git grep` for an address block list or `redirect: 'error'` over `origin/master` finds none in `apps/`). Where it later calls an address it was handed (a webhook, a feed), it takes the kit's `guardedFetch`, with `allowLocal` only in development and tests. Only on the owner's word.
 - **Backups** (K61): `ops/lib/backup.sh` (248 lines) is the kit's script's source: it moves to `ops/backup.sh` with `SK_BACKUP_PREFIX=sbr`, its seed and recovery keys as `SK_BACKUP_SECRET_FILES`, its schema as `SK_BACKUP_DB_SCHEMA=sbr`. What stays in Bingo: the compose calls, `apply_db_roles` after a restore, and the seed-key check of its drill (run after the kit's drill, or in `SK_BACKUP_START_CMD`). Only on the owner's word.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
@@ -351,6 +353,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 ### Since v0.21.0
 
+- **Guarded fetch** (K62): Cases has none today (`git grep` over `073f9ad` finds no address block list, no `redirect: 'error'` and no season feed read in `apps/`). When it reads the website's season feed or calls an outside address, it passes `guardedFetch({ allowedHosts: [the website's host] })`. Only on the owner's word.
 - **Backups** (K61): **Cases has no backup today** (no `backup`, `restore` or `pg_dump` outside its docs and route files, `git grep` over `073f9ad`), and holds accounts and results. It takes the kit's `ops/backup.sh` first, before the other shared parts: its installer is native (a local PostgreSQL), so it sets `SK_BACKUP_DB_URL` (no password in it) instead of a container, runs a systemd timer from `print-units`, and has no volumes unless it keeps uploads. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)

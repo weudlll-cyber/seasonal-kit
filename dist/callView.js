@@ -20,7 +20,7 @@ export function callEmbedUrl(callId, theme, path = EMBED_PATH) {
 }
 const oneOf = (...values) => (value) => values.some((v) => v === value);
 const isStatus = oneOf('scheduled', 'live', 'ended');
-const isReason = oneOf('ended', 'gone');
+const isReason = oneOf('ended', 'gone', 'unshared');
 const isMode = oneOf('picture', 'collapsed');
 // An error code such as `call_full`: short, lower case, never text to show as it is.
 const isCode = (value) => typeof value === 'string' && /^[a-z][a-z0-9_]{0,63}$/.test(value);

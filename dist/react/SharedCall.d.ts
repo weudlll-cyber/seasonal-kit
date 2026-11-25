@@ -17,7 +17,8 @@
  * Depends on:     react, ../callSlot, ../callView, ./CallFrame (the sandbox), ./theme
  * Source:         new in the kit (K77), built on ./CallSlotBox and ./CallFrame.
  * Spec:           Seasonal Entertainment docs/concepts/shared-call.md "The games' kit" at
- *                 cc743b9. Not built on the website yet: see the pull request for what is assumed.
+ *                 cc743b9 and docs/GAME-INTEGRATION.md §9 at 963be59 (branch `feat/shared-call`,
+ *                 not merged on the website yet).
  */
 import { type ReactElement } from 'react';
 export interface SharedCallSlotProps {

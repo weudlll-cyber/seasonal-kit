@@ -13,7 +13,9 @@
  *                 callView.js: the sources, the six messages and their fields, and the error
  *                 codes of server/src/calls/joinRoutes.js, which all fit `isCode`). Anything
  *                 malformed or unknown is ignored, and so is a `ready` that names another call
- *                 than the one linked. It needs a call id, so nothing links while a game has
+ *                 than the one linked. The view of the shared call (K77) also ends with the
+ *                 reason `unshared` when the call stops being shared (unshared or replaced);
+ *                 only that view sends it. It needs a call id, so nothing links while a game has
  *                 none (./callSlot hides the slot then). It frames nothing itself:
  *                 ./react/CallFrame does, in ./react/CallSlotBox, only with a call id. Nothing
  *                 the page sends is secret: flags and a theme name.
@@ -21,7 +23,8 @@
  *                 seasonal-mini-games apps/web/src/chat/useHostChatFrame.ts at 91b23bc); no game
  *                 has a call view yet (Mini Games 91b23bc, Bingo c3b76c1).
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Call view inside a game"
- *                 (at e7b995c)
+ *                 (at e7b995c); its shared view and the reason `unshared` at 963be59, branch
+ *                 `feat/shared-call`, not merged on the website yet
  */
 import type { EmbedTheme } from './chatEmbed.js';
 import { isLocalPath } from './localPath.js';
@@ -37,7 +40,8 @@ export type FromCall =
       readonly signedIn: boolean;
     }
   | { readonly type: 'live'; readonly listening: boolean }
-  | { readonly type: 'ended'; readonly reason: 'ended' | 'gone' }
+  // `unshared`: the shared view only, when its call is no longer the shared one.
+  | { readonly type: 'ended'; readonly reason: 'ended' | 'gone' | 'unshared' }
   | { readonly type: 'speaking'; readonly active: boolean }
   | {
       readonly type: 'resize';
@@ -81,7 +85,7 @@ const oneOf =
     values.some((v) => v === value);
 
 const isStatus = oneOf<CallStatus>('scheduled', 'live', 'ended');
-const isReason = oneOf('ended', 'gone');
+const isReason = oneOf('ended', 'gone', 'unshared');
 const isMode = oneOf('picture', 'collapsed');
 // An error code such as `call_full`: short, lower case, never text to show as it is.
 const isCode = (value: unknown): value is string =>

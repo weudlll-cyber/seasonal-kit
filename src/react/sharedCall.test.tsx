@@ -5,7 +5,7 @@
  *
  * Responsibility: the frame loads `/embed/call/shared` with no call number, hidden; a live call
  *                 shows the box and gives its id; a scheduled one stays hidden; `ended` hides it
- *                 and a later share shows it again; `resize` changes the form; the view is told
+ *                 (also with the reason `unshared`) and a later share shows it again; `resize` changes the form; the view is told
  *                 whether it is in sight; messages from another window or origin are ignored; a
  *                 theme change loads the view anew; and "Back to the call" links to the live call
  *                 only. The view is a stub: the messages are dispatched as the contract's.
@@ -91,6 +91,19 @@ describe('SharedCallSlot', () => {
     expect(onCall).toHaveBeenLastCalledWith(12);
   });
 
+  it('hides it when the call is no longer shared, and shows the next one under its id', () => {
+    const { onCall } = mounted();
+    says(ready(9));
+    says({ type: 'ended', reason: 'unshared' });
+    expect(box().hidden).toBe(true);
+    expect(onCall).toHaveBeenLastCalledWith(null);
+    says(ready(12));
+    expect(box().hidden).toBe(false);
+    expect(onCall).toHaveBeenLastCalledWith(12);
+  });
+});
+
+describe('SharedCallSlot’s forms, strangers and path', () => {
   it('starts as the strip on a phone and takes the form the view asks for', () => {
     mounted(true);
     says(ready(9));

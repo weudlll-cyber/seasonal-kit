@@ -389,7 +389,10 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   at `cc743b9`: a member already in the call sees in the game only a note that they are in the call
   (no picture), there is only ever one shared call, and every organiser and admin may share one.
   `SharedCallSlot` frames `/embed/call/shared` with no call number and shows only while a call is
-  live; `BackToCall` links to it. The note and who may share are the website's.
+  live; `BackToCall` links to it. The note and who may share are the website's. The website's
+  contract for the shared view (GAME-INTEGRATION.md §9 at `963be59`) ends it with the reason
+  `unshared` when its call stops being shared, then posts `ready` for the next one: the kit accepts
+  that reason, without which the message was dropped and the slot stayed visible.
 - **K79 — The header's fold depends only on the width and the items** (2026-11-26, Seasonal Cases'
   finding on v0.22.0). Every decision measures the unfolded layout; a folded header is measured
   again on a new window width, a change of its own size (not by the fold itself) and loaded web

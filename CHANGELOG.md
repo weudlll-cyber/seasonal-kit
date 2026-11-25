@@ -14,6 +14,8 @@ applies it.
 
 ### Changed
 
+- **The header's brand link is a 44 px target** (K84): its box grows (19–38 px before), the logo and
+  the header's height stay.
 - **The working rule for checks** (K82; HANDBOOK, CLAUDE.md): one browser spec file locally where a
   change touches what it checks; no waiting for CI between pieces.
 

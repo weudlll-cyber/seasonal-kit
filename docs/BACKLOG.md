@@ -28,10 +28,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **30. The header's brand link is under 44 px** (found by the sweep, 2026-11-26: 36 px on a
-  desktop, 19 px on a phone; K29 asks 44 px). Done when: the link is 44 px high, or the owner
-  accepts it as it is.
-
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -176,3 +172,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **29. The socket client and the season icons** (compared 2026-11-26; decided 2026-11-25, K83).
   The season icons ship in the kit (`seasons/`, `SeasonIcon`, the daily comparison). The socket
   client is not built. Closed in v0.28.0.
+- **30. The header's brand link was under 44 px** (found by the sweep, 2026-11-26; decided
+  2026-11-25, K84). Closed in v0.28.0 (`css/header.css`, `showcase/testing.spec.ts`, which no
+  longer accepts the finding).

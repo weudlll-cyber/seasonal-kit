@@ -409,3 +409,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   every pull request and daily, as the season colours are. They belong to the Seasonal Tokens
   project and are not under the AGPL. A stylesheet draws them, so a bundler finds the files as it
   finds the fonts.
+- **K84 — The header's brand link is a 44 px target** (decided 2026-11-25, BACKLOG 30; K29). Its box
+  grows, the logo and the header's height do not: measured on the kit's headers at seven widths, the
+  link went from 19–38 px to 44–46 px at 100 % text (55 px and more at 200 %), with every header as
+  high as before.

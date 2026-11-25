@@ -662,6 +662,27 @@ the installed package:
 CI on the merge commit `b51e7ba`: `CI` and `CodeQL` passed. The scratch folders are left in the
 session's scratch directory, outside every repository.
 
+## The v0.28.0 season icons and operator address, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.28.0` (merge commit `c864703`), both with `ignore-scripts=true`
+(React and React DOM 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5, Vite 8.3.8), ran `tsc` and
+four tests on the installed package:
+
+- it is `0.28.0`;
+- the winter icon is the recorded bytes, and `SeasonIcon` names it "Winter";
+- **a Vite build of `seasons.css` and one file imported by its package path carries all four
+  icons**;
+- `header.css` gives the brand link its 44 px box, and the installed `ops/lib/operator.sh` stops
+  without a terminal, naming the file and the key.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.14.0 | Worked  | Worked | 4 passed |
+| npm 11.19.0  | Worked  | Worked | 4 passed |
+
+CI on the merge commit `c864703`: `CI` and `CodeQL` passed. The scratch folders are left in the
+session's scratch directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

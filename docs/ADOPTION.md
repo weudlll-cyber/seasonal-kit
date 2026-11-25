@@ -171,6 +171,10 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Guarded fetch** (K62): `apps/server/src/seasons/safeFetch.ts` (99 lines) and `integration/safePost.ts` (87 lines) are replaced by the kit's `guardedFetch` and `isPublicAddress`; its feed reader gets `guardedFetch({ allowedHosts: [the website's host] })`. Its `readLimited` is also used by the account feed: that stays until the kit's fetch serves it. Only on the owner's word; its own address check misses a literal written `[::ffff:7f00:1]`, which the kit's catches.
 - **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word; the existing backups stay readable (the same tar of dump and uploads, age).
 
+### Since v0.22.0
+
+- **Game bar** (K65): its focus bar's facts wrap on a phone instead of ending in "…" and the bar has padding of its own from the gutter tokens: the look of the bar changes on adoption, so check its round screen at 360 px. Any padding of its own on the bar goes (`round/focus.css`). Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -299,6 +303,10 @@ reachable on every phone.
 - **Guarded fetch** (K62): Bingo has no guarded fetch of its own today (`git grep` for an address block list or `redirect: 'error'` over `origin/master` finds none in `apps/`). Where it later calls an address it was handed (a webhook, a feed), it takes the kit's `guardedFetch`, with `allowLocal` only in development and tests. Only on the owner's word.
 - **Backups** (K61): `ops/lib/backup.sh` (248 lines) is the kit's script's source: it moves to `ops/backup.sh` with `SK_BACKUP_PREFIX=sbr`, its seed and recovery keys as `SK_BACKUP_SECRET_FILES`, its schema as `SK_BACKUP_DB_SCHEMA=sbr`. What stays in Bingo: the compose calls, `apply_db_roles` after a restore, and the seed-key check of its drill (run after the kit's drill, or in `SK_BACKUP_START_CMD`). Only on the owner's word.
 
+### Since v0.22.0
+
+- **Header and start card** (K65): the folded brand keeps its longest word and the back link's words wrap on a phone; `StartCard` takes `opensIn` as before. Nothing to change; Bingo has no game bar. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -361,6 +369,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 - **Session cookie, CSRF, headers** (K63, K60): `sameSiteWrites` and `sameOrigin` (`app.ts` 110-136) are replaced by `writeCheck({ trustedProxies })` (it also refuses a write with neither header, which Cases lets pass); its `helmetOptions` (`web.ts`) by `securityHeaderSet({ mode: 'website', frames: [the chat origin] })` in `securityHeadersHook`. Only on the owner's word.
 - **Guarded fetch** (K62): Cases has none today (`git grep` over `073f9ad` finds no address block list, no `redirect: 'error'` and no season feed read in `apps/`). When it reads the website's season feed or calls an outside address, it passes `guardedFetch({ allowedHosts: [the website's host] })`. Only on the owner's word.
 - **Backups** (K61): **Cases has no backup today** (no `backup`, `restore` or `pg_dump` outside its docs and route files, `git grep` over `073f9ad`), and holds accounts and results. It takes the kit's `ops/backup.sh` first, before the other shared parts: its installer is native (a local PostgreSQL), so it sets `SK_BACKUP_DB_URL` (no password in it) instead of a container, runs a systemd timer from `print-units`, and has no volumes unless it keeps uploads. Only on the owner's word.
+
+### Since v0.22.0
+
+- **Four patches deleted** (K65): `shell.css` 195 (the brand rule: the kit's own now, with `flex-basis` 0 instead of auto, so the toggle keeps the Menu's row at 360 and 375 px) and 204 (the chip wrap: the kit has had it since v0.19.1), `moments.css` 27-56 (the bar's padding, the narrow-phone padding and the wrapped facts) and `screens.css` 41 (hides the start card's countdown: leave `opensIn` out instead). The bar looks as its stand-in did, with the buttons on a row of their own when the fact and the buttons do not share one. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

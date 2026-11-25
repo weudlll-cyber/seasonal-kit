@@ -79,6 +79,29 @@ describe('the start card', () => {
   });
 });
 
+describe('the start card without a countdown (v0.22.0)', () => {
+  it('has no countdown at all without opensIn, and still has the rest (v0.22.0)', () => {
+    render(
+      <StartCard
+        game="cases"
+        season={null}
+        title="Seasonal Cases"
+        facts={['12 cases']}
+        signature="r3"
+      />,
+    );
+    expect(screen.queryByTestId('countdown')).toBeNull();
+    expect(screen.queryByRole('timer')).toBeNull();
+    expect(screen.getByTestId('start-card').textContent).not.toMatch(/Opens in/);
+    expect(screen.getByText('12 cases')).toBeTruthy();
+  });
+
+  it('keeps the countdown for a round that opens at 0 s: 0 is a time, not "none"', () => {
+    render(<StartCard game="cases" season={null} title="T" opensIn={0} signature="r4" />);
+    expect(screen.getByTestId('countdown').textContent).toBe('Opens in 0 s');
+  });
+});
+
 describe('the start card fitting', () => {
   it('fits again after web fonts load only when its `fit` option asks (v0.16.0)', () => {
     vi.stubGlobal('ResizeObserver', undefined);

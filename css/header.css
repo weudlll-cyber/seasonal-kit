@@ -13,8 +13,10 @@
  *                   second row, src/react/useHeaderFold.ts; since v0.11.0, before it below
  *                   960 px) one row (brand, Menu, toggle), the navigation and the account in an
  *                   opaque panel under it (src/react/MenuFold.tsx);
- *                 - on a phone (≤ 640 px) the back link its own short first row, the wordmark
- *                   hidden, the account chip whole.
+ *                 - on a phone (≤ 640 px) the back link its own short first row (its words may
+ *                   wrap, since v0.22.0), the wordmark hidden, the account chip whole; the folded
+ *                   brand keeps its longest word, and the Menu and the toggle take a row of their
+ *                   own when they do not share the brand's (since v0.22.0).
  *                 Text never below the game's floor (`--sk-floor-text`, ./fit.css); targets
  *                 44 px. Colours only from ./tokens.css, so light and dark both work. The buttons
  *                 are ./bar.css's `sk-bar-button` and the back link and toggle ./shell.css's: a
@@ -221,12 +223,17 @@
   display: contents;
 }
 
+/* The brand never shrinks below its longest word (since v0.22.0): it used to shrink to nothing
+   (`min-width: 0`), so at 360 px and the largest text its two-line name ran under the Menu
+   button (Seasonal Cases, D65 follow-up). The basis stays 0, so where the brand, Menu and toggle
+   fit one row nothing moves; where they do not, the Menu and the toggle take a row of their
+   own below the brand instead of covering it. */
 /* Folded (src/react/useHeaderFold.ts: the items would take a second row; since v0.11.0, before
    it below a fixed 960 px): one row, brand, Menu, toggle; the menu an opaque panel under the
    bar. */
 .sk-header[data-sk-folded='true'] .sk-header-brand {
   flex: 1 1 0;
-  min-width: 0;
+  min-width: min-content;
 }
 
 .sk-header[data-sk-folded='true'] .sk-menu-button {

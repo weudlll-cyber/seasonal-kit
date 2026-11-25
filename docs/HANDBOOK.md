@@ -218,6 +218,9 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   game wires them and keeps its own compose files and key checks.
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.
 - **Season feed:** `seasonFeedReader` with `guardedFetch({ allowedHosts })` or the game's own (K62).
+- **Phone layouts** (K65): the folded header's brand keeps its longest word, the back link's words wrap,
+  the game bar's facts wrap and its buttons keep a row, with the gutter tokens' padding;
+  `StartCard` without `opensIn` has no countdown. Measured in `showcase/cases.spec.ts`.
 - **Session cookie, CSRF, headers:** `sessionCookie` (lifetime = the session's absolute length), `writeCheck`
   (a write names where it came from; the forwarded host only from the proxy) and `securityHeaderSet` (K60,
   K63); the game keeps its token, its session store and the admin path test.

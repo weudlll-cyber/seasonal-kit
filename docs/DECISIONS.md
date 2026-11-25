@@ -290,3 +290,26 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   the error beside the body, never in it; Mini Games' website-feed field is `extra`. The per-address
   limit (Bingo's `openRouteLimit`) and the route registration stay in each game. Seasonal Cases' `/api/health`
   and `/api/ready` move to these names when it adopts, with its installer's probe.
+- **K65 — The fixes from Seasonal Cases' measurements** (decided 2026-11-25 in Cases' planning,
+  built 2026-11-26, v0.22.0). Cases' own CSS patches on its kit adoption (shell.css 195 and 204,
+  moments.css 27-56, screens.css 41) move into the kit, each proved by a showcase measurement
+  (`showcase/cases.spec.ts`):
+  1. **The header's fold is right and nothing changes.** Cases' bar (back link, brand, six links, a
+     member with three steps) folds at 1280 and 1536 px and unfolds from about 1700 px; opened by
+     force it needs two rows at 1280 and 1536 px and one at 1920 px, so the kit never folds a bar
+     that fits. Cases' brand rule changes no box there.
+  2. **The folded brand keeps its longest word** (`min-width: min-content`, basis still 0): it no
+     longer runs under the Menu button at 200 % font; the controls take a row of their own below
+     it when they do not share one. Cases' `flex: 1 1 auto` is not taken: it put the toggle on a
+     third row at 360 and 375 px at the default font. The back link's words may wrap on a phone:
+     kept on one line they were 288 px wide at 200 % and pushed the whole header past a 360 px
+     window.
+  3. **The folded account chip** (24-character name, rank, three steps) was measured at 320 to
+     390 px at 100 % and 200 %: it already wraps inside the menu panel (v0.19.1); the only fault
+     at 200 % was the back link above, now fixed.
+  4. **The game bar's facts wrap instead of ending in "…"** on a phone, never narrower than their
+     widest word; the bar wraps its items so the buttons keep one row of their own; its inline
+     padding is the gutter tokens' (the page's gutter on a desktop, 0.5rem on a phone, 0.25rem at
+     400 px and under). Every game's bar changes look when it adopts.
+  5. **`StartCard`'s `opensIn` is optional**: without it no countdown, as Cases needs (its shows
+     have no start time); with it, as before (0 is a time).

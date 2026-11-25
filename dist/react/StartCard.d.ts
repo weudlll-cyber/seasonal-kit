@@ -5,8 +5,8 @@
  *
  * Responsibility: the card fills its space and never scrolls the page: the head (the game's
  *                 season icon, the title in the largest type, a badge such as "Halving round"),
- *                 the game's special block, its facts as a list, and "Opens in N s" as a timer
- *                 that is not read out every second. Where the card has not the room (above a
+ *                 the game's special block, its facts as a list, and, when the game gives `opensIn`, "Opens in N s" as
+ *                 a timer that is not read out every second (without it, no countdown). Where the card has not the room (above a
  *                 docked chat, a small phone), every size shrinks with the screen's scale
  *                 (`--fit`, ./useFitScale) down to the game's floors (../../css/fit.css). A game
  *                 whose rounds show no season passes `season` null: no tint, no icon. The words
@@ -29,7 +29,7 @@ export interface StartCardProps {
     readonly badge?: ReactNode;
     readonly special?: ReactNode;
     readonly facts?: readonly ReactNode[];
-    readonly opensIn: number;
+    readonly opensIn?: number;
     readonly signature: string;
     readonly fit?: FitOptions;
 }

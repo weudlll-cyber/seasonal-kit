@@ -59,10 +59,14 @@
   text-decoration: underline;
 }
 
-/* A phone: its own short first row, still at the top left. */
+/* A phone: its own short first row, still at the top left. Its words may wrap (since v0.22.0): at
+   the largest text they are wider than a 360 px window and, kept on one line, they pushed the
+   whole header, the folded menu and the account chip past the window's edge. Where they fit
+   they stay on one line. */
 @media (max-width: 640px) {
   .sk-back-link {
     flex-basis: 100%;
+    white-space: normal;
   }
 }
 

@@ -9,6 +9,8 @@ applies it.
 
 ### Fixed
 
+- **A docked screen's content is reachable by keyboard.** `DockedScreen`'s scrolling box is a Tab
+  stop, the region "Game screen" (axe `scrollable-region-focusable`).
 - **The Menu button no longer depends on the order of the kit's CSS files.** With `bar.css` after
   `header.css` it showed in an unfolded header.
 - **The backup units no longer point into the pnpm store.** `print-units` writes the path the

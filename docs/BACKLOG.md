@@ -151,3 +151,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `ops/test/backup-units.test.sh`).
 - **33. The Menu button showed when `bar.css` came after `header.css`** (Seasonal Cases,
   2026-11-25). Closed in v0.27.0 (`css/header.css`, `showcase/layout.spec.ts`).
+- **34. A docked screen's scrolling content had no keyboard access** (Seasonal Cases, result page,
+  2026-11-25). Closed in v0.27.0 (`DockedScreen`, `dockless.test.tsx`, `showcase/layout.spec.ts`).

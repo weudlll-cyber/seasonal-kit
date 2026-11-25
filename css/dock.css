@@ -43,6 +43,12 @@
   flex-direction: column;
 }
 
+/* The content is a Tab stop (it may scroll); its ring is inside, where nothing clips it. */
+.sk-docked-main:focus-visible {
+  outline: 2px solid var(--sk-focus-ring);
+  outline-offset: -2px;
+}
+
 .sk-chat-dock {
   flex: none;
   min-width: 0;

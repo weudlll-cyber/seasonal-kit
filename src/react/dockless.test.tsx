@@ -30,6 +30,15 @@ afterEach(() => {
 const visibleHeight = (): string =>
   document.documentElement.style.getPropertyValue('--sk-visible-height');
 
+describe('the docked screen’s content (v0.27.0)', () => {
+  it('is one Tab stop with a name, so a keyboard can scroll it', () => {
+    render(<DockedScreen withoutChat>result</DockedScreen>);
+    const main = screen.getByRole('region', { name: 'Game screen' });
+    expect(main.getAttribute('tabindex')).toBe('0');
+    expect(main.className).toBe('sk-docked-main');
+  });
+});
+
 describe('the docked screen without a chat', () => {
   it('has no dock of any kind on a desktop', () => {
     vi.stubGlobal('innerWidth', 1280);

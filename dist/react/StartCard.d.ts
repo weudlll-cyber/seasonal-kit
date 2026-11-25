@@ -12,7 +12,8 @@
  *                 whose rounds show no season passes `season` null: no tint, no icon. The words
  *                 and icons are the game's; the frame holds only their places. A game whose web
  *                 fonts load late passes `fit={{ afterFonts: true }}` (v0.16.0) to fit again
- *                 once they have loaded.
+ *                 once they have loaded. With `opensAt` (v0.24.0) the card counts down itself on the
+ *                 server's clock (./useCountdown).
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
  *                 ./useFitScale.
@@ -30,6 +31,10 @@ export interface StartCardProps {
     readonly special?: ReactNode;
     readonly facts?: readonly ReactNode[];
     readonly opensIn?: number;
+    readonly opensAt?: {
+        readonly at: number | null;
+        readonly offsetMs: number | null;
+    };
     readonly signature: string;
     readonly fit?: FitOptions;
 }

@@ -24,6 +24,7 @@ export {
   systemTheme,
   type Theme,
 } from './theme.js';
+export { clockOffset, type ClockSample } from './serverClock.js';
 export {
   signInAgain,
   signInAgainAfter,

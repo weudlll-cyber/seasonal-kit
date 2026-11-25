@@ -12,7 +12,8 @@
  *                 whose rounds show no season passes `season` null: no tint, no icon. The words
  *                 and icons are the game's; the frame holds only their places. A game whose web
  *                 fonts load late passes `fit={{ afterFonts: true }}` (v0.16.0) to fit again
- *                 once they have loaded.
+ *                 once they have loaded. With `opensAt` (v0.24.0) the card counts down itself on the
+ *                 server's clock (./useCountdown).
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
  *                 ./useFitScale.
@@ -21,6 +22,7 @@
 import { useId, type ReactElement, type ReactNode } from 'react';
 
 import type { FitGame, FitOptions } from '../fit.js';
+import { useCountdown } from './useCountdown.js';
 import { useFitScale } from './useFitScale.js';
 
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
@@ -39,11 +41,30 @@ export interface StartCardProps {
   // Whole seconds until the round opens. Optional since v0.22.0 (Seasonal Cases' rounds open when
   // the organiser says so): without it the card has no countdown at all, not "Opens in 0 s".
   readonly opensIn?: number;
+  // Instead of opensIn (since v0.24.0): the moment the round opens by the server's clock (ms) and
+  // the clock's offset (`clockOffset`, null until measured); the card counts down itself and
+  // shows nothing until both are known. Given together with opensIn, this one counts.
+  readonly opensAt?: { readonly at: number | null; readonly offsetMs: number | null };
   // Changes when the card's content does, so it fits again.
   readonly signature: string;
   // Options for the fitting, passed to useFitScale as they are (since v0.16.0): `afterFonts` fits
   // again once web fonts have loaded. Without it the card fits as before.
   readonly fit?: FitOptions;
+}
+
+// The countdown line: the game's seconds, or counted here to `opensAt`; nothing without either.
+function Countdown(p: {
+  readonly opensIn: StartCardProps['opensIn'];
+  readonly opensAt: StartCardProps['opensAt'];
+}): ReactElement | null {
+  const counted = useCountdown(p.opensAt?.at ?? null, p.opensAt?.offsetMs ?? null);
+  const seconds = p.opensAt === undefined ? p.opensIn : (counted ?? undefined);
+  if (seconds === undefined) return null;
+  return (
+    <p className="sk-start-count" role="timer" aria-live="off" data-testid="countdown">
+      Opens in <strong>{Math.max(0, Math.ceil(seconds))}</strong> s
+    </p>
+  );
 }
 
 export function StartCard(p: StartCardProps): ReactElement {
@@ -76,11 +97,7 @@ export function StartCard(p: StartCardProps): ReactElement {
           ))}
         </ul>
       )}
-      {p.opensIn === undefined ? null : (
-        <p className="sk-start-count" role="timer" aria-live="off" data-testid="countdown">
-          Opens in <strong>{Math.max(0, Math.ceil(p.opensIn))}</strong> s
-        </p>
-      )}
+      <Countdown opensIn={p.opensIn} opensAt={p.opensAt} />
     </section>
   );
 }

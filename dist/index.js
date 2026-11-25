@@ -14,6 +14,7 @@
  * Source:         new in the kit (the entry point).
  */
 export { applyTheme, onShownThemeChange, onSystemThemeChange, resolveTheme, shownTheme, storedTheme, storeTheme, systemTheme, } from './theme.js';
+export { clockOffset } from './serverClock.js';
 export { signInAgain, signInAgainAfter, websiteLoginHref, websiteSignInHref, } from './websiteSignIn.js';
 export { chatEmbedUrl, connectChat, } from './chatEmbed.js';
 export { chatBarText, createChatArrivals, } from './chatArrivals.js';

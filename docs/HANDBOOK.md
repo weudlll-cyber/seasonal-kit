@@ -218,6 +218,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   game wires them and keeps its own compose files and key checks.
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.
 - **Season feed:** `seasonFeedReader` with `guardedFetch({ allowedHosts })` or the game's own (K62).
+- **Countdowns** (K69): `useCountdown` (or `StartCard`'s `opensAt`) with the offset `clockOffset`
+  measures; never the page's clock alone.
 - **Steps beside a name** (K68): `StepBadges` with `steps.css`, in every list of names, the header's
   look; a game draws no step badge of its own.
 - **Test tools** (K66): `@seasonal/kit/testing`, for a game's own suites only: `setTheme`,

@@ -14,6 +14,9 @@ behaviour.
 
 ### Added
 
+- **`clockOffset`, `useCountdown` and `StartCard`'s `opensAt`** (K69): a countdown on the server's clock,
+  the visitor's offset measured from answers that carry the server's time; nothing shows until it is
+  measured. From Mini Games' clock sync and Bingo Royale's countdown.
 - **`StepBadges`** and `steps.css` (K68): the header's step badges beside any name, for boards, player
   lists and lower thirds. The header uses it; `header.css` brings `steps.css` along, and the header
   looks as before. From the three games' own badge components.

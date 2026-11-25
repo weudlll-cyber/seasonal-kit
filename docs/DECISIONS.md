@@ -334,3 +334,9 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   component for boards, player lists and lower thirds: the kit's `Step` shape, only an icon
   `isStepIcon` accepts, at most three, 1.25rem, named by the step. A step without a drawable icon is
   left out, as in the header, although Mini Games writes its name as text today.
+- **K69 — A countdown runs on the server's clock** (decided 2026-11-25 on section 5, built
+  2026-11-26, v0.24.0). `clockOffset` (main entry) measures the visitor's offset from answers that
+  carry the server's time, the shortest round trip winning, and is null without a usable one;
+  `useCountdown(at, offsetMs)` (React) counts the seconds to a server time and shows nothing until
+  both are known, so a visitor's wrong clock is never trusted; `StartCard` takes `opensAt` (opt-in),
+  `opensIn` unchanged. How a server time is asked for stays in each game (Mini Games' `time.sync`).

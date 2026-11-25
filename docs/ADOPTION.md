@@ -189,6 +189,7 @@ Each step pins the newest tag; a step never mixes two tags.
 ### Since v0.25.0
 
 - **Backup split and route file** (K71, K72): nothing to do for the split (it calls `ops/backup.sh`); `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
+- **Load helpers** (K73): `load/measure.mjs`'s `spread` and `metricsSampler` become `latencies` and `watchServer({ prefix: 'smg_' })`; its percentiles move one rank down (nearest rank). Only on the owner's word.
 
 ## Seasonal Bingo Royale
 
@@ -336,6 +337,7 @@ reachable on every phone.
 ### Since v0.25.0
 
 - **Backup split and route file** (K71, K72): its `write_nginx_route` / `write_caddy_route` and `apply_route_file` become `sk_route_install` with `SK_ROUTE_SECRET_HEADER=X-Sbr-Proxy-Secret`; its final checks stay. Only on the owner's word.
+- **Load helpers** (K73): `load/common.mjs`'s percentiles, `inBatches` and `watchServer` become the kit's with `prefix: 'sbr_'`; the CPU is reported in cores, not percent. Only on the owner's word.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
@@ -418,6 +420,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.25.0
 
 - **Backup split and route file** (K71, K72): its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
+- **Load helpers** (K73): none today; its first load check starts from `latencies` and `watchServer`. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

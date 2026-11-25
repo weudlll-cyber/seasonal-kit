@@ -13,6 +13,8 @@ Operations parts (DECISIONS K71 onwards). Opt-in; nothing runs unless a game run
 
 ### Added
 
+- **`latencies`, `inBatches` and `watchServer`** in `@seasonal/kit/testing` (K73): the load check's
+  measuring helpers from Bingo Royale's and Mini Games' `load/`; scenarios stay in the games.
 - **`ops/lib/website-route.sh`** (K72): the installer's route-file step of a website install, for nginx
   and Caddy, from Mini Games' `website-route.sh` (itself from Bingo Royale's): writes the game's own
   route file, checks, restores on refusal and reloads. Tested against the real nginx and Caddy,
@@ -22,6 +24,11 @@ Operations parts (DECISIONS K71 onwards). Opt-in; nothing runs unless a game run
 
 - **`ops/backup.sh` is split** (K71): the entry sources `ops/lib/backup-core.sh` and
   `ops/lib/backup-restore.sh`, which ship in the package. Same commands, variables and behaviour.
+
+### Migration, per game
+
+- **All three games:** nothing is required; each part is listed in
+  [docs/ADOPTION.md](docs/ADOPTION.md) under "Since v0.25.0".
 
 ## [0.24.0] - 2026-11-26
 

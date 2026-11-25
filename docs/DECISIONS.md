@@ -359,3 +359,9 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   file; the content is Mini Games' (from Bingo's), with the game's names and upstreams as
   `SK_ROUTE_*` variables, each checked so none can add a directive. The rest of the installer stays
   in the games.
+- **K73 — The kit ships the load check's measuring helpers** (decided 2026-11-25 on section 8 of
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md), "helper only", built
+  2026-11-26, v0.25.0). `latencies`, `inBatches` and `watchServer` are in the testing entry:
+  Bingo Royale's nearest-rank percentiles (Mini Games' rounded one rank up) and its metrics sampler
+  with Mini Games' summary, the metric prefix a parameter. Scenarios, targets and sign-in stay in
+  each game.

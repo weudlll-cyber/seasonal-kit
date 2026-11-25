@@ -600,6 +600,27 @@ the installed package:
 CI on the merge commit `84998cd`: `CI` and `CodeQL` passed. The scratch folders are left in the
 session's scratch directory, outside every repository.
 
+## The v0.25.0 operations scripts and load helpers, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.25.0` (merge commit `5927474`), both with `ignore-scripts=true`
+(TypeScript 5.9.3 NodeNext, Vitest 5.0.5), ran `tsc` and four tests on the installed package:
+
+- it is `0.25.0` and ships `ops/lib/backup-core.sh`, `backup-restore.sh` and `website-route.sh`;
+- **`ops/backup.sh` finds its libraries from the installed package** (through pnpm's link too): it
+  prints its help, and sourced it defines `do_restore` and `prune_backups`;
+- the route library, sourced from the package, writes an nginx route with the game's sign-in
+  location and upstream;
+- `latencies`, `inBatches` and `watchServer` work from `@seasonal/kit/testing`.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.14.0 | Worked  | Worked | 4 passed |
+| npm 11.19.0  | Worked  | Worked | 4 passed |
+
+CI on the merge commit `5927474`: `CI` and `CodeQL` passed; the drill and the route file in the real
+nginx and Caddy are in CI's `ops` job. The scratch folders are left in the session's scratch
+directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

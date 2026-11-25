@@ -97,6 +97,46 @@ function StepHeaders(): ReactElement {
   );
 }
 
+// Seasonal Cases' bar (v0.22.0): the back link, its brand, six links (one long: "My matches") and
+// a member's chip with three steps, in website mode. Measured at 1280, 1536 and 1920 px
+// (./cases.spec.ts): the header folds only when these items do not fit one row.
+// As wide as the window, as a game's header is: the page's own gutter (which grows with the root
+// font) must not narrow it, or a 320 px phone at 200 % would measure the page, not the header.
+const FULL_WIDTH = { width: '100vw', marginLeft: 'calc(50% - 50vw)' } as const;
+
+// Exactly 24 characters, the longest name Cases allows.
+const LONG_NAME = 'Maximilian-Alexander Ros';
+const CASES_LINKS = ['Start', 'Stage', 'Chronicle', 'My matches', 'Admin', 'Privacy'];
+
+function CasesHeader(): ReactElement {
+  return (
+    <>
+      <h3>Seasonal Cases' bar: six links and a member with three steps</h3>
+      <div data-testid="cases-header" style={FULL_WIDTH}>
+        <AppHeader
+          {...base}
+          websiteMode
+          brand={{ href: '#/', emblem: EMBLEM, name: 'Seasonal Cases' }}
+          links={CASES_LINKS.map((label, i) => ({ href: `#/${label}`, label, active: i === 0 }))}
+          account={{ ...account, name: 'Ana', role: 'player · rank 2', steps: STEPS }}
+          signIn={{ href: '/games/cases/auth/website/login?next=%2Fgames%2Fcases%2F' }}
+        />
+      </div>
+      <h3>Seasonal Cases' longest member: 24 characters, a rank, three steps</h3>
+      <div data-testid="cases-long-header" style={FULL_WIDTH}>
+        <AppHeader
+          {...base}
+          websiteMode
+          brand={{ href: '#/', emblem: EMBLEM, name: 'Seasonal Cases' }}
+          links={CASES_LINKS.map((label, i) => ({ href: `#/${label}`, label, active: i === 0 }))}
+          account={{ ...account, name: LONG_NAME, role: 'player · rank 12', steps: STEPS }}
+          signIn={{ href: '/games/cases/auth/website/login?next=%2Fgames%2Fcases%2F' }}
+        />
+      </div>
+    </>
+  );
+}
+
 export function Headers(): ReactElement {
   return (
     <section aria-labelledby="header-title" className="showcase-section">
@@ -142,6 +182,7 @@ export function Headers(): ReactElement {
         />
       </div>
       <StepHeaders />
+      <CasesHeader />
     </section>
   );
 }

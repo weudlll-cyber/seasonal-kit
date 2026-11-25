@@ -7,6 +7,43 @@ applies it.
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-11-26
+
+The fixes from Seasonal Cases' measurements of its kit adoption (DECISIONS K65): Cases' own CSS
+patches move into the kit, each proved by a measurement in `showcase/cases.spec.ts`.
+
+### Changed
+
+- **The folded header's brand keeps its longest word** (`css/header.css`): `min-width:
+min-content` instead of 0, the basis still 0. At 360 px and 200 % font its two-line name no longer
+  runs under the Menu button; the Menu and the toggle take a row of their own below it when they do
+  not share one. Where they fit one row nothing moves.
+- **The back link's words may wrap on a phone** (`css/shell.css`): at 200 % font they were 288 px
+  wide on one line and pushed the header, the folded menu and the account chip past a 360 px window.
+- **The game bar's facts wrap instead of ending in "…" on a phone** (`css/bar.css`), never narrower
+  than their widest word, and the bar wraps its items, so its buttons keep one row. **The bar has
+  inline padding of its own now** from the gutter tokens: the page's gutter on a desktop, 0.5rem on a
+  phone, 0.25rem at 400 px and under. **Every game's bar changes look when it adopts this**: a fact
+  that was cut off now shows whole, on a second line, and a game that added its own bar padding
+  deletes it.
+- **`StartCard`'s `opensIn` is optional** (`src/react/StartCard.tsx`): without it the card has no
+  countdown; with it, as before.
+
+### Checked, unchanged
+
+- The header unfolds where Cases' items fit: its bar folds at 1280 and 1536 px because opened it
+  needs two rows, and stays unfolded from about 1700 px. Nothing was fixed; the measurement is in the
+  showcase. Cases' brand rule changes no box at 1280, 1536 or 1920 px.
+- The folded account chip with a 24-character name, a rank and three steps fits the menu panel and
+  the window from 320 to 390 px at 100 % and 200 % font.
+
+### Migration, per game
+
+- **Seasonal Cases:** delete the four patches (`shell.css` 195 and 204, `moments.css` 27-56,
+  `screens.css` 41) and leave `opensIn` out of its start card.
+- **Mini Games, Bingo Royale:** nothing is required; the bar's wrapped facts and its own padding show
+  on adoption (see [docs/ADOPTION.md](docs/ADOPTION.md)).
+
 ## [0.21.0] - 2026-11-26
 
 The shared server parts of the three games, as opt-in parts of the kit (DECISIONS K60 to K64, from
@@ -1285,7 +1322,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.22.0...HEAD
+[0.22.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...v0.20.0
 [0.19.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.0...v0.19.1

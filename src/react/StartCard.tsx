@@ -5,8 +5,8 @@
  *
  * Responsibility: the card fills its space and never scrolls the page: the head (the game's
  *                 season icon, the title in the largest type, a badge such as "Halving round"),
- *                 the game's special block, its facts as a list, and "Opens in N s" as a timer
- *                 that is not read out every second. Where the card has not the room (above a
+ *                 the game's special block, its facts as a list, and, when the game gives `opensIn`, "Opens in N s" as
+ *                 a timer that is not read out every second (without it, no countdown). Where the card has not the room (above a
  *                 docked chat, a small phone), every size shrinks with the screen's scale
  *                 (`--fit`, ./useFitScale) down to the game's floors (../../css/fit.css). A game
  *                 whose rounds show no season passes `season` null: no tint, no icon. The words
@@ -36,8 +36,9 @@ export interface StartCardProps {
   readonly badge?: ReactNode;
   readonly special?: ReactNode;
   readonly facts?: readonly ReactNode[];
-  // Whole seconds until the round opens.
-  readonly opensIn: number;
+  // Whole seconds until the round opens. Optional since v0.22.0 (Seasonal Cases' rounds open when
+  // the organiser says so): without it the card has no countdown at all, not "Opens in 0 s".
+  readonly opensIn?: number;
   // Changes when the card's content does, so it fits again.
   readonly signature: string;
   // Options for the fitting, passed to useFitScale as they are (since v0.16.0): `afterFonts` fits
@@ -75,9 +76,11 @@ export function StartCard(p: StartCardProps): ReactElement {
           ))}
         </ul>
       )}
-      <p className="sk-start-count" role="timer" aria-live="off" data-testid="countdown">
-        Opens in <strong>{Math.max(0, Math.ceil(p.opensIn))}</strong> s
-      </p>
+      {p.opensIn === undefined ? null : (
+        <p className="sk-start-count" role="timer" aria-live="off" data-testid="countdown">
+          Opens in <strong>{Math.max(0, Math.ceil(p.opensIn))}</strong> s
+        </p>
+      )}
     </section>
   );
 }

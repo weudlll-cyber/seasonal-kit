@@ -29,6 +29,7 @@ import {
   usePanels,
   WebsiteChatFrame,
   type BarAction,
+  type Panels,
 } from '../src/react/index.js';
 import { Headers } from './Headers.js';
 
@@ -46,6 +47,33 @@ const ACTIONS: readonly BarAction<'chat' | 'players' | 'host' | 'prefs'>[] = [
   { id: 'players', icon: 'players', label: 'Players' },
   { id: 'host', icon: 'host', label: 'Host' },
 ];
+
+// Seasonal Cases' organiser bar (v0.22.0): a fact of several words, a sound switch, the applause
+// and four panel buttons, six 44 px buttons in all, as wide as the window (so a phone's width, not
+// the page's gutter, decides). At 360 px and the largest text the fact wraps and keeps its widest
+// word, and the six buttons keep one row.
+function OrganiserBar(p: {
+  readonly panels: Panels<'chat' | 'players' | 'host' | 'prefs'>;
+}): ReactElement {
+  return (
+    <div
+      data-testid="organiser-bar"
+      style={{ minWidth: 0, width: '100vw', marginLeft: 'calc(50% - 50vw)' }}
+    >
+      <GameBar
+        lead={<span className="showcase-pill">Cases</span>}
+        facts={[{ text: 'Organiser view of round 4' }]}
+        time={{ text: '9:50', left: true }}
+        toggles={[
+          { id: 'sound', icon: 'sound', label: 'Sound', on: true, onToggle: () => undefined },
+        ]}
+        presses={[{ id: 'applaud', icon: 'applaud', label: 'Applaud', onPress: () => undefined }]}
+        actions={[...ACTIONS, { id: 'prefs', icon: 'prefs', label: 'Settings' }]}
+        panels={p.panels}
+      />
+    </div>
+  );
+}
 
 function Bar(): ReactElement {
   const panels = usePanels<'chat' | 'players' | 'host' | 'prefs'>();
@@ -70,6 +98,7 @@ function Bar(): ReactElement {
           panels={panels}
         />
       </div>
+      <OrganiserBar panels={panels} />
       {/* Mini Games' bar (v0.12.0): the back link first, the Pre-picks button with `prefs`. */}
       <div data-testid="back-bar" style={{ minWidth: 0 }}>
         <GameBar

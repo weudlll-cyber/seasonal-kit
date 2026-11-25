@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -46,11 +46,8 @@
     "./bar.css": "./css/bar.css",
     "./header.css": "./css/header.css"
   },
-  "files": [
-    "browser",
-    "css",
-    "dist",
-    "fonts"
+  "sideEffects": [
+    "**/*.css"
   ],
   "peerDependencies": {
     "react": "^19.3.1",
@@ -99,7 +96,13 @@
     "vite": "8.3.8",
     "vitest": "5.1.1"
   },
-  "sideEffects": [
-    "**/*.css"
+  "files": [
+    "browser",
+    "css",
+    "dist",
+    "fonts",
+    "ops/backup.sh",
+    "ops/pull-backups.sh",
+    "ops/pull-backups.ps1"
   ]
 }

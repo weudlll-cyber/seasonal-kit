@@ -7,6 +7,49 @@ applies it.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-11-26
+
+The shared server parts of the three games, as opt-in parts of the kit (DECISIONS K60 to K64, from
+[docs/concepts/shared-server-parts.md](docs/concepts/shared-server-parts.md)). Nothing existing
+changes: a game that changes nothing sees today's behaviour, and it adopts each part on the owner's
+word, as [ADOPTION.md](docs/ADOPTION.md) says. A new entry in the package: `ops/`.
+
+### Added
+
+- **`HEALTH_PATHS` and `readiness`** in `@seasonal/kit/server` (DECISIONS K64): the route names
+  `/healthz` and `/readyz` and the readiness answer (200 ready, or 503 unavailable when the probe
+  fails or is later than 1.5 s, the error beside the body and never in it), from Bingo's and Mini
+  Games' `routes/health.ts`. No game changes until it adopts.
+- **`sessionCookie`, `sessionCookieOptions`, `writeCheck`, `securityHeaderSet`, `renderPolicy` and
+  `securityHeadersHook`** in `@seasonal/kit/server` (DECISIONS K63, K60): the session cookie's name
+  and attributes with a `Max-Age` equal to the session's absolute length (Bingo's); the CSRF check for
+  state-changing requests (`Sec-Fetch-Site`, `Origin` against the request's host, the forwarded host
+  believed only from the trusted proxy's TCP peer, a write naming neither refused; from Cases'
+  `sameSiteWrites`); and the security headers as data (Bingo's strict policy with Mini Games'
+  ancestors and admin rules, no HSTS) with a Fastify hook. No game changes until it adopts.
+- **`guardedFetch` and `isPublicAddress`** in `@seasonal/kit/server` (DECISIONS K62): a fetch with
+  the shape `seasonFeedReader` takes, that connects only to public addresses (checked inside the
+  socket's lookup, so DNS rebinding cannot pass), https only, no redirects, a timeout over the whole
+  exchange and a body limit, `allowedHosts` and `allowLocal` (development) as options. Taken from
+  Mini Games' `safeFetch.ts` and `safePost.ts`; adds the hex form of an IPv4-mapped IPv6 address and
+  the reserved, benchmarking, documentation, 6to4 and NAT64 ranges. Property tests over addresses.
+- **`ops/backup.sh`, `ops/pull-backups.sh`, `ops/pull-backups.ps1`** (DECISIONS K61, shipped in the
+  package, [docs/OPERATIONS.md](docs/OPERATIONS.md)): encrypted backups of a game's PostgreSQL, its
+  uploads volumes and its secret files (age, to the operator's public key; 14 newest and 8 weekly
+  kept), a restore that refuses another environment's backup (by name and by manifest) and runs in one
+  transaction, a restore drill in a throw-away PostgreSQL container that compares each table with the
+  dump, and the systemd units for the nightly timer. Taken from Bingo Royale's `ops/lib/backup.sh`
+  (the rehearsed one) and Mini Games' drill; settings are `SK_BACKUP_*` variables. No secret, key or
+  dump is printed. Tested on a real PostgreSQL container in CI (job `ops`, not a required check).
+
+### Migration, per game
+
+- **All three games:** nothing is required. Each part is listed per game in
+  [docs/ADOPTION.md](docs/ADOPTION.md) under "Since v0.21.0": what it replaces and how.
+- **Seasonal Cases:** has no backup today; it takes `ops/backup.sh` first.
+- **Mini Games:** its cookie outlives a website session by 23 days; `sessionCookieOptions` fixes it on
+  adoption (recorded in K63).
+
 ## [0.20.0] - 2026-11-26
 
 The owner's answers on four proposals of the night audit of 2026-11-25 (DECISIONS K58, K59). Every
@@ -1242,7 +1285,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...HEAD
+[0.21.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...v0.20.0
 [0.19.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.0...v0.19.1
 [0.19.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.18.0...v0.19.0

@@ -3,6 +3,10 @@
 An investigation, read-only, no code (night audit 2026-11-25, piece 9). Nothing in the kit changes
 with this page; it recommends, and the owner decides.
 
+**Status (2026-11-26):** items 1 to 4 of the recommended order below are in the kit since v0.21.0
+(DECISIONS K61 to K64; K60 for the CSRF check). Nothing in a game has changed: each adopts on the
+owner's word ([ADOPTION.md](../ADOPTION.md)). The installer (5) and the load helper (6) are not taken.
+
 Read on 2026-11-25 from each game's `origin/master`: Seasonal Bingo Royale `2380ea7`, Seasonal
 Mini Games `1988346`, Seasonal Cases `073f9ad`. "Alike" is the share of a file's code lines (blank
 lines and comments left out) that the other file has too, trimmed and compared line by line: a
@@ -76,7 +80,16 @@ rough measure, good for ordering, not for proof. Bingo and Cases pin kit v0.11.1
   sessions last 7 days after a website sign-in (`sessions.ts` lines 10 and 51, `routes/auth.ts`
   line 192): the cookie outlives the session by 23 days. The server decides, so no access follows,
   but it is the very defect Bingo fixed. Cases uses one constant for both (`SESSION_MS`), which is
-  consistent. **Bingo's version is right.** Both compare the CSRF token in constant time.
+  consistent. **Bingo's version is right.** Bingo and Mini Games compare a CSRF token in constant time.
+- **Cases guards its writes another way, and well** (corrected on 2026-11-25; an earlier version of
+  this page and of the audit said it relied on `SameSite=Lax` alone, which was wrong). In
+  `apps/server/src/app.ts` (`073f9ad`) the `onRequest` hook `sameSiteWrites` (lines 125-136,
+  registered at line 214) refuses any request but GET, HEAD and OPTIONS with 403 when
+  `Sec-Fetch-Site` is present and is neither `same-origin` nor `none`, or when the `Origin`'s host
+  differs from the `Host` header (`sameOrigin`, lines 110-119, which also decides the socket
+  handshake at line 222). A write with no `Origin` passes there. The check needs no token and no
+  state, which suits a game behind the website's proxy; the kit's check (v0.21.0, K60) covers at
+  least this and refuses a write that carries neither header.
 - **A kit part:** framework-free helpers: `sessionCookieOptions({ name, path, secure }, maxAgeSeconds)`
   and `csrfMatches(a, b)` (the constant-time compare the kit already has in `trust.ts`). The
   Fastify hooks stay in each game: the kit has no Fastify and no runtime dependency.

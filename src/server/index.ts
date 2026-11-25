@@ -5,13 +5,16 @@
  *
  * Responsibility: name everything a game's server may import: the trust checks, the safe
  *                 return path and login hop, the identity headers and their decision, TOTP,
- *                 recovery codes, the rate limiter, the failure brake (since v0.15.0), the session-end notifier, and the website's
+ *                 recovery codes, the rate limiter, the failure brake (since v0.15.0), the guarded fetch, the session cookie, the CSRF write check and the security headers and the health routes (since v0.21.0), the session-end notifier, and the website's
  *                 open-rounds page and season feed (since v0.11.0). Node only (node:crypto,
  *                 node:net); never imported by browser code. Accounts, sessions and every
  *                 database statement stay in the games.
  * Source:         new in the kit.
  */
 export { FailureBrake } from './failureBrake.js';
+export { HEALTH_PATHS, readiness, type ReadinessAnswer, type ReadinessOptions } from './health.js';
+export { isPublicAddress } from './guardedAddress.js';
+export { FetchRefused, guardedFetch, type GuardedFetchOptions } from './guardedFetch.js';
 export {
   IDENTITY_HEADERS,
   identityFrom,
@@ -53,6 +56,20 @@ export {
   type SeasonFeedState,
   type SeasonToken,
 } from './seasonFeed.js';
+export {
+  renderPolicy,
+  securityHeaderSet,
+  securityHeadersHook,
+  type SecurityHeaderOptions,
+  type SecurityHeaderSet,
+} from './securityHeaders.js';
+export {
+  sessionCookie,
+  sessionCookieOptions,
+  type SessionCookie,
+  type SessionCookieInput,
+  type SessionCookieOptions,
+} from './sessionCookie.js';
 export { SessionEnds, type SessionEndsListener } from './sessionEnds.js';
 export { type Ladder, type Step, type StepsMode } from './steps.js';
 export {
@@ -65,3 +82,9 @@ export {
   stepAt,
 } from './totp.js';
 export { secretMatches, trustedPeers, type HeaderValue } from './trust.js';
+export {
+  writeCheck,
+  type WriteCheckOptions,
+  type WriteDecision,
+  type WriteRequest,
+} from './writeCheck.js';

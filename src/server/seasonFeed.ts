@@ -11,8 +11,8 @@
  *                 never throws and keeps the last good answer when a read fails, saying why
  *                 (`lastError`) and whether that answer is older than `staleAfterMs` (`stale`).
  *                 Reads that overlap share one request, so an older answer never replaces a
- *                 newer one. The kit has no guarded fetch, so the game passes its own (`fetch`):
- *                 the one that refuses private addresses and other hosts. The reader adds what it
+ *                 newer one. The game passes the fetch (`fetch`): the kit's `guardedFetch({ allowedHosts })`
+ *                 (since v0.21.0), or its own, that refuses private addresses and other hosts. The reader adds what it
  *                 can hold itself: an https origin, `redirect: 'error'` and a refused redirected
  *                 answer, a timeout of its own over the whole read (also when a wrapper drops the
  *                 signal), at most 64 KiB counted in bytes as the body streams in (cancelled
@@ -108,7 +108,7 @@ export interface SeasonFeedState {
 export interface SeasonFeedOptions {
   // The website's origin, https: the feed is `<origin>/api/public/season`.
   readonly origin: string;
-  // The game's guarded fetch (public addresses only, the website's host). It should pass on
+  // The guarded fetch: the kit's `guardedFetch({ allowedHosts: [the website's host] })` or the game's own. It should pass on
   // `init.signal` and `init.redirect`; the reader holds its timeout and size cap either way.
   readonly fetch: (url: string, init: RequestInit) => Promise<Response>;
   // Whole milliseconds, ≥ 1: the read's limit (5 s) and when an answer is stale (10 min).

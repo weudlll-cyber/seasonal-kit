@@ -242,3 +242,51 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   `watchFit` keep their positional arguments; an options object is considered when another option is
   needed. A-05: the local branch `worktree-agent-a459ae22b757ed187` and `.claude/worktrees/` stay
   untouched.
+- **K60 — The kit's CSRF check refuses a write that names neither its origin nor its site** (decided
+  2026-11-25, v0.21.0; Seasonal Cases' planning). A state-changing request (anything but GET, HEAD
+  and OPTIONS) with no `Origin` and no `Sec-Fetch-Site` is refused. It also refuses one whose
+  `Sec-Fetch-Site` is present and is neither `same-origin` nor `none`, and one whose `Origin` host is
+  not the request's own host as the game sees it behind the website's proxy (a forwarded host is trusted
+  only from the configured proxy). This covers what Cases' `sameSiteWrites` does (`app.ts:125-136`) and
+  is stricter on the missing `Origin`.
+- **K61 — The kit ships a backup and restore script** (decided 2026-11-25, v0.21.0; the night chain, from
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) section 1). `ops/backup.sh`,
+  `ops/pull-backups.sh` and `ops/pull-backups.ps1` are in the package: Bingo Royale's rehearsed backup
+  made to take its settings from `SK_BACKUP_*` variables, with Mini Games' restore drill. Encrypted with
+  age to the operator's public key, 14 newest and 8 weekly kept, a restore that refuses another
+  environment's backup, in one transaction. No secret, key or dump is printed. It runs only when a game
+  runs it; no game changes until it adopts. Seasonal Cases has no backup today and takes this first
+  ([OPERATIONS.md](OPERATIONS.md)).
+- **K62 — The kit ships a guarded fetch** (decided 2026-11-26, v0.21.0; the night chain, from
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) section 2). `guardedFetch(options)`
+  and `isPublicAddress` are in `@seasonal/kit/server`, from Mini Games' `safeFetch` and `safePost`:
+  https only, every address the host resolves to must be public (IPv4 and IPv6, an IPv4-mapped one in
+  its dotted or hex form judged as its IPv4), checked inside the socket's own lookup so a second,
+  different DNS answer cannot pass, no redirects, a 5 s timeout over the whole exchange and a 64 KiB
+  limit, both options. `seasonFeedReader` keeps taking a fetch from the game and documents this one.
+  Found while generalising: Mini Games' mapped-address match sees only the dotted form, and the URL
+  parser writes `[::ffff:127.0.0.1]` as `[::ffff:7f00:1]`, so a literal in that form passes there; the
+  kit's check does not miss it (reported to the owner, Mini Games is read-only from here). No game
+  changes until it adopts.
+- **K63 — The kit ships the session cookie, the CSRF write check and the security header set**
+  (decided 2026-11-26, v0.21.0; the night chain, from
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) sections 3 and 4). In
+  `@seasonal/kit/server`, framework-free, no dependency: `sessionCookie` and `sessionCookieOptions`
+  (Bingo's: `__Host-` or `__Secure-` name, `HttpOnly`, `SameSite=Lax`, `Max-Age` equal to the
+  session's absolute length, so Mini Games' fixed 30 days is not copied); `writeCheck` (K60: Cases'
+  `sameSiteWrites`, a write with neither `Origin` nor `Sec-Fetch-Site` refused, the forwarded host
+  believed only from `trustedProxies`, the TCP peer, as the identity checks do); `securityHeaderSet`,
+  `renderPolicy` and `securityHeadersHook` (Bingo's strict policy, Mini Games' configurable ancestors
+  and admin rules; `script-src 'self'` always, `style-src 'self'` unless `inlineStyles`;
+  `frame-ancestors` the game's own origin, which is the website's, in website mode, where an embed
+  allowlist is refused; **no HSTS in any mode**: the website sends it in website mode, the TLS proxy
+  standalone). A game's CSRF token stays and is a second layer. No game's headers or cookie change
+  until it adopts.
+- **K64 — The kit settles the health routes and ships the readiness answer** (decided 2026-11-26,
+  v0.21.0; the night chain, from [concepts/shared-server-parts.md](concepts/shared-server-parts.md)
+  section 5). `HEALTH_PATHS` is `/healthz` (liveness, `{ status: 'ok' }`) and `/readyz`: the names
+  Bingo Royale and Mini Games already share and their installers probe. `readiness(probe, { timeoutMs,
+extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reason: 'database' }` with
+  the error beside the body, never in it; Mini Games' website-feed field is `extra`. The per-address
+  limit (Bingo's `openRouteLimit`) and the route registration stay in each game. Seasonal Cases' `/api/health`
+  and `/api/ready` move to these names when it adopts, with its installer's probe.

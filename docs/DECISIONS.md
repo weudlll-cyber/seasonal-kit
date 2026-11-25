@@ -398,3 +398,8 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K81 — In website mode a game is framed by the website only** (confirmed 2026-11-25).
   `securityHeaderSet({ mode: 'website' })` refuses `ancestors`, as before. A game that must be framed
   elsewhere uses a standalone install with its `ancestors` list.
+- **K82 — How every Seasonal project runs its checks** (decided 2026-11-25). Locally before each
+  push the fast tests of the changed files and, when a browser spec checks what changed, that one
+  spec file in one browser; the full checks on GitHub through the draft PR; no waiting for CI between
+  pieces, one look at the end and before a merge; CI cancels a replaced run of a work branch; no
+  re-run on an unchanged tree.

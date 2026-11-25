@@ -7,6 +7,16 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- **The working rule for checks** (K82; HANDBOOK, CLAUDE.md): one browser spec file locally where a
+  change touches what it checks; no waiting for CI between pieces.
+
+### Migration, per project
+
+- **Website** (seasonal-entertainment): add the `cancel-in-progress` concurrency to its `ci.yml`
+  (it has none today). **The games:** nothing for K82.
+
 ## [0.27.0] - 2026-11-26
 
 Fixes for what Seasonal Cases and Mini Games reported on v0.22.0.

@@ -417,3 +417,8 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   takes it from `/etc/seasonal/operator.env` (`SK_OPERATOR_EMAIL`, root's, mode 0644) through the
   kit's `sk_operator_email`; an explicit `--email` still wins and fills an empty file. No address is
   in the kit, in a game's repository or in a log beyond the installer's "using <address> from <file>".
+- **K86 — Every game has a one-command install and an operator guide** (decided 2026-11-26):
+  `ops/install.sh` (Ubuntu 24.04, Docker, standalone or inside the website, re-runnable, ending in a
+  check through `/readyz`, using the kit's ops parts) and `docs/operator-guide.md` for an owner who
+  is not technical, with fixed sections. Held by review and by the rehearsal before production
+  ([HANDBOOK.md](HANDBOOK.md)).

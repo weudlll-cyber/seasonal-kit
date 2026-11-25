@@ -202,6 +202,7 @@ Each step pins the newest tag; a step never mixes two tags.
 ### Since v0.28.0
 
 - **Icons, operator address** (K83, K85): `seasons.css` and `SeasonIcon` in place of its four optimized season files (its own differ from the website's: the website's drawings show after); its installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): nothing; it follows the rule.
 
 ## Seasonal Bingo Royale
 
@@ -362,6 +363,7 @@ reachable on every phone.
 ### Since v0.28.0
 
 - **Icons, operator address** (K83, K85): `seasons.css` and `SeasonIcon` in place of its copies of the four optimized season files, which equal the website's; its installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): nothing beyond checking that `docs/operator-guide.md` has the update and uninstall sections.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
@@ -457,6 +459,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.28.0
 
 - **Icons, operator address** (K83, K85): season icons from the kit if it shows any; its Docker installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): `deploy/install.sh` moves to `ops/install.sh`; `docs/INSTALL.md` and `docs/OPERATIONS-CASES.md` (branch `kit/v0.17-adoption`) are joined into `docs/operator-guide.md`, keeping their content, at its next adoption.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

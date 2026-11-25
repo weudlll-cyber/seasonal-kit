@@ -23,6 +23,7 @@ installer, and the working rule for checks.
 
 - **The header's brand link is a 44 px target** (K84): its box grows (19–38 px before); the logo
   and the header's height stay.
+- **Every game has a one-command install and an operator guide** (K86; HANDBOOK).
 - **The working rule for checks** (K82; HANDBOOK, CLAUDE.md): one browser spec file locally where a
   change touches what it checks; no waiting for CI between pieces.
 
@@ -47,6 +48,11 @@ installer, and the working rule for checks.
 - **Seasonal Cases:** its Docker installer copies the kit's whole `ops/` folder, not
   `ops/backup.sh` alone (the script fails without `ops/lib/`), and uses `sk_operator_email` when it
   moves. If it shows season icons, the kit's; else nothing.
+- **K86, install and guide:** **Mini Games and Bingo Royale:** nothing, they follow it (Bingo checks
+  that its guide has the update and uninstall sections). **Seasonal Cases:** moves
+  `deploy/install.sh` to `ops/install.sh` and joins `docs/INSTALL.md` and
+  `docs/OPERATIONS-CASES.md` into `docs/operator-guide.md` at its next adoption, keeping their
+  content.
 
 ## [0.27.0] - 2026-11-26
 

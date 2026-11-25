@@ -19,6 +19,10 @@ kit=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 chmod 0755 "$work"
+# A copy anyone may read: the check without root runs it, and a CI checkout lies in a home
+# folder that other users cannot enter.
+cp -r "$kit/ops" "$work/ops"
+chmod -R a+rX "$work/ops"
 export W=$work LOG=$work/calls
 
 failures=0
@@ -109,7 +113,7 @@ game_route_settings() {
   SK_ROUTE_MODE=nginx SK_ROUTE_FILE=$work/srv/routes/gm-\$1.conf
   SK_ROUTE_CHECK_CMD='[[ ! -e \$W/fail.nginx ]]' SK_ROUTE_RELOAD_CMD='echo proxy-reloaded >>"\$LOG"'
 }
-source "$kit/ops/lib/admin.sh"
+source "$work/ops/lib/admin.sh"
 sk_admin_main "\$@"
 EOF
 

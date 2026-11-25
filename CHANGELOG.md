@@ -9,11 +9,16 @@ applies it.
 
 ### Added
 
+- **`writeCheck({ crossOrigin })`**: named writes another site's page may make, by method, exact
+  path and exact origins; the request passes its `url`.
 - **`guardedFetch({ localOrigins })`**: exact origins from a game's server configuration that may
   be reached over plain http and at a private or container address; every other rule stays.
 
 ### Migration, per game
 
+- **Mini Games:** list `POST /api/v1/auth/handoff` with its embed origins, pass `url: request.url`,
+  and drop the path exemption in `auth/sessionPlugin.ts`. **Seasonal Cases and Bingo Royale:**
+  nothing.
 - **Mini Games:** read `SMG_WEBSITE_LOCAL_URL` through `localOrigins` and drop the plain fetch and
   `readLimited` of `integration/accountFeed.ts`. **Seasonal Cases:** move its account feed's plain
   fetch onto it. **Bingo Royale:** nothing.

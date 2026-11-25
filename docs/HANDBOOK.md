@@ -242,6 +242,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Calls to the website on the same machine** (v0.27.0): `guardedFetch({ localOrigins })` with the
   origins from the server's configuration, never from a user's or admin's input; no plain `fetch`
   and never `allowLocal` in production.
+- **A write from another site** (v0.27.0): named in `writeCheck({ crossOrigin })`, never skipped by
+  a path exemption.
 - **Game bar gutter** (v0.27.0): a game whose page has its own gutter sets `--sk-bar-gutter: 0`
   instead of overriding the bar's padding.
 - **Phone layouts** (K65): the folded header's brand keeps its longest word, the back link's words wrap,

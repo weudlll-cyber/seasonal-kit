@@ -166,3 +166,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Games, 2026-11-25). Closed in v0.27.0 (`securityHeaderSet`, its test).
 - **41. The game bar indented twice inside a page with a gutter** (Mini Games, 2026-11-25).
   Closed in v0.27.0 (`--sk-bar-gutter`, `showcase/layout.spec.ts`).
+- **42. No way to call a configured local address through the guarded fetch** (Mini Games,
+  2026-11-25). Closed in v0.27.0 (`localOrigins`, `guardedFetch.test.ts`).

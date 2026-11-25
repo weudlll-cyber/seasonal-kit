@@ -7,8 +7,16 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- **`guardedFetch({ localOrigins })`**: exact origins from a game's server configuration that may
+  be reached over plain http and at a private or container address; every other rule stays.
+
 ### Migration, per game
 
+- **Mini Games:** read `SMG_WEBSITE_LOCAL_URL` through `localOrigins` and drop the plain fetch and
+  `readLimited` of `integration/accountFeed.ts`. **Seasonal Cases:** move its account feed's plain
+  fetch onto it. **Bingo Royale:** nothing.
 - **Mini Games:** set `--sk-bar-gutter: 0` where the page already has a gutter. **Seasonal Cases and
   Bingo Royale:** nothing.
 - A game that uses `securityHeaderSet`: pass `secure: true` where it is served over https; an inline

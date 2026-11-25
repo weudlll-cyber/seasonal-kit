@@ -7,6 +7,23 @@ applies it.
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-11-26
+
+The hardening of a game's containers (K89).
+
+### Added
+
+- **`findWeakContainers`** in `@seasonal/kit/testing`: names each hardening setting a game's
+  Compose file lacks. The settings are in OPERATIONS.md "Container hardening".
+
+### Migration, per game
+
+- **Bingo Royale and Mini Games:** add `read_only` with its `tmpfs`, `cap_drop: [ALL]` and the four
+  capabilities to the database service (their app services have the settings already), and a test
+  that calls the check. A proxy service names the capabilities it needs, or says why it is
+  unchecked. Rehearse an upgrade with existing data first.
+- **Seasonal Cases:** the same in its Docker install; its app service has the settings already.
+
 ## [0.30.0] - 2026-11-26
 
 The basic security of a standalone game's server (K88).
@@ -1549,7 +1566,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...HEAD
+[0.31.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...v0.28.0

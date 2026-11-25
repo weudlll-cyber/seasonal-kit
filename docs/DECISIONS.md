@@ -383,3 +383,10 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   backup stays as it is for the server side: the units `print-units` writes keep requiring
   `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
   paths. Cases moves to Docker first, then takes the kit's backup unchanged.
+- **K77 — The kit's part of the one shared call** (owner, decided 2026-11-25; built 2026-11-26 on
+  branch `feat/shared-call-slot`, not merged: it waits for the website's part). From the website's
+  [concepts/shared-call.md](https://github.com/weudlll-cyber/seasonal-entertainment/blob/master/docs/concepts/shared-call.md)
+  at `cc743b9`: a member already in the call sees in the game only a note that they are in the call
+  (no picture), there is only ever one shared call, and every organiser and admin may share one.
+  `SharedCallSlot` frames `/embed/call/shared` with no call number and shows only while a call is
+  live; `BackToCall` links to it. The note and who may share are the website's.

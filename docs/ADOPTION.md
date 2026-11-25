@@ -194,6 +194,7 @@ Each step pins the newest tag; a step never mixes two tags.
 ### Since v0.26.0
 
 - **Website stand-in** (K74): the contract half of `e2e/websiteStub.ts` (authorize, identity, login, chat page) becomes `startWebsiteStandIn`; its nginx stack with the game's real route file, the database and the account-changes feed stay. Only on the owner's word.
+- **Shared call** (K77, not released): its call slot becomes `SharedCallSlot` with `BackToCall` on the result screen; no call-id field. Only on the owner's word, once released.
 
 ## Seasonal Bingo Royale
 
@@ -346,6 +347,7 @@ reachable on every phone.
 ### Since v0.26.0
 
 - **Website stand-in** (K74): the stand-in proxy of `e2e/websiteStack.ts` becomes `startWebsiteStandIn` (its `stub_user` cookie becomes `se.sid` from `sessionCookie`); the database per worker and `expireSessions` stay. Only on the owner's word.
+- **Shared call** (K77, not released): render `SharedCallSlot` in the docked chat and `BackToCall` after a round. Only on the owner's word, once released.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
@@ -433,6 +435,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.26.0
 
 - **Website stand-in** (K74): `e2e/websiteStub.ts`'s contract half becomes `startWebsiteStandIn`; its Vite middleware serves the client as the stand-in's app. Only on the owner's word.
+- **Shared call** (K77, not released): `SharedCallSlot` where its show leaves room and `BackToCall` on the result. Only on the owner's word, once released.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

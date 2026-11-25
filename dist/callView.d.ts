@@ -63,6 +63,7 @@ export type ToCall = {
     readonly visible: boolean;
 };
 export declare const isCallId: (value: unknown) => value is number;
+export declare function sharedCallEmbedUrl(theme: EmbedTheme, path?: string): string;
 export declare function callEmbedUrl(callId: number, theme: EmbedTheme, path?: string): string;
 export declare function parseCall(data: Fields): FromCall | null;
 export interface CallLinkOptions {
@@ -72,3 +73,4 @@ export interface CallLinkOptions {
     readonly origin?: string;
 }
 export declare function connectCall(options: CallLinkOptions): FrameLink<ToCall>;
+export declare function connectSharedCall(options: Omit<CallLinkOptions, 'callId'>): FrameLink<ToCall>;

@@ -57,6 +57,8 @@ export {
 export {
   callEmbedUrl,
   connectCall,
+  connectSharedCall,
+  sharedCallEmbedUrl,
   type CallLinkOptions,
   type CallStatus,
   type FromCall,

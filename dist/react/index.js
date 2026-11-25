@@ -25,6 +25,7 @@ export { GameBar, } from './GameBar.js';
 export { PhaseStrip } from './PhaseStrip.js';
 export { useFocusMode } from './useFocusMode.js';
 export { useFullscreen } from './useFullscreen.js';
+export { BackToCall, SharedCallSlot, } from './SharedCall.js';
 export { StepBadges } from './StepBadges.js';
 export { useApiGet } from './useApiGet.js';
 export { useCountdown } from './useCountdown.js';

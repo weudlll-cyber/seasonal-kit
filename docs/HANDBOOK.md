@@ -225,6 +225,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Backups:** `ops/backup.sh` (backup, restore, drill, the nightly timer's units) and the pull scripts,
   shipped in the package and set by `SK_BACKUP_*` variables (K61, [OPERATIONS.md](OPERATIONS.md)); the
   game wires them and keeps its own compose files and key checks.
+- **Shared call** (K77, branch, not released): `SharedCallSlot` and `BackToCall` for the one call
+  shared with the games.
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.
 - **Season feed:** `seasonFeedReader` with `guardedFetch({ allowedHosts })` or the game's own (K62).
 - **API calls** (K70): `createApiClient` with `ApiError` as the one error shape, and `useApiGet` for a

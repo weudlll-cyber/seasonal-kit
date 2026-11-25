@@ -7,6 +7,12 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- **`SharedCallSlot`, `BackToCall`, `connectSharedCall` and `sharedCallEmbedUrl`** (K77): the kit's
+  part of the one shared call, against the website's concept; not released until the website
+  provides `/embed/call/shared`.
+
 ## [0.26.0] - 2026-11-26
 
 The website's stand-in for the games' browser tests (DECISIONS K74). Opt-in, test code only.

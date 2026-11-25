@@ -234,3 +234,28 @@ game's `game_cmd_<word> <env> …`.
 | `game_usage`                      | optional                | The game's own usage lines.                                                                                                                  |
 | `game_route_settings <env>`       | uninstall, website mode | Sets `SK_ROUTE_MODE`, `_FILE`, `_CHECK_CMD`, `_RELOAD_CMD`; no file, no route.                                                               |
 | `game_uninstall_extra <env>`      | optional                | Removes what only the game knows.                                                                                                            |
+
+## The host baseline
+
+`ops/lib/host-baseline.sh` gives a **standalone** game's server (Ubuntu 24.04) its basic security
+(K88). The installer sources it and calls `sk_host_baseline standalone`, or `website`, where it
+says that the website's installer owns the host and changes nothing.
+
+It only adds, never removes, and skips each step already in place with a sentence:
+
+1. **Firewall (ufw):** allows the ports SSH really uses (every `port` of `sshd -T`, and the port of
+   the operator's own connection), 80 and 443, **then** turns ufw on. Without an SSH port, or if a
+   rule cannot be added, ufw is not turned on.
+2. **Automatic security updates:** installs `unattended-upgrades` and, if they are off, writes
+   `/etc/apt/apt.conf.d/52seasonal-auto-upgrades`.
+3. **fail2ban:** installs it and writes the SSH jail `/etc/fail2ban/jail.d/seasonal-sshd.conf` for
+   those ports.
+
+It **never changes the SSH configuration**: it reports whether root and password login are allowed,
+with advice. A firewall at the hosting provider must allow the same ports. Ports a game publishes
+through Docker bypass ufw, so a game publishes its app on loopback only.
+
+| Variable           | Needed for | Meaning                                         |
+| ------------------ | ---------- | ----------------------------------------------- |
+| `SK_HOST_APT_CONF` | optional   | Default `/etc/apt/apt.conf.d` (for the tests).  |
+| `SK_HOST_JAIL_DIR` | optional   | Default `/etc/fail2ban/jail.d` (for the tests). |

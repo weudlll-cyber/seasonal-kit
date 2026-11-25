@@ -426,3 +426,8 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   Royale's `sbr`, with update, confirm and rollback, and an uninstall of exactly one environment
   that asks for its name. The backups stay unless `--purge-backups` is given, because a backup cannot
   be made again; an unknown option of uninstall stops it.
+- **K88 — A standalone install secures its host** (2026-11-26). The kit's `sk_host_baseline` turns
+  on the firewall (SSH's real ports first, then 80 and 443), automatic security updates and a
+  fail2ban SSH jail, only adding. It never changes the SSH configuration, only reports it, because a
+  wrong change locks the owner out. In website mode it does nothing: the website's installer owns
+  the host.

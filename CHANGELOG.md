@@ -7,6 +7,22 @@ applies it.
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-26
+
+The basic security of a standalone game's server (K88).
+
+### Added
+
+- **`ops/lib/host-baseline.sh`**: `sk_host_baseline` allows SSH's real ports, 80 and 443 and
+  turns the firewall on, turns on automatic security updates and adds a fail2ban SSH jail. It only
+  adds, never changes the SSH configuration, and does nothing in website mode.
+
+### Migration, per game
+
+- **Bingo Royale and Mini Games:** the installer calls `sk_host_baseline` with its install mode;
+  the operator guide's manual firewall, update and fail2ban steps go (the SSH advice stays).
+- **Seasonal Cases:** its Docker installer calls it.
+
 ## [0.29.0] - 2026-11-26
 
 The admin command every game shares (K87), from Bingo Royale's `sbr`.
@@ -1533,7 +1549,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...HEAD
+[0.30.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...v0.27.0

@@ -106,3 +106,29 @@ Its compose files and env file, the seed-key check after a drill (Bingo's `check
 database roles it re-grants after a restore (Bingo's `apply_db_roles`), and the words of its operator
 guide. A game that needs a step the script does not have runs it in `SK_BACKUP_STOP_CMD` or
 `SK_BACKUP_START_CMD`, or after the restore.
+
+## The website's route file (since v0.25.0, K72)
+
+`ops/lib/website-route.sh` is the installer's route-file step of a website install. A game's
+installer sources it from the package, sets the variables and calls `sk_route_install`; or prints
+the content with `sk_route_nginx` / `sk_route_caddy`. It writes only the game's own file, mode
+0600 (it holds the proxy secret), into the folder the website's proxy already imports, checks the
+proxy, puts the earlier file back when the proxy refuses it, and reloads. Every value is checked
+first, so none can add a directive; the secret is never printed.
+
+| Variable                    | Meaning                                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `SK_ROUTE_GAME`             | The game's slug at the website, e.g. `mini-games`.                                                                |
+| `SK_ROUTE_BASE`             | The path it is served under, e.g. `/games/mini-games`.                                                            |
+| `SK_ROUTE_SECRET_HEADER`    | The header that carries the proxy secret, e.g. `X-Smg-Proxy-Secret`.                                              |
+| `SK_ROUTE_SECRET`           | The proxy secret (letters, digits and `._~+/=-`); read it from the env file, never type it on a command line.     |
+| `SK_ROUTE_APP`              | The app as the proxy reaches it, `host:port`.                                                                     |
+| `SK_ROUTE_WEBSITE`          | The website as the proxy reaches it, `host:port`.                                                                 |
+| `SK_ROUTE_AUTHORIZE`        | Optional: the website's authorize path, default `/api/games/<game>/authorize`.                                    |
+| `SK_ROUTE_IDENTITY_HEADERS` | Optional: the identity headers passed on, default the website's seven.                                            |
+| `SK_ROUTE_MODE`             | `nginx` or `caddy` (for `sk_route_install`).                                                                      |
+| `SK_ROUTE_FILE`             | The route file's absolute path, ending `.conf` or `.caddy`.                                                       |
+| `SK_ROUTE_CHECK_CMD`        | The proxy's own check, e.g. `nginx -t -q`, or `docker exec <caddy> caddy validate --config /etc/caddy/Caddyfile`. |
+| `SK_ROUTE_RELOAD_CMD`       | The proxy's reload, e.g. `systemctl reload nginx`.                                                                |
+
+The game keeps its end-of-install check through the website and its own compose names.

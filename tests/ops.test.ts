@@ -20,7 +20,8 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string): string => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const pkg = JSON.parse(read('package.json')) as { files: string[] };
 const BACKUP = ['ops/backup.sh', 'ops/lib/backup-core.sh', 'ops/lib/backup-restore.sh'];
-const SHIPPED = [...BACKUP, 'ops/pull-backups.sh', 'ops/pull-backups.ps1'];
+const ROUTE = 'ops/lib/website-route.sh';
+const SHIPPED = [...BACKUP, ROUTE, 'ops/pull-backups.sh', 'ops/pull-backups.ps1'];
 // The entry and its libraries are one script to the shell, so they are read as one.
 const script = BACKUP.map(read).join('\n');
 const docs = read('docs/OPERATIONS.md');
@@ -71,5 +72,20 @@ describe('the settings', () => {
     ]) {
       expect(inDocs.has(`SK_BACKUP_${name}`), name).toBe(true);
     }
+  });
+});
+
+describe('the route file settings', () => {
+  const route = read(ROUTE);
+  const inScript = new Set(route.match(/SK_ROUTE_[A-Z_]+[A-Z]/g));
+  const inDocs = new Set([...docs.matchAll(/^\| `(SK_ROUTE_[A-Z_]+)`/gm)].map((m) => m[1]));
+
+  it('are exactly the ones docs/OPERATIONS.md lists', () => {
+    expect([...inDocs].sort()).toEqual([...inScript].sort());
+  });
+
+  it('the library never traces and never prints the secret', () => {
+    expect(route).not.toMatch(/set -[a-z]*x/);
+    expect(route).not.toMatch(/(echo|printf)[^\n]*\$\{?SK_ROUTE_SECRET\b/);
   });
 });

@@ -11,6 +11,13 @@ applies it.
 
 Operations parts (DECISIONS K71 onwards). Opt-in; nothing runs unless a game runs it.
 
+### Added
+
+- **`ops/lib/website-route.sh`** (K72): the installer's route-file step of a website install, for nginx
+  and Caddy, from Mini Games' `website-route.sh` (itself from Bingo Royale's): writes the game's own
+  route file, checks, restores on refusal and reloads. Tested against the real nginx and Caddy,
+  imported as the website's configuration imports it.
+
 ### Changed
 
 - **`ops/backup.sh` is split** (K71): the entry sources `ops/lib/backup-core.sh` and

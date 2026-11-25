@@ -352,3 +352,10 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   2026-11-26, v0.25.0). `ops/backup.sh` is the entry (94 lines) and sources `ops/lib/backup-core.sh`
   and `ops/lib/backup-restore.sh`, which ship beside it: the same functions, commands and variables;
   the drill test passes unchanged. A game keeps calling `ops/backup.sh`.
+- **K72 — The kit ships the installer's route-file step** (decided 2026-11-25 on
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) section 6, built 2026-11-26,
+  v0.25.0). `ops/lib/website-route.sh` writes a game's own file into the website's routes folder
+  (nginx `include …/routes/*.conf`, Caddy `import /etc/caddy/routes/*.caddy`), never a website
+  file; the content is Mini Games' (from Bingo's), with the game's names and upstreams as
+  `SK_ROUTE_*` variables, each checked so none can add a directive. The rest of the installer stays
+  in the games.

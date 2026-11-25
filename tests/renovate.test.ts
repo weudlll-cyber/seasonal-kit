@@ -70,7 +70,8 @@ describe('Renovate and the scanner images', () => {
       const groups = match.exec(line)?.groups;
       expect(groups, line).toBeDefined();
       expect(groups?.['depName']).toMatch(/^[\w.-]+(\/[\w.-]+)+$/);
-      expect(groups?.['currentValue']).toMatch(/^v?\d+\.\d+\.\d+$/);
+      // `-alpine` is an image's variant: Renovate's Docker versioning keeps it on updates.
+      expect(groups?.['currentValue']).toMatch(/^v?\d+\.\d+\.\d+(-alpine)?$/);
       expect(groups?.['currentDigest']).toMatch(/^sha256:[a-f0-9]{64}$/);
     }
   });

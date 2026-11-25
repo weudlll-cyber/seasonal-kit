@@ -37,6 +37,8 @@ concurrency:
 env:
   OSV_SCANNER_IMAGE: ghcr.io/google/osv-scanner:v2.7.0@sha256:4f3b7e2c64b9d38a5febc5a7e4a3dfef1d1362f726dea7a2ef4762b46469fcd0
   GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+  NGINX_IMAGE: docker.io/library/nginx:1.27.5-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+  CADDY_IMAGE: docker.io/library/caddy:2.11.9-alpine@sha256:003a97808e781aa9f7e75cc2f43d34d461099031faf5e20faefb9f61126836f0
   SHELLCHECK_IMAGE: koalaman/shellcheck:v0.10.0@sha256:2097951f02e735b613f4a34de20c40f937a6c8f18ecb170612c88c34517221fb
   LYCHEE_IMAGE: lycheeverse/lychee:0.24.2@sha256:e2d19e57cf6ab037026f20b8e449a1f30d9d7f81eef4194763aab2eab20bd28d
 
@@ -112,8 +114,9 @@ jobs:
             --exclude-path node_modules '**/*.md'
 
   ops:
-    # The backup scripts (ops/, docs/OPERATIONS.md): shellcheck, then back up a real PostgreSQL,
-    # restore into a fresh one and compare (ops/test/backup.test.sh). Not a required check.
+    # The ops scripts (ops/, docs/OPERATIONS.md): shellcheck; back up a real PostgreSQL, restore
+    # into a fresh one and compare (ops/test/backup.test.sh); and the website route file in the
+    # real nginx and Caddy (ops/test/website-route.test.sh). Not a required check.
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -122,11 +125,13 @@ jobs:
           # The job token stays off the disk: no step pushes (audit 2026-11-22).
           persist-credentials: false
       - name: shellcheck
-        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" ops/backup.sh ops/pull-backups.sh ops/test/backup.test.sh
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/website-route.test.sh
       - name: age
         run: sudo apt-get install -y -q age
       - name: Back up, drill and restore on a real PostgreSQL
         run: bash ops/test/backup.test.sh
+      - name: The route file in the real nginx and Caddy
+        run: bash ops/test/website-route.test.sh
 
   showcase:
     # Every component in 5 viewports × 2 themes: axe finds nothing serious or critical

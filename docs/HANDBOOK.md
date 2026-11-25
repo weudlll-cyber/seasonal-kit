@@ -213,6 +213,10 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); the
   rules and keys stay in the game.
 - **Rate limiter:** `RateLimiter` with the game's own rules, for the routes other than sign-in.
+- **Load checks:** `latencies`, `inBatches` and `watchServer` of the testing entry (K73); the scenarios
+  and targets stay in the game.
+- **Route file:** `ops/lib/website-route.sh` writes a website install's route file for nginx or Caddy
+  (K72); the game keeps the rest of its installer.
 - **Backups:** `ops/backup.sh` (backup, restore, drill, the nightly timer's units) and the pull scripts,
   shipped in the package and set by `SK_BACKUP_*` variables (K61, [OPERATIONS.md](OPERATIONS.md)); the
   game wires them and keeps its own compose files and key checks.

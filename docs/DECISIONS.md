@@ -348,3 +348,20 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   so it maps at adoption; the kit does not carry its shape. `createApiClient` sends the CSRF token on
   writes and gives `onAnswer` every answer, so a game keeps its own rule for a lost session.
   `useApiGet` gives idle, loading, ready or failed with the whole error, tied to its path.
+- **K71 — The backup script is split under the 300-line rule** (decided 2026-11-25, built
+  2026-11-26, v0.25.0). `ops/backup.sh` is the entry (94 lines) and sources `ops/lib/backup-core.sh`
+  and `ops/lib/backup-restore.sh`, which ship beside it: the same functions, commands and variables;
+  the drill test passes unchanged. A game keeps calling `ops/backup.sh`.
+- **K72 — The kit ships the installer's route-file step** (decided 2026-11-25 on
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md) section 6, built 2026-11-26,
+  v0.25.0). `ops/lib/website-route.sh` writes a game's own file into the website's routes folder
+  (nginx `include …/routes/*.conf`, Caddy `import /etc/caddy/routes/*.caddy`), never a website
+  file; the content is Mini Games' (from Bingo's), with the game's names and upstreams as
+  `SK_ROUTE_*` variables, each checked so none can add a directive. The rest of the installer stays
+  in the games.
+- **K73 — The kit ships the load check's measuring helpers** (decided 2026-11-25 on section 8 of
+  [concepts/shared-server-parts.md](concepts/shared-server-parts.md), "helper only", built
+  2026-11-26, v0.25.0). `latencies`, `inBatches` and `watchServer` are in the testing entry:
+  Bingo Royale's nearest-rank percentiles (Mini Games' rounded one rank up) and its metrics sampler
+  with Mini Games' summary, the metric prefix a parameter. Scenarios, targets and sign-in stay in
+  each game.

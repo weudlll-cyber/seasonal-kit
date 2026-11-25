@@ -186,6 +186,11 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Countdown** (K69): its offset comes from `syncClock`'s three round trips passed to `clockOffset`; `useTicker` for the countdown to the open becomes `useCountdown` or the card's `opensAt` (the cooldown ring keeps `useTicker`). Only on the owner's word.
 - **API client** (K70): `shell/http.ts` becomes `createApiClient({ csrf, onAnswer: (r) => signInAgainAfter(r, SESSION_ENDED_HEADER) })`; its `refusal` field is read from `ApiError.body`; `boards/useApi.ts` becomes `useApiGet`. Only on the owner's word.
 
+### Since v0.25.0
+
+- **Backup split and route file** (K71, K72): nothing to do for the split (it calls `ops/backup.sh`); `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
+- **Load helpers** (K73): `load/measure.mjs`'s `spread` and `metricsSampler` become `latencies` and `watchServer({ prefix: 'smg_' })`; its percentiles move one rank down (nearest rank). Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -329,6 +334,11 @@ reachable on every phone.
 - **Countdown** (K69): `useSecondsUntil` (which counts on the page's clock) becomes `useCountdown`, with the offset from a server time in an answer it already gets, or a `time.sync` intent. This fixes a wrong countdown on a wrong clock. Only on the owner's word.
 - **API client** (K70): `shell/http.ts` becomes `createApiClient` with its CSRF token and `onAnswer` reporting a lost session (401 or `CSRF_INVALID`); `league/useApiGet.ts` becomes `useApiGet` (the failed state carries the whole error). A network failure is now `ApiError(0, 'NO_ANSWER')`. Only on the owner's word.
 
+### Since v0.25.0
+
+- **Backup split and route file** (K71, K72): its `write_nginx_route` / `write_caddy_route` and `apply_route_file` become `sk_route_install` with `SK_ROUTE_SECRET_HEADER=X-Sbr-Proxy-Secret`; its final checks stay. Only on the owner's word.
+- **Load helpers** (K73): `load/common.mjs`'s percentiles, `inBatches` and `watchServer` become the kit's with `prefix: 'sbr_'`; the CPU is reported in cores, not percent. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -406,6 +416,11 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 - **Step badges** (K68): `stage/Badges.tsx` takes `StepBadges` once its contract sends the full step (`{ ladder, name, icon }`, as the website's header does) in place of `badges: string[]`; until then it stays. Only on the owner's word.
 - **Countdown** (K69): none today; a show with a start time passes `opensAt` to `StartCard` with the offset from an answer that carries the server's time. Only on the owner's word.
 - **API client** (K70): `lib/api.ts` (`getJson`, `postJson`) becomes `createApiClient({ prefix: 'api' })`. Cases' server answers `{ error: sentence }`; its screens read `ApiError.body.error` for the sentence, and `ApiError.code` is `ERROR` until its server sends `code`. `useAction` stays. Only on the owner's word.
+
+### Since v0.25.0
+
+- **Backup split and route file** (K71, K72): its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
+- **Load helpers** (K73): none today; its first load check starts from `latencies` and `watchServer`. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

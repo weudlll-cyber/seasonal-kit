@@ -23,6 +23,15 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `master` has its own `ChatDock` around the kit's frame. The chat frame's link (9a) and the
   dock's arrivals and `DockedScreen` (9b) are closed (part two).
 
+- **27. Shared client parts and test tools** (2026-11-26). The comparison of what the three games
+  built on the client side and for their browser tests is written:
+  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) (Bingo `8d20904`, Mini Games
+  `9e3c6f3`, Cases `073f9ad`). It recommends eight candidates in an order (the screenshot and theme
+  helper and the static guards first, then the fit probe and size sweep, steps in lists, the countdown,
+  the API client, the website stand-in, base components CSS, the socket client and season icons) and
+  names what stays in the games. Nothing is built. Done when: the owner says which parts to build, each
+  then becomes its own item.
+
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the

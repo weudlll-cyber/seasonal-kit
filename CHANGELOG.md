@@ -9,6 +9,13 @@ applies it.
 
 ### Added
 
+- **`sessionCookie`, `sessionCookieOptions`, `writeCheck`, `securityHeaderSet`, `renderPolicy` and
+  `securityHeadersHook`** in `@seasonal/kit/server` (DECISIONS K63, K60): the session cookie's name
+  and attributes with a `Max-Age` equal to the session's absolute length (Bingo's); the CSRF check for
+  state-changing requests (`Sec-Fetch-Site`, `Origin` against the request's host, the forwarded host
+  believed only from the trusted proxy's TCP peer, a write naming neither refused; from Cases'
+  `sameSiteWrites`); and the security headers as data (Bingo's strict policy with Mini Games'
+  ancestors and admin rules, no HSTS) with a Fastify hook. No game changes until it adopts.
 - **`guardedFetch` and `isPublicAddress`** in `@seasonal/kit/server` (DECISIONS K62): a fetch with
   the shape `seasonFeedReader` takes, that connects only to public addresses (checked inside the
   socket's lookup, so DNS rebinding cannot pass), https only, no redirects, a timeout over the whole

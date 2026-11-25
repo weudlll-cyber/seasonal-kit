@@ -482,6 +482,28 @@ type still import and compile.
 
 Both consumers were deleted afterwards.
 
+## The v0.20.0 `sideEffects` field and a consumer's bundle, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.20.0` (merge commit `61022ec`), both with `ignore-scripts=true`
+(React 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5, **Vite 8.3.5 building the consumer**). Each
+has a one-file entry that imports three of the kit's stylesheets (`tokens.css`, `header.css`,
+`bar.css`) and one value (`MIN_POINTER_TARGET`), ran `tsc`, `vite build` and four tests on what the
+build wrote:
+
+- the installed package is `0.20.0` and says `"sideEffects": ["**/*.css"]`;
+- **the bundle keeps the CSS**: the built stylesheet holds `--sk-color-spring`, `.sk-header-chip`
+  and `.sk-bar-button`, though no JavaScript names any of them;
+- **and drops the JavaScript that was not used**: the built script (0.69 kB) has no `watchFit`,
+  `seasonFeedReader` or `linkFrame`;
+- the installed `CallFrame.js` carries `strict-origin` and `GameBar.js` carries `aria-controls`.
+
+| Consumer                 | Install                                                                                                   | `tsc`  | Build | Tests    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- | ------ | ----- | -------- |
+| pnpm 12.14.0, Vite 8.3.5 | Worked. The lockfile resolved the tag to the merge commit's tarball (`codeload…/tar.gz/61022ec…`).        | Worked | Built | 4 passed |
+| npm 11.19.0, Vite 8.3.5  | Worked. `npm ls` shows the kit `0.20.0` at `…seasonal-kit.git#61022ec…` with the consumer's `vite` 8.3.5. | Worked | Built | 4 passed |
+
+Both consumers were deleted afterwards.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

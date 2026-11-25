@@ -18,10 +18,12 @@
  *                 - the game bar's facts wrap instead of ending in "…", never narrower than their
  *                   widest word, the buttons stay in one row, and the bar's padding is the
  *                   gutter tokens' (0.5rem on a phone, 0.25rem under 400 px).
- * Depends on:     @playwright/test, ./Headers.tsx and ./Showcase.tsx (the fixtures)
+ * Depends on:     @playwright/test, ./screens, ./Headers.tsx and ./Showcase.tsx (the fixtures)
  * Source:         new in the kit (Seasonal Cases' planning, 2026-11-25).
  */
 import { expect, test, type Page } from '@playwright/test';
+
+import { settled } from './screens.js';
 
 // Cases' own rule (its shell.css line 195), which the kit now has in its own form.
 const CASES_RULE =
@@ -43,7 +45,7 @@ async function open(page: Page, { width, height, theme, font = 16 }: Setting) {
   await page.goto(`/?theme=${theme}`);
   await page.addStyleTag({ content: `html { font-size: ${String(font)}px; }` });
   // Boxes measured while a web font is still on its way would move under the test.
-  await page.evaluate(() => document.fonts.ready);
+  await settled(page);
 }
 
 const casesHeader = (page: Page) => page.getByTestId('cases-header').getByTestId('app-header');

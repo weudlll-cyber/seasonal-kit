@@ -22,6 +22,11 @@
  * Spec:           Mini Games DECISIONS O46, O47, O92, O97
  */
 
+/* A game's to set (see below); `initial` leaves each width its own padding. */
+:where(:root) {
+  --sk-bar-gutter: initial;
+}
+
 .sk-game-bar {
   display: flex;
   align-items: center;

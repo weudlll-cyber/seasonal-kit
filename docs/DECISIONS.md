@@ -391,3 +391,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   header is `display: flex`) and before the fonts do (at 673 ms, no face loaded). There the header
   needed 1228 px in the fallback font and 1230 px in Luxora, so the font swap alone does not explain
   Cases' fold at 1536 px, which was not reproduced; it stayed because only a wider window unfolded.
+- **K80 — One CI run per push** (2026-11-26). CI runs on push only for `master` and on pull
+  requests against `master`; a work branch has a draft PR from its first push. Mini Games
+  (`branches: ['**', '!shots/**']`) and Seasonal Cases (`branches: ['**']`) ran two identical runs
+  per push; the kit, the website and Bingo Royale already follow the rule.

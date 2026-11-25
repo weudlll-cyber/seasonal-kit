@@ -7,6 +7,12 @@ applies it.
 
 ## [Unreleased]
 
+### Migration, per game
+
+- **Mini Games and Seasonal Cases:** set `push.branches` to `[master]` in
+  `.github/workflows/ci.yml` (K80).
+- **Bingo Royale:** nothing for K80.
+
 ### Fixed
 
 - **Docs:** ADOPTION.md says how Cases reads the season feed now.

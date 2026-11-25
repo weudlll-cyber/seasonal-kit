@@ -262,6 +262,17 @@
   width: 100%;
 }
 
+/* In the folded menu a long chip (the website's longest name and role, and three step icons)
+   wraps inside the panel instead of running past the window's edge: 450 px on a 320 to 375 px
+   phone before (night audit 2026-11-25, piece 6). A chip that fits is unchanged. */
+.sk-header[data-sk-folded='true'] .sk-menu .sk-header-chip {
+  max-width: 100%;
+  padding-block: 0.25rem;
+  flex-wrap: wrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 /* Inside the scrolling panel the dev menu opens in the flow, not over it (it would be cut). */
 .sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu-panel {
   position: static;

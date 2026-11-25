@@ -14,9 +14,14 @@ and each step is a game PR the owner approves (DECISIONS K1, K15).
 A path and line count below that this check did not change is as it was at the first plan
 (Mini Games `866df03`, Bingo `a43209a`, 2026-11-21).
 
-Where each game stands:
+**Update, 2026-11-25** (each game's `origin/master`): Mini Games `1988346` pins v0.18.0 (PR #53: v0.14's token names, PR #54: the server's
+`RateLimiter` and `SessionEnds`, PR #55: v0.18.0's fit option);
+Bingo Royale `2380ea7` and Seasonal Cases `073f9ad` pin v0.11.1; Seasonal Party `a09f803` pins
+none. The bullets below are the 2026-11-23 state, kept as the plan's history.
 
-- **Mini Games** uses no kit release yet.
+Where each game stood on 2026-11-23:
+
+- **Mini Games** used no kit release yet.
 - **Bingo's adoption branch** pins v0.10.1 and has moved its tokens, fonts, motion, theme, chat
   frame, dev sign-in and server checks onto the kit. It kept its own header, back link, rate
   limiter and final placement until the kit had its requests R1–R4, all in v0.11.0.

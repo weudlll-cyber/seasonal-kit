@@ -13,7 +13,9 @@ Royale `3b8a58e`, Seasonal Cases `073f9ad`; kit `master` `97b8238`. Mini Games' 
 is not on its `master` (a search of the tree finds none), so what it asks for is taken from the
 kit's BACKLOG 12 and the code that would need it.
 
-## What the kit has today
+## What the kit had then (v0.14.0, `master` `97b8238`)
+
+The line numbers below are those of that tree; ResultFrame and frames.css have changed since (v0.15.0).
 
 `ResultFrame` ([src/react/ResultFrame.tsx](../../src/react/ResultFrame.tsx) lines 57–81) renders
 one fixed order: a first part (`.sk-result-first`: headline with `lines` and `proof`, then

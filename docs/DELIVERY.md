@@ -641,6 +641,27 @@ Two scratch consumers pinned `#v0.26.0` (merge commit `0e94fef`), both with `ign
 CI on the merge commit `0e94fef`: `CI` and `CodeQL` passed. The scratch folders are left in the
 session's scratch directory, outside every repository.
 
+## The v0.27.0 fix release, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.27.0` (merge commit `b51e7ba`), both with `ignore-scripts=true`
+(React and React DOM 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5), ran `tsc` and five tests on
+the installed package:
+
+- it is `0.27.0`;
+- `guardedFetch({ localOrigins })` reaches the named local origin and refuses another address;
+- the named cross-origin write passes on its path only, the headers carry the new directives and the
+  frame address with its path, and the plain-http cookie takes the base path;
+- the installed docked screen has its named Tab stop, and `bar.css` reads `--sk-bar-gutter`;
+- `print-units`, called through `node_modules/@seasonal/kit`, writes that path, not one in `.pnpm`.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.21.0 | Worked  | Worked | 5 passed |
+| npm 11.19.0  | Worked  | Worked | 5 passed |
+
+CI on the merge commit `b51e7ba`: `CI` and `CodeQL` passed. The scratch folders are left in the
+session's scratch directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

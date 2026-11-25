@@ -231,3 +231,14 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   [NIGHT-2026-11-25.md](NIGHT-2026-11-25.md)): what changes nothing a game sees is fixed with a test that
   fails first; what would change behaviour, a public name or a default is recorded with a proposal
   for the owner (BACKLOG 26), never changed. The result is released as v0.19.1.
+- **K58 — The owner's answers on four proposals of the 2026-11-25 audit are built** (decided 2026-11-25,
+  v0.20.0; A-01, A-02, A-17, A-29 of [AUDIT-2026-11-25.md](AUDIT-2026-11-25.md)). The copyright holder of
+  the font files, read from their own name table, is recorded in `fonts/README.md` (Fontastica, 2021).
+  A `BarAction` may carry `controls`, written as the button's `aria-controls`. The call frame has
+  `referrerPolicy="strict-origin"`, as the chat frame has. `package.json` has
+  `"sideEffects": ["**/*.css"]`, and the delivery proof shows that a consumer's bundle keeps the
+  kit's CSS.
+- **K59 — Two proposals of the audit are declined** (decided 2026-11-25). A-03: `useFitScale` and
+  `watchFit` keep their positional arguments; an options object is considered when another option is
+  needed. A-05: the local branch `worktree-agent-a459ae22b757ed187` and `.claude/worktrees/` stay
+  untouched.

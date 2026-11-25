@@ -28,15 +28,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **26. The owner's word on the night audit's proposals** (2026-11-25, K57). Each is a change a
-  game could see, so none was made: A-01 name the woff2's copyright holder in `fonts/README.md`;
-  A-02 an optional `controls` id on the game bar's panel actions (`aria-controls`); A-03 the
-  positional arguments of `useFitScale` and `watchFit` (breaking to fix); A-17
-  `referrerPolicy="strict-origin"` on the call frame; A-29 a `sideEffects` field in `package.json`;
-  A-05 the stale local `worktree-agent-…` branch and `.claude/worktrees/` (never on origin). Details
-  and the smallest fix of each are in [AUDIT-2026-11-25.md](AUDIT-2026-11-25.md). Done when: the
-  owner has answered each; what is accepted becomes its own item.
-
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -137,3 +128,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `useDockArrivals`, `useDockSight` and `useDockView` (`apps/web/src/chat/ChatRoom.tsx` line 26) and
   `DockedScreen` (`apps/web/src/match/DockedMatch.tsx` line 28). Closed by that use; `ChatDock`
   and the call slot stay in item 9.
+- **26. The owner's word on the night audit's proposals** (2026-11-25, K58, K59). A-01, A-02, A-17 and
+  A-29 are built: the font's copyright holder is in `fonts/README.md`, `BarAction` takes `controls`, the
+  call frame has `referrerPolicy="strict-origin"`, `package.json` has `sideEffects`. A-03 is declined and
+  A-05 stays as it is. Closed by v0.20.0.

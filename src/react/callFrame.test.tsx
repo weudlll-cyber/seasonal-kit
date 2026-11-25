@@ -43,6 +43,8 @@ describe('the call slot with a call', () => {
     expect(frame.getAttribute('src')).toBe('/embed/call/7?theme=auto');
     expect(frame.getAttribute('allow')).toBe('autoplay; fullscreen');
     expect(frame.getAttribute('title')).toBe('Call');
+    // As the chat frame: the site gets the origin, never the path of the game's page (v0.20.0).
+    expect(frame.getAttribute('referrerpolicy')).toBe('strict-origin');
     expect(frame.getAttribute('sandbox')).toBe(
       'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox',
     );

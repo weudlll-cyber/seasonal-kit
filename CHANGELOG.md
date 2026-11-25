@@ -7,6 +7,31 @@ applies it.
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-11-26
+
+The owner's answers on four proposals of the night audit of 2026-11-25 (DECISIONS K58, K59). Every
+change is opt-in or invisible: a game that changes nothing sees today's behaviour.
+
+### Added
+
+- **`BarAction.controls`**: the id of the panel a game bar button opens, written as the button's
+  `aria-controls` (audit A-02). Left out, the button has none, as before.
+- **`"sideEffects": ["**/*.css"]`** in `package.json` (A-29): a bundler may drop unused kit
+  JavaScript and always keeps a stylesheet a game imports. The delivery proof bundles a consumer
+  and shows its CSS is in the output.
+
+### Changed
+
+- **The call frame's `referrerPolicy` is `strict-origin`** (A-17), as the chat frame's: the site
+  learns the origin, not the path of the game's page.
+- **`fonts/README.md` records the copyright holder** read from the font files' own name table (A-01):
+  Fontastica, 2021.
+
+### Migration, per game
+
+- **Mini Games, Seasonal Cases:** optional: pass `controls` on a bar action for `aria-controls`.
+- **Bingo Royale, Seasonal Party:** nothing.
+
 ## [0.19.1] - 2026-11-25
 
 The night's clean-up (DECISIONS K57): nothing in the public API changed (the shipped `dist/` is
@@ -1217,7 +1242,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...HEAD
+[0.20.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...v0.20.0
 [0.19.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.0...v0.19.1
 [0.19.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.17.0...v0.18.0

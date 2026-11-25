@@ -160,6 +160,10 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Step badges in the header** (K56): available and optional. Pass the member's steps as
   `account.steps` to `AppHeader`; without it the header is as before.
 
+### Since v0.20.0
+
+- **Game bar panel buttons** (K58): its bar may pass `controls` (the id of the panel a button opens) so the button carries `aria-controls`; the call frame now sends `strict-origin` as its referrer, as the chat frame does. Optional, no change needed.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -277,6 +281,10 @@ reachable on every phone.
 - **Step badges in the header** (K56): available and optional. Pass the member's steps as
   `account.steps` to `AppHeader`; without it the header is as before.
 
+### Since v0.20.0
+
+- **Nothing to do** (K58). Bingo has no game bar and no call slot; the package's `sideEffects` field lets its bundler drop unused kit JavaScript.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -328,6 +336,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
   identity passes its steps as they are). Each is drawn as a small icon beside the name in the
   chip and in the folded menu; an icon address other than "/media/step-icons/<32 hex>.webp" is
   not drawn. Leave the field out and the header is as before.
+
+### Since v0.20.0
+
+- **Game bar panel buttons** (K58): its bar may pass `controls` on a `BarAction` for `aria-controls`; optional. The call frame's referrer policy and the `sideEffects` field need nothing from the game.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

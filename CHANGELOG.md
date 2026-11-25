@@ -9,6 +9,7 @@ applies it.
 
 ### Fixed
 
+- **Docs:** `backup` needs Linux; a Windows drill runs in a Linux container (OPERATIONS.md).
 - **The plain-http session cookie takes the base path** (development): it had `Path=/` whatever
   `basePath` said.
 - **A docked screen's content is reachable by keyboard.** `DockedScreen`'s scrolling box is a Tab

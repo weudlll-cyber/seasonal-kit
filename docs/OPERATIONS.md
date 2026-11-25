@@ -82,6 +82,9 @@ the rows the dump carries (counted in the dump's own `COPY` blocks, so a databas
 does not matter). It prints each table's count and "drill passed", or fails if one differs. It
 removes its container. Run it after the first backup, and now and then (monthly) on the newest.
 
+`backup` needs Linux: in Git Bash on Windows its `install -m` and `chmod` calls fail. A drill on a
+Windows computer, backup included, runs in a Linux container.
+
 ## Restoring
 
 `ops/backup.sh restore <file> --identity key.txt [--secrets-to <folder>] [--force-env] [--yes]`

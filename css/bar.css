@@ -29,8 +29,10 @@
   min-width: 0;
   /* The bar keeps its own inline padding (since v0.22.0): the page's gutter on a desktop, the
      smallest spacing on a phone and half of it on a narrow one, so the buttons and the fact's
-     widest word fit a 360 px row with six 44 px buttons (a game no longer adds its own). */
-  padding-inline: var(--sk-gutter);
+     widest word fit a 360 px row with six 44 px buttons (a game no longer adds its own). A game
+     whose page already has a gutter sets `--sk-bar-gutter` (0, since v0.27.0), which then is the
+     bar's inline padding at every width; unset, each width keeps its own. */
+  padding-inline: var(--sk-bar-gutter, var(--sk-gutter));
   max-height: 44px;
   font-size: max(var(--sk-floor-text), 0.875rem);
   white-space: nowrap;
@@ -123,7 +125,7 @@
   .sk-game-bar {
     gap: 0.25rem;
     max-height: none;
-    padding-inline: var(--sk-space-1);
+    padding-inline: var(--sk-bar-gutter, var(--sk-space-1));
     /* Items that do not fit one row go on the next (since v0.22.0): the buttons keep one row of
        their own instead of being squeezed into a column beside a long fact. */
     flex-wrap: wrap;
@@ -172,7 +174,7 @@
 /* A narrow phone (360 px and less): half the spacing, as six buttons and a word fill the row. */
 @media (max-width: 400px) {
   .sk-game-bar {
-    padding-inline: calc(var(--sk-space-1) / 2);
+    padding-inline: var(--sk-bar-gutter, calc(var(--sk-space-1) / 2));
   }
 }
 

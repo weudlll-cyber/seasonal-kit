@@ -70,6 +70,24 @@ for (const order of [
   });
 }
 
+// The bar's own padding is a game's to set (Mini Games, v0.27.0); unset, as before.
+for (const [width, unset] of [
+  [1280, '32px'],
+  [800, '8px'],
+  [360, '4px'],
+] as const) {
+  test(`the game bar's gutter is a token at ${String(width)} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    const styles = ['tokens.css', 'bar.css'].map((n) => `<style>${sheet(n)}</style>`).join('');
+    await page.setContent(`${styles}<div class="sk-game-bar">Round 1</div>`);
+    const bar = page.locator('.sk-game-bar');
+    await expect(bar).toHaveCSS('padding-left', unset);
+    await page.addStyleTag({ content: ':root { --sk-bar-gutter: 0px; }' });
+    await expect(bar).toHaveCSS('padding-left', '0px');
+    await expect(bar).toHaveCSS('padding-right', '0px');
+  });
+}
+
 // A docked screen's content that scrolls is reachable and named (axe, Seasonal Cases, v0.27.0).
 for (const [width, height] of [
   [1536, 768],

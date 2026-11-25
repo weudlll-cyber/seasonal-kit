@@ -239,6 +239,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Test tools** (K66): `@seasonal/kit/testing`, for a game's own suites only: `setTheme`,
   `captureLook`, the sizes, the guards `findFixedColours`, `findSmallText` and `findLowContrast`, and
   `sweep` (every screen at seven sizes, 100 % and 200 %, light and dark, with axe; K67).
+- **Game bar gutter** (v0.27.0): a game whose page has its own gutter sets `--sk-bar-gutter: 0`
+  instead of overriding the bar's padding.
 - **Phone layouts** (K65): the folded header's brand keeps its longest word, the back link's words wrap,
   the game bar's facts wrap and its buttons keep a row, with the gutter tokens' padding;
   `StartCard` without `opensIn` has no countdown. Measured in `showcase/cases.spec.ts`.

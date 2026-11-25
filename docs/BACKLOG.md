@@ -164,3 +164,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Closed in v0.27.0.
 - **40. The security headers had no `script-src-attr` and no upgrade of http requests** (Mini
   Games, 2026-11-25). Closed in v0.27.0 (`securityHeaderSet`, its test).
+- **41. The game bar indented twice inside a page with a gutter** (Mini Games, 2026-11-25).
+  Closed in v0.27.0 (`--sk-bar-gutter`, `showcase/layout.spec.ts`).

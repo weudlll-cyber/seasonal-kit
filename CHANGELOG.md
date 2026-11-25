@@ -9,6 +9,8 @@ applies it.
 
 ### Migration, per game
 
+- **Mini Games:** set `--sk-bar-gutter: 0` where the page already has a gutter. **Seasonal Cases and
+  Bingo Royale:** nothing.
 - A game that uses `securityHeaderSet`: pass `secure: true` where it is served over https; an inline
   event handler in a page (`onclick="…"`) stops running.
 - **Mini Games and Seasonal Cases:** set `push.branches` to `[master]` in
@@ -17,6 +19,7 @@ applies it.
 
 ### Fixed
 
+- **The game bar's inline padding is a token**, `--sk-bar-gutter`; unset, the bar looks as before.
 - **The security headers** add `script-src-attr 'none'`, and `upgrade-insecure-requests` when
   `securityHeaderSet` is told `secure: true`.
 - **Docs:** Mini Games' backups from before the kit's script are not readable as they are (ADOPTION.md).

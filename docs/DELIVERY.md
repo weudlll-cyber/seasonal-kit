@@ -580,6 +580,26 @@ CI on the merge commit `6900866`: `CI` and `CodeQL` passed. The sweep's behaviou
 proved by `showcase/testing.spec.ts` in CI, not here. The scratch folders are left in the session's
 scratch directory, outside every repository.
 
+## The v0.24.0 client parts, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.24.0` (merge commit `84998cd`), both with `ignore-scripts=true`
+(React and React DOM 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5), ran `tsc` and four tests on
+the installed package:
+
+- it is `0.24.0`, exports `./steps.css`, and its `header.css` brings it along;
+- `StepBadges` draws the website's own icon, named by the step, and nothing for another address;
+- `clockOffset` measures an offset and gives null without a sample; a `StartCard` with an
+  unmeasured `opensAt` shows no countdown;
+- `createApiClient` throws one `ApiError` with the status and the server's code.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.14.0 | Worked  | Worked | 4 passed |
+| npm 11.19.0  | Worked  | Worked | 4 passed |
+
+CI on the merge commit `84998cd`: `CI` and `CodeQL` passed. The scratch folders are left in the
+session's scratch directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

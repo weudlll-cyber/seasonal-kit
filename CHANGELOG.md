@@ -7,6 +7,53 @@ applies it.
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-11-26
+
+The season icons, the header's brand link at 44 px, one operator contact address for every
+installer, and the working rule for checks.
+
+### Added
+
+- **The season icons** (K83): the website's four drawings in `seasons/`, `seasons.css` and
+  `SeasonIcon`. Not under the AGPL ([seasons/README.md](seasons/README.md)).
+- **`ops/lib/operator.sh`** (K85): `sk_operator_email`, the operator's contact address from one
+  file on the server.
+
+### Changed
+
+- **The header's brand link is a 44 px target** (K84): its box grows (19–38 px before); the logo
+  and the header's height stay.
+- **Every game has a one-command install and an operator guide** (K86; HANDBOOK).
+- **The working rule for checks** (K82; HANDBOOK, CLAUDE.md): one browser spec file locally where a
+  change touches what it checks; no waiting for CI between pieces.
+
+### Fixed
+
+- **The account chip read "Signed in asOlga"** above 1440 px: the space was lost between two parts
+  of the chip. The chip is that space wider there.
+- **Docs:** an installer copies the kit's whole `ops/` folder, never `ops/backup.sh` alone.
+
+### Migration, per project
+
+- **Website** (seasonal-entertainment): add the `cancel-in-progress` concurrency to its `ci.yml`
+  (it has none today). It may read `/etc/seasonal/operator.env` in its installer (its own
+  decision).
+- **Bingo Royale:** its installer calls `sk_operator_email` in place of its own `--email` handling
+  (the flag keeps working). Its eight season files equal the website's: delete its copies of the
+  four optimized ones and use the kit's (`seasons.css`, `SeasonIcon` or the package paths); the
+  `source/` files are not in the kit.
+- **Mini Games:** its installer calls `sk_operator_email`, as Bingo's. Use the kit's season icons;
+  its four optimized files differ, so it then shows the website's current drawings. Its copy at
+  `$SMG_ROOT/kit/backup.sh` becomes a copy of the kit's whole `ops/` folder, keeping the layout.
+- **Seasonal Cases:** its Docker installer copies the kit's whole `ops/` folder, not
+  `ops/backup.sh` alone (the script fails without `ops/lib/`), and uses `sk_operator_email` when it
+  moves. If it shows season icons, the kit's; else nothing.
+- **K86, install and guide:** **Mini Games and Bingo Royale:** nothing, they follow it (Bingo checks
+  that its guide has the update and uninstall sections). **Seasonal Cases:** moves
+  `deploy/install.sh` to `ops/install.sh` and joins `docs/INSTALL.md` and
+  `docs/OPERATIONS-CASES.md` into `docs/operator-guide.md` at its next adoption, keeping their
+  content.
+
 ## [0.27.0] - 2026-11-26
 
 Fixes for what Seasonal Cases and Mini Games reported on v0.22.0.
@@ -1462,7 +1509,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...HEAD
+[0.28.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...v0.25.0

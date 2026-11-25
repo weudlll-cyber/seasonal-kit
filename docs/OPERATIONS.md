@@ -3,8 +3,13 @@
 How a game wires the kit's `ops/backup.sh` (since v0.21.0, DECISIONS K61). The script is shipped in
 the package (`node_modules/@seasonal/kit/ops/backup.sh`), changes nothing on install, and runs only
 when the game's server runs it. Since v0.25.0 its functions are in `ops/lib/` beside it (K71), so a
-game calls the script from the package and never copies it alone. It is Bingo Royale's rehearsed backup, made to take its settings
+game calls the script from the package, or copies the kit's whole `ops/` folder, keeping its
+layout. It is Bingo Royale's rehearsed backup, made to take its settings
 from variables, with Mini Games' restore drill; what stays in a game is listed at the end.
+
+**Copying it elsewhere** (out of an image to the server, say): copy the kit's whole `ops/` folder,
+keeping its layout. `ops/backup.sh` loads `ops/lib/backup-core.sh` and `ops/lib/backup-restore.sh`
+from beside itself, so a copy of `backup.sh` alone fails.
 
 ## What a backup is
 
@@ -137,3 +142,28 @@ first, so none can add a directive; the secret is never printed.
 | `SK_ROUTE_RELOAD_CMD`       | The proxy's reload, e.g. `systemctl reload nginx`.                                                                |
 
 The game keeps its end-of-install check through the website and its own compose names.
+
+## The operator's address
+
+One contact address for a server, used by every Seasonal installer for the TLS certificates (ACME)
+and as the operator's contact (K85). It is never in a repository.
+
+- **The file:** `/etc/seasonal/operator.env`, owned by root, mode 0644 (the address is no secret).
+- **The key:** `SK_OPERATOR_EMAIL=<address>`, a plain address. Other lines are left as they are.
+- **Who reads it:** an installer that sources `ops/lib/operator.sh` and calls
+  `email=$(sk_operator_email "$EMAIL_FLAG")`. The website's installer may read the same file; that
+  is the website's own decision.
+
+`sk_operator_email` prints the address:
+
+1. one passed to it (the installer's `--email`) wins, and is written to the file if the file has
+   none;
+2. else the file's;
+3. else, at a terminal, it asks once and writes the answer;
+4. else it stops and names the file and the key.
+
+It says "using <address> from <file>" and no other line with an address.
+
+| Variable          | Needed for | Meaning                                                                 |
+| ----------------- | ---------- | ----------------------------------------------------------------------- |
+| `SK_OPERATOR_DIR` | optional   | The folder holding `operator.env`, default `/etc/seasonal` (for tests). |

@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -49,7 +49,9 @@
     "./frames.css": "./css/frames.css",
     "./bar.css": "./css/bar.css",
     "./header.css": "./css/header.css",
-    "./steps.css": "./css/steps.css"
+    "./steps.css": "./css/steps.css",
+    "./seasons.css": "./css/seasons.css",
+    "./seasons/*.svg": "./seasons/*.svg"
   },
   "sideEffects": [
     "**/*.css"
@@ -113,8 +115,10 @@
     "ops/backup.sh",
     "ops/lib/backup-core.sh",
     "ops/lib/backup-restore.sh",
+    "ops/lib/operator.sh",
     "ops/lib/website-route.sh",
     "ops/pull-backups.sh",
-    "ops/pull-backups.ps1"
+    "ops/pull-backups.ps1",
+    "seasons"
   ]
 }

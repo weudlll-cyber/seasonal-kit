@@ -5,7 +5,9 @@
  *
  * Responsibility: `sweep` runs the kit's header screen and its bar-and-start-card screen
  *                 (./sweep/main.tsx) through the seven default sizes, 100 % and 200 % root font,
- *                 light and dark, with axe, and finds nothing; on the broken screen the probe names
+ *                 light and dark, with axe, and finds nothing, the header's brand link among its
+ *                 44 px targets (v0.28.0), which also leaves the header's height alone; on the
+ *                 broken screen the probe names
  *                 the wide box, the cut text, the small button and the clipped fitted root, and
  *                 `sweep` fails with them; `captureLook` writes its four pictures.
  * Depends on:     @playwright/test, @axe-core/playwright, ../src/testing, ./screens
@@ -17,15 +19,10 @@ import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 import { axeFinder, captureLook, probe, sweep } from '../src/testing/index.js';
-import { SCREENS } from './screens.js';
-
-// Known and reported to the owner, not changed here: the header's brand link is 36 px high on a
-// desktop and 19 px on a phone, under the kit's 44 px (K29).
-const KNOWN = ['a.sk-header-brand'];
+import { SCREENS, settled } from './screens.js';
 
 const screenOf = (name: string) => ({
   name,
-  allow: KNOWN,
   open: async (page: Page) => {
     await page.goto(`/sweep/?screen=${name}`);
     await page.locator('#root > *').first().waitFor();
@@ -39,6 +36,31 @@ for (const name of ['header', 'bar']) {
     const seen = await sweep(page, [screenOf(name)], { axe: axeFinder(AxeBuilder) });
     expect(seen).toBe(28);
   });
+}
+
+// The brand link's box (K29, v0.28.0): 44 px or more, in a header as high as without the rule.
+for (const width of [1536, 375]) {
+  for (const font of [16, 32]) {
+    const at = `${String(width)} px, ${String(font)} px text`;
+    test(`the brand link is 44 px high and the header no higher: ${at}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await screenOf('header').open(page);
+      await page.addStyleTag({ content: `html { font-size: ${String(font)}px }` });
+      await settled(page);
+      const heights = () =>
+        page.locator('.sk-header').evaluate((header) => ({
+          link: header.querySelector('.sk-header-brand')?.getBoundingClientRect().height ?? 0,
+          header: header.getBoundingClientRect().height,
+        }));
+      const now = await heights();
+      expect(now.link).toBeGreaterThanOrEqual(44);
+      await page.addStyleTag({
+        content: '.sk-header-brand { min-height: 0; margin-block: 0; padding-block: 0 }',
+      });
+      await settled(page);
+      expect(now.header).toBe((await heights()).header);
+    });
+  }
 }
 
 test('the probe names every kind of fault on the broken screen', async ({ page }) => {

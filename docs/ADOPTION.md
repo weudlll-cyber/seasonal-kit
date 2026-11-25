@@ -188,7 +188,7 @@ Each step pins the newest tag; a step never mixes two tags.
 
 ### Since v0.25.0
 
-- **Backup split and route file** (K71, K72): nothing to do for the split (it calls `ops/backup.sh`); `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
+- **Backup split and route file** (K71, K72): its copy at `$SMG_ROOT/kit/backup.sh` (`ops/lib/backup.sh` line 21) becomes a copy of the kit's whole `ops/` folder, keeping the layout, since `ops/backup.sh` loads `ops/lib/` from beside itself; `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
 - **Load helpers** (K73): `load/measure.mjs`'s `spread` and `metricsSampler` become `latencies` and `watchServer({ prefix: 'smg_' })`; its percentiles move one rank down (nearest rank). Only on the owner's word.
 
 ### Since v0.26.0
@@ -198,6 +198,11 @@ Each step pins the newest tag; a step never mixes two tags.
 ### Since v0.27.0
 
 - **The fix release** (CHANGELOG, "Migration, per game"): the headers, the named cross-origin write, the local origin, the bar gutter and the CI triggers. Only on the owner’s word.
+
+### Since v0.28.0
+
+- **Icons, operator address** (K83, K85): `seasons.css` and `SeasonIcon` in place of its four optimized season files (its own differ from the website's: the website's drawings show after); its installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): nothing; it follows the rule.
 
 ## Seasonal Bingo Royale
 
@@ -355,6 +360,11 @@ reachable on every phone.
 
 - **The fix release** (CHANGELOG, "Migration, per game"): only the headers’ two new directives, if it takes `securityHeaderSet`.
 
+### Since v0.28.0
+
+- **Icons, operator address** (K83, K85): `seasons.css` and `SeasonIcon` in place of its copies of the four optimized season files, which equal the website's; its installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): nothing beyond checking that `docs/operator-guide.md` has the update and uninstall sections.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -435,7 +445,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 ### Since v0.25.0
 
-- **Backup split and route file** (K71, K72): its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
+- **Backup split and route file** (K71, K72): its Docker installer (branch `kit/v0.17-adoption`) copies `ops/backup.sh` alone out of the image (`deploy/lib/backup.sh`); it copies the kit's whole `ops/` folder instead, keeping the layout, or the script fails. Its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
 - **Load helpers** (K73): none today; its first load check starts from `latencies` and `watchServer`. Only on the owner's word.
 
 ### Since v0.26.0
@@ -445,6 +455,11 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.27.0
 
 - **The fix release** (CHANGELOG, "Migration, per game"): its header, Menu and docked-screen findings are fixed in the kit; the backup path, the local origin and the CI triggers. Only on the owner’s word.
+
+### Since v0.28.0
+
+- **Icons, operator address** (K83, K85): season icons from the kit if it shows any; its Docker installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): `deploy/install.sh` moves to `ops/install.sh`; `docs/INSTALL.md` and `docs/OPERATIONS-CASES.md` (branch `kit/v0.17-adoption`) are joined into `docs/operator-guide.md`, keeping their content, at its next adoption.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

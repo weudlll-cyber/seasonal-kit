@@ -8,7 +8,7 @@
  *                 - css/shell.css draws one focus ring, `--sk-focus-ring`, on every control the
  *                   kit draws, for keyboard focus (WCAG 2.4.7); its colour's contrast is
  *                   tests/contrast.test.ts's;
- *                 - the bar's buttons and the back link are 44 px targets (WCAG 2.5.5 level AAA,
+ *                 - the bar's buttons, the back link and the header's brand link are 44 px targets (WCAG 2.5.5 level AAA,
  *                   the kit's aim);
  *                 - the phase strip's parts wrap, so nothing scrolls sideways at 320 px
  *                   (WCAG 1.4.10; the showcase checks the page at 320 px).
@@ -72,6 +72,13 @@ describe('the targets', () => {
     expect(rule(sheet('shell.css'), '.sk-back-link')).toMatch(
       /min-height:\s*var\(--sk-hit-target\)/,
     );
+  });
+
+  it('makes the header’s brand link 44 px high, taking its padding back by a margin', () => {
+    const brand = rule(sheet('header.css'), '.sk-header-brand');
+    expect(brand).toMatch(/box-sizing:\s*border-box/);
+    expect(brand).toMatch(/min-height:\s*var\(--sk-hit-target\)/);
+    expect(brand).toMatch(/margin-block:\s*-0\.25rem;\s*padding-block:\s*0\.25rem/);
   });
 
   it('keeps the hit target at 44 px', () => {

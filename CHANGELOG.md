@@ -7,6 +7,13 @@ applies it.
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-11-26
+
+The shared server parts of the three games, as opt-in parts of the kit (DECISIONS K60 to K64, from
+[docs/concepts/shared-server-parts.md](docs/concepts/shared-server-parts.md)). Nothing existing
+changes: a game that changes nothing sees today's behaviour, and it adopts each part on the owner's
+word, as [ADOPTION.md](docs/ADOPTION.md) says. A new entry in the package: `ops/`.
+
 ### Added
 
 - **`HEALTH_PATHS` and `readiness`** in `@seasonal/kit/server` (DECISIONS K64): the route names
@@ -34,6 +41,14 @@ applies it.
   dump, and the systemd units for the nightly timer. Taken from Bingo Royale's `ops/lib/backup.sh`
   (the rehearsed one) and Mini Games' drill; settings are `SK_BACKUP_*` variables. No secret, key or
   dump is printed. Tested on a real PostgreSQL container in CI (job `ops`, not a required check).
+
+### Migration, per game
+
+- **All three games:** nothing is required. Each part is listed per game in
+  [docs/ADOPTION.md](docs/ADOPTION.md) under "Since v0.21.0": what it replaces and how.
+- **Seasonal Cases:** has no backup today; it takes `ops/backup.sh` first.
+- **Mini Games:** its cookie outlives a website session by 23 days; `sessionCookieOptions` fixes it on
+  adoption (recorded in K63).
 
 ## [0.20.0] - 2026-11-26
 
@@ -1270,7 +1285,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...HEAD
+[0.21.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...v0.20.0
 [0.19.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.0...v0.19.1
 [0.19.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.18.0...v0.19.0

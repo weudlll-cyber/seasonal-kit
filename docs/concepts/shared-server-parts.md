@@ -3,6 +3,10 @@
 An investigation, read-only, no code (night audit 2026-11-25, piece 9). Nothing in the kit changes
 with this page; it recommends, and the owner decides.
 
+**Status (2026-11-26):** items 1 to 4 of the recommended order below are in the kit since v0.21.0
+(DECISIONS K61 to K64; K60 for the CSRF check). Nothing in a game has changed: each adopts on the
+owner's word ([ADOPTION.md](../ADOPTION.md)). The installer (5) and the load helper (6) are not taken.
+
 Read on 2026-11-25 from each game's `origin/master`: Seasonal Bingo Royale `2380ea7`, Seasonal
 Mini Games `1988346`, Seasonal Cases `073f9ad`. "Alike" is the share of a file's code lines (blank
 lines and comments left out) that the other file has too, trimmed and compared line by line: a

@@ -149,3 +149,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **32. The backup units named a path in the pnpm store** (Seasonal Cases, 2026-11-25): it changes
   with every kit update. Closed in v0.27.0 (`ops/backup.sh`, `print_units`,
   `ops/test/backup-units.test.sh`).
+- **33. The Menu button showed when `bar.css` came after `header.css`** (Seasonal Cases,
+  2026-11-25). Closed in v0.27.0 (`css/header.css`, `showcase/layout.spec.ts`).

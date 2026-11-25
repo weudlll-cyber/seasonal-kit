@@ -200,8 +200,10 @@
   font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
 }
 
-/* The fold: on a wide screen no button and no box of its own. */
-.sk-menu-button {
+/* The fold: on a wide screen no button and no box of its own. The button also is an
+   `sk-bar-button` (./bar.css, `display: inline-flex`), so this rule names the header too: the
+   order a game imports the two files in then makes no difference (since v0.27.0). */
+.sk-header .sk-menu-button {
   display: none;
 }
 

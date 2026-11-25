@@ -9,6 +9,8 @@ applies it.
 
 ### Fixed
 
+- **The Menu button no longer depends on the order of the kit's CSS files.** With `bar.css` after
+  `header.css` it showed in an unfolded header.
 - **The backup units no longer point into the pnpm store.** `print-units` writes the path the
   script was called by, and refuses one inside `.pnpm`.
 - **The header's fold no longer depends on how the page got there** (K79). A header folded once

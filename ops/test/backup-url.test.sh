@@ -25,11 +25,15 @@ equals() { if [[ $2 == "$3" ]]; then ok "$1"; else bad "$1: got [$2]"; fi; }
 # The stand-in clients: one line per argument, and the password they were given.
 mkdir "$work/bin"
 for client in pg_dump pg_restore psql; do
+  # psql reads all it is sent, as the real one does: exiting early would break the writer's pipe
+  # now and then. The others are sent nothing that must be read.
+  reads=':'
+  [[ $client != psql ]] || reads='cat >/dev/null'
   cat >"$work/bin/$client" <<EOF
 #!/usr/bin/env bash
 printf '%s\n' "\$@" >>'$work/args'
 printf '%s' "\${PGPASSWORD-unset}" >'$work/password.$client'
-cat >/dev/null 2>&1 </dev/null || true
+$reads
 printf 'data'
 EOF
   chmod +x "$work/bin/$client"

@@ -23,19 +23,17 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `master` has its own `ChatDock` around the kit's frame. The chat frame's link (9a) and the
   dock's arrivals and `DockedScreen` (9b) are closed (part two).
 
-- **27. Shared client parts and test tools** (2026-11-26). The comparison of what the three games
-  built on the client side and for their browser tests is written:
-  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) (Bingo `8d20904`, Mini Games
-  `9e3c6f3`, Cases `073f9ad`). It recommends eight candidates in an order (the screenshot and theme
-  helper and the static guards first, then the fit probe and size sweep, steps in lists, the countdown,
-  the API client, the website stand-in, base components CSS, the socket client and season icons) and
-  names what stays in the games. Nothing is built. Done when: the owner says which parts to build, each
-  then becomes its own item.
-
 - **14. Framing a host chat from another https origin** (Mini Games T412). Deferred (decided
   2026-11-23): not built, and not planned for a release until the owner takes it up. Today
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
+
+- **29. The socket client and the season icons** (2026-11-26). Compared and costed, nothing built
+  ([concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14): a socket client
+  is recommended later, the season icons in the kit now. Done when: the owner says yes or no.
+- **30. The header's brand link is under 44 px** (found by the sweep, 2026-11-26: 36 px on a
+  desktop, 19 px on a phone; K29 asks 44 px). Done when: the link is 44 px high, or the owner
+  accepts it as it is.
 
 ## Part two — closed
 
@@ -141,3 +139,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   A-29 are built: the font's copyright holder is in `fonts/README.md`, `BarAction` takes `controls`, the
   call frame has `referrerPolicy="strict-origin"`, `package.json` has `sideEffects`. A-03 is declined and
   A-05 stays as it is. Closed by v0.20.0.
+- **27. Shared client parts and test tools** (2026-11-26, K66 to K70 and K73 to K76). The
+  comparison's parts are built and released: v0.23.0 (PR #61), v0.24.0 (PR #63), v0.25.0 (PR #65)
+  and v0.26.0 (PR #67). The shared call slot (draft PR #68) and the base components (draft PR #70)
+  wait for review; what was only compared is item 29.

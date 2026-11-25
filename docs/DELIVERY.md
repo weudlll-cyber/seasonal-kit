@@ -621,6 +621,26 @@ CI on the merge commit `5927474`: `CI` and `CodeQL` passed; the drill and the ro
 nginx and Caddy are in CI's `ops` job. The scratch folders are left in the session's scratch
 directory, outside every repository.
 
+## The v0.26.0 website stand-in and the database URL, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.26.0` (merge commit `0e94fef`), both with `ignore-scripts=true`
+(TypeScript 5.9.3 NodeNext, Vitest 5.0.5), ran `tsc` and three tests on the installed package:
+
+- it is `0.26.0`;
+- **the stand-in website, from the package, signs a member in through its proxy**: the app gets the
+  identity the kit's `identityFrom` reads and the game's secret, and the season feed passes
+  `parseSeasonFeed`;
+- the installed `ops/backup.sh` splits a database URL: the address without the password, the
+  decoded password in `PGPASSWORD`.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.14.0 | Worked  | Worked | 3 passed |
+| npm 11.19.0  | Worked  | Worked | 3 passed |
+
+CI on the merge commit `0e94fef`: `CI` and `CodeQL` passed. The scratch folders are left in the
+session's scratch directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

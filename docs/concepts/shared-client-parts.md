@@ -386,3 +386,40 @@ builders, the Playwright config and stacks, dialogs, toasts, tables and the noti
 
 Separately, and not a kit matter: Bingo's `useSecondsUntil` counts on the page's own clock; and the
 two games' season SVGs differ byte for byte, which may or may not be intended.
+
+## 14. Follow-up: the socket client's cost, and whose the season icons are (2026-11-26)
+
+Read-only, recommendations only. Since this note was written, v0.23.0 to v0.26.0 built its first
+five candidates and the website stand-in.
+
+### The socket client as a kit part
+
+- **What a kit part would bring in:** `socket.io-client` as an optional peer (all three games pin
+  `4.8.4`: Bingo `8d20904`, Mini Games `9e3c6f3`, Cases `073f9ad`, `apps/web/package.json`). MIT, as
+  are its dependencies `engine.io-client` 6.6.7, `socket.io-parser` 4.2.7 and `engine.io-parser` 5.2.3
+  (read in Mini Games' install). The browser bundle is 40 759 bytes, 12 945 gzipped
+  (`dist/socket.io.esm.min.js`); `ws` and `xmlhttprequest-ssl`, listed by `engine.io-client`, serve
+  Node only.
+- **What it would be:** the factory of section 9 (one socket under the base path, `reset`, `intent`
+  with a growing `seq` and a timeout), with the clock from `clockOffset` (in the kit since v0.24.0):
+  about 60 lines, and with them the games' wire contract (`t`, `seq`, `data`) written into the kit.
+- **Recommendation: do not build it yet.** Two games share about 48 lines of it, Cases speaks other
+  events, and the part would freeze one protocol in the kit. Take it up when a third game uses the
+  intent protocol; until then Bingo takes Mini Games' `syncClock` and feeds the kit's
+  `clockOffset`.
+
+### The season icons
+
+- **The website's files** are `client/src/assets/seasons/{spring,summer,autumn,winter}.svg` and
+  `client/src/assets/seasons/source/*.svg` (website `cc743b9`), beside
+  `client/src/assets/seasonal-tokens.svg` and `client/public/brand/emblem.webp`.
+- **Who carries them:** Bingo's eight season files are **byte for byte the website's** (the same git
+  blobs, e.g. `spring.svg` `35b12c3`). **Mini Games' differ** in all four optimized files and in
+  `source/autumn.svg` and `source/winter.svg` (its `assets/README.md` says it copied them from Bingo at
+  `d294585`). The emblem (`c3aa47d`) is the same file in the website, Bingo, Mini Games and Cases.
+- **Recommendation: ship them in the kit, do not link them.** A standalone game has no website to
+  link to, and linking would widen every game's content security policy. Ship the website's four
+  optimized files in the kit, compared in CI against the website's `master` as the season colours
+  are, with a small `SeasonIcon`; Mini Games would then show the website's current drawings. The
+  licence note of the games' `assets/README.md` (the icons belong to the Seasonal Tokens project and
+  are not under the AGPL) moves with them. **This needs the owner's word.**

@@ -242,3 +242,10 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   `watchFit` keep their positional arguments; an options object is considered when another option is
   needed. A-05: the local branch `worktree-agent-a459ae22b757ed187` and `.claude/worktrees/` stay
   untouched.
+- **K60 — The kit's CSRF check refuses a write that names neither its origin nor its site** (decided
+  2026-11-25, v0.21.0; Seasonal Cases' planning). A state-changing request (anything but GET, HEAD
+  and OPTIONS) with no `Origin` and no `Sec-Fetch-Site` is refused. It also refuses one whose
+  `Sec-Fetch-Site` is present and is neither `same-origin` nor `none`, and one whose `Origin` host is
+  not the request's own host as the game sees it behind the website's proxy (a forwarded host is trusted
+  only from the configured proxy). This covers what Cases' `sameSiteWrites` does (`app.ts:125-136`) and
+  is stricter on the missing `Origin`.

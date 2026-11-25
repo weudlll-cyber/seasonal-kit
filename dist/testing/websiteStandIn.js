@@ -24,11 +24,14 @@
  * Spec:           website docs/GAME-INTEGRATION.md at cc743b9
  */
 import http, {} from 'node:http';
+import { safeNext } from '../server/returnPath.js';
 import { authorize, checkOpenRounds, seasonFeed, } from './standInContract.js';
 import { framePage, FRAME_MESSAGES } from './standInFrames.js';
 import { appHeaders, forward, forwardUpgrade, } from './standInProxy.js';
 // A 1x1 WebP, the shape of a step icon.
 const ICON = Buffer.from('UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=', 'base64');
+// The one folder a login may return to.
+const GAMES = '/games/';
 const targetOf = (state, path) => {
     const slug = /^\/games\/([a-z0-9-]+)(?:\/|$)/.exec(path)?.[1] ?? '';
     const game = Object.hasOwn(state.options.games, slug) ? state.options.games[slug] : undefined;
@@ -50,10 +53,13 @@ function send(response, status, type, body) {
     response.end(body);
 }
 function login(state, url, response) {
-    const next = url.searchParams.get('next') ?? '';
-    const local = /^\/games\/[\x21-\x7e]*$/.test(next) && !next.includes('\\');
+    // The kit's own return-path rule, under the games' folder; anything else goes to its start.
+    const next = safeNext(url.searchParams.get('next'), GAMES);
     const cookie = state.chosen === null ? [] : [`se.sid=${String(state.chosen)}; Path=/; SameSite=Lax`];
-    response.writeHead(302, { location: local ? next : '/games', 'set-cookie': cookie });
+    response.writeHead(302, {
+        location: `${GAMES}${next.slice(GAMES.length)}`,
+        'set-cookie': cookie,
+    });
     response.end();
 }
 // `GET /api/games/<slug>/authorize`: a game switched off answers 404.

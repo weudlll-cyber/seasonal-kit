@@ -27,6 +27,7 @@ import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import type { Duplex } from 'node:stream';
 
+import { safeNext } from '../server/returnPath.js';
 import {
   authorize,
   checkOpenRounds,
@@ -64,6 +65,9 @@ export interface WebsiteStandIn {
 // A 1x1 WebP, the shape of a step icon.
 const ICON = Buffer.from('UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=', 'base64');
 
+// The one folder a login may return to.
+const GAMES = '/games/';
+
 interface State {
   readonly options: StandInOptions;
   origin: string;
@@ -99,11 +103,14 @@ function send(response: ServerResponse, status: number, type: string, body: stri
 }
 
 function login(state: State, url: URL, response: ServerResponse): void {
-  const next = url.searchParams.get('next') ?? '';
-  const local = /^\/games\/[\x21-\x7e]*$/.test(next) && !next.includes('\\');
+  // The kit's own return-path rule, under the games' folder; anything else goes to its start.
+  const next = safeNext(url.searchParams.get('next'), GAMES);
   const cookie =
     state.chosen === null ? [] : [`se.sid=${String(state.chosen)}; Path=/; SameSite=Lax`];
-  response.writeHead(302, { location: local ? next : '/games', 'set-cookie': cookie });
+  response.writeHead(302, {
+    location: `${GAMES}${next.slice(GAMES.length)}`,
+    'set-cookie': cookie,
+  });
   response.end();
 }
 

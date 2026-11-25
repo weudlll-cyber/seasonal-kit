@@ -51,8 +51,15 @@ export function appHeaders(request, target, ask) {
     headers[target.game.secretHeader.toLowerCase()] = target.game.secret;
     return headers;
 }
+// Where a request goes: the game's own host, port and nothing else of the request's address, so
+// a request line naming another host ("//elsewhere/…" or an absolute address) stays with the game.
+function toApp(request, app, headers) {
+    const { pathname, search } = new URL(request.url ?? '/', 'http://stand-in');
+    const { hostname, port } = new URL(app);
+    return { hostname, port, path: `${pathname}${search}`, method: request.method ?? 'GET', headers };
+}
 export function forward(request, response, app, headers) {
-    const upstream = http.request(new URL(request.url ?? '/', app), { method: request.method ?? 'GET', headers }, (answer) => {
+    const upstream = http.request(toApp(request, app, headers), (answer) => {
         response.writeHead(answer.statusCode ?? 502, answer.headers);
         answer.pipe(response);
     });
@@ -63,7 +70,7 @@ export function forward(request, response, app, headers) {
 }
 // A WebSocket (or another upgrade): the same headers, then the two sockets joined.
 export function forwardUpgrade(request, socket, app, headers) {
-    const upstream = http.request(new URL(request.url ?? '/', app), { headers });
+    const upstream = http.request(toApp(request, app, headers));
     upstream.on('upgrade', (answer, appSocket, head) => {
         const lines = Object.entries(answer.headers).flatMap(([name, value]) => [value].flat().map((v) => `${name}: ${String(v)}`));
         socket.write(`HTTP/1.1 101 Switching Protocols\r\n${lines.join('\r\n')}\r\n\r\n`);

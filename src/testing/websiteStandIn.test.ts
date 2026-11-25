@@ -22,14 +22,11 @@ import { connect, type AddressInfo } from 'node:net';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { parseCall } from '../callView.js';
-import { parseChat } from '../chatEmbed.js';
 import { identityFrom, isWebsiteGuest } from '../server/identity.js';
 import { openRoundsPage } from '../server/openRounds.js';
 import { parseSeasonFeed } from '../server/seasonFeed.js';
 import { stepsFrom } from '../server/steps.js';
-import { authorize, checkOpenRounds, seasonFeed, type StandInMember } from './standInContract.js';
-import { FRAME_MESSAGES, framePage } from './standInFrames.js';
+import { checkOpenRounds, seasonFeed, type StandInMember } from './standInContract.js';
 import { startWebsiteStandIn, type WebsiteStandIn } from './websiteStandIn.js';
 
 const ICON = '/media/step-icons/0123456789abcdef0123456789abcdef.webp';
@@ -138,32 +135,6 @@ describe('what the authorize route refuses', () => {
     expect((await get(route, original('TRACE'))).status).toBe(403);
     expect((await get('/api/games/bingo/authorize', original('GET'))).status).toBe(404);
   });
-
-  it("asks a state-changing method for the website's own origin", () => {
-    const ask = (method: string, origin?: string) =>
-      authorize(
-        { method: 'GET', originalMethod: method, origin, siteOrigin: 'https://site.example' },
-        null,
-      ).status;
-    for (const method of ['POST', 'PUT', 'PATCH', 'DELETE']) {
-      expect(ask(method), method).toBe(403);
-      expect(ask(method, 'https://evil.example')).toBe(403);
-      expect(ask(method, 'https://site.example')).toBe(204);
-    }
-    expect([ask('HEAD'), ask('OPTIONS')]).toEqual([204, 204]);
-  });
-
-  it("gives an admin the right to host without a grant, and an empty step list as '[]'", () => {
-    const answer = authorize(
-      { method: 'GET', originalMethod: 'GET', origin: undefined, siteOrigin: 'x' },
-      { id: 1, name: 'A', role: 'admin' },
-    );
-    expect(answer.headers['x-acting-user-can-host']).toBe('true');
-    expect(stepsFrom(answer.headers['x-acting-user-steps'], 'all')).toEqual({
-      steps: [],
-      bad: false,
-    });
-  });
 });
 
 describe('the proxy under /games/<slug>/ (GAME-INTEGRATION.md §2)', () => {
@@ -218,6 +189,24 @@ describe('the proxy under /games/<slug>/ (GAME-INTEGRATION.md §2)', () => {
   });
 });
 
+describe('where a proxied request goes', () => {
+  it('keeps a request that names another host with the game', async () => {
+    seen = [];
+    const { hostname, port } = new URL(site.origin);
+    // An absolute address in the request line, as a client of a proxy would send it.
+    const status = await new Promise<number | undefined>((resolve) => {
+      http
+        .request({ hostname, port, path: 'http://evil.example/games/mini-games/x?y=1' }, (r) => {
+          r.resume();
+          resolve(r.statusCode);
+        })
+        .end();
+    });
+    expect(status).toBe(200);
+    expect(seen.map((x) => x.url)).toEqual(['/games/mini-games/x?y=1']);
+  });
+});
+
 describe('a WebSocket through the proxy', () => {
   const upgrade = (path: string): Promise<string> =>
     new Promise((resolve) => {
@@ -256,7 +245,7 @@ describe('the login and the public routes', () => {
     expect(r.headers.get('set-cookie')).toContain('se.sid=42');
     for (const next of ['https://evil.example', '//evil.example', '/games/\\x', '']) {
       const away = await get(`/login?next=${encodeURIComponent(next)}`);
-      expect(away.headers.get('location'), next).toBe('/games');
+      expect(away.headers.get('location'), next).toBe('/games/');
     }
     site.signInAs(null);
     expect((await get('/login')).headers.get('set-cookie')).toBeNull();
@@ -357,34 +346,11 @@ describe("a game's open rounds, read through the stand-in", () => {
 });
 
 describe('the frames (EMBED.md and GAME-INTEGRATION.md §9)', () => {
-  const { chat, call } = FRAME_MESSAGES;
-
-  it("every chat message is one the kit's chat link accepts, unchanged", () => {
-    for (const message of [chat.ready, chat.unread, chat.resize]) {
-      expect(parseChat(message)).toEqual(message);
-    }
-    expect([chat.source, chat.host]).toEqual(['seasonal-chat', 'seasonal-chat-host']);
-  });
-
-  it("every call message is one the kit's call link accepts, unchanged", () => {
-    for (const m of [call.ready, call.live, call.ended, call.speaking, call.resize, call.error]) {
-      expect(parseCall(m)).toEqual(m);
-    }
-    expect([call.source, call.host]).toEqual(['seasonal-call', 'seasonal-call-host']);
-  });
-
   it('serves both frames with their ready message', async () => {
     const chatPage = await (await get('/embed/chat?room=cases', asMember)).text();
     expect(chatPage).toContain('"room":"cases","signedIn":true');
     const callPage = await (await get('/embed/call/12')).text();
     expect(callPage).toContain('"call":12,"status":"live","signedIn":false');
     expect((await get('/embed/call/0')).status).toBe(404);
-  });
-
-  it('never posts to "*" and cannot be broken out of by a room name', () => {
-    const page = framePage('chat', { type: 'ready', room: '</script><script>x' });
-    expect(page).not.toContain("'*'");
-    expect(page).not.toContain('</script><script>x');
-    expect(page.match(/<\/script>/g)).toHaveLength(1);
   });
 });

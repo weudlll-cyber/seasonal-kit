@@ -73,20 +73,24 @@ export function appHeaders(
   return headers;
 }
 
+// Where a request goes: the game's own host, port and nothing else of the request's address, so
+// a request line naming another host ("//elsewhere/…" or an absolute address) stays with the game.
+function toApp(request: IncomingMessage, app: string, headers: IncomingHttpHeaders) {
+  const { pathname, search } = new URL(request.url ?? '/', 'http://stand-in');
+  const { hostname, port } = new URL(app);
+  return { hostname, port, path: `${pathname}${search}`, method: request.method ?? 'GET', headers };
+}
+
 export function forward(
   request: IncomingMessage,
   response: ServerResponse,
   app: string,
   headers: IncomingHttpHeaders,
 ): void {
-  const upstream = http.request(
-    new URL(request.url ?? '/', app),
-    { method: request.method ?? 'GET', headers },
-    (answer) => {
-      response.writeHead(answer.statusCode ?? 502, answer.headers);
-      answer.pipe(response);
-    },
-  );
+  const upstream = http.request(toApp(request, app, headers), (answer) => {
+    response.writeHead(answer.statusCode ?? 502, answer.headers);
+    answer.pipe(response);
+  });
   upstream.on('error', () => {
     response.writeHead(502).end('the game does not answer');
   });
@@ -100,7 +104,7 @@ export function forwardUpgrade(
   app: string,
   headers: IncomingHttpHeaders,
 ): void {
-  const upstream = http.request(new URL(request.url ?? '/', app), { headers });
+  const upstream = http.request(toApp(request, app, headers));
   upstream.on('upgrade', (answer, appSocket, head) => {
     const lines = Object.entries(answer.headers).flatMap(([name, value]) =>
       [value].flat().map((v) => `${name}: ${String(v)}`),

@@ -6,10 +6,12 @@
  * Responsibility: with the boxes of a one-row bar the header stays unfolded at any width; with
  *                 a second row (the toggle starting below the brand's bottom: an admin's long
  *                 bar, the back link in website mode) it folds before the paint and says so in
- *                 `data-sk-folded`. A new close key tries one row again; a window grown past the
- *                 width it folded at unfolds, and a smaller one keeps it folded; a header that
- *                 changes size checks again; unfolding closes an open menu. jsdom has no layout,
- *                 so each element's box is stubbed: one row is 40 px high from the top.
+ *                 `data-sk-folded`. A new close key tries one row again. The answer depends only
+ *                 on the width and the items (v0.27.0): a fresh mount equals a wide mount resized
+ *                 to the same width; a header that changes size checks again, once per change,
+ *                 and so do web fonts that load; a check that ends folded keeps an open menu, and
+ *                 unfolding closes it. jsdom has no layout, so each element's box is stubbed: one
+ *                 row is 40 px high from the top, and the header's own height is a variable.
  * Depends on:     vitest, jsdom, @testing-library/react
  */
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
@@ -20,15 +22,30 @@ import { AppHeader, type AppHeaderProps } from './AppHeader.js';
 // Whether the stubbed layout puts the theme toggle on a second row.
 let secondRow = false;
 let resized: (() => void) | null = null;
+// The header's own height, and the boxes measured so far.
+let height = 40;
+let measured = 0;
+// The font set: `ready` resolves when the test says so.
+let fonts = new EventTarget();
+let fontsReady = (): void => undefined;
 
 beforeEach(() => {
   secondRow = false;
+  height = 40;
+  measured = 0;
+  const ready = new Promise<void>((resolve) => {
+    fontsReady = resolve;
+  });
+  fonts = Object.assign(new EventTarget(), { ready });
+  Object.defineProperty(document, 'fonts', { value: fonts, configurable: true });
+  vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(() => height);
   vi.stubGlobal('matchMedia', () => ({
     matches: false,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
   }));
   vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+    measured += 1;
     const low = secondRow && this.classList.contains('sk-theme-toggle');
     return new DOMRect(0, low ? 50 : 0, 40, 40);
   });
@@ -49,6 +66,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   resized = null;
+  Reflect.deleteProperty(document, 'fonts');
 });
 
 const admin: AppHeaderProps = {
@@ -95,26 +113,16 @@ describe('the header fold, measured (v0.11.0, Bingo R1)', () => {
     expect(folded()).toBe('true');
   });
 
-  it('unfolds in a window grown past the width it folded at, not in a smaller one', () => {
-    widen(1280);
+  it('keeps an open menu through a check that ends folded', () => {
     secondRow = true;
     render(<AppHeader {...admin} />);
-    secondRow = false;
+    const menu = screen.getByTestId('menu-button');
+    fireEvent.click(menu);
     act(() => {
-      widen(1200);
+      fonts.dispatchEvent(new Event('loadingdone'));
     });
     expect(folded()).toBe('true');
-    act(() => {
-      widen(1600);
-    });
-    expect(folded()).toBe('false');
-  });
-
-  it('checks again when the header changes size (a larger font)', () => {
-    render(<AppHeader {...admin} />);
-    secondRow = true;
-    act(() => resized?.());
-    expect(folded()).toBe('true');
+    expect(menu.getAttribute('aria-expanded')).toBe('true');
   });
 
   it('closes an open menu once the items fit in the bar again', () => {
@@ -129,6 +137,101 @@ describe('the header fold, measured (v0.11.0, Bingo R1)', () => {
       widen(1600);
     });
     expect(menu.getAttribute('aria-expanded')).toBe('false');
+  });
+});
+
+describe('the fold from the width and the items alone (v0.27.0, K79)', () => {
+  it('decides again at every new width, whatever it decided before', () => {
+    widen(1280);
+    secondRow = true;
+    render(<AppHeader {...admin} />);
+    secondRow = false;
+    act(() => {
+      widen(1200);
+    });
+    expect(folded()).toBe('false');
+    secondRow = true;
+    act(() => {
+      widen(1100);
+    });
+    expect(folded()).toBe('true');
+  });
+
+  it.each([1100, 1536])(
+    'gives a fresh mount at %i px and a wide mount resized to it the same answer',
+    (width) => {
+      // The items need 1200 px, whatever the page did before.
+      const at = (to: number): void => {
+        secondRow = to < 1200;
+        widen(to);
+      };
+      at(width);
+      render(<AppHeader {...admin} />);
+      const fresh = folded();
+      cleanup();
+      for (const first of [1920, 800]) {
+        at(first);
+        render(<AppHeader {...admin} />);
+        act(() => {
+          at(width);
+        });
+        expect(folded()).toBe(fresh);
+        cleanup();
+      }
+      expect(fresh).toBe(String(width < 1200));
+    },
+  );
+});
+
+describe('a folded header measured again (v0.27.0, K79)', () => {
+  it('checks again when the header changes size (a larger font, a late stylesheet)', () => {
+    render(<AppHeader {...admin} />);
+    secondRow = true;
+    height = 90;
+    act(() => resized?.());
+    expect(folded()).toBe('true');
+    secondRow = false;
+    height = 40;
+    act(() => resized?.());
+    expect(folded()).toBe('false');
+  });
+
+  it('measures a folded header once per change, and not for its own fold', () => {
+    secondRow = true;
+    render(<AppHeader {...admin} />);
+    const after = measured;
+    act(() => resized?.());
+    act(() => {
+      fireEvent(window, new Event('resize'));
+    });
+    expect(measured).toBe(after);
+    height = 90;
+    act(() => resized?.());
+    const retried = measured;
+    expect(retried).toBeGreaterThan(after);
+    act(() => resized?.());
+    expect(measured).toBe(retried);
+    expect(folded()).toBe('true');
+  });
+
+  it.each([
+    [
+      'are ready',
+      (): void => {
+        fontsReady();
+      },
+    ],
+    ['finish loading later', (): void => void fonts.dispatchEvent(new Event('loadingdone'))],
+  ])('tries one row again when the web fonts %s', async (_, loaded) => {
+    secondRow = true;
+    render(<AppHeader {...admin} />);
+    expect(folded()).toBe('true');
+    secondRow = false;
+    await act(() => {
+      loaded();
+      return Promise.resolve();
+    });
+    expect(folded()).toBe('false');
   });
 });
 

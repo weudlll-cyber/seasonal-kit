@@ -1,17 +1,17 @@
 /**
  * @file   tests/season-check.test.ts
- * @brief  The season colour comparison: equal passes, any changed or missing value fails.
+ * @brief  The season comparisons: equal passes, any changed or missing colour or icon byte fails.
  *
  * Responsibility: scripts/season-check.mjs's `seasonDiff` against a copy of the website's
  *                 declarations (its tokens.css lines 16-19 and 25 on master, 2026-11-20). CI runs
- *                 the same comparison against the live site.
+ *                 the same comparisons against the live site, the icons' among them (K83).
  * Source:         new in the kit.
  */
 import { readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
-import { SEASON_TOKENS, seasonDiff } from '../scripts/season-check.mjs';
+import { iconDiff, SEASON_TOKENS, seasonDiff } from '../scripts/season-check.mjs';
 
 const kit = readFileSync(new URL('../css/tokens.css', import.meta.url), 'utf8');
 const site = `:root {
@@ -45,5 +45,28 @@ describe('seasonDiff', () => {
 
   it('ignores the case of a hex value', () => {
     expect(seasonDiff(kit, site.replace('#afb84e', '#AFB84E'))).toEqual([]);
+  });
+});
+
+describe('iconDiff', () => {
+  const bytes = (text: string) => new TextEncoder().encode(text);
+  const icon = (season: string, kit: string, site: string) => ({
+    season,
+    kit: bytes(kit),
+    site: bytes(site),
+  });
+
+  it('passes files that are the same bytes', () => {
+    expect(iconDiff([icon('spring', '<svg/>', '<svg/>')])).toEqual([]);
+  });
+
+  it.each([
+    ['one byte changed', '<svg />'],
+    ['a line ending added', '<svg/>\n'],
+    ['an empty answer', ''],
+  ])('names the season with %s', (_name, site) => {
+    expect(iconDiff([icon('spring', '<svg/>', '<svg/>'), icon('winter', '<svg/>', site)])).toEqual([
+      'winter',
+    ]);
   });
 });

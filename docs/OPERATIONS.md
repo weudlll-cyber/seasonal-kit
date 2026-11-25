@@ -3,8 +3,13 @@
 How a game wires the kit's `ops/backup.sh` (since v0.21.0, DECISIONS K61). The script is shipped in
 the package (`node_modules/@seasonal/kit/ops/backup.sh`), changes nothing on install, and runs only
 when the game's server runs it. Since v0.25.0 its functions are in `ops/lib/` beside it (K71), so a
-game calls the script from the package and never copies it alone. It is Bingo Royale's rehearsed backup, made to take its settings
+game calls the script from the package, or copies the kit's whole `ops/` folder, keeping its
+layout. It is Bingo Royale's rehearsed backup, made to take its settings
 from variables, with Mini Games' restore drill; what stays in a game is listed at the end.
+
+**Copying it elsewhere** (out of an image to the server, say): copy the kit's whole `ops/` folder,
+keeping its layout. `ops/backup.sh` loads `ops/lib/backup-core.sh` and `ops/lib/backup-restore.sh`
+from beside itself, so a copy of `backup.sh` alone fails.
 
 ## What a backup is
 
@@ -57,8 +62,10 @@ Every setting is an environment variable; put them in one env file, mode 0600, r
 1. Install `age` on the server and generate the operator's key **on the operator's own computer**
    (`age-keygen -o key.txt`); give the server only the public key (`age-keygen -y key.txt`).
 2. Write the env file with the settings above.
-3. Print the units and install them, then enable the timer:
-   `ops/backup.sh print-units` writes a `…-backup@.service`, a `…-backup-failed@.service` (it logs
+3. Print the units and install them, then enable the timer. Call the script through the package's
+   link, `node_modules/@seasonal/kit/ops/backup.sh print-units`: the service runs it by the path
+   you called, and a path inside the pnpm store is refused, because it changes with every kit
+   update. It writes a `…-backup@.service`, a `…-backup-failed@.service` (it logs
    a failed backup) and a `…-backup@.timer` for 03:30. Put them in `/etc/systemd/system/`, then
    `systemctl daemon-reload` and `systemctl enable --now <prefix>-backup@<env>.timer`.
 4. Run one by hand first: `ops/backup.sh backup`.
@@ -79,6 +86,9 @@ group, no root.
 the rows the dump carries (counted in the dump's own `COPY` blocks, so a database that has moved on
 does not matter). It prints each table's count and "drill passed", or fails if one differs. It
 removes its container. Run it after the first backup, and now and then (monthly) on the newest.
+
+`backup` needs Linux: in Git Bash on Windows its `install -m` and `chmod` calls fail. A drill on a
+Windows computer, backup included, runs in a Linux container.
 
 ## Restoring
 
@@ -132,3 +142,28 @@ first, so none can add a directive; the secret is never printed.
 | `SK_ROUTE_RELOAD_CMD`       | The proxy's reload, e.g. `systemctl reload nginx`.                                                                |
 
 The game keeps its end-of-install check through the website and its own compose names.
+
+## The operator's address
+
+One contact address for a server, used by every Seasonal installer for the TLS certificates (ACME)
+and as the operator's contact (K85). It is never in a repository.
+
+- **The file:** `/etc/seasonal/operator.env`, owned by root, mode 0644 (the address is no secret).
+- **The key:** `SK_OPERATOR_EMAIL=<address>`, a plain address. Other lines are left as they are.
+- **Who reads it:** an installer that sources `ops/lib/operator.sh` and calls
+  `email=$(sk_operator_email "$EMAIL_FLAG")`. The website's installer may read the same file; that
+  is the website's own decision.
+
+`sk_operator_email` prints the address:
+
+1. one passed to it (the installer's `--email`) wins, and is written to the file if the file has
+   none;
+2. else the file's;
+3. else, at a terminal, it asks once and writes the answer;
+4. else it stops and names the file and the key.
+
+It says "using <address> from <file>" and no other line with an address.
+
+| Variable          | Needed for | Meaning                                                                 |
+| ----------------- | ---------- | ----------------------------------------------------------------------- |
+| `SK_OPERATOR_DIR` | optional   | The folder holding `operator.env`, default `/etc/seasonal` (for tests). |

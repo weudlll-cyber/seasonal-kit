@@ -9,5 +9,3 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
 - 28\. Base components: built on `feat/base-components` (draft PR), waiting for the owner's look
   review.
-- 29\. The socket client and the season icons: waiting for the owner's word.
-- 30\. The header's brand link is under 44 px: waiting for the owner's word.

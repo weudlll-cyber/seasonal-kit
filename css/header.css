@@ -56,7 +56,14 @@
 /* No `order` anywhere: what is shown follows the DOM, so the tab order is the visual order
    (WCAG 2.4.3, audit 2026-11-22 B7 finding 4): back link, brand, Menu, navigation, account,
    theme toggle. tests/header-css.test.ts keeps it so. */
+/* The brand link is a 44 px target (K29, since v0.28.0) in a header no higher than before: the
+   little padding above and below is taken back by the same negative margin, so the link reaches
+   44 px also where it has a row to itself (a phone at 200 % text). The logo's size is the same. */
 .sk-header-brand {
+  box-sizing: border-box;
+  min-height: var(--sk-hit-target);
+  margin-block: -0.25rem;
+  padding-block: 0.25rem;
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -200,8 +207,10 @@
   font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
 }
 
-/* The fold: on a wide screen no button and no box of its own. */
-.sk-menu-button {
+/* The fold: on a wide screen no button and no box of its own. The button also is an
+   `sk-bar-button` (./bar.css, `display: inline-flex`), so this rule names the header too: the
+   order a game imports the two files in then makes no difference (since v0.27.0). */
+.sk-header .sk-menu-button {
   display: none;
 }
 

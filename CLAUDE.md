@@ -51,19 +51,32 @@ Everything in this repository is English: code, comments, commit messages, docs.
 Owner decision of 2026-11-06: spend fewer tokens without testing or checking less. Owner decision
 of 2026-11-23: these saving rules apply to every Seasonal project, this one included.
 
-- Locally run only the unit tests of the files you changed, with the dot reporter, so a passing
-  run prints almost nothing: `pnpm exec vitest run <files> --reporter=dot`. The full `pnpm verify`
-  and the showcase run on GitHub through the pull request.
+Owner decision of 2026-11-25 (DECISIONS K82), for every Seasonal project:
+
+1. Locally, before each push: the fast tests of the changed files, with the dot reporter, so a
+   passing run prints almost nothing (`pnpm exec vitest run <files> --reporter=dot`); and when the
+   change touches what a browser spec checks, that one spec file in one browser (about a minute),
+   never the whole browser suite. A browser failure found only on GitHub costs a push, a wait and
+   reading the run's log, again for every attempt.
+2. On GitHub: the full checks (`pnpm verify`, the showcase) through the draft PR, which exists
+   from the branch's first push.
+3. Do not wait for CI between the pieces of a chain: look at the latest run once at the end of the
+   chain and before every merge, and fix a red run on the same branch.
+4. CI cancels a run that a newer push to the same work branch has replaced (`ci.yml`'s
+   `concurrency`, not on `master`).
+5. Never re-run a check on an unchanged tree.
+
+And:
+
 - Long logs (an install, a delivery proof, CI job logs) go to a file under `logs/` (git-ignored);
   read only the failing part (grep or tail), never the whole log.
 - Screenshots are taken for the owner, not for checking: check with assertions, and open an image
   yourself only when an assertion cannot decide it. The showcase's `showcase/screens/` is
   git-ignored and never committed.
-- Wait for CI with one blocking command (`gh pr checks <n> --watch`, or `gh run watch <id>`
+- When waiting for CI, use one blocking command (`gh pr checks <n> --watch`, or `gh run watch <id>`
   with its output in a file), not by polling.
 - Read large files by searching first and reading only the lines needed.
-- A flaky test is fixed at its cause the first time it flakes, not re-run. Never re-run a check
-  on an unchanged tree.
+- A flaky test is fixed at its cause the first time it flakes, not re-run.
 
 ## Git
 
@@ -79,5 +92,6 @@ of 2026-11-23: these saving rules apply to every Seasonal project, this one incl
 
 ## Before reporting
 
-Run `pnpm verify` and `pnpm build`. Report: files touched with lines before/after, what was
-removed, what was reused, coverage, CI results, and what was noticed but left alone.
+Run `pnpm build`; `pnpm verify` is the pull request's (Working cheaply). Report: files touched with
+lines before/after, what was removed, what was reused, coverage, CI results, and what was noticed
+but left alone.

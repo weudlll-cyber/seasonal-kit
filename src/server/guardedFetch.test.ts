@@ -9,7 +9,9 @@
  *                 private address, or to one private among public ones, is refused by the
  *                 socket's lookup and the server sees no connection; a second, different answer
  *                 is judged afresh (DNS rebinding). Plus the refusals before any connection:
- *                 http, a bad address, a host not allowed, a private address literal.
+ *                 http, a bad address, a host not allowed, a private address literal. A named
+ *                 local origin (v0.27.0) is reached over http at a private address, and nothing
+ *                 beside it is: not another port, address or scheme, and no redirect.
  * Depends on:     vitest, node:http, node:net
  * Source:         new in the kit (K62).
  */
@@ -70,6 +72,13 @@ describe('the exchange', () => {
     expect(await r.text()).toBe('hello');
   });
 
+  it('opens a connection of its own for every call', async () => {
+    const before = connections;
+    await local(`${base}/ok`);
+    await local(`${base}/ok`);
+    expect(connections - before).toBe(2);
+  });
+
   it('refuses a redirect and does not follow it', async () => {
     await expect(local(`${base}/redirect`)).rejects.toThrow(FetchRefused);
   });
@@ -108,6 +117,48 @@ describe('before any connection', () => {
 
   it('refuses plain http when allowLocal is off', async () => {
     await expect(guardedFetch({ allowLocal: false })(`${base}/ok`)).rejects.toThrow(/https/);
+  });
+});
+
+describe('a local origin the game names (v0.27.0)', () => {
+  const named = (): ReturnType<typeof guardedFetch> =>
+    guardedFetch({ localOrigins: [base], timeoutMs: 1000 });
+
+  it('is reached over plain http at a private address, by exactly that origin', async () => {
+    expect((await named()(`${base}/ok`)).status).toBe(200);
+  });
+
+  it.each([
+    ['the same host on another port', () => 'http://127.0.0.1:1/ok', /https/],
+    ['another private address', () => base.replace('127.0.0.1', '127.0.0.2'), /https/],
+    ['another private address over https', () => 'https://10.0.0.1/ok', /not public/],
+    ['the same host over https', () => base.replace('http:', 'https:'), /not public/],
+  ])('gives nothing to %s', async (_name, address, message) => {
+    await expect(named()(address())).rejects.toThrow(message);
+  });
+
+  it('still refuses a redirect from it', async () => {
+    const before = connections;
+    await expect(named()(`${base}/redirect`)).rejects.toThrow(/redirect/);
+    expect(connections - before).toBeLessThanOrEqual(1);
+  });
+
+  it('keeps the allowed hosts', async () => {
+    const both = guardedFetch({ localOrigins: [base], allowedHosts: ['feed.example'] });
+    await expect(both(`${base}/ok`)).rejects.toThrow(/host/);
+  });
+
+  it.each([
+    'http://127.0.0.1:3000/',
+    'http://127.0.0.1:3000/api',
+    'http://*.internal',
+    'ftp://website',
+    'HTTP://Website',
+    'http://website:80',
+    'website:3000',
+    '',
+  ])('refuses the entry %j when it is built', (entry) => {
+    expect(() => guardedFetch({ localOrigins: [entry] })).toThrow(/exact origins/);
   });
 });
 

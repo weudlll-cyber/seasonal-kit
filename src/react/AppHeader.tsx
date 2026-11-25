@@ -113,9 +113,13 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
       ) : (
         <>
           <a className="sk-header-chip" href={account.href} data-testid="signed-in-as">
-            {/* Shown on wide screens, read out on narrower ones (../../css/header.css). */}
-            <span className="sk-header-chip-prefix">Signed in as </span>
-            {account.name} ({account.role})
+            {/* One run of text: the chip lays its children out side by side, which would drop
+                the space between two of them ("Signed in asOlga", fixed in v0.28.0). */}
+            <span>
+              {/* Shown on wide screens, read out on narrower ones (../../css/header.css). */}
+              <span className="sk-header-chip-prefix">Signed in as </span>
+              {account.name} ({account.role})
+            </span>
             <StepBadges
               steps={account.steps}
               className="sk-header-steps"

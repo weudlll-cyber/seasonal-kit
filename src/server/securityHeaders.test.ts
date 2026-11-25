@@ -2,7 +2,8 @@
  * @file   src/server/securityHeaders.test.ts
  * @brief  Each directive and header of the security set, its modes, and the Fastify hook (K63).
  *
- * Responsibility: every directive of the policy by name; scripts never `'unsafe-inline'` under
+ * Responsibility: every directive of the policy by name; `upgrade-insecure-requests` only over
+ *                 https; scripts never `'unsafe-inline'` under
  *                 any option; styles only with `inlineStyles`; `frame-ancestors` in website mode
  *                 (own origin, the website's origin if another, `ancestors` refused), standalone
  *                 (own origin and the allowlist) and admin (none, `DENY`, Trusted Types);
@@ -40,6 +41,7 @@ describe('the policy', () => {
       'font-src': ["'self'"],
       'style-src': ["'self'"],
       'script-src': ["'self'"],
+      'script-src-attr': ["'none'"],
       'connect-src': ["'self'"],
       'frame-src': ["'self'"],
       'frame-ancestors': ["'self'"],
@@ -64,6 +66,15 @@ describe('the policy', () => {
     expect(standalone.directives['style-src']).toEqual(["'self'"]);
   });
 
+  it('upgrades insecure requests only for a game served over https', () => {
+    const https = securityHeaderSet({ mode: 'website', secure: true });
+    expect(https.directives['upgrade-insecure-requests']).toEqual([]);
+    expect(renderPolicy(https.directives)).toMatch(/; upgrade-insecure-requests$/);
+    for (const plain of [website, securityHeaderSet({ mode: 'website', secure: false })]) {
+      expect(plain.directives).not.toHaveProperty('upgrade-insecure-requests');
+    }
+  });
+
   it('frames what it is told to, or nothing', () => {
     const chat = securityHeaderSet({
       mode: 'website',
@@ -73,6 +84,37 @@ describe('the policy', () => {
     expect(securityHeaderSet({ mode: 'website', frames: [] }).directives['frame-src']).toEqual([
       "'none'",
     ]);
+  });
+});
+
+describe('a frame source with a path (v0.27.0)', () => {
+  it.each([
+    'https://site.example/embed/chat',
+    'https://site.example:8443/embed/',
+    'https://site.example/a%20b/~c_d.e-f',
+  ])('writes %s into frame-src as given', (source) => {
+    const set = securityHeaderSet({ mode: 'website', frames: [source] });
+    expect(set.directives['frame-src']).toEqual([source]);
+  });
+
+  it.each([
+    'http://site.example/embed/chat',
+    'https://site.example/embed?theme=dark',
+    'https://site.example/embed#x',
+    'https://site.example/*',
+    'https://*.example/embed',
+    'https://site.example/a;script-src',
+    'https://site.example/a,b',
+    'https://site.example/a b',
+    "https://site.example/'self'",
+    '/embed/chat',
+  ])('refuses %j', (source) => {
+    expect(() => securityHeaderSet({ mode: 'website', frames: [source] })).toThrow(RangeError);
+  });
+
+  it('is for frames only: an ancestor stays a plain origin', () => {
+    const ancestors = ['https://site.example/embed'];
+    expect(() => securityHeaderSet({ mode: 'standalone', ancestors })).toThrow(RangeError);
   });
 });
 

@@ -169,7 +169,7 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Health routes** (K64): `http/routes/health.ts` registers `HEALTH_PATHS` and answers with `readiness(pingDatabase, { extra: feed time })`; names unchanged. Only on the owner's word.
 - **Session cookie, CSRF, headers** (K63): `auth/sessionPlugin.ts` takes `sessionCookie` and `sessionCookieOptions` with `Max-Age` from the session's length (the cookie is 30 days today, a website session 7: it outlives it by 23); its CSRF token stays and `writeCheck` is added as a second layer, with its own host behind the website's proxy; `http/plugins/securityHeaders.ts` takes `securityHeaderSet` with its `ancestors` and `admin` rules and drops `'unsafe-inline'` from `style-src` once its inline styles move. Only on the owner's word.
 - **Guarded fetch** (K62): `apps/server/src/seasons/safeFetch.ts` (99 lines) and `integration/safePost.ts` (87 lines) are replaced by the kit's `guardedFetch` and `isPublicAddress`; its feed reader gets `guardedFetch({ allowedHosts: [the website's host] })`. Its `readLimited` is also used by the account feed: that stays until the kit's fetch serves it. Only on the owner's word; its own address check misses a literal written `[::ffff:7f00:1]`, which the kit's catches.
-- **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word; the existing backups stay readable (the same tar of dump and uploads, age).
+- **Backups** (K61): `ops/lib/backup.sh` (153 lines) and its pull scripts are replaced by the kit's `ops/backup.sh`, `pull-backups.sh` and `pull-backups.ps1` with `SK_BACKUP_PREFIX=smg`; its restore drill is the kit's (a throw-away PostgreSQL, each table compared with the dump). Only on the owner's word. The kit's restore refuses the existing backups as they are (they hold `uploads.tar` and no manifest, `ops/lib/backup-restore.sh`): rewrite one before restoring it, as Mini Games' `docs/operator-guide.md` section 5 describes (branch `feat/kit-0.22`, `a483d81`); the old files age out with the retention.
 
 ### Since v0.22.0
 
@@ -188,12 +188,21 @@ Each step pins the newest tag; a step never mixes two tags.
 
 ### Since v0.25.0
 
-- **Backup split and route file** (K71, K72): nothing to do for the split (it calls `ops/backup.sh`); `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
+- **Backup split and route file** (K71, K72): its copy at `$SMG_ROOT/kit/backup.sh` (`ops/lib/backup.sh` line 21) becomes a copy of the kit's whole `ops/` folder, keeping the layout, since `ops/backup.sh` loads `ops/lib/` from beside itself; `ops/lib/website-route.sh` is replaced by the kit's with its names as `SK_ROUTE_*`, its end-of-install check (`verify_website`) staying. Its route's authorize and metrics rules are the kit's. Only on the owner's word.
 - **Load helpers** (K73): `load/measure.mjs`'s `spread` and `metricsSampler` become `latencies` and `watchServer({ prefix: 'smg_' })`; its percentiles move one rank down (nearest rank). Only on the owner's word.
 
 ### Since v0.26.0
 
 - **Website stand-in** (K74): the contract half of `e2e/websiteStub.ts` (authorize, identity, login, chat page) becomes `startWebsiteStandIn`; its nginx stack with the game's real route file, the database and the account-changes feed stay. Only on the owner's word.
+
+### Since v0.27.0
+
+- **The fix release** (CHANGELOG, "Migration, per game"): the headers, the named cross-origin write, the local origin, the bar gutter and the CI triggers. Only on the owner’s word.
+
+### Since v0.28.0
+
+- **Icons, operator address** (K83, K85): `seasons.css` and `SeasonIcon` in place of its four optimized season files (its own differ from the website's: the website's drawings show after); its installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): nothing; it follows the rule.
 
 ### Since the base components’ release
 
@@ -351,6 +360,15 @@ reachable on every phone.
 
 - **Website stand-in** (K74): the stand-in proxy of `e2e/websiteStack.ts` becomes `startWebsiteStandIn` (its `stub_user` cookie becomes `se.sid` from `sessionCookie`); the database per worker and `expireSessions` stay. Only on the owner's word.
 
+### Since v0.27.0
+
+- **The fix release** (CHANGELOG, "Migration, per game"): only the headers’ two new directives, if it takes `securityHeaderSet`.
+
+### Since v0.28.0
+
+- **Icons, operator address** (K83, K85): `seasons.css` and `SeasonIcon` in place of its copies of the four optimized season files, which equal the website's; its installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): nothing beyond checking that `docs/operator-guide.md` has the update and uninstall sections.
+
 ### Since the base components’ release
 
 - **Base components** (K78): `packages/ui/src/base.css`’s button, panel, field, input, select, chip and badge rules are replaced by `components.css`. Visible changes: a disabled button is muted on the second surface instead of faded, a disabled field looks locked. Only on the owner's word.
@@ -415,7 +433,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Health routes** (K64): `/api/health` and `/api/ready` become `/healthz` and `/readyz` with `readiness`; its installer's probe moves with them. Only on the owner's word.
 - **Session cookie, CSRF, headers** (K63, K60): `sameSiteWrites` and `sameOrigin` (`app.ts` 110-136) are replaced by `writeCheck({ trustedProxies })` (it also refuses a write with neither header, which Cases lets pass); its `helmetOptions` (`web.ts`) by `securityHeaderSet({ mode: 'website', frames: [the chat origin] })` in `securityHeadersHook`. Only on the owner's word.
-- **Guarded fetch** (K62): Cases has none today (`git grep` over `073f9ad` finds no address block list, no `redirect: 'error'` and no season feed read in `apps/`). When it reads the website's season feed or calls an outside address, it passes `guardedFetch({ allowedHosts: [the website's host] })`. Only on the owner's word.
+- **Guarded fetch** (K62): done on the way. Cases reads the website's season feed through `guardedFetch` with only the website's host allowed (`apps/server/src/seasonSource.ts`, commit `e54ec31` on branch `kit/v0.17-adoption`; its `master` `073f9ad` has no outward fetch yet).
 - **Backups** (K61): **Cases has no backup today** (no `backup`, `restore` or `pg_dump` outside its docs and route files, `git grep` over `073f9ad`), and holds accounts and results. **It moves to Docker first, then takes the kit's backup unchanged** (K76): the database container as `SK_BACKUP_DB_CONTAINER`, the systemd timer from `print-units`, no volumes unless it keeps uploads. The backup comes before its other shared parts. Only on the owner's word.
 
 ### Since v0.22.0
@@ -435,12 +453,21 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 ### Since v0.25.0
 
-- **Backup split and route file** (K71, K72): its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
+- **Backup split and route file** (K71, K72): its Docker installer (branch `kit/v0.17-adoption`) copies `ops/backup.sh` alone out of the image (`deploy/lib/backup.sh`); it copies the kit's whole `ops/` folder instead, keeping the layout, or the script fails. Its `deploy/` installer may call `sk_route_install` for its route file, with `SK_ROUTE_SECRET_HEADER` its own; compare the written file with its current one before switching. Only on the owner's word.
 - **Load helpers** (K73): none today; its first load check starts from `latencies` and `watchServer`. Only on the owner's word.
 
 ### Since v0.26.0
 
 - **Website stand-in** (K74): `e2e/websiteStub.ts`'s contract half becomes `startWebsiteStandIn`; its Vite middleware serves the client as the stand-in's app. Only on the owner's word.
+
+### Since v0.27.0
+
+- **The fix release** (CHANGELOG, "Migration, per game"): its header, Menu and docked-screen findings are fixed in the kit; the backup path, the local origin and the CI triggers. Only on the owner’s word.
+
+### Since v0.28.0
+
+- **Icons, operator address** (K83, K85): season icons from the kit if it shows any; its Docker installer calls `sk_operator_email`. Only on the owner's word.
+- **Install and guide** (K86): `deploy/install.sh` moves to `ops/install.sh`; `docs/INSTALL.md` and `docs/OPERATIONS-CASES.md` (branch `kit/v0.17-adoption`) are joined into `docs/operator-guide.md`, keeping their content, at its next adoption.
 
 ### Since the base components’ release
 

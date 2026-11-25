@@ -3,3 +3,5 @@
 * text=auto eol=lf
 *.png binary
 *.woff2 binary
+# The website's season icons, byte for byte (seasons/README.md): no line-ending change.
+seasons/*.svg -text

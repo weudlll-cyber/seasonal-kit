@@ -388,3 +388,42 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   game that imports it changes nothing until it uses one. Where the games differ, Mini Games' version
   is proposed (its disabled button and locked field keep their text readable). Released only after
   the owner has looked at the review page. (K77 is the shared call slot's, on its own branch.)
+- **K79 — The header's fold depends only on the width and the items** (2026-11-26, Seasonal Cases'
+  finding on v0.22.0). Every decision measures the unfolded layout; a folded header is measured
+  again on a new window width, a change of its own size (not by the fold itself) and loaded web
+  fonts. Measured first, with a long organiser header in a throwaway page (Chromium on Windows, the
+  faces under a name no system has): the first decision comes after the stylesheets apply (the
+  header is `display: flex`) and before the fonts do (at 673 ms, no face loaded). There the header
+  needed 1228 px in the fallback font and 1230 px in Luxora, so the font swap alone does not explain
+  Cases' fold at 1536 px, which was not reproduced; it stayed because only a wider window unfolded.
+- **K80 — One CI run per push** (2026-11-26). CI runs on push only for `master` and on pull
+  requests against `master`; a work branch has a draft PR from its first push. Mini Games
+  (`branches: ['**', '!shots/**']`) and Seasonal Cases (`branches: ['**']`) ran two identical runs
+  per push; the kit, the website and Bingo Royale already follow the rule.
+- **K81 — In website mode a game is framed by the website only** (confirmed 2026-11-25).
+  `securityHeaderSet({ mode: 'website' })` refuses `ancestors`, as before. A game that must be framed
+  elsewhere uses a standalone install with its `ancestors` list.
+- **K82 — How every Seasonal project runs its checks** (decided 2026-11-25). Locally before each
+  push the fast tests of the changed files and, when a browser spec checks what changed, that one
+  spec file in one browser; the full checks on GitHub through the draft PR; no waiting for CI between
+  pieces, one look at the end and before a merge; CI cancels a replaced run of a work branch; no
+  re-run on an unchanged tree.
+- **K83 — The season icons ship in the kit** (decided 2026-11-25, BACKLOG 29; the socket client
+  stays out, as [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14
+  recommends). The website's four optimized files, byte for byte, compared with its `master` on
+  every pull request and daily, as the season colours are. They belong to the Seasonal Tokens
+  project and are not under the AGPL. A stylesheet draws them, so a bundler finds the files as it
+  finds the fonts.
+- **K84 — The header's brand link is a 44 px target** (decided 2026-11-25, BACKLOG 30; K29). Its box
+  grows, the logo and the header's height do not: measured on the kit's headers at seven widths, the
+  link went from 19–38 px to 44–46 px at 100 % text (55 px and more at 200 %), with every header as
+  high as before.
+- **K85 — One operator contact address per server** (decided 2026-11-25). Every Seasonal installer
+  takes it from `/etc/seasonal/operator.env` (`SK_OPERATOR_EMAIL`, root's, mode 0644) through the
+  kit's `sk_operator_email`; an explicit `--email` still wins and fills an empty file. No address is
+  in the kit, in a game's repository or in a log beyond the installer's "using <address> from <file>".
+- **K86 — Every game has a one-command install and an operator guide** (decided 2026-11-26):
+  `ops/install.sh` (Ubuntu 24.04, Docker, standalone or inside the website, re-runnable, ending in a
+  check through `/readyz`, using the kit's ops parts) and `docs/operator-guide.md` for an owner who
+  is not technical, with fixed sections. Held by review and by the rehearsal before production
+  ([HANDBOOK.md](HANDBOOK.md)).

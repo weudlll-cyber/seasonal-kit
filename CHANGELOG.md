@@ -9,6 +9,10 @@ applies it.
 
 ### Added
 
+- **`HEALTH_PATHS` and `readiness`** in `@seasonal/kit/server` (DECISIONS K64): the route names
+  `/healthz` and `/readyz` and the readiness answer (200 ready, or 503 unavailable when the probe
+  fails or is later than 1.5 s, the error beside the body and never in it), from Bingo's and Mini
+  Games' `routes/health.ts`. No game changes until it adopts.
 - **`sessionCookie`, `sessionCookieOptions`, `writeCheck`, `securityHeaderSet`, `renderPolicy` and
   `securityHeadersHook`** in `@seasonal/kit/server` (DECISIONS K63, K60): the session cookie's name
   and attributes with a `Max-Age` equal to the session's absolute length (Bingo's); the CSRF check for

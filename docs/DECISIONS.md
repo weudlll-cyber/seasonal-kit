@@ -282,3 +282,11 @@ sandbox`, so that "Open the call page" opens `/calls/<id>` as an ordinary page o
   allowlist is refused; **no HSTS in any mode**: the website sends it in website mode, the TLS proxy
   standalone). A game's CSRF token stays and is a second layer. No game's headers or cookie change
   until it adopts.
+- **K64 — The kit settles the health routes and ships the readiness answer** (decided 2026-11-26,
+  v0.21.0; the night chain, from [concepts/shared-server-parts.md](concepts/shared-server-parts.md)
+  section 5). `HEALTH_PATHS` is `/healthz` (liveness, `{ status: 'ok' }`) and `/readyz`: the names
+  Bingo Royale and Mini Games already share and their installers probe. `readiness(probe, { timeoutMs,
+extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reason: 'database' }` with
+  the error beside the body, never in it; Mini Games' website-feed field is `extra`. The per-address
+  limit (Bingo's `openRouteLimit`) and the route registration stay in each game. Seasonal Cases' `/api/health`
+  and `/api/ready` move to these names when it adopts, with its installer's probe.

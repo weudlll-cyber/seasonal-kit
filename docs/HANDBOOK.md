@@ -221,6 +221,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Session cookie, CSRF, headers:** `sessionCookie` (lifetime = the session's absolute length), `writeCheck`
   (a write names where it came from; the forwarded host only from the proxy) and `securityHeaderSet` (K60,
   K63); the game keeps its token, its session store and the admin path test.
+- **Health routes:** `/healthz` and `/readyz` (`HEALTH_PATHS`), the readiness answer from `readiness`
+  (K64); the game limits the routes per address and owns the probe.
 - **Guarded fetch:** `guardedFetch` and `isPublicAddress` for every call a server makes to an address
   it was handed (K62).
 

@@ -5,13 +5,14 @@
  *
  * Responsibility: name everything a game's server may import: the trust checks, the safe
  *                 return path and login hop, the identity headers and their decision, TOTP,
- *                 recovery codes, the rate limiter, the failure brake (since v0.15.0), the guarded fetch, the session cookie, the CSRF write check and the security headers (since v0.21.0), the session-end notifier, and the website's
+ *                 recovery codes, the rate limiter, the failure brake (since v0.15.0), the guarded fetch, the session cookie, the CSRF write check and the security headers and the health routes (since v0.21.0), the session-end notifier, and the website's
  *                 open-rounds page and season feed (since v0.11.0). Node only (node:crypto,
  *                 node:net); never imported by browser code. Accounts, sessions and every
  *                 database statement stay in the games.
  * Source:         new in the kit.
  */
 export { FailureBrake } from './failureBrake.js';
+export { HEALTH_PATHS, readiness, type ReadinessAnswer, type ReadinessOptions } from './health.js';
 export { isPublicAddress } from './guardedAddress.js';
 export { FetchRefused, guardedFetch, type GuardedFetchOptions } from './guardedFetch.js';
 export { IDENTITY_HEADERS, identityFrom, isWebsiteGuest, mappedRoles, websiteSignInCheck, type IdentityHeaders, type RequestHeaders, type SignInCheck, type SignInDecision, type WebsiteIdentity, } from './identity.js';

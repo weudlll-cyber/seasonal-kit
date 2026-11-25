@@ -10,7 +10,8 @@
  *                 (`trustedProxies`) the `X-Forwarded-Host` is the request's host, but only when
  *                 the TCP peer is the proxy: from any other peer, and with no proxy configured,
  *                 it is ignored, so a forged one cannot make a foreign Origin pass. A bad proxy
- *                 range fails when the check is built.
+ *                 range fails when the check is built. A named cross-origin write (v0.27.0) passes
+ *                 only from its listed origin on its exact path and method.
  * Depends on:     vitest
  * Source:         new in the kit (K60, K63).
  */
@@ -151,5 +152,55 @@ describe('behind the website proxy', () => {
 
   it('a bad range fails when the check is built', () => {
     expect(() => writeCheck({ trustedProxies: ['10.0.0.0/99'] })).toThrow(RangeError);
+  });
+});
+
+describe('a write another site may make (v0.27.0)', () => {
+  const PATH = '/api/v1/auth/handoff';
+  const named = writeCheck({
+    crossOrigin: [{ method: 'post', path: PATH, origins: ['https://site.example'] }],
+  });
+  const from = (headers: WriteRequest['headers'], url = PATH, method = 'POST') =>
+    named({ method, url, headers: { host, ...headers }, peer: undefined });
+  const listed = { origin: 'https://site.example', 'sec-fetch-site': 'cross-site' };
+
+  it.each([PATH, `${PATH}?next=1`])('passes the listed origin on %s', (url) => {
+    expect(from(listed, url)).toEqual({ ok: true });
+  });
+
+  // [name, headers, url, method]
+  it.each([
+    ['another path', listed, `${PATH}/x`, 'POST'],
+    ['a longer prefix', listed, '/api/v1/auth', 'POST'],
+    ['another method', listed, PATH, 'DELETE'],
+    ['Sec-Fetch-Site alone', { 'sec-fetch-site': 'cross-site' }, PATH, 'POST'],
+  ])('refuses %s as cross-site', (_name, headers, url, method) => {
+    expect(from(headers, url, method)).toEqual({ ok: false, reason: 'cross-site' });
+  });
+
+  it.each([
+    ['another origin', { origin: 'https://evil.example' }, 'origin-mismatch'],
+    ['no Origin', {}, 'no-origin'],
+  ])('refuses %s on the listed path', (_name, headers, reason) => {
+    expect(from(headers)).toEqual({ ok: false, reason });
+  });
+
+  it('refuses the listed origin when the game gives no url', () => {
+    const request = { method: 'POST', headers: { host, ...listed }, peer: undefined };
+    expect(named(request)).toEqual({ ok: false, reason: 'cross-site' });
+  });
+
+  it("keeps the game's own pages writing to the same path", () => {
+    expect(from({ origin: 'https://game.example' })).toEqual({ ok: true });
+  });
+
+  it.each([
+    [{ path: '/a/*', origins: ['https://site.example'] }],
+    [{ path: '/a?x=1', origins: ['https://site.example'] }],
+    [{ path: 'a', origins: ['https://site.example'] }],
+    [{ path: '/a', origins: ['https://site.example/'] }],
+    [{ path: '/a', origins: ['*'] }],
+  ])('refuses the entry %j when it is built', (entry) => {
+    expect(() => writeCheck({ crossOrigin: [{ method: 'POST', ...entry }] })).toThrow(RangeError);
   });
 });

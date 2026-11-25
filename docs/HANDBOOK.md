@@ -30,7 +30,8 @@ later pins are in **Seasonal Mini Games** (`0bed072`).
    `vitest.config.ts`, `pnpm-workspace.yaml`; `.editorconfig`, `.gitattributes`, `.gitignore`,
    `.npmrc`, `.nvmrc`, `.prettierignore`, `osv-scanner.toml`; `LICENSE`, `CLAUDE.md`,
    `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, and `docs/DECISIONS.md`, `docs/BACKLOG.md`
-   and `docs/OPEN.md`.
+   and `docs/OPEN.md`. The copied `ci.yml` must follow the CI trigger rule of "How we work"
+   (push only for `master`); Cases' file does not yet.
 3. **Pin the kit by tag** in `package.json` (see "The repository and the kit"), and take the
    stylesheets and parts the game uses from it.
 4. **Plan for Docker on the server.** Every game runs in Docker there, as the website, Bingo Royale
@@ -71,6 +72,7 @@ The website is a different stack (JavaScript on Node `v26.13.1`, npm), pinned in
 | Every game speaks English to its players (decided 2026-11-24, K53).                                                                                                                                                                                                                                                                                                                                                                                 | review: no test can tell a language; the game's e2e reads its own texts                                                          |
 | Every game is licensed AGPL-3.0-or-later (decided 2026-11-24, K54): a `LICENSE` file with the AGPL's text and `"license": "AGPL-3.0-or-later"` in `package.json`. The Luxora Grotesk font is the one exception, shipped under the owner's approval (K8).                                                                                                                                                                                            | review; the kit has no test for another repository's licence (none found)                                                        |
 | Everything in a repository is English: code, comments, commit messages, docs.                                                                                                                                                                                                                                                                                                                                                                       | CLAUDE.md "Language"                                                                                                             |
+| CI runs on push only for `master` (after a merge) and on `pull_request` against `master`; a work branch has a draft PR from its first push, so each push is checked exactly once. Schedules and `workflow_dispatch` stay allowed (K80).                                                                                                                                                                                                             | review                                                                                                                           |
 | `master` is protected. Work happens on a branch and goes in through a PR; a PR merges only when every required check is green and the owner has approved, as a merge commit.                                                                                                                                                                                                                                                                        | branch protection (K13, K19); the repository's settings (K24, RELEASING)                                                         |
 | Push always: every commit is pushed, so nothing lives only on one PC.                                                                                                                                                                                                                                                                                                                                                                               | CLAUDE.md; the night's morning sheet                                                                                             |
 | After a merge the branch is deleted on origin and locally; only `master` (and, during a night, its sheet branch) stays on origin.                                                                                                                                                                                                                                                                                                                   | `delete_branch_on_merge` (K24); CLAUDE.md "Git"                                                                                  |
@@ -186,7 +188,8 @@ The exports are in the [README](../README.md); what each replaces per game is in
 Each part is held by its own tests in `src/` and `tests/` and by the showcase (CI `showcase`).
 
 - **Header:** `AppHeader` with `BackLink` in website mode; folds into its Menu whenever its items
-  do not fit, or always under `foldBelow` px (K40, `header.css`). The theme toggle is always
+  do not fit (the same answer at a width however the page got there, K79), or always under
+  `foldBelow` px (K40, `header.css`). The theme toggle is always
   last in the row; there is no configurable order (K43). `account.steps` draws the member's
   website step badges as small icons in the chip, only for the website's own icon addresses
   (K56).
@@ -236,6 +239,15 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Test tools** (K66): `@seasonal/kit/testing`, for a game's own suites only: `setTheme`,
   `captureLook`, the sizes, the guards `findFixedColours`, `findSmallText` and `findLowContrast`, and
   `sweep` (every screen at seven sizes, 100 % and 200 %, light and dark, with axe; K67).
+- **Calls to the website on the same machine** (v0.27.0): `guardedFetch({ localOrigins })` with the
+  origins from the server's configuration, never from a user's or admin's input; no plain `fetch`
+  and never `allowLocal` in production.
+- **A write from another site** (v0.27.0): named in `writeCheck({ crossOrigin })`, never skipped by
+  a path exemption.
+- **Who may frame a game** (K81): in website mode the website only (`securityHeaderSet({ mode:
+'website' })`); anywhere else needs a standalone install with its `ancestors`.
+- **Game bar gutter** (v0.27.0): a game whose page has its own gutter sets `--sk-bar-gutter: 0`
+  instead of overriding the bar's padding.
 - **Phone layouts** (K65): the folded header's brand keeps its longest word, the back link's words wrap,
   the game bar's facts wrap and its buttons keep a row, with the gutter tokens' padding;
   `StartCard` without `opensIn` has no countdown. Measured in `showcase/cases.spec.ts`.

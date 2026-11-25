@@ -98,6 +98,8 @@
   /* Layout */
   --sk-content-width: 72rem;
   --sk-gutter: clamp(1rem, 0.5rem + 2vw, 2rem);
+  /* `--sk-bar-gutter` is a game's to set, not set here: the game bar's inline padding at every
+     width (./bar.css), else this gutter on a desktop and the smallest spacing on a phone. */
 
   /* Motion (off under prefers-reduced-motion, ./motion.css) */
   --sk-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);

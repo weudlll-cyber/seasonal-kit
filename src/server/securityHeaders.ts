@@ -6,13 +6,17 @@
  *                 and the other headers as plain objects, so a test reads each one and a game
  *                 hands them to any server. The policy is Bingo's strict one, with Mini Games'
  *                 configurable ancestors and its admin rules:
- *                 - `script-src 'self'`, never `'unsafe-inline'`; `style-src 'self'` unless the
- *                   game says `inlineStyles` (a development page; a finding in a scan);
+ *                 - `script-src 'self'`, never `'unsafe-inline'`, and `script-src-attr 'none'`
+ *                   (no inline event handler, v0.27.0); `style-src 'self'` unless the game says
+ *                   `inlineStyles` (a development page; a finding in a scan);
+ *                 - `upgrade-insecure-requests` only when the game says it is served over https
+ *                   (`secure`, v0.27.0): on plain-http development it would break every request;
  *                 - `frame-ancestors`: in website mode (`mode: 'website'`) the game's own origin,
  *                   which is the website's, and the `websiteOrigin` when it is another origin,
  *                   nobody else, and `ancestors` is refused there; standalone, its own origin and
  *                   the `ancestors` (an embed allowlist of plain origins);
- *                 - `frame-src` from `frames` (plain origins or `'self'`; none gives `'none'`);
+ *                 - `frame-src` from `frames` (plain origins, an https origin followed by a path
+ *                   since v0.27.0, or `'self'`; none gives `'none'`);
  *                 - `admin`: framed by nobody (`frame-ancestors 'none'`, `X-Frame-Options: DENY`)
  *                   and Trusted Types required for scripts;
  *                 - no HSTS, ever: the website sends it in website mode (it owns the whole
@@ -22,7 +26,8 @@
  *                   camera, microphone, location and payment, and same-origin opener and
  *                   resource policies; `X-Frame-Options: SAMEORIGIN` only where no other site may
  *                   frame the game (it knows no list).
- *                 Every origin is checked to be plain, so no stored value can add a directive.
+ *                 Every origin (and a frame source's path) is checked, so no stored value can add
+ *                 a directive.
  *                 `securityHeadersHook` sets a set on each response as a Fastify `onRequest`
  *                 hook, from one set or a function of the request's url (the admin paths).
  * Source:         seasonal-bingo-royale apps/server/src/http/plugins/securityHeaders.ts at
@@ -40,8 +45,12 @@ export interface SecurityHeaderOptions {
   readonly websiteOrigin?: string;
   // Standalone: the sites that may frame the game (plain origins).
   readonly ancestors?: Sources;
-  // What the game may frame: plain origins or `'self'`; default `['self']`; empty is none.
+  // What the game may frame: plain origins, `https://host/path` (no query, fragment or
+  // wildcard) or `'self'`; default `['self']`; empty is none.
   readonly frames?: Sources;
+  // Served over https (as `sessionCookie` is told): browsers then upgrade http addresses.
+  // Left out or false: no upgrade, for plain-http development.
+  readonly secure?: boolean;
   // Allow inline styles (a development page). Never scripts.
   readonly inlineStyles?: boolean;
   // Allow blob: images (a canvas the game draws and shows).
@@ -59,13 +68,20 @@ export interface SecurityHeaderSet {
 const SELF = "'self'";
 // Only a plain origin reaches a header, so no stored value can add a directive.
 const PLAIN_ORIGIN = /^https?:\/\/[A-Za-z0-9.-]+(:\d{1,5})?$/;
+// An https origin and a path of plain characters: nothing that ends a source or a directive.
+const HTTPS_PATH = /^https:\/\/[A-Za-z0-9.-]+(:\d{1,5})?(\/(?:[\w.~-]|%[0-9A-Fa-f]{2})*)+$/;
 const PERMISSIONS = 'camera=(), microphone=(), geolocation=(), payment=()';
 
-function origins(list: Sources, what: string, allowSelf: boolean): Sources {
-  for (const o of list) {
-    if (!PLAIN_ORIGIN.test(o) && !(allowSelf && o === SELF)) {
-      throw new RangeError(`${what} must be plain origins`);
-    }
+function origins(list: Sources, what: string): Sources {
+  if (!list.every((o) => PLAIN_ORIGIN.test(o))) {
+    throw new RangeError(`${what} must be plain origins`);
+  }
+  return list;
+}
+
+function frameSources(list: Sources): Sources {
+  if (!list.every((s) => s === SELF || PLAIN_ORIGIN.test(s) || HTTPS_PATH.test(s))) {
+    throw new RangeError('frames must be plain origins or https addresses with a path');
   }
   return list;
 }
@@ -77,13 +93,13 @@ function ancestorsOf(options: SecurityHeaderOptions): Sources {
       throw new RangeError('A website install is framed by the website only: no ancestors');
     }
     const site = options.websiteOrigin === undefined ? [] : [options.websiteOrigin];
-    return [SELF, ...origins(site, 'The website origin', false)];
+    return [SELF, ...origins(site, 'The website origin')];
   }
-  return [SELF, ...origins(options.ancestors ?? [], 'ancestors', false)];
+  return [SELF, ...origins(options.ancestors ?? [], 'ancestors')];
 }
 
 export function securityHeaderSet(options: SecurityHeaderOptions): SecurityHeaderSet {
-  const frames = origins(options.frames ?? [SELF], 'frames', true);
+  const frames = frameSources(options.frames ?? [SELF]);
   const ancestors = ancestorsOf(options);
   const directives: Record<string, Sources> = {
     'default-src': [SELF],
@@ -94,9 +110,12 @@ export function securityHeaderSet(options: SecurityHeaderOptions): SecurityHeade
     'font-src': [SELF],
     'style-src': [SELF, ...(options.inlineStyles === true ? ["'unsafe-inline'"] : [])],
     'script-src': [SELF],
+    'script-src-attr': ["'none'"],
     'connect-src': [SELF],
     'frame-src': frames.length === 0 ? ["'none'"] : frames,
     'frame-ancestors': ancestors,
+    // A directive without a value.
+    ...(options.secure === true ? { 'upgrade-insecure-requests': [] } : {}),
     ...(options.admin === true ? { 'require-trusted-types-for': ["'script'"] } : {}),
   };
   // X-Frame-Options has no list: with another site allowed, frame-ancestors decides alone.

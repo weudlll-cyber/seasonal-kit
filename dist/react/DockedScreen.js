@@ -15,7 +15,9 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                 above the on-screen keyboard. With `withoutChat` (since v0.12.0) there is no
  *                 dock at all, no strip and no sheet, and the content still follows the keyboard
  *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
- *                 it may sit under other parts of the page (v0.7.0, found by the showcase).
+ *                 it may sit under other parts of the page (v0.7.0, found by the showcase). The
+ *                 content's box is one Tab stop, the region "Game screen", so a keyboard can
+ *                 scroll it (since v0.27.0).
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).
@@ -52,5 +54,5 @@ export function DockedScreen(p) {
     const openChat = useRef(null);
     // Narrowed here: what is left is the dock's own props (and `withoutChat`, which it ignores).
     const dock = p.withoutChat === true ? null : _jsx(ChatDock, { ...p, phone: view === 'phone' });
-    return (_jsx(DockHandOver.Provider, { value: openChat, children: _jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", children: p.children }), dock] }) }));
+    return (_jsx(DockHandOver.Provider, { value: openChat, children: _jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", role: "region", "aria-label": "Game screen", tabIndex: 0, children: p.children }), dock] }) }));
 }

@@ -12,10 +12,12 @@
  *                 that opened them when Escape or Close shuts them. Under
  *                 `prefers-reduced-motion: reduce` the win glow and every transition are off,
  *                 and without it the glow runs, so the check can fail.
- * Depends on:     @playwright/test
+ * Depends on:     @playwright/test, ./screens
  * Source:         new in the kit.
  */
 import { expect, test, type Page } from '@playwright/test';
+
+import { settled } from './screens.js';
 
 const CONTROLS =
   'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -68,6 +70,7 @@ for (const [label, width, height] of [
   }) => {
     await page.setViewportSize({ width, height });
     await page.goto('/?theme=light');
+    await settled(page);
     const total = await markControls(page);
     expect(total).toBeGreaterThan(5);
     expect(await page.locator('[tabindex]:not([tabindex="0"]):not([tabindex="-1"])').count()).toBe(

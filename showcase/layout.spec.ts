@@ -10,10 +10,16 @@
  *                 each button still 44 px wide (Cases 32; v0.11.0). The bar's back link shows
  *                 arrow and words on a desktop and the arrow alone, 44 px wide, on a phone, with
  *                 the words as its name (v0.12.0). The result frame without a reveal is one column
- *                 and with a middle card keeps it between the first part and "more" (v0.15.0).
- * Depends on:     @playwright/test
+ *                 and with a middle card keeps it between the first part and "more" (v0.15.0). The
+ *                 header's Menu button shows only when folded, whichever of header.css and bar.css
+ *                 comes last (v0.27.0). A docked screen whose content scrolls passes axe's
+ *                 scrollable-region-focusable (v0.27.0).
+ * Depends on:     @playwright/test, @axe-core/playwright
  * Source:         new in the kit.
  */
+import { readFileSync } from 'node:fs';
+
+import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 // At least this much, in CSS px, between the arrow and the words: a third of the small text.
@@ -36,6 +42,87 @@ test('the back link keeps a gap between arrow and words', async ({ page }) => {
     });
   expect(gap).toBeGreaterThanOrEqual(MIN_GAP_PX);
 });
+
+// The Menu button carries two of the kit's classes; whichever file a game imports last, it
+// shows only in a folded header (Seasonal Cases, v0.27.0).
+const sheet = (name: string): string =>
+  readFileSync(new URL(`../css/${name}`, import.meta.url), 'utf8');
+
+for (const order of [
+  ['bar.css', 'header.css'],
+  ['header.css', 'bar.css'],
+]) {
+  test(`the Menu button shows only when folded, with ${order.join(' before ')}`, async ({
+    page,
+  }) => {
+    const styles = order.map((name) => `<style>${sheet(name)}</style>`).join('');
+    const button = '<button class="sk-bar-button sk-menu-button">Menu</button>';
+    await page.setContent(
+      `${styles}<header class="sk-header" data-sk-folded="false">${button}</header>`,
+    );
+    const menu = page.locator('button');
+    await expect(menu).toHaveCSS('display', 'none');
+    await page.locator('header').evaluate((h) => {
+      h.setAttribute('data-sk-folded', 'true');
+    });
+    // `inline-flex`, which a flex item computes to `flex`.
+    await expect(menu).toHaveCSS('display', 'flex');
+  });
+}
+
+// The bar's own padding is a game's to set (Mini Games, v0.27.0); unset, as before.
+for (const [width, unset] of [
+  [1280, '32px'],
+  [800, '8px'],
+  [360, '4px'],
+] as const) {
+  test(`the game bar's gutter is a token at ${String(width)} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    const styles = ['tokens.css', 'bar.css'].map((n) => `<style>${sheet(n)}</style>`).join('');
+    await page.setContent(`${styles}<div class="sk-game-bar">Round 1</div>`);
+    const bar = page.locator('.sk-game-bar');
+    await expect(bar).toHaveCSS('padding-left', unset);
+    await page.addStyleTag({ content: ':root { --sk-bar-gutter: 0px; }' });
+    await expect(bar).toHaveCSS('padding-left', '0px');
+    await expect(bar).toHaveCSS('padding-right', '0px');
+  });
+}
+
+// A docked screen's content that scrolls is reachable and named (axe, Seasonal Cases, v0.27.0).
+for (const [width, height] of [
+  [1536, 768],
+  [390, 844],
+] as const) {
+  for (const theme of ['light', 'dark']) {
+    const at = `${String(width)} px, ${theme}`;
+    test(`a scrolling docked screen is reachable by keyboard: ${at}`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.goto(`/?theme=${theme}`);
+      const main = page.locator('.sk-docked-main').first();
+      // Text alone, running past the box: nothing inside it can take the focus.
+      await main.evaluate((box) => {
+        const lines = Array.from({ length: 200 }, () => {
+          const line = document.createElement('p');
+          line.textContent = 'A long result.';
+          return line;
+        });
+        box.replaceChildren(...lines);
+        box.style.overflowY = 'auto';
+        box.dataset['testid'] = 'scrolling';
+      });
+      const found = await new AxeBuilder({ page })
+        .include('[data-testid="scrolling"]')
+        .withRules(['scrollable-region-focusable'])
+        .analyze();
+      expect(found.passes.map((rule) => rule.id)).toEqual(['scrollable-region-focusable']);
+      expect(found.violations).toEqual([]);
+      await expect(page.getByRole('region', { name: 'Game screen' }).first()).toHaveAttribute(
+        'tabindex',
+        '0',
+      );
+    });
+  }
+}
 
 // The header never takes two rows (Bingo R1): at each width every app header's visible items
 // share one row, the admin's long bar folding at 1280 px and the short ones unfolded on a wide

@@ -17,11 +17,16 @@ import { describe, expect, it } from 'vitest';
 import { sessionCookie, sessionCookieOptions } from './sessionCookie.js';
 
 describe('sessionCookie', () => {
-  it('is plain on http, at the root', () => {
-    expect(sessionCookie({ name: 'sbr_session', secure: false, basePath: '/games/' })).toEqual({
+  it.each([
+    [undefined, '/'],
+    ['/', '/'],
+    ['/games/mini/', '/games/mini'],
+  ])('is plain on http, under the base path %j', (basePath, path) => {
+    const input = { name: 'sbr_session', secure: false };
+    expect(sessionCookie(basePath === undefined ? input : { ...input, basePath })).toEqual({
       name: 'sbr_session',
       secure: false,
-      path: '/',
+      path,
     });
   });
 

@@ -9,6 +9,7 @@ applies it.
 
 ### Added
 
+- **`securityHeaderSet`’s `frames`** also takes an https origin followed by a path.
 - **`writeCheck({ crossOrigin })`**: named writes another site's page may make, by method, exact
   path and exact origins; the request passes its `url`.
 - **`guardedFetch({ localOrigins })`**: exact origins from a game's server configuration that may
@@ -16,6 +17,8 @@ applies it.
 
 ### Migration, per game
 
+- **Mini Games:** pass `https://<website public host>/embed/chat` in `frames` and drop its own
+  `frame-src` override (`headersFor`).
 - **Mini Games:** list `POST /api/v1/auth/handoff` with its embed origins, pass `url: request.url`,
   and drop the path exemption in `auth/sessionPlugin.ts`. **Seasonal Cases and Bingo Royale:**
   nothing.

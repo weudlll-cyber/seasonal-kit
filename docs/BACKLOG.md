@@ -170,3 +170,5 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   2026-11-25). Closed in v0.27.0 (`localOrigins`, `guardedFetch.test.ts`).
 - **43. `writeCheck` had no named cross-origin write** (Mini Games, 2026-11-25). Closed in
   v0.27.0 (`crossOrigin`, `writeCheck.test.ts`).
+- **44. `frames` took origins only** (Mini Games, 2026-11-25). Closed in v0.27.0
+  (`securityHeaderSet`, its test).

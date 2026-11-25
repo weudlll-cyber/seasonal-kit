@@ -87,6 +87,37 @@ describe('the policy', () => {
   });
 });
 
+describe('a frame source with a path (v0.27.0)', () => {
+  it.each([
+    'https://site.example/embed/chat',
+    'https://site.example:8443/embed/',
+    'https://site.example/a%20b/~c_d.e-f',
+  ])('writes %s into frame-src as given', (source) => {
+    const set = securityHeaderSet({ mode: 'website', frames: [source] });
+    expect(set.directives['frame-src']).toEqual([source]);
+  });
+
+  it.each([
+    'http://site.example/embed/chat',
+    'https://site.example/embed?theme=dark',
+    'https://site.example/embed#x',
+    'https://site.example/*',
+    'https://*.example/embed',
+    'https://site.example/a;script-src',
+    'https://site.example/a,b',
+    'https://site.example/a b',
+    "https://site.example/'self'",
+    '/embed/chat',
+  ])('refuses %j', (source) => {
+    expect(() => securityHeaderSet({ mode: 'website', frames: [source] })).toThrow(RangeError);
+  });
+
+  it('is for frames only: an ancestor stays a plain origin', () => {
+    const ancestors = ['https://site.example/embed'];
+    expect(() => securityHeaderSet({ mode: 'standalone', ancestors })).toThrow(RangeError);
+  });
+});
+
 describe('who may frame the game', () => {
   it('website mode: its own origin, which is the website, and nobody else', () => {
     expect(website.directives['frame-ancestors']).toEqual(["'self'"]);

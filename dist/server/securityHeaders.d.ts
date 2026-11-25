@@ -15,7 +15,8 @@
  *                   which is the website's, and the `websiteOrigin` when it is another origin,
  *                   nobody else, and `ancestors` is refused there; standalone, its own origin and
  *                   the `ancestors` (an embed allowlist of plain origins);
- *                 - `frame-src` from `frames` (plain origins or `'self'`; none gives `'none'`);
+ *                 - `frame-src` from `frames` (plain origins, an https origin followed by a path
+ *                   since v0.27.0, or `'self'`; none gives `'none'`);
  *                 - `admin`: framed by nobody (`frame-ancestors 'none'`, `X-Frame-Options: DENY`)
  *                   and Trusted Types required for scripts;
  *                 - no HSTS, ever: the website sends it in website mode (it owns the whole
@@ -25,7 +26,8 @@
  *                   camera, microphone, location and payment, and same-origin opener and
  *                   resource policies; `X-Frame-Options: SAMEORIGIN` only where no other site may
  *                   frame the game (it knows no list).
- *                 Every origin is checked to be plain, so no stored value can add a directive.
+ *                 Every origin (and a frame source's path) is checked, so no stored value can add
+ *                 a directive.
  *                 `securityHeadersHook` sets a set on each response as a Fastify `onRequest`
  *                 hook, from one set or a function of the request's url (the admin paths).
  * Source:         seasonal-bingo-royale apps/server/src/http/plugins/securityHeaders.ts at

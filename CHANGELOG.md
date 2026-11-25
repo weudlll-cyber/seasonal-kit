@@ -7,6 +7,23 @@ applies it.
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-11-26
+
+Test tools for the games' own suites, in a new entry `@seasonal/kit/testing` (DECISIONS K66). Opt-in:
+no other entry imports it and no game changes until it uses it.
+
+### Added
+
+- **`setTheme`, `settle`, `captureLook`, `DESKTOP`, `PHONE` and `SWEEP_SIZES`**: the theme switch and
+  the screenshots of a look in a browser test, from Bingo Royale's and Mini Games' `e2e/screens.ts`.
+- **`findFixedColours`, `findSmallText` and `findLowContrast`**: static guards a game calls from its own
+  Vitest test, from Bingo Royale's `noFixedColours`, `minTextSize` and `designTokens` tests.
+- **`probe`, `sweep` and `axeFinder`** (K67): one call that walks a game's screens at seven sizes, 100 %
+  and 200 % root font, light and dark, with axe, and fails on sideways scroll, a box past the window,
+  cut text, a control under 44 px or a fitted root that cuts a part. From Bingo Royale's fit probe and
+  the size loop pasted into its specs. Proved on the kit's own screens in `showcase/testing.spec.ts`.
+- **`@playwright/test`** is an optional peer, for the entry's types.
+
 ## [0.22.0] - 2026-11-26
 
 The fixes from Seasonal Cases' measurements of its kit adoption (DECISIONS K65): Cases' own CSS
@@ -1322,7 +1339,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.22.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.23.0...HEAD
+[0.23.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.19.1...v0.20.0

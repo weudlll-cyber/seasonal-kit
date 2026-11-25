@@ -313,3 +313,18 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
      400 px and under). Every game's bar changes look when it adopts.
   5. **`StartCard`'s `opensIn` is optional**: without it no countdown, as Cases needs (its shows
      have no start time); with it, as before (0 is a time).
+- **K66 — The kit ships test tools in their own entry** (decided 2026-11-25 on
+  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) sections 1 to 3, built
+  2026-11-26, v0.23.0). `@seasonal/kit/testing` is for a game's own Vitest and Playwright suites:
+  sizes, the theme switch, screenshots of a look, and static guards (fixed colours, token contrast,
+  text size). No other entry imports it, so it never reaches a game's bundle; it imports nothing at
+  run time but Node's own modules. `@playwright/test` is an optional peer (`^1.64.1`, the oldest a
+  game pins), used for types only (K37).
+- **K67 — The fit probe and the sweep** (decided 2026-11-25 on section 2, built 2026-11-26, v0.23.0).
+  `probe(page)` and `sweep(page, screens, { axe })` are in the testing entry: the default sizes are
+  1920x1080, 1536x768, 1280x720, 390x844, 375x667, 360x780 and 320x568, root fonts 16 and 32 px, light
+  and dark. A screen fails on sideways scroll, a box past the window, cut text, a control under 44 px
+  (a link in running text exempt, a checkbox or radio measured by its label), or a fitted root that
+  cuts a part. The game passes its own axe (`axeFinder(AxeBuilder)`, or `false` by name), so the kit
+  depends on nothing new. A screen may name findings it accepts (`allow`). Bingo's text floor, card
+  cells and overlap check, and Mini Games' pixel contrast, stay in the games.

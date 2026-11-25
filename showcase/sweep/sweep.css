@@ -1,0 +1,52 @@
+/**
+ * @file   showcase/sweep/sweep.css
+ * @brief  The layout of the sweep's screens (./main.tsx): two that fit, one broken on purpose.
+ * Source: new in the kit (K66).
+ */
+body {
+  margin: 0;
+  background: var(--sk-page-background);
+  color: var(--sk-color-text);
+  font-family: var(--sk-font-family);
+}
+
+.sweep-page {
+  padding: var(--sk-space-2) var(--sk-gutter);
+  overflow-wrap: anywhere;
+}
+
+.sweep-button {
+  min-height: var(--sk-hit-target);
+}
+
+/* The bar and the card take the window; the card fits what is left. */
+.sweep-fill {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100dvh;
+}
+
+.sweep-wide {
+  width: 2400px;
+}
+
+.sweep-cut {
+  width: 6rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.sweep-tiny {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+}
+
+.sweep-clipped {
+  height: 40px;
+  overflow: hidden;
+}
+
+.sweep-tall {
+  height: 200px;
+}

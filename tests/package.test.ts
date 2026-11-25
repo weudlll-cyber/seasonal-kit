@@ -12,7 +12,8 @@
  * Depends on:     vitest, node:fs
  * Source:         new in the kit.
  */
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -32,6 +33,30 @@ describe('package.json sideEffects', () => {
     for (const [name, target] of css) {
       expect(typeof target, name).toBe('string');
       expect(typeof target === 'string' && target.endsWith('.css'), name).toBe(true);
+    }
+  });
+});
+
+// Every source file a game's runtime can import: all of src/ but the testing entry.
+const runtime = readdirSync(new URL('../src', import.meta.url), { recursive: true })
+  .map((f) => String(f).split(path.sep).join('/'))
+  .filter((f) => /\.tsx?$/.test(f) && !f.includes('.test.') && !f.startsWith('testing/'));
+const source = (f: string): string => readFileSync(new URL(`../src/${f}`, import.meta.url), 'utf8');
+
+describe('the testing entry (K66)', () => {
+  it('is imported by nothing a game runs, so it never reaches a bundle', () => {
+    expect(runtime.length).toBeGreaterThan(20);
+    expect(runtime.filter((f) => /from '(\.\.?\/)+testing\//.test(source(f)))).toEqual([]);
+  });
+
+  it('imports Playwright as a type only: it is an optional peer', () => {
+    const testing = readdirSync(new URL('../src/testing', import.meta.url)).filter(
+      (f) => !f.includes('.test.'),
+    );
+    for (const f of testing) {
+      expect(source(`testing/${f}`), f).not.toMatch(
+        /^import (?!type)[^;]*'@(playwright|axe-core)/m,
+      );
     }
   });
 });

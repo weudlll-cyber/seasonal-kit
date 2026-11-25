@@ -103,7 +103,7 @@ describe('Node, kept by hand (K38)', () => {
 
 describe('the peer ranges (K37)', () => {
   it('are caret ranges, each met by the exact devDependency the kit tests with', () => {
-    expect(Object.keys(pkg.peerDependencies).sort()).toEqual(['react', 'vite']);
+    expect(Object.keys(pkg.peerDependencies).sort()).toEqual(['@playwright/test', 'react', 'vite']);
     for (const [name, range] of Object.entries(pkg.peerDependencies)) {
       const floor = /^\^(\d+)\.(\d+)\.(\d+)$/.exec(range);
       const own = /^(\d+)\.(\d+)\.(\d+)$/.exec(pkg.devDependencies[name] ?? '');

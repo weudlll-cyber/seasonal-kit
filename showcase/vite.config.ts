@@ -1,6 +1,6 @@
 /**
  * @file   showcase/vite.config.ts
- * @brief  Vite for the kit's showcase: three pages, the showcase and the stubs of the website's
+ * @brief  Vite for the kit's showcase: four pages, the showcase, the sweep's screens and the stubs of the website's
  *         chat and call embeds, built into showcase/dist/ (git-ignored, never shipped).
  *
  * Responsibility: `pnpm showcase` serves it for people; the Playwright run builds it and
@@ -21,7 +21,7 @@ const here = (path: string): string => fileURLToPath(new URL(path, import.meta.u
 
 export default defineConfig({
   root: here('.'),
-  // Three pages, no single-page fallback: without it /embed/chat served the showcase itself,
+  // Four pages, no single-page fallback: without it /embed/chat served the showcase itself,
   // which then framed itself again.
   appType: 'mpa',
   build: {
@@ -31,6 +31,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: here('index.html'),
+        sweep: here('sweep/index.html'),
         chat: here('embed/chat/index.html'),
         call: here('embed/call/7.html'),
       },

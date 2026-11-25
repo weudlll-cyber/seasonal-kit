@@ -559,6 +559,27 @@ shows that the files a game installs carry the change. The two scratch folders w
 session's scratch directory, outside every repository: deleting them was refused by the session's
 permission mode.
 
+## The v0.23.0 testing entry, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.23.0` (merge commit `6900866`), both with `ignore-scripts=true`
+(React 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5, Vite 8.3.8, `@playwright/test` 1.64.1, the
+oldest a game pins), ran `tsc` and three tests on the installed package:
+
+- it is `0.23.0`, exports `./testing`, and names `@playwright/test` an optional peer;
+- the guards find a fixed colour and a 10 px text in a game folder, and `findLowContrast` passes the
+  installed `tokens.css`;
+- **a game's bundle carries nothing of the testing entry**: a Vite build of an entry that imports the
+  kit's value, React and CSS entries holds the start card and none of the testing code's strings.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.14.0 | Worked  | Worked | 3 passed |
+| npm 11.19.0  | Worked  | Worked | 3 passed |
+
+CI on the merge commit `6900866`: `CI` and `CodeQL` passed. The sweep's behaviour in a browser is
+proved by `showcase/testing.spec.ts` in CI, not here. The scratch folders are left in the session's
+scratch directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

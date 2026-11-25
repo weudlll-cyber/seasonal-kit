@@ -31,9 +31,10 @@
  */
 import type { ReactElement, ReactNode } from 'react';
 
-import { isStepIcon, MAX_STEPS, type Step } from '../stepShape.js';
+import type { Step } from '../stepShape.js';
 import { BackLink } from './BackLink.js';
 import { MenuFold } from './MenuFold.js';
+import { StepBadges } from './StepBadges.js';
 import { ThemeToggle } from './theme.js';
 import { barButtonClass } from './barButtonClass.js';
 
@@ -93,24 +94,6 @@ function Nav(p: Pick<AppHeaderProps, 'links' | 'navExtra'>): ReactElement {
   );
 }
 
-// The member's step badges: one small image each, named by the step. An icon is drawn only if it
-// is exactly the website's file ("/media/step-icons/<32 hex>.webp", the check the server applies
-// to the website's header); a step with another address, or none, is dropped, so a game cannot
-// make the header load any other URL. The images are not decorative: their names are read.
-function Steps(p: { readonly steps: readonly Step[] }): ReactElement | null {
-  const shown = p.steps
-    .slice(0, MAX_STEPS)
-    .flatMap((s) => (isStepIcon(s.icon) ? [{ key: s.ladder, name: s.name, src: s.icon }] : []));
-  if (shown.length === 0) return null;
-  return (
-    <span className="sk-header-steps">
-      {shown.map((s) => (
-        <img key={s.key} className="sk-header-step" src={s.src} alt={s.name} />
-      ))}
-    </span>
-  );
-}
-
 function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'closeKey'>) {
   const button = barButtonClass(p.buttonClassName);
   const { account, signIn } = p;
@@ -133,7 +116,11 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
             {/* Shown on wide screens, read out on narrower ones (../../css/header.css). */}
             <span className="sk-header-chip-prefix">Signed in as </span>
             {account.name} ({account.role})
-            {account.steps === undefined ? null : <Steps steps={account.steps} />}
+            <StepBadges
+              steps={account.steps}
+              className="sk-header-steps"
+              imageClassName="sk-header-step"
+            />
           </a>
           <button
             type="button"

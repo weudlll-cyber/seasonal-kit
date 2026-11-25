@@ -30,7 +30,7 @@
  *                 (ThemeToggle) and ./MenuFold.
  */
 import type { ReactElement, ReactNode } from 'react';
-import { type Step } from '../stepShape.js';
+import type { Step } from '../stepShape.js';
 export interface HeaderLink {
     readonly href: string;
     readonly label: string;

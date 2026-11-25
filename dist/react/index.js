@@ -25,6 +25,7 @@ export { GameBar, } from './GameBar.js';
 export { PhaseStrip } from './PhaseStrip.js';
 export { useFocusMode } from './useFocusMode.js';
 export { useFullscreen } from './useFullscreen.js';
+export { StepBadges } from './StepBadges.js';
 export { usePanels } from './usePanels.js';
 export { ResultFrame } from './ResultFrame.js';
 export { StartCard } from './StartCard.js';

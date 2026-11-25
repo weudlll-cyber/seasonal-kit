@@ -180,6 +180,10 @@ Each step pins the newest tag; a step never mixes two tags.
 - **Test tools** (K66): `e2e/screens.ts` is replaced by `setTheme`, `captureLook` and the sizes of `@seasonal/kit/testing` (its focus-mode fallback is in the kit's); `noFixedColours.test.ts` and `designTokens.test.ts` become calls of `findFixedColours` and `findLowContrast` with its own pairs. Only on the owner's word.
 - **Sweep** (K67): a spec calls `sweep` over its screens with `axeFinder(AxeBuilder)`; it gains the 200 % font and the 320 px sizes it does not run today. `e2e/contrast.ts` stays. Only on the owner's word.
 
+### Since v0.24.0
+
+- **Step badges** (K68): `round/PlayerSteps.tsx` is replaced by `StepBadges` with `steps.css`; a step without an icon is no longer written as text (the header's look, decided). Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -317,6 +321,10 @@ reachable on every phone.
 - **Test tools** (K66): `e2e/screens.ts` is replaced by the kit's; `noFixedColours.test.ts`, `minTextSize.test.ts` (its card-number and podium rules stay) and `designTokens.test.ts` call the kit's guards with its own folders and pairs. Only on the owner's word.
 - **Sweep** (K67): the size and font loop pasted into its admin, host and start-match specs becomes `sweep`; `fitProbe`'s text floor, card cells and overlap check stay. Only on the owner's word.
 
+### Since v0.24.0
+
+- **Step badges** (K68): `components/StepBadges.tsx`'s own markup is replaced by the kit's `StepBadges`; its `StepsByName` context stays and passes the steps in. Its visually hidden "Holder: …" words give way to the step's name as the image's name. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -388,6 +396,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Test tools** (K66): it gains the guards it lacks (`findFixedColours`, `findSmallText`, `findLowContrast` over its client) and uses `setTheme` in `e2e/screens.spec.ts`. Only on the owner's word.
 - **Sweep** (K67): its `e2e/screens.spec.ts` measurements move onto `sweep`, which adds axe and the 200 % run. Only on the owner's word.
+
+### Since v0.24.0
+
+- **Step badges** (K68): `stage/Badges.tsx` takes `StepBadges` once its contract sends the full step (`{ ladder, name, icon }`, as the website's header does) in place of `badges: string[]`; until then it stays. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

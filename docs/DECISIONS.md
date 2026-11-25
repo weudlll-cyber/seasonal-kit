@@ -328,3 +328,9 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   cuts a part. The game passes its own axe (`axeFinder(AxeBuilder)`, or `false` by name), so the kit
   depends on nothing new. A screen may name findings it accepts (`allow`). Bingo's text floor, card
   cells and overlap check, and Mini Games' pixel contrast, stay in the games.
+- **K68 — Steps beside a name: one look in every game, the header's** (decided 2026-11-25 on
+  [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 4, built 2026-11-26,
+  v0.24.0). `StepBadges` (`@seasonal/kit/react`, `steps.css`) is the account chip's badges as a
+  component for boards, player lists and lower thirds: the kit's `Step` shape, only an icon
+  `isStepIcon` accepts, at most three, 1.25rem, named by the step. A step without a drawable icon is
+  left out, as in the header, although Mini Games writes its name as text today.

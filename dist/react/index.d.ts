@@ -25,6 +25,7 @@ export { GameBar, type BarAction, type BarFact, type BarIconName, type BarPress,
 export { PhaseStrip, type PhasePart, type PhaseStripProps } from './PhaseStrip.js';
 export { useFocusMode } from './useFocusMode.js';
 export { useFullscreen, type Fullscreen } from './useFullscreen.js';
+export { StepBadges, type StepBadgesProps } from './StepBadges.js';
 export { usePanels, type Panels } from './usePanels.js';
 export { ResultFrame, type ResultFrameProps } from './ResultFrame.js';
 export { StartCard, type Season, type StartCardProps } from './StartCard.js';

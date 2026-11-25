@@ -7,6 +7,17 @@ applies it.
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-11-26
+
+Client parts (DECISIONS K68 to K70). Every one is opt-in; a game that changes nothing sees today's
+behaviour.
+
+### Added
+
+- **`StepBadges`** and `steps.css` (K68): the header's step badges beside any name, for boards, player
+  lists and lower thirds. The header uses it; `header.css` brings `steps.css` along, and the header
+  looks as before. From the three games' own badge components.
+
 ## [0.23.0] - 2026-11-26
 
 Test tools for the games' own suites, in a new entry `@seasonal/kit/testing` (DECISIONS K66). Opt-in:
@@ -1339,7 +1350,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.23.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...HEAD
+[0.24.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.20.0...v0.21.0

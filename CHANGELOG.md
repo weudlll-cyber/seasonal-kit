@@ -7,6 +7,30 @@ applies it.
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-11-26
+
+The admin command every game shares (K87), from Bingo Royale's `sbr`.
+
+### Added
+
+- **`ops/lib/admin.sh`** (with `admin-update.sh`, `admin-uninstall.sh`): `status`, `update`,
+  `confirm`, `rollback`, `backup`, `restore`, `logs` and `uninstall` for a game's own command, which
+  sets its names and hooks (OPERATIONS.md). Uninstall removes one environment and keeps the backups.
+- **`sk_route_remove`** in `ops/lib/website-route.sh`: the uninstall's removal of the game's route
+  file.
+- **Docs:** [concepts/shared-ops-parts.md](docs/concepts/shared-ops-parts.md), how the four projects
+  install, operate and secure their games.
+
+### Migration, per game
+
+- **Bingo Royale:** `ops/sbr` becomes a short command on the library (its database roles, recovery
+  key and website refresh in `game_before_start`; `admin`, `maintenance` and `loadcheck` stay its
+  own verbs). The kit's restore asks `[y/N]` and says its own lines.
+- **Mini Games:** `ops/smg` becomes a command on the library and gains `uninstall`; its wait for
+  running rounds is `game_before_update`; an unconfirmed update now blocks the next.
+- **Seasonal Cases:** gains one command with `update`, `rollback` and `uninstall`; `admin` stays
+  its own verb. Copy the kit's whole `ops/` folder.
+
 ## [0.28.0] - 2026-11-26
 
 The season icons, the header's brand link at 44 px, one operator contact address for every
@@ -1509,7 +1533,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...HEAD
+[0.29.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...v0.26.0

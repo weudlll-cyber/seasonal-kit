@@ -167,3 +167,70 @@ It says "using <address> from <file>" and no other line with an address.
 | Variable          | Needed for | Meaning                                                                 |
 | ----------------- | ---------- | ----------------------------------------------------------------------- |
 | `SK_OPERATOR_DIR` | optional   | The folder holding `operator.env`, default `/etc/seasonal` (for tests). |
+
+## The admin command
+
+`ops/lib/admin.sh` gives every game's own command (`sbr`, `smg`, …) the same verbs with the same
+meaning and output (K87). The game's command sets the settings, defines its hooks, sources the
+library and calls it:
+
+```sh
+#!/usr/bin/env bash
+SK_ADMIN_NAME=game SK_ADMIN_PREFIX=gm
+SK_ADMIN_ETC=/etc/game SK_ADMIN_STATE=/var/lib/game SK_ADMIN_ROOT=/opt/game
+SK_ADMIN_IMAGE_REPO=game-app SK_ADMIN_IMAGE_KEY=GAME_IMAGE SK_ADMIN_REF_KEY=GAME_REF
+game_compose() { local env=$1; shift; docker compose -p "game-$env" --env-file "/etc/game/$env.env" "$@"; }
+game_backup_settings() { export SK_BACKUP_PREFIX=gm SK_BACKUP_ENV=$1 …; }
+source /opt/game/kit/ops/lib/admin.sh
+sk_admin_main "$@"
+```
+
+Copy the kit's whole `ops/` folder, keeping its layout.
+
+| Command                         | What it does                                                                                                                                                                                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`                        | Environment, image and ref, containers, `/readyz`, last and next backup, a failed backup, a pending rollback. Exit 0 also when not ready.                                                                                                                        |
+| `update <git ref>`              | Builds the ref, backs up, keeps a plain dump, installs the new stack files, starts, waits for `/readyz`. Refused while the last update is unconfirmed.                                                                                                           |
+| `confirm`                       | Deletes the dump and the rollback data.                                                                                                                                                                                                                          |
+| `rollback`                      | Asks, backs up, restores the dump in one transaction only if the schema migrated, puts back image, ref, settings and stack files.                                                                                                                                |
+| `backup`, `restore [--drill] f` | `ops/backup.sh` with the game's settings.                                                                                                                                                                                                                        |
+| `logs [service]`                | Follows the logs.                                                                                                                                                                                                                                                |
+| `uninstall [--purge-backups]`   | Removes one environment: containers, volumes, backup timer, route file, rollback data, settings. Asks for the environment's name. With the last environment also the images, units, command and folders. **The backups stay** unless `--purge-backups` is given. |
+
+`--env <name>` and `--yes` may stand anywhere. Messages: plain lines, `WARNING: …`, and `STOP: …`
+with exit 1; an unknown command prints the usage and exits 2. Root only. Any other command runs the
+game's `game_cmd_<word> <env> …`.
+
+| Setting                | Needed   | Meaning                                                                                |
+| ---------------------- | -------- | -------------------------------------------------------------------------------------- |
+| `SK_ADMIN_NAME`        | yes      | The command's name, in messages.                                                       |
+| `SK_ADMIN_PREFIX`      | yes      | The backup units' prefix (`<prefix>-backup@<env>.timer`, as `print-units` names them). |
+| `SK_ADMIN_ETC`         | yes      | The settings folder: `<env>.env` per environment and `install.conf`.                   |
+| `SK_ADMIN_STATE`       | yes      | Per environment: the rollback data.                                                    |
+| `SK_ADMIN_ROOT`        | yes      | The installed files.                                                                   |
+| `SK_ADMIN_IMAGE_REPO`  | yes      | The image's repository name; unused images of it are removed.                          |
+| `SK_ADMIN_IMAGE_KEY`   | yes      | The key of `<env>.env` naming the running image.                                       |
+| `SK_ADMIN_REF_KEY`     | yes      | The key of `install.conf` naming the installed git ref.                                |
+| `SK_ADMIN_DEFAULT_ENV` | optional | The environment without `--env`.                                                       |
+| `SK_ADMIN_APP_SERVICE` | optional | The app's Compose service, default `app`.                                              |
+| `SK_ADMIN_READY_URL`   | optional | Default `http://127.0.0.1:3000/readyz`, asked inside the app's container.              |
+| `SK_ADMIN_WAIT_TRIES`  | optional | Two-second tries for the app to be ready, default 90.                                  |
+| `SK_ADMIN_STACK_FILES` | optional | Files under the root an update replaces; kept for a rollback.                          |
+| `SK_ADMIN_BACKUP`      | optional | The backup script, default `../backup.sh` beside the library.                          |
+| `SK_ADMIN_UNIT_DIR`    | optional | Default `/etc/systemd/system`.                                                         |
+| `SK_ADMIN_COMMAND`     | optional | The command's link to remove, default `/usr/local/bin/<name>`.                         |
+
+| Hook                              | Needed for              | What it does                                                                                                                                 |
+| --------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `game_compose <env> …`            | every command           | Docker Compose for the environment.                                                                                                          |
+| `game_backup_settings <env>`      | every command           | Exports the `SK_BACKUP_*` settings. The start command of a restore must run `up -d`, not `start`, where a service re-applies database roles. |
+| `game_build <env> <ref>`          | update                  | Builds the image and sets `SK_ADMIN_NEW_IMAGE`.                                                                                              |
+| `game_migrations <env>`           | update, rollback        | Prints how many migrations the database holds.                                                                                               |
+| `game_before_update <env> <ref>`  | optional                | Before the backup: wait for running rounds, or refuse.                                                                                       |
+| `game_install_stack <env> <ref>`  | optional                | Installs the ref's stack files and command.                                                                                                  |
+| `game_before_start <env> <ref>`   | optional                | Before the new image starts; may keep the old settings as `<state>/<env>/env.before`.                                                        |
+| `game_after_restore <env> <0\|1>` | optional                | In a rollback, before the start (1: the database was restored).                                                                              |
+| `game_status <env>`               | optional                | The game's own status lines.                                                                                                                 |
+| `game_usage`                      | optional                | The game's own usage lines.                                                                                                                  |
+| `game_route_settings <env>`       | uninstall, website mode | Sets `SK_ROUTE_MODE`, `_FILE`, `_CHECK_CMD`, `_RELOAD_CMD`; no file, no route.                                                               |
+| `game_uninstall_extra <env>`      | optional                | Removes what only the game knows.                                                                                                            |

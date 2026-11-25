@@ -63,6 +63,20 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.29.0 (branch `feat/ops-admin`, PR #76)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+**Read by the session that wrote it** (it removes data): the environment name is a plain word before
+it becomes part of a path; the game's folders must be two names deep; uninstall asks for the name,
+refuses unknown options and keeps the backups unless asked; every `rm -rf` has a guarded variable.
+Proven with stand-ins; a rehearsal on a real server is each game's adoption.
+
 ### 2026-11-26 — before v0.28.0 (branch `feat/checks-icons-link-operator`, PR #74)
 
 | Scan                         | Tool and command                                                                                  | Result                                              |

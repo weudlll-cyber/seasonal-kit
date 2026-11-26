@@ -63,6 +63,23 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.33.0 (branch `fix/bingo-findings`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+**Read by the session that wrote it.** The restore: the secret files are compared before the app
+is stopped and copied after the database and volumes; a file changed between the two would be
+overwritten, a window that needs write access to the secrets folder during a restore. The brake:
+a key holds at most `limit` slots, attempts under way included, and the map's bound counts those
+keys too; an attempt that is never ended ages out with the window, so a route's lost call cannot
+brake a key for longer. A sign-in that does not call `reserve` still lets parallel guesses
+through (CHANGELOG, migration). A restore without `--secrets-to` still only names the secrets.
+
 ### 2026-11-26 — before v0.32.0 (branch `feat/ops-db-roles`)
 
 | Scan                         | Tool and command                                           | Result                                                                              |

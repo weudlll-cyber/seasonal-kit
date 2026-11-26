@@ -7,7 +7,9 @@
  *                 as the website and its proxy do for the named games:
  *                 - the sign-in: `<base>/auth/website` through the proxy (./standInProxy) with the
  *                   website's authorize decision (./standInContract) for the member whose `se.sid`
- *                   cookie the browser carries; `GET /api/games/<slug>/authorize` itself;
+ *                   cookie the browser carries; `GET /api/games/<slug>/authorize` itself, which
+ *                   answers 500 to a request carrying the game's proxy secret header (since
+ *                   v0.34.0: the secret never reaches the website);
  *                 - `/login?next=` sets that cookie for the member the test chose (`signInAs`) and
  *                   returns to a local `next` under `/games/`;
  *                 - `/api/public/season`, `/media/step-icons/<32 hex>.webp`;
@@ -121,8 +123,14 @@ function authorizeRoute(
   slug: string,
   response: ServerResponse,
 ): void {
-  if (targetOf(state, `/games/${slug}`) === null) {
+  const target = targetOf(state, `/games/${slug}`);
+  if (target === null) {
     response.writeHead(404, { 'cache-control': 'no-store' }).end();
+    return;
+  }
+  // The proxy's secret must never reach the website: a request that carries it is refused.
+  if (request.headers[target.game.secretHeader.toLowerCase()] !== undefined) {
+    response.writeHead(500, { 'cache-control': 'no-store' }).end();
     return;
   }
   const original = request.headers['x-original-method'];

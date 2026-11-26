@@ -28,12 +28,11 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **29. The socket client and the season icons** (2026-11-26). Compared and costed, nothing built
-  ([concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14): a socket client
-  is recommended later, the season icons in the kit now. Done when: the owner says yes or no.
-- **30. The header's brand link is under 44 px** (found by the sweep, 2026-11-26: 36 px on a
-  desktop, 19 px on a phone; K29 asks 44 px). Done when: the link is 44 px high, or the owner
-  accepts it as it is.
+- **49. Shared ops parts for every game** (owner, 2026-11-26): install, operate and secure alike.
+  Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Items a to e are
+  released: the admin command with uninstall (v0.29.0), the host baseline (v0.30.0), the container
+  hardening check (v0.31.0) and the database roles (v0.32.0). Items f to k wait for the owner's word.
+  Done when: f to k are decided.
 
 ## Part two — closed
 
@@ -106,7 +105,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   measures again in the real game and reports back; a new item then. Closed by PR #39 and v0.15.0
   without a change.
 - **20. A merged single-card `ResultFrame` option** (the concept's point 4, Bingo, 2026-11-24).
-  Decided no, K47: Bingo shows its result like the other games and drops its own `results.css`
+  Decided no, K47 (replaced by K93, 2026-11-26: the frame has a `dense` variant). Bingo drops its own `results.css`
   overrides at its next kit adoption. Nothing to build.
 - **21. The start card fits again after web fonts load** (Mini Games T404 and T423, decided
   2026-11-24, K48). `StartCard`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to
@@ -176,3 +175,42 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   no (K81); nothing to build.
 - **46. A pooled socket could skip the guarded fetch’s address check** (security pass before
   v0.27.0). Closed in v0.27.0 (`agent: false`, `guardedFetch.test.ts`).
+- **29. The socket client and the season icons** (compared 2026-11-26; decided 2026-11-25, K83).
+  The season icons ship in the kit (`seasons/`, `SeasonIcon`, the daily comparison). The socket
+  client is not built. Closed in v0.28.0.
+- **30. The header's brand link was under 44 px** (found by the sweep, 2026-11-26; decided
+  2026-11-25, K84). Closed in v0.28.0 (`css/header.css`, `showcase/testing.spec.ts`, which no
+  longer accepts the finding).
+- **47. The account chip showed "Signed in asOlga" above 1440 px** (Seasonal Cases, 2026-11-25).
+  Closed in v0.28.0 (`AppHeader`, `showcase/steps.spec.ts`).
+- **48. The docs let an installer copy `ops/backup.sh` alone** (Seasonal Cases, 2026-11-25): it
+  loads `ops/lib/`. Closed in v0.28.0 (OPERATIONS.md, ADOPTION.md).
+- **50. A restore refused a differing secret only after replacing the database** (Bingo Royale,
+  2026-11-26). Closed in v0.33.0 (`ops/lib/backup-restore.sh`, `ops/test/backup.test.sh`, K91).
+- **51. The failure brake read its rule once and let parallel guesses through** (Bingo Royale,
+  2026-11-26). Closed in v0.33.0 (`failureBrake.ts` and its test, K92).
+- **52. The result frame showed fewer places than Bingo's panel and clipped descenders** (Bingo
+  Royale, 2026-11-26). Closed in v0.33.0 (`dense`, K93; the headline's line height;
+  `showcase/looks.spec.ts`).
+- **53. A full header folded for its badges, the folded toggle left the Menu's row and the chat
+  bar's text did not grow** (Bingo Royale, 2026-11-26). Closed in v0.33.0 (K94,
+  `showcase/looks.spec.ts`, `showcase/cases.spec.ts`).
+- **54. ADOPTION.md's Bingo section was behind Bingo's master** (2026-11-26). Closed in v0.33.0.
+- **28. Base components: the owner's look review** (2026-11-26, K78). Taken as proposed (K95).
+  Closed in v0.34.0 (`css/components.css`, `showcase/components.spec.ts`).
+- **55. Bingo Royale's three header wishes** (2026-11-26). Closed in v0.34.0 (K96,
+  `css/header-account.css`, `css/header.css`, `showcase/looks.spec.ts`).
+- **56. A fresh install's owner role could create no temporary table** (Mini Games, 2026-11-26).
+  Closed in v0.34.0 (`ops/lib/db-roles.sql`, `tests/db-roles.integration.test.ts`, K97).
+- **57. The admin restore could not restore secret files** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (`ops/lib/admin.sh`, `ops/test/admin.test.sh`, K98).
+- **58. `SeasonIcon` took pixels only and had no one-colour form** (Mini Games, 2026-11-26).
+  Closed in v0.34.0 (K99).
+- **59. No way to send a request again after a step-up** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (K100).
+- **60. No plain-http frame source with a path in development** (Mini Games, 2026-11-26). Closed
+  in v0.34.0 (K101).
+- **61. The contrast guard read no `var()` or `color-mix()`** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (K102).
+- **62. The stand-in website accepted the proxy's secret** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (K103).

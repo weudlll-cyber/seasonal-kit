@@ -40,7 +40,7 @@ docs on embedding a game are.
 | `@seasonal/kit/devtools`   | the development tools' server recipe, Node only: `devSignInAccount`, `devStubPlugin` (the production bundle's stub), `devMarkersIn` and `KIT_DEV_MARKERS` for the bundle test                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 A game imports the kit's CSS (`fonts.css`, `tokens.css`, `motion.css`, `shell.css`, and
-`fit.css`, `dock.css`, `frames.css`, `bar.css`, `header.css` and `call.css` for the parts it uses; `header.css` needs `bar.css`) before its
+`fit.css`, `dock.css`, `frames.css`, `bar.css`, `header.css` and `call.css` for the parts it uses, `seasons.css` for the season icons and `components.css`, the opt-in `sk-` classes for buttons, panels and fields; `header.css` needs `bar.css`) before its
 own, and adds only its own arena tokens and animations.
 
 ## How a game pins it
@@ -73,3 +73,6 @@ GNU Affero General Public License v3.0 or later ([LICENSE](LICENSE)), as Mini Ga
 exception is the Luxora Grotesk font in `fonts/`. It belongs to the Seasonal Tokens project and is
 not under the AGPL; the owner approved shipping it here on 2026-11-20. See
 [fonts/README.md](fonts/README.md).
+
+The season icons in `seasons/` belong to the Seasonal Tokens project too and are not under the
+AGPL; see [seasons/README.md](seasons/README.md).

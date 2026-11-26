@@ -18,9 +18,11 @@
  *                 5. the development tools, rendered only when the game passes them (its lazily
  *                    loaded ./dev DevSignIn, behind its dev flag);
  *                 6. the theme toggle (./theme).
+ *                 The chip is filled and signed out "Sign in" is the one primary button; on a
+ *                 phone the back link's row is lower (../../css/header.css, header-account.css, K96).
  *                 When they would not fit on one row, the navigation and the account fold
  *                 into one menu button (./MenuFold, ./useHeaderFold; since v0.11.0, measured
- *                 before the paint; a game may also name a width under which it always folds, `foldBelow`,
+ *                 before the paint; the step badges give way first, since v0.33.0; a game may also name a width under which it always folds, `foldBelow`,
  *                 since v0.13.0). Its sizes keep the game's floors
  *                 (../../css/header.css, K14). The words of the links, the role and the routes
  *                 are the game's; the header holds only their places.
@@ -101,7 +103,7 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
     <div className="sk-header-account" data-testid="account">
       {account === null ? (
         <>
-          <a className={button} href={signIn.href} data-testid="sign-in">
+          <a className={`${button} sk-header-primary`} href={signIn.href} data-testid="sign-in">
             Sign in
           </a>
           {p.websiteMode || signIn.registerHref === undefined ? null : (
@@ -113,9 +115,13 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
       ) : (
         <>
           <a className="sk-header-chip" href={account.href} data-testid="signed-in-as">
-            {/* Shown on wide screens, read out on narrower ones (../../css/header.css). */}
-            <span className="sk-header-chip-prefix">Signed in as </span>
-            {account.name} ({account.role})
+            {/* One run of text: the chip lays its children out side by side, which would drop
+                the space between two of them ("Signed in asOlga", fixed in v0.28.0). */}
+            <span>
+              {/* Shown on wide screens, read out on narrower ones (../../css/header.css). */}
+              <span className="sk-header-chip-prefix">Signed in as </span>
+              {account.name} ({account.role})
+            </span>
             <StepBadges
               steps={account.steps}
               className="sk-header-steps"
@@ -150,16 +156,20 @@ export function AppHeader(p: AppHeaderProps): ReactElement {
           <small>Seasonal Entertainment</small>
         </span>
       </a>
-      <MenuFold
-        closeKey={p.closeKey}
-        {...(p.buttonClassName === undefined ? {} : { buttonClassName: p.buttonClassName })}
-        {...(p.foldBelow === undefined ? {} : { foldBelow: p.foldBelow })}
-      >
-        <Nav links={p.links} navExtra={p.navExtra} />
-        <Account {...p} />
-      </MenuFold>
-      {/* Last in the DOM as on screen, so Tab meets it where the eye does (WCAG 2.4.3). */}
-      <ThemeToggle />
+      {/* Folded, the Menu button and the toggle are one group that wraps together (since
+          v0.33.0); unfolded the group has no box of its own. */}
+      <div className="sk-header-controls">
+        <MenuFold
+          closeKey={p.closeKey}
+          {...(p.buttonClassName === undefined ? {} : { buttonClassName: p.buttonClassName })}
+          {...(p.foldBelow === undefined ? {} : { foldBelow: p.foldBelow })}
+        >
+          <Nav links={p.links} navExtra={p.navExtra} />
+          <Account {...p} />
+        </MenuFold>
+        {/* Last in the DOM as on screen, so Tab meets it where the eye does (WCAG 2.4.3). */}
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

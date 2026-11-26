@@ -50,6 +50,23 @@ main {
   height: 640px;
 }
 
+/* A whole screen of its own (./Fixtures.tsx): the header, then the docked screen in the rest. */
+.showcase-screen {
+  display: flex;
+  flex-direction: column;
+  height: var(--sk-visible-height, 100dvh);
+}
+
+.showcase-fill {
+  flex: 1;
+  min-height: 0;
+}
+
+.showcase-places {
+  margin: 0;
+  line-height: 2rem;
+}
+
 .showcase-pill {
   padding: 0.2rem 0.6rem;
   border: 1px solid var(--sk-color-border-strong);

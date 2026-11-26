@@ -12,15 +12,21 @@
  *                 page's glows, the bar's gradient) is checked with each of them. What falls
  *                 short is returned as "theme: text on background, colour: ratio"; a token that
  *                 is missing or holds no colour throws, so a renamed token cannot pass silently.
- * Depends on:     nothing
+ *                 Since v0.34.0 a token's `var()` and `color-mix(in srgb, …)` are worked out
+ *                 (./cssColour), a pair may name such a value instead of a token, and one that
+ *                 cannot be worked out is returned as "theme: … unresolved …", never passed.
+ * Depends on:     ./cssColour
  * Source:         seasonal-bingo-royale apps/web/src/designTokens.test.ts at 8d20904 (the parsing,
  *                 compositing and WCAG formula; seasonal-mini-games' file at 9e3c6f3 is the same
  *                 test, 80 % alike). Generalised: the pairs are the game's list.
  * Spec:           WCAG 2.2 SC 1.4.3 and 1.4.11
  */
+import { coloursIn, resolveValue, type Rgba } from './cssColour.js';
+
 export interface ContrastPair {
+  // A token ("--sk-color-text") or a value written with tokens (since v0.34.0).
   readonly text: string;
-  // Background tokens, bottom first.
+  // Background tokens or values, bottom first.
   readonly on: readonly string[];
   readonly min?: number;
 }
@@ -31,10 +37,7 @@ export interface ContrastInput {
   readonly pairs: readonly ContrastPair[];
 }
 
-type Rgba = readonly [number, number, number, number];
-
 const SELECTORS = { light: [':root'], dark: [':root', ":root[data-theme='dark']"] } as const;
-const COLOUR = /#[0-9a-f]{6}|rgb\(\d+ \d+ \d+(?: \/ [\d.]+%)?\)/gi;
 
 // The custom properties of one theme: every named block of every file, later ones winning.
 function tokensOf(css: readonly string[], theme: keyof typeof SELECTORS): Map<string, string> {
@@ -51,18 +54,16 @@ function tokensOf(css: readonly string[], theme: keyof typeof SELECTORS): Map<st
   return tokens;
 }
 
-function parse(value: string): Rgba {
-  if (value.startsWith('#')) {
-    const at = (i: number): number => Number.parseInt(value.slice(i, i + 2), 16);
-    return [at(1), at(3), at(5), 1];
-  }
-  const [r = 0, g = 0, b = 0, a] = [...value.matchAll(/[\d.]+/g)].map((m) => Number(m[0]));
-  return [r, g, b, a === undefined ? 1 : a / 100];
-}
+// What a pair names: a token, or a value written with tokens (`var()`, `color-mix()`).
+const isToken = (name: string): boolean => name.startsWith('--');
 
-// Every colour a token holds (a gradient holds several).
-function coloursOf(tokens: Map<string, string>, name: string): Rgba[] {
-  const found = (tokens.get(name)?.match(COLOUR) ?? []).map(parse);
+// Every colour it holds (a gradient holds several), or null when it cannot be worked out. A pair
+// naming a token that is missing or holds no colour at all throws.
+function coloursOf(tokens: Map<string, string>, name: string): Rgba[] | null {
+  const value = isToken(name) ? tokens.get(name) : name;
+  const resolved = value === undefined ? '' : resolveValue(value, tokens);
+  if (resolved === null) return null;
+  const found = coloursIn(resolved);
   if (found.length === 0) throw new Error(`no colour in the token ${name}`);
   return found;
 }
@@ -87,29 +88,34 @@ function contrastRatio(a: Rgba, b: Rgba): number {
 }
 
 // Every background the stack can make: each colour of each layer over each result below.
-function backgrounds(tokens: Map<string, string>, stack: readonly string[]): Rgba[] {
-  return stack.reduce<Rgba[]>(
-    (below, name) =>
-      coloursOf(tokens, name).flatMap((layer) => below.map((base) => over(layer, base))),
+function backgrounds(layers: readonly (readonly Rgba[])[]): Rgba[] {
+  return layers.reduce<Rgba[]>(
+    (below, layer) => layer.flatMap((top) => below.map((base) => over(top, base))),
     // White under the bottom layer, as a browser paints a page.
     [[255, 255, 255, 1]],
+  );
+}
+
+// One pair in one theme: what falls short, or what could not be worked out.
+function shortOf(tokens: Map<string, string>, theme: string, pair: ContrastPair): string[] {
+  const min = pair.min ?? 4.5;
+  const where = `${theme}: ${pair.text} on ${pair.on.join(' + ')}`;
+  const text = coloursOf(tokens, pair.text);
+  const layers = pair.on.map((name) => coloursOf(tokens, name));
+  const lost = [pair.text, ...pair.on].filter((_, i) => [text, ...layers][i] === null);
+  // Never passed: a value the guard cannot work out is a finding of its own.
+  if (text === null || lost.length > 0) return [`${where}: unresolved ${lost.join(', ')}`];
+  return backgrounds(layers as Rgba[][]).flatMap((bg) =>
+    text
+      .map((colour) => contrastRatio(over(colour, bg), bg))
+      .filter((ratio) => ratio < min)
+      .map((ratio) => `${where}: ${ratio.toFixed(2)} < ${String(min)}`),
   );
 }
 
 export function findLowContrast(input: ContrastInput): string[] {
   return (['light', 'dark'] as const).flatMap((theme) => {
     const tokens = tokensOf(input.css, theme);
-    return input.pairs.flatMap((pair) => {
-      const min = pair.min ?? 4.5;
-      return backgrounds(tokens, pair.on).flatMap((bg) =>
-        coloursOf(tokens, pair.text)
-          .map((text) => contrastRatio(over(text, bg), bg))
-          .filter((ratio) => ratio < min)
-          .map(
-            (ratio) =>
-              `${theme}: ${pair.text} on ${pair.on.join(' + ')}: ${ratio.toFixed(2)} < ${String(min)}`,
-          ),
-      );
-    });
+    return input.pairs.flatMap((pair) => shortOf(tokens, theme, pair));
   });
 }

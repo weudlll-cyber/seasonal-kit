@@ -13,6 +13,244 @@ applies it.
   part of the one shared call, against the website's concept and its contract for the shared view
   (`ended` may say `unshared`); not released until the website provides `/embed/call/shared`.
 
+## [0.34.0] - 2026-11-26
+
+The base components, as the owner took them after his look (K95), one header look for every
+game (K96), and seven fixes from Seasonal Mini Games' v0.32.0 adoption (K97 to K103).
+
+### Added
+
+- **`components.css`** (K95): opt-in classes `sk-btn` (`--primary`, `--danger`, `--big`),
+  `sk-panel` (`--inset`), `sk-field`, `sk-input`, `sk-select`, `sk-field-help--error`, `sk-chip`
+  and `sk-badge-live`. From the base styles of Mini Games and Bingo Royale.
+- **Admin restore** (K98): `SK_ADMIN_SECRETS_DIR` makes `restore` put the backup's secret files
+  there (`--secrets-to`); without it, as before.
+- **`SeasonIcon`** (K99): `size` takes any CSS length as text; `mono` draws the icon in
+  `currentColor` (`seasons.css`).
+- **`createApiClient`** (K100): `retry(error)` may send a refused request once more, e.g. after a
+  two-factor step-up.
+- **`securityHeaderSet`** (K101): a plain-http frame source with a path on a development host
+  (`localhost`, `127.0.0.1`, `[::1]`, `*.localhost`, `*.test`). Browsers' policies know no IPv6
+  literal and may ignore a `[::1]` source.
+- **`findLowContrast`** (K102): follows `var()`, works out `color-mix(in srgb, …)`, takes such
+  values in pairs, and reports what it cannot work out.
+
+### Changed
+
+- **The header's account chip** is filled (second surface colour) with small bold text.
+- **"Sign in"** in the header, signed out, is the solid button, the only primary one there
+  (class `sk-header-primary`).
+- **The back link in the header on a phone** takes a lower row (30 px instead of 44 px at the
+  default text, the words' own lines from about 150 %); its tap area stays 44 px.
+- `header.css` brings `header-account.css` along (the account's rules moved there).
+- **`startWebsiteStandIn`** (K103): its `authorize` route answers 500 to a request carrying the
+  game's proxy secret header.
+
+### Fixed
+
+- **Database roles** (K97): the owner may create temporary tables, so a migration that uses one
+  runs on a fresh install. The app role still creates nothing.
+
+### Migration, per game
+
+- **Bingo Royale:**
+  - buttons, panels, fields, chips: `.sbr-btn` (`--primary`, `--danger`, `--big`), `.sbr-panel`
+    (`--inset`), `.sbr-field`, `.sbr-input`, `.sbr-select`, `.sbr-chip` and `.sbr-badge-live` of
+    `packages/ui/src/base.css` give way to the `sk-` classes. Looks different: a disabled button is
+    muted on the second surface instead of faded, a disabled field looks locked;
+  - back link and sign-in: `shell/header.css` drops its `.sk-header-chip` rules, its solid "Sign
+    in" rule and its phone `.sk-back-link { min-height: 0 }` (which would cut the tap area).
+    Looks different: the chip's padding is the kit's (it stays on one line on a phone, and wraps in
+    the folded menu), and the phone's back-link row is about 11 px higher than Bingo's own at the
+    default text. Its wider button padding stays its own rule, if it keeps it.
+  - the fixes: nothing required. Its `db-roles.sql` copy gives way to the kit's as before; a
+    `findLowContrast` pair that now meets a `var()` is checked instead of throwing.
+- **Mini Games:**
+  - buttons, panels, fields, chips: `.smg-btn` (`--primary`, `--danger`, `--big`), `.smg-panel`
+    (`--inset`), `.smg-field`, `.smg-input`, `.smg-select`, `.smg-field-help--error`, `.smg-chip`
+    and `.smg-badge-live` give way to the `sk-` classes; the field lock and the signed field stay
+    its own. No look change intended;
+  - back link and sign-in: nothing to remove. Looks different with the pin: the chip filled with
+    small bold text, "Sign in" solid when signed out, a lower back-link row on phones.
+  - the fixes: drops its own `GRANT TEMPORARY` for the owner role; sets `SK_ADMIN_SECRETS_DIR`
+    in its admin command's settings and drops its own tool for the secrets; its season icon is the
+    kit's (`size="1rem"`, `mono`); the admin app's `api` becomes `createApiClient` with
+    `retry: async (e) => e.code === 'AUTH_STEP_UP_REQUIRED' && (await askStepUp())`; its own-row tint
+    test becomes `findLowContrast` pairs with `color-mix()`; its stub's secret check goes.
+- **Seasonal Cases:**
+  - buttons, panels, fields: `.button` (and `.button-solid`), `.card` and the bare `input` and
+    `select` rules of `shell/shell.css` give way to `sk-btn` (`--primary`), `sk-panel`,
+    `sk-input` and `sk-select`. Looks different: bolder, larger button text, a danger button, the
+    locked look of disabled controls. It has no chip or live badge of its own;
+  - back link and sign-in: its `ShellBar` is not the kit's header, so its back link keeps its
+    44 px row, and its "Sign in" stays its own button (it may take `sk-btn sk-btn--primary`).
+- **Seasonal Party:** nothing; its back link sits in its own bar and is unchanged.
+
+## [0.33.0] - 2026-11-26
+
+Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.
+
+### Fixed
+
+- **Restore order** (K91): `ops/backup.sh restore` decides every refusal (a differing secret file,
+  a `--secrets-to` that is no folder, a missing setting, the manifest) before the app is stopped or
+  anything replaced. Until now a differing secret stopped it after the database was overwritten.
+- **`FailureBrake` and parallel guesses** (K92): `reserve(key)` returns an attempt holding one of
+  the key's `limit` places, ended with `failed()` or `passed()`, or null while braked. Guesses sent
+  together passed `braked` before the first failure was counted.
+- **Result headline:** the frame sets its line height (1.3), so a game's tighter heading no longer
+  has its descenders clipped by the two-line clamp.
+- **Folded header:** the Menu button and the theme toggle wrap together, as one group.
+- **Phone chat bar:** its text and unread count grow with the player's font size.
+
+### Added
+
+- `FailureBrake` takes its rule as a function too, read at each check, as `RateLimiter` does.
+- **`ResultFrame` `dense`** (K93): one card, small padding, the headline on one row with its
+  lines.
+- **Step badges give way** (K94): where the header's items would take a second row, the chip shows
+  only the first badge, then none, before the header folds. Hidden badges are still read out; the
+  folded menu shows all.
+
+ADOPTION.md's Bingo section describes its master as it is.
+
+### Migration, per game
+
+- **Bingo Royale:** passes its admin-set limits to `FailureBrake` as the function (`liveRule`),
+  and `behindBrakes` uses `reserve`; the `LoginBrake` class goes, so `auth/loginBrake.ts` goes too
+  once `behindBrakes` is moved or nothing else is left in it.
+- **The header's markup:** the Menu button, the panel and the theme toggle sit in
+  `.sk-header-controls`. A game's stylesheet that addresses them as direct children of
+  `.sk-header` writes a descendant selector; `header.css` also brings `header-dev.css` along.
+- **Bingo Royale:** `dense` on its final placement; it re-measures the places and the fold at
+  1280 x 720.
+- **The others:** nothing breaks. A sign-in that calls `braked` then `failed` still lets parallel
+  guesses through until it calls `reserve` instead.
+
+## [0.32.0] - 2026-11-26
+
+Two database roles for every game (K90), from Bingo Royale.
+
+### Added
+
+- **`ops/lib/db-roles.sh`** and **`db-roles.sql`**: `sk_db_roles_apply` sets up the owner and app
+  roles and gives the schema to the owner; passwords on standard input only.
+- **`grantAppRole`** in `@seasonal/kit/server`: the app role's rights after every migration, with
+  append-only and read-only tables.
+
+### Migration, per game
+
+- **Bingo Royale:** `ops/lib/db-roles.sql` and `db/roles.ts` give way to the kit's (prefix `sbr`,
+  its four append-only tables, `schema_migrations` read-only).
+- **Mini Games and Seasonal Cases:** a migration step that connects as the owner (a command or a
+  service that runs before the app), the two passwords in the settings, `sk_db_roles_apply` in the
+  installer and after a restore, `grantAppRole` after migrating; the app's `DATABASE_URL` becomes
+  the app role's. Convert an existing install once, with a backup first.
+
+## [0.31.0] - 2026-11-26
+
+The hardening of a game's containers (K89).
+
+### Added
+
+- **`findWeakContainers`** in `@seasonal/kit/testing`: names each hardening setting a game's
+  Compose file lacks. The settings are in OPERATIONS.md "Container hardening".
+
+### Migration, per game
+
+- **Bingo Royale and Mini Games:** add `read_only` with its `tmpfs`, `cap_drop: [ALL]` and the four
+  capabilities to the database service (their app services have the settings already), and a test
+  that calls the check. A proxy service names the capabilities it needs, or says why it is
+  unchecked. Rehearse an upgrade with existing data first.
+- **Seasonal Cases:** the same in its Docker install; its app service has the settings already.
+
+## [0.30.0] - 2026-11-26
+
+The basic security of a standalone game's server (K88).
+
+### Added
+
+- **`ops/lib/host-baseline.sh`**: `sk_host_baseline` allows SSH's real ports, 80 and 443 and
+  turns the firewall on, turns on automatic security updates and adds a fail2ban SSH jail. It only
+  adds, never changes the SSH configuration, and does nothing in website mode.
+
+### Migration, per game
+
+- **Bingo Royale and Mini Games:** the installer calls `sk_host_baseline` with its install mode;
+  the operator guide's manual firewall, update and fail2ban steps go (the SSH advice stays).
+- **Seasonal Cases:** its Docker installer calls it.
+
+## [0.29.0] - 2026-11-26
+
+The admin command every game shares (K87), from Bingo Royale's `sbr`.
+
+### Added
+
+- **`ops/lib/admin.sh`** (with `admin-update.sh`, `admin-uninstall.sh`): `status`, `update`,
+  `confirm`, `rollback`, `backup`, `restore`, `logs` and `uninstall` for a game's own command, which
+  sets its names and hooks (OPERATIONS.md). Uninstall removes one environment and keeps the backups.
+- **`sk_route_remove`** in `ops/lib/website-route.sh`: the uninstall's removal of the game's route
+  file.
+- **Docs:** [concepts/shared-ops-parts.md](docs/concepts/shared-ops-parts.md), how the four projects
+  install, operate and secure their games.
+
+### Migration, per game
+
+- **Bingo Royale:** `ops/sbr` becomes a short command on the library (its database roles, recovery
+  key and website refresh in `game_before_start`; `admin`, `maintenance` and `loadcheck` stay its
+  own verbs). The kit's restore asks `[y/N]` and says its own lines.
+- **Mini Games:** `ops/smg` becomes a command on the library and gains `uninstall`; its wait for
+  running rounds is `game_before_update`; an unconfirmed update now blocks the next.
+- **Seasonal Cases:** gains one command with `update`, `rollback` and `uninstall`; `admin` stays
+  its own verb. Copy the kit's whole `ops/` folder.
+
+## [0.28.0] - 2026-11-26
+
+The season icons, the header's brand link at 44 px, one operator contact address for every
+installer, and the working rule for checks.
+
+### Added
+
+- **The season icons** (K83): the website's four drawings in `seasons/`, `seasons.css` and
+  `SeasonIcon`. Not under the AGPL ([seasons/README.md](seasons/README.md)).
+- **`ops/lib/operator.sh`** (K85): `sk_operator_email`, the operator's contact address from one
+  file on the server.
+
+### Changed
+
+- **The header's brand link is a 44 px target** (K84): its box grows (19–38 px before); the logo
+  and the header's height stay.
+- **Every game has a one-command install and an operator guide** (K86; HANDBOOK).
+- **The working rule for checks** (K82; HANDBOOK, CLAUDE.md): one browser spec file locally where a
+  change touches what it checks; no waiting for CI between pieces.
+
+### Fixed
+
+- **The account chip read "Signed in asOlga"** above 1440 px: the space was lost between two parts
+  of the chip. The chip is that space wider there.
+- **Docs:** an installer copies the kit's whole `ops/` folder, never `ops/backup.sh` alone.
+
+### Migration, per project
+
+- **Website** (seasonal-entertainment): add the `cancel-in-progress` concurrency to its `ci.yml`
+  (it has none today). It may read `/etc/seasonal/operator.env` in its installer (its own
+  decision).
+- **Bingo Royale:** its installer calls `sk_operator_email` in place of its own `--email` handling
+  (the flag keeps working). Its eight season files equal the website's: delete its copies of the
+  four optimized ones and use the kit's (`seasons.css`, `SeasonIcon` or the package paths); the
+  `source/` files are not in the kit.
+- **Mini Games:** its installer calls `sk_operator_email`, as Bingo's. Use the kit's season icons;
+  its four optimized files differ, so it then shows the website's current drawings. Its copy at
+  `$SMG_ROOT/kit/backup.sh` becomes a copy of the kit's whole `ops/` folder, keeping the layout.
+- **Seasonal Cases:** its Docker installer copies the kit's whole `ops/` folder, not
+  `ops/backup.sh` alone (the script fails without `ops/lib/`), and uses `sk_operator_email` when it
+  moves. If it shows season icons, the kit's; else nothing.
+- **K86, install and guide:** **Mini Games and Bingo Royale:** nothing, they follow it (Bingo checks
+  that its guide has the update and uninstall sections). **Seasonal Cases:** moves
+  `deploy/install.sh` to `ops/install.sh` and joins `docs/INSTALL.md` and
+  `docs/OPERATIONS-CASES.md` into `docs/operator-guide.md` at its next adoption, keeping their
+  content.
+
 ## [0.27.0] - 2026-11-26
 
 Fixes for what Seasonal Cases and Mini Games reported on v0.22.0.
@@ -1468,7 +1706,14 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...HEAD
+[0.34.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...v0.34.0
+[0.33.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...v0.33.0
+[0.32.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...v0.32.0
+[0.31.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...v0.31.0
+[0.30.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...v0.30.0
+[0.29.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...v0.29.0
+[0.28.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.24.0...v0.25.0

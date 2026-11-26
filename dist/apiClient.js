@@ -11,7 +11,9 @@
  *                 `onAnswer` sees every answer before it is judged: a game reports a lost session
  *                 there, or sends the page to the website's sign-in (`signInAgainAfter`,
  *                 ./websiteSignIn) and returns true, and the call then never settles, as the page
- *                 is leaving. `basePathOf` is the folder the page is served from ("/" alone,
+ *                 is leaving. `retry` (since v0.34.0) is asked about a refusing answer; when it
+ *                 says true, the same method, path and body are sent once more (with the CSRF
+ *                 token as it is then), and that second answer stands. `basePathOf` is the folder the page is served from ("/" alone,
  *                 "/games/bingo/" inside the website).
  * Depends on:     nothing (the browser's fetch)
  * Source:         seasonal-bingo-royale apps/web/src/shell/http.ts at 8d20904 and
@@ -44,7 +46,7 @@ export function basePathOf(pageUrl) {
 function requestOf(call, token) {
     const method = call.method ?? 'GET';
     const headers = {};
-    if (call.body !== undefined)
+    if (call.text !== undefined)
         headers['content-type'] = 'application/json';
     const writes = method !== 'GET' && method !== 'HEAD';
     if (writes && token !== null)
@@ -53,7 +55,7 @@ function requestOf(call, token) {
         method,
         headers,
         credentials: 'same-origin',
-        ...(call.body === undefined ? {} : { body: JSON.stringify(call.body) }),
+        ...(call.text === undefined ? {} : { body: call.text }),
     };
 }
 const textOf = (body, key) => {
@@ -71,9 +73,20 @@ async function answerTo(send, url, init) {
         throw new ApiError(0, 'NO_ANSWER');
     }
 }
+// The call with its body written out once, so a second sending carries the same bytes.
+const written = (call) => ({
+    ...call,
+    text: call.body === undefined ? undefined : JSON.stringify(call.body),
+});
+// Whether a refused call goes out again: only for a real answer, and only when the game says so.
+async function again(options, error) {
+    if (!(error instanceof ApiError) || error.status === 0)
+        return false;
+    return (await options.retry?.(error)) === true;
+}
 export function createApiClient(options = {}) {
     const prefix = options.prefix ?? 'api/v1';
-    return async (path, call = {}) => {
+    const once = async (path, call) => {
         const base = options.basePath ?? basePathOf(document.baseURI);
         const url = `${base}${prefix}${path}`;
         // Read at call time, so a test or a page that replaces fetch is heard.
@@ -87,5 +100,16 @@ export function createApiClient(options = {}) {
             throw new ApiError(response.status, code ?? 'ERROR', textOf(body, 'reason'), body);
         }
         return (response.status === 204 ? undefined : (body ?? {}));
+    };
+    return async (path, call = {}) => {
+        const sent = written(call);
+        try {
+            return await once(path, sent);
+        }
+        catch (error) {
+            if (!(await again(options, error)))
+                throw error;
+            return once(path, sent);
+        }
     };
 }

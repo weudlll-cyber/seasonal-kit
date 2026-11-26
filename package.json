@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.27.0",
+  "version": "0.34.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -49,7 +49,10 @@
     "./frames.css": "./css/frames.css",
     "./bar.css": "./css/bar.css",
     "./header.css": "./css/header.css",
-    "./steps.css": "./css/steps.css"
+    "./steps.css": "./css/steps.css",
+    "./components.css": "./css/components.css",
+    "./seasons.css": "./css/seasons.css",
+    "./seasons/*.svg": "./seasons/*.svg"
   },
   "sideEffects": [
     "**/*.css"
@@ -89,6 +92,7 @@
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",
     "@types/node": "22.20.5",
+    "@types/pg": "8.23.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitest/coverage-v8": "5.1.1",
@@ -97,6 +101,7 @@
     "fast-check": "4.11.0",
     "jsdom": "31.0.1",
     "lefthook": "2.2.2",
+    "pg": "8.23.1",
     "prettier": "3.10.1",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -111,10 +116,18 @@
     "dist",
     "fonts",
     "ops/backup.sh",
+    "ops/lib/admin.sh",
+    "ops/lib/admin-uninstall.sh",
+    "ops/lib/admin-update.sh",
     "ops/lib/backup-core.sh",
     "ops/lib/backup-restore.sh",
+    "ops/lib/db-roles.sh",
+    "ops/lib/db-roles.sql",
+    "ops/lib/host-baseline.sh",
+    "ops/lib/operator.sh",
     "ops/lib/website-route.sh",
     "ops/pull-backups.sh",
-    "ops/pull-backups.ps1"
+    "ops/pull-backups.ps1",
+    "seasons"
   ]
 }

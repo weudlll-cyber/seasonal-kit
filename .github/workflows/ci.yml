@@ -1,12 +1,12 @@
 # @file   .github/workflows/ci.yml
 # @brief  CI: verify (format, lint, typecheck, tests with coverage gates and the contrast check,
-#         dist up to date, season colours equal to the website's master), osv-scanner,
+#         dist up to date, season colours and icons equal to the website's master), osv-scanner,
 #         gitleaks, the docs' links, and the showcase with axe (since v0.7.0).
 #
 # Responsibility: seasonal-mini-games .github/workflows/ci.yml at 93ed780 cut to a library
 #                 (no e2e, no image), stricter: osv-scanner fails on any finding, the committed
-#                 dist/ must equal a fresh build, the season colours are compared with the
-#                 website (DECISIONS K3), also daily, so a change on the site is noticed while
+#                 dist/ must equal a fresh build, the season colours and icons are compared
+#                 with the website (DECISIONS K3, K83), also daily, so a change on the site is noticed while
 #                 the kit sits still. Every job is a required check of master's branch
 #                 protection, `showcase` since 2026-11-21 (DECISIONS K19, docs/RELEASING.md).
 #                 Any red job is a reason not to merge.
@@ -20,7 +20,7 @@ on:
   pull_request:
     branches: [master]
   schedule:
-    # Daily 05:17 UTC: the season colour check against the website's master.
+    # Daily 05:17 UTC: the season check against the website's master.
     - cron: '17 5 * * *'
 
 # Read-only unless a job asks for more; none does.
@@ -69,9 +69,9 @@ jobs:
             echo "::error::dist/ differs from a fresh build; run pnpm build and commit dist/"
             exit 1
           fi
-      # The website is the single source of the season colours: any difference fails (exit 1),
-      # and so does a site that cannot be read (exit 2).
-      - name: Season colours equal the website's master
+      # The website is the single source of the season colours and icons: any difference fails
+      # (exit 1), and so does a site that cannot be read (exit 2).
+      - name: Season colours and icons equal the website's master
         run: node scripts/season-check.mjs
 
   osv-scanner:
@@ -125,13 +125,19 @@ jobs:
           # The job token stays off the disk: no step pushes (audit 2026-11-22).
           persist-credentials: false
       - name: shellcheck
-        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/backup-url.test.sh ops/test/backup-units.test.sh ops/test/website-route.test.sh
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/lib/operator.sh ops/lib/admin.sh ops/lib/admin-update.sh ops/lib/admin-uninstall.sh ops/lib/host-baseline.sh ops/lib/db-roles.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/backup-url.test.sh ops/test/backup-units.test.sh ops/test/website-route.test.sh ops/test/operator.test.sh ops/test/admin.test.sh ops/test/host-baseline.test.sh
       - name: age
         run: sudo apt-get install -y -q age
       - name: A database URL's password stays off the command lines
         run: bash ops/test/backup-url.test.sh
       - name: The timer's units name the backup by a path that survives a kit update
         run: bash ops/test/backup-units.test.sh
+      - name: The operator's address is read from one file and written once
+        run: bash ops/test/operator.test.sh
+      - name: The shared admin command updates, rolls back and uninstalls one environment
+        run: sudo bash ops/test/admin.test.sh
+      - name: The host baseline adds what is missing and never locks SSH out
+        run: sudo bash ops/test/host-baseline.test.sh
       - name: Back up, drill and restore on a real PostgreSQL
         run: bash ops/test/backup.test.sh
       - name: The route file in the real nginx and Caddy

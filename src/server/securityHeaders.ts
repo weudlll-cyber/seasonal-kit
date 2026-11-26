@@ -16,7 +16,9 @@
  *                   nobody else, and `ancestors` is refused there; standalone, its own origin and
  *                   the `ancestors` (an embed allowlist of plain origins);
  *                 - `frame-src` from `frames` (plain origins, an https origin followed by a path
- *                   since v0.27.0, or `'self'`; none gives `'none'`);
+ *                   since v0.27.0, a plain-http one with a path only on a development host
+ *                   (localhost, 127.0.0.1, [::1], *.localhost, *.test; since v0.34.0), or
+ *                   `'self'`; none gives `'none'`);
  *                 - `admin`: framed by nobody (`frame-ancestors 'none'`, `X-Frame-Options: DENY`)
  *                   and Trusted Types required for scripts;
  *                 - no HSTS, ever: the website sends it in website mode (it owns the whole
@@ -46,7 +48,8 @@ export interface SecurityHeaderOptions {
   // Standalone: the sites that may frame the game (plain origins).
   readonly ancestors?: Sources;
   // What the game may frame: plain origins, `https://host/path` (no query, fragment or
-  // wildcard) or `'self'`; default `['self']`; empty is none.
+  // wildcard; `http://` with a path only on a local development host) or `'self'`; default
+  // `['self']`; empty is none.
   readonly frames?: Sources;
   // Served over https (as `sessionCookie` is told): browsers then upgrade http addresses.
   // Left out or false: no upgrade, for plain-http development.
@@ -68,8 +71,13 @@ export interface SecurityHeaderSet {
 const SELF = "'self'";
 // Only a plain origin reaches a header, so no stored value can add a directive.
 const PLAIN_ORIGIN = /^https?:\/\/[A-Za-z0-9.-]+(:\d{1,5})?$/;
-// An https origin and a path of plain characters: nothing that ends a source or a directive.
-const HTTPS_PATH = /^https:\/\/[A-Za-z0-9.-]+(:\d{1,5})?(\/(?:[\w.~-]|%[0-9A-Fa-f]{2})*)+$/;
+// A path of plain characters: nothing that ends a source or a directive.
+const PATH = String.raw`(:\d{1,5})?(\/(?:[\w.~-]|%[0-9A-Fa-f]{2})*)+$`;
+// An https origin and a path.
+const HTTPS_PATH = new RegExp(String.raw`^https:\/\/[A-Za-z0-9.-]+` + PATH);
+// Plain http with a path only for a development host on this machine (since v0.34.0).
+const LOCAL_HOST = String.raw`(?:localhost|127\.0\.0\.1|\[::1\]|(?:[A-Za-z0-9-]+\.)+(?:localhost|test))`;
+const LOCAL_PATH = new RegExp(String.raw`^http:\/\/` + LOCAL_HOST + PATH);
 const PERMISSIONS = 'camera=(), microphone=(), geolocation=(), payment=()';
 
 function origins(list: Sources, what: string): Sources {
@@ -80,8 +88,11 @@ function origins(list: Sources, what: string): Sources {
 }
 
 function frameSources(list: Sources): Sources {
-  if (!list.every((s) => s === SELF || PLAIN_ORIGIN.test(s) || HTTPS_PATH.test(s))) {
-    throw new RangeError('frames must be plain origins or https addresses with a path');
+  const forms = [PLAIN_ORIGIN, HTTPS_PATH, LOCAL_PATH];
+  if (!list.every((s) => s === SELF || forms.some((form) => form.test(s)))) {
+    throw new RangeError(
+      'frames must be plain origins, https addresses with a path, or such on a local host',
+    );
   }
   return list;
 }

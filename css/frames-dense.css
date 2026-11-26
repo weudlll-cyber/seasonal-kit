@@ -1,0 +1,39 @@
+/**
+ * @file   css/frames-dense.css
+ * @brief  The result's dense variant (src/react/ResultFrame.tsx `dense`): more room for the
+ *         placings where the screen is low.
+ *
+ * Responsibility: `data-sk-density` dense makes the frame one card (the first part, the middle
+ *                 one and "more" without borders of their own), with the kit's small spacing
+ *                 steps as padding and gaps, and the headline on one row with its lines (they
+ *                 wrap where a line is too narrow), the proof at the row's end. The sizes and
+ *                 floors are ./frames.css's, which brings this file along.
+ * Source:         new in the kit, from Seasonal Bingo Royale's own result panel (its v0.22.0
+ *                 adoption report, 2026-11-26: the kit's frame showed 5 places whole where its
+ *                 panel showed 7 at 1280x720).
+ */
+.sk-result[data-sk-density='dense'] {
+  align-content: start;
+  gap: 0;
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  background: var(--sk-color-card);
+}
+
+.sk-result[data-sk-density='dense'] > :is(.sk-result-first, .sk-result-middle, .sk-result-more) {
+  gap: var(--sk-space-1);
+  padding: var(--sk-space-1) var(--sk-space-2);
+  border: 0;
+  background: none;
+}
+
+.sk-result[data-sk-density='dense'] .sk-result-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--sk-space-2);
+}
+
+.sk-result[data-sk-density='dense'] .sk-result-head > .sk-result-proof {
+  margin-inline-start: auto;
+}

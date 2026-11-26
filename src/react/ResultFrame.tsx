@@ -21,7 +21,9 @@
  *                 `panel` (since v0.11.0, Bingo R4) makes it a panel inside a screen (a replay,
  *                 a notice, a host console): its headline a heading of the game's level instead
  *                 of the page's h1, no one-screen first part, and names broken only at their
- *                 own break points, never inside (../../css/frames.css).
+ *                 own break points, never inside (../../css/frames.css). `dense` (since v0.33.0,
+ *                 Bingo) is one card of small padding, the headline on one row with its lines
+ *                 (../../css/frames-dense.css).
  * Source:         seasonal-mini-games apps/web/src/round/ResultScreen.tsx and result.css at
  *                 866df03 (the first part's grid; its proof, placings and standings stay in the
  *                 game); seasonal-bingo-royale apps/web/src/components/Podium.tsx and results.css
@@ -64,6 +66,9 @@ export interface ResultFrameProps {
   // A panel inside a screen instead of a page of its own (since v0.11.0, Bingo R4): its
   // headline a heading of the game's level, its first part as high as its content.
   readonly panel?: { readonly level: 2 | 3 | 4 | 5 | 6 };
+  // One card with small padding, the headline on one row with its lines (since v0.33.0, Bingo):
+  // more room for the placings where the screen is low.
+  readonly dense?: boolean;
 }
 
 const HEADINGS = { 2: 'h2', 3: 'h3', 4: 'h4', 5: 'h5', 6: 'h6' } as const;
@@ -82,6 +87,7 @@ export function ResultFrame(p: ResultFrameProps): ReactElement {
       data-sk-layout={p.layout ?? 'list'}
       data-sk-variant={p.panel === undefined ? 'page' : 'panel'}
       data-sk-reveal={hasReveal ? undefined : 'none'}
+      data-sk-density={p.dense === true ? 'dense' : undefined}
       data-testid="result"
     >
       <div className="sk-result-first" data-sk-fit-fixed="" data-testid="result-first">

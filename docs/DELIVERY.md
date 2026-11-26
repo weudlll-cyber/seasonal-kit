@@ -641,6 +641,86 @@ Two scratch consumers pinned `#v0.26.0` (merge commit `0e94fef`), both with `ign
 CI on the merge commit `0e94fef`: `CI` and `CodeQL` passed. The scratch folders are left in the
 session's scratch directory, outside every repository.
 
+## The v0.27.0 fix release, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.27.0` (merge commit `b51e7ba`), both with `ignore-scripts=true`
+(React and React DOM 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5), ran `tsc` and five tests on
+the installed package:
+
+- it is `0.27.0`;
+- `guardedFetch({ localOrigins })` reaches the named local origin and refuses another address;
+- the named cross-origin write passes on its path only, the headers carry the new directives and the
+  frame address with its path, and the plain-http cookie takes the base path;
+- the installed docked screen has its named Tab stop, and `bar.css` reads `--sk-bar-gutter`;
+- `print-units`, called through `node_modules/@seasonal/kit`, writes that path, not one in `.pnpm`.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.21.0 | Worked  | Worked | 5 passed |
+| npm 11.19.0  | Worked  | Worked | 5 passed |
+
+CI on the merge commit `b51e7ba`: `CI` and `CodeQL` passed. The scratch folders are left in the
+session's scratch directory, outside every repository.
+
+## The v0.28.0 season icons and operator address, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers pinned `#v0.28.0` (merge commit `c864703`), both with `ignore-scripts=true`
+(React and React DOM 19.3.1, TypeScript 5.9.3 NodeNext, Vitest 5.0.5, Vite 8.3.8), ran `tsc` and
+four tests on the installed package:
+
+- it is `0.28.0`;
+- the winter icon is the recorded bytes, and `SeasonIcon` names it "Winter";
+- **a Vite build of `seasons.css` and one file imported by its package path carries all four
+  icons**;
+- `header.css` gives the brand link its 44 px box, and the installed `ops/lib/operator.sh` stops
+  without a terminal, naming the file and the key.
+
+| Consumer     | Install | `tsc`  | Tests    |
+| ------------ | ------- | ------ | -------- |
+| pnpm 12.14.0 | Worked  | Worked | 4 passed |
+| npm 11.19.0  | Worked  | Worked | 4 passed |
+
+CI on the merge commit `c864703`: `CI` and `CodeQL` passed. The scratch folders are left in the
+session's scratch directory, outside every repository.
+
+## The v0.29.0 to v0.32.0 ops releases, with pnpm and with npm (2026-11-26, the tags themselves)
+
+For each tag two scratch consumers, one with pnpm 12.14.0 and one with npm 11.19.0, both with
+`ignore-scripts=true`, installed `#<tag>` and ran that release's check on the installed files:
+
+| Tag     | Merge     | What ran on the installed package                                                                    |
+| ------- | --------- | ---------------------------------------------------------------------------------------------------- |
+| v0.29.0 | `3b64ec7` | a game command on the shipped `ops/lib/admin.sh` prints the usage with `uninstall` and exits 2       |
+| v0.30.0 | `f3829d2` | `sk_host_baseline website` from the shipped library says it changes nothing                          |
+| v0.31.0 | `c5b24d5` | `findWeakContainers` from `@seasonal/kit/testing` names the three settings a bare service lacks      |
+| v0.32.0 | `0016e86` | `grantAppRole` is exported; `sk_db_roles_apply` fills the shipped SQL with the names (sent to `cat`) |
+
+All eight installs and checks passed. `CI` and `CodeQL` passed on each merge commit. The scratch
+folders are left in the session's scratch directory, outside every repository.
+
+## v0.33.0, with pnpm and with npm (2026-11-26, the tag itself)
+
+Scratch consumers outside every repository, with `ignore-scripts=true`, installed `#v0.33.0`
+(merge `4261eb9`):
+
+- one with pnpm and one with npm typechecked and ran three tests on the installed files: the failure
+  brake's `reserve` and live rule, the dense result and the header's controls group rendered, and
+  the two new stylesheets and the restore shipped;
+- one with pnpm and one with npm ran the shipped backup script's secret check: it refuses a
+  differing secret, names the secrets without a folder and writes nothing.
+
+All four passed, and `CI` and `CodeQL` passed on the merge commit. The scratch folders are left in
+the session's scratch directory.
+
+## v0.34.0, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.34.0` (merge `7c1e97f`), typechecked and ran three tests on
+the installed files: the new stylesheets, the two shipped ops files, the primary "Sign in" and the
+one-colour season icon; the client's `retry`, a local frame path and a token mix in the contrast
+guard; the website stand-in's refusal of the proxy secret. Both passed. The scratch folders are
+left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

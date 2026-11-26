@@ -7,5 +7,5 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 9\. React wrappers: `ChatDock` and the call slot are in the kit since v0.4.0, open until a game
   uses them (the chat frame's link, the dock's arrivals and `DockedScreen` are closed).
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
-- 29\. The socket client and the season icons: waiting for the owner's word.
-- 30\. The header's brand link is under 44 px: waiting for the owner's word.
+- 49\. Shared ops parts: a to e released; f to k wait for the owner's word
+  ([concepts/shared-ops-parts.md](concepts/shared-ops-parts.md)).

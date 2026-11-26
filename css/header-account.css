@@ -1,0 +1,85 @@
+/**
+ * @file   css/header-account.css
+ * @brief  The app header's account part (src/react/AppHeader.tsx): the buttons, the one primary
+ *         "Sign in" and the account chip.
+ *
+ * Responsibility: the account's row; its buttons keep their words (44 px targets); signed out,
+ *                 "Sign in" is the solid button, the header's only primary one (K96); the chip is
+ *                 filled with small bold text (K96), never under the game's text floor, holds the
+ *                 step badges' size, and shows "Signed in as" only on wide screens. The folded
+ *                 menu's and the phone's rules are ./header.css's, which brings this file along.
+ * Source:         ./header.css, the account's rules moved here (v0.34.0); the chip's fill and the
+ *                 solid "Sign in" are seasonal-bingo-royale apps/web/src/shell/header.css at
+ *                 d7d841e.
+ */
+.sk-header-account {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* "Sign in" and "Register" are links that look like the bar's buttons; no button label wraps. */
+.sk-header-account a.sk-bar-button {
+  text-decoration: none;
+}
+
+/* The header's buttons carry words: on a phone ./bar.css makes `sk-bar-button` an icon-only
+   square, so here they keep their width and padding, at least the 44 px target. */
+.sk-header .sk-bar-button {
+  width: auto;
+  min-height: var(--sk-hit-target);
+  padding-inline: 0.65rem;
+  white-space: nowrap;
+}
+
+/* Signed out, "Sign in" is the solid button, the header's only primary one (K96). The selector
+   names the header too, so a game's own button class cannot take the fill back. */
+.sk-header .sk-header-primary {
+  border-color: transparent;
+  background: var(--sk-color-solid);
+  color: var(--sk-color-on-solid);
+}
+
+.sk-header .sk-header-primary:hover {
+  background: var(--sk-color-solid);
+  opacity: 0.88;
+}
+
+/* The account chip leads to the account page: a filled chip with small bold text (K96) that
+   reacts like a button. */
+.sk-header-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--sk-hit-target);
+  padding: 0 0.8rem;
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-surface-2);
+  color: var(--sk-color-text);
+  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
+  font-weight: var(--sk-font-weight-strong);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* The step badges' size in the chip (./steps.css); a game may set its own here. */
+.sk-header-chip {
+  --sk-step-icon: 1.25rem;
+}
+
+.sk-header-chip:hover {
+  background: var(--sk-color-active-bg);
+}
+
+/* "Signed in as" is read out, not shown, up to wide screens (a host's bar stays one row). */
+@media (max-width: 1440px) {
+  .sk-header-chip-prefix {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

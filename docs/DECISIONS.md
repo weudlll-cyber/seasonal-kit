@@ -393,6 +393,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   contract for the shared view (GAME-INTEGRATION.md §9 at `963be59`) ends it with the reason
   `unshared` when its call stops being shared, then posts `ready` for the next one: the kit accepts
   that reason, without which the message was dropped and the slot stayed visible.
+- **K78 — Base components are opt-in classes, held for the owner's look review** (2026-11-26, built,
+  not merged). `components.css` draws buttons, panels, fields and chips as `sk-` classes only, so a
+  game that imports it changes nothing until it uses one. Where the games differ, Mini Games' version
+  is proposed (its disabled button and locked field keep their text readable). Released only after
+  the owner has looked at the review page. (K77 is the shared call slot's, on its own branch.)
 - **K79 — The header's fold depends only on the width and the items** (2026-11-26, Seasonal Cases'
   finding on v0.22.0). Every decision measures the unfolded layout; a folded header is measured
   again on a new window width, a change of its own size (not by the fold itself) and loaded web
@@ -408,3 +413,79 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K81 — In website mode a game is framed by the website only** (confirmed 2026-11-25).
   `securityHeaderSet({ mode: 'website' })` refuses `ancestors`, as before. A game that must be framed
   elsewhere uses a standalone install with its `ancestors` list.
+- **K82 — How every Seasonal project runs its checks** (decided 2026-11-25). Locally before each
+  push the fast tests of the changed files and, when a browser spec checks what changed, that one
+  spec file in one browser; the full checks on GitHub through the draft PR; no waiting for CI between
+  pieces, one look at the end and before a merge; CI cancels a replaced run of a work branch; no
+  re-run on an unchanged tree.
+- **K83 — The season icons ship in the kit** (decided 2026-11-25, BACKLOG 29; the socket client
+  stays out, as [concepts/shared-client-parts.md](concepts/shared-client-parts.md) section 14
+  recommends). The website's four optimized files, byte for byte, compared with its `master` on
+  every pull request and daily, as the season colours are. They belong to the Seasonal Tokens
+  project and are not under the AGPL. A stylesheet draws them, so a bundler finds the files as it
+  finds the fonts.
+- **K84 — The header's brand link is a 44 px target** (decided 2026-11-25, BACKLOG 30; K29). Its box
+  grows, the logo and the header's height do not: measured on the kit's headers at seven widths, the
+  link went from 19–38 px to 44–46 px at 100 % text (55 px and more at 200 %), with every header as
+  high as before.
+- **K85 — One operator contact address per server** (decided 2026-11-25). Every Seasonal installer
+  takes it from `/etc/seasonal/operator.env` (`SK_OPERATOR_EMAIL`, root's, mode 0644) through the
+  kit's `sk_operator_email`; an explicit `--email` still wins and fills an empty file. No address is
+  in the kit, in a game's repository or in a log beyond the installer's "using <address> from <file>".
+- **K86 — Every game has a one-command install and an operator guide** (decided 2026-11-26):
+  `ops/install.sh` (Ubuntu 24.04, Docker, standalone or inside the website, re-runnable, ending in a
+  check through `/readyz`, using the kit's ops parts) and `docs/operator-guide.md` for an owner who
+  is not technical, with fixed sections. Held by review and by the rehearsal before production
+  ([HANDBOOK.md](HANDBOOK.md)).
+- **K87 — One admin command's verbs in every game** (2026-11-26). `ops/lib/admin.sh`, from Bingo
+  Royale's `sbr`, with update, confirm and rollback, and an uninstall of exactly one environment
+  that asks for its name. The backups stay unless `--purge-backups` is given, because a backup cannot
+  be made again; an unknown option of uninstall stops it.
+- **K88 — A standalone install secures its host** (2026-11-26). The kit's `sk_host_baseline` turns
+  on the firewall (SSH's real ports first, then 80 and 443), automatic security updates and a
+  fail2ban SSH jail, only adding. It never changes the SSH configuration, only reports it, because a
+  wrong change locks the owner out. In website mode it does nothing: the website's installer owns
+  the host.
+- **K89 — Every game's containers are hardened alike** (2026-11-26). App and database run with a
+  read-only root, `no-new-privileges` and all capabilities dropped; the database adds back only
+  CHOWN, DAC_OVERRIDE, SETGID and SETUID, measured on `postgres:17-alpine`. A game's own test holds
+  its Compose file to it with `findWeakContainers`; the kit adds no CI guard.
+- **K90 — The running game connects as a role that only reads and writes rows** (2026-11-26). An
+  owner role migrates and then grants the app role (`grantAppRole`), with tables a game names as
+  append-only or read-only; the kit's SQL, from Bingo Royale's, sets both roles up and takes the
+  passwords on standard input only.
+- **K91 — A restore refuses before it replaces** (2026-11-26). Everything that can refuse a restore
+  is decided before the app is stopped. The kit's restore reads only the kit's backups; an older
+  backup needs the game's documented rewrite and ages out (decided 2026-11-25).
+- **K92 — The failure brake counts attempts under way** (2026-11-26). `reserve` gives an attempt
+  one of the key's `limit` places until it is ended, so parallel guesses stay within the limit, and
+  the brake's rule may be a function read at each check (from Bingo Royale's `loginBrake`).
+  `braked` and `failed` stay for a route that cannot be tried in parallel.
+- **K93 — `ResultFrame` has a dense variant** (decided 2026-11-26, reported by Bingo Royale's
+  planning). One card with small padding, the headline on one row with its lines. It replaces K47
+  ("no merged single-card option"); the frame without `dense` is unchanged but for the headline's
+  line height.
+- **K94 — The step badges give way before the header folds** (decided 2026-11-26, reported by Bingo
+  Royale's planning). Only the highest badge, then none in the bar, then the fold. "Highest" is the
+  first of the member's steps as the website sends them (Holder before Farmer before Investor);
+  the steps are one per ladder and carry no rank across ladders.
+- **K95 — The base components are released as proposed** (decided 2026-11-26, after the owner's
+  look at the review page; ends K78's hold). Buttons, fields, panels, chips, the disabled button
+  and the locked field as the page's "Kit (proposed)" column.
+- **K96 — Three header looks for every game** (decided 2026-11-26, Bingo Royale's wishes). The
+  account chip is filled with small bold text; the back link's row on a phone is only as high as
+  its words allow while its tap area stays 44 px (as K84, no breach of K29); signed out, "Sign
+  in" is the header's one primary button. They are the kit's look, not options.
+- **K97 — The owner role may create temporary tables** (2026-11-26). A migration may move rows
+  through one; `PUBLIC` and the app role still get no `TEMPORARY`.
+- **K98 — The admin restore takes the secrets folder from the game's settings** (2026-11-26):
+  `SK_ADMIN_SECRETS_DIR`. A differing secret still needs `--force-env` (K91).
+- **K99 — `SeasonIcon` takes any CSS length and has a one-colour form** (2026-11-26).
+- **K100 — A refused call may be sent once more** (2026-11-26): `createApiClient`'s `retry`,
+  never twice and never without an answer.
+- **K101 — Plain http with a path only on a development host** (2026-11-26): `localhost`,
+  `127.0.0.1`, `[::1]`, `*.localhost`, `*.test`; every other frame source with a path is https.
+- **K102 — The contrast guard works out tokens** (2026-11-26): `var()` and `color-mix()` in srgb;
+  what it cannot work out is a finding, and a pair naming a missing token still throws.
+- **K103 — The stand-in website refuses the proxy's secret** (2026-11-26): its `authorize` answers
+  500 to a request carrying it, as a game's own stub did; the proxy half still clears it.

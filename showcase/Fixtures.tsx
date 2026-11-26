@@ -24,7 +24,11 @@ export function Places(p: { readonly dense: boolean }): ReactElement {
     <div className="showcase-screen" data-sk-game="bingo">
       <AppHeader {...PLAIN_HEADER} />
       <div className="showcase-fill">
-        <DockedScreen chat={<WebsiteChatFrame room="bingo" path="/embed/chat/" />} bar="line">
+        <DockedScreen
+          chat={<WebsiteChatFrame room="bingo" path="/embed/chat/" />}
+          bar="line"
+          callId={null}
+        >
           <ResultFrame
             game="bingo"
             panel={{ level: 2 }}

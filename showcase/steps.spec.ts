@@ -20,6 +20,8 @@
  */
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
+import { settled } from './screens.js';
+
 const NAMES = ['Diamond holder', 'Golden farmer', 'Early investor'];
 // 1.25rem at the browser's 16 px default.
 const ICON_PX = 20;
@@ -27,6 +29,8 @@ const ICON_PX = 20;
 async function openChip(page: Page, width: number, theme: string, testId: string) {
   await page.setViewportSize({ width, height: 800 });
   await page.goto(`/?theme=${theme}`);
+  // The fold is decided again when the web fonts arrive (a header may unfold then, v0.33.0).
+  await settled(page);
   const header = page.getByTestId(testId).getByTestId('app-header');
   // Folded (a phone): the chip sits in the menu, which opens first.
   if ((await header.getAttribute('data-sk-folded')) === 'true') {

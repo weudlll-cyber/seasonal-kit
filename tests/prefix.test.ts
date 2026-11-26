@@ -91,9 +91,9 @@ describe('the data-sk- prefix (since v0.10.1)', () => {
 // the CSS only reads.
 const properties = (css: string): string[] => {
   const text = css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/'[^']*'|"[^"]*"/g, '');
-  return [...text.matchAll(/(--[\w-]+)\s*:/g), ...text.matchAll(/var\(\s*(--[\w-]+)/g)].map(
-    (m) => m[1] ?? '',
-  );
+  // A declaration starts a name: the "--primary:hover" of a class modifier is not one.
+  const declared = text.matchAll(/(?<![\w-])(--[\w-]+)\s*:/g);
+  return [...declared, ...text.matchAll(/var\(\s*(--[\w-]+)/g)].map((m) => m[1] ?? '');
 };
 
 describe('the --sk- prefix on custom properties (since v0.14.0)', () => {
@@ -106,6 +106,10 @@ describe('the --sk- prefix on custom properties (since v0.14.0)', () => {
     expect(
       properties(':root { --color-text: red; } a { color: var(--space-1); scale: var(--fit, 1); }'),
     ).toEqual(['--color-text', '--space-1', '--fit']);
+  });
+
+  it('reads no property out of a class modifier before a pseudo-class', () => {
+    expect(properties('.sk-btn--primary:hover { color: red; }')).toEqual([]);
   });
 
   it('reads no property out of a comment or a quoted string', () => {

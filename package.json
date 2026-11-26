@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.33.0",
+  "version": "0.34.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -50,6 +50,7 @@
     "./bar.css": "./css/bar.css",
     "./header.css": "./css/header.css",
     "./steps.css": "./css/steps.css",
+    "./components.css": "./css/components.css",
     "./seasons.css": "./css/seasons.css",
     "./seasons/*.svg": "./seasons/*.svg"
   },

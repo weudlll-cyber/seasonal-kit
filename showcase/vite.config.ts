@@ -1,7 +1,8 @@
 /**
  * @file   showcase/vite.config.ts
- * @brief  Vite for the kit's showcase: four pages, the showcase, the sweep's screens and the stubs of the website's
- *         chat and call embeds, built into showcase/dist/ (git-ignored, never shipped).
+ * @brief  Vite for the kit's showcase: five pages (the showcase, the sweep's screens, the base
+ *         components' review page and the stubs of the website's chat and call embeds), built
+ *         into showcase/dist/ (git-ignored, never shipped).
  *
  * Responsibility: `pnpm showcase` serves it for people; the Playwright run builds it and
  *                 serves the build on a fixed port (../playwright.config.ts). The stub lives at
@@ -21,7 +22,7 @@ const here = (path: string): string => fileURLToPath(new URL(path, import.meta.u
 
 export default defineConfig({
   root: here('.'),
-  // Four pages, no single-page fallback: without it /embed/chat served the showcase itself,
+  // Five pages, no single-page fallback: without it /embed/chat served the showcase itself,
   // which then framed itself again.
   appType: 'mpa',
   build: {
@@ -32,6 +33,7 @@ export default defineConfig({
       input: {
         main: here('index.html'),
         sweep: here('sweep/index.html'),
+        components: here('components/index.html'),
         chat: here('embed/chat/index.html'),
         call: here('embed/call/7.html'),
       },

@@ -63,6 +63,17 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.34.0, the base components and header looks (branch `feat/base-components`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+Stylesheets and one class on a link: no input is read and nothing new runs.
+
 ### 2026-11-26 — before v0.34.0, the fixes (branch `fix/minigames-findings`)
 
 | Scan                         | Tool and command                       | Result                                     |

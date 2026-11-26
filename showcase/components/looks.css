@@ -1,0 +1,414 @@
+/**
+ * @file   showcase/components/looks.css
+ * @brief  The three games' current component rules, copied for the look review, each under its
+ *         own scope, with their token names mapped to the kit's. Never shipped.
+ * Source:         seasonal-bingo-royale packages/ui/src/base.css at 8d20904, seasonal-mini-games
+ *                 the same path at 9e3c6f3, seasonal-cases apps/web/src/shell/shell.css at 073f9ad
+ */
+.components-page {
+  padding: var(--sk-space-2) var(--sk-gutter);
+  font-family: var(--sk-font-family);
+}
+
+body {
+  margin: 0;
+  background: var(--sk-page-background);
+  color: var(--sk-color-text);
+}
+
+.components-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--sk-space-3);
+}
+
+.components-column {
+  display: grid;
+  align-content: start;
+  gap: var(--sk-space-2);
+}
+
+.components-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sk-space-1);
+}
+
+/* Each game resets box-sizing for its whole page; the same here, for every column. */
+.components-column * {
+  box-sizing: border-box;
+}
+
+/* The games' older token names, as the kit's tokens (the same website values). */
+.look-bingo,
+.look-cases {
+  --color-text: var(--sk-color-text);
+  --color-text-muted: var(--sk-color-text-muted);
+  --color-glass: var(--sk-color-glass);
+  --color-active-bg: var(--sk-color-active-bg);
+  --color-border: var(--sk-color-border);
+  --color-border-strong: var(--sk-color-border-strong);
+  --color-surface: var(--sk-color-surface);
+  --color-surface-2: var(--sk-color-surface-2);
+  --color-solid: var(--sk-color-solid);
+  --color-on-solid: var(--sk-color-on-solid);
+  --color-danger: var(--sk-color-danger);
+  --color-card: var(--sk-color-card);
+  --color-live: var(--sk-color-live);
+  --color-on-live: var(--sk-color-on-live);
+  --color-accent: var(--sk-color-accent);
+  --radius: var(--sk-radius);
+  --radius-card: var(--sk-radius-card);
+  --radius-pill: var(--sk-radius-pill);
+  --space-1: var(--sk-space-1);
+  --space-2: var(--sk-space-2);
+  --space-3: var(--sk-space-3);
+  --panel-padding: min(var(--sk-space-3), 6.7vw);
+  --hit-target: var(--sk-hit-target);
+  --font-weight-strong: var(--sk-font-weight-strong);
+  --font-weight-heading: var(--sk-font-weight-heading);
+  --font-size-small: var(--sk-font-size-small);
+  --font-size-lead: var(--sk-font-size-lead);
+  --duration-fast: var(--sk-duration-fast);
+  --ease-out: var(--sk-ease-out);
+}
+
+.cases-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+/* Bingo Royale */
+.look-bingo .sbr-panel {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: var(--panel-padding);
+}
+
+.look-bingo .sbr-panel--inset {
+  background: var(--color-surface-2);
+}
+
+.look-bingo .sbr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--hit-target);
+  padding: 0 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-glass);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--font-weight-strong);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.look-bingo .sbr-btn:hover:not(:disabled) {
+  background: var(--color-active-bg);
+}
+
+.look-bingo .sbr-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.look-bingo .sbr-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.look-bingo .sbr-btn--primary {
+  border-color: transparent;
+  background: var(--color-solid);
+  color: var(--color-on-solid);
+}
+
+.look-bingo .sbr-btn--primary:hover:not(:disabled) {
+  background: var(--color-solid);
+  opacity: 0.88;
+}
+
+.look-bingo .sbr-btn--danger {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  background: transparent;
+}
+
+.look-bingo .sbr-btn--big {
+  min-height: 4rem;
+  padding: 0 2rem;
+  font-size: var(--font-size-lead);
+}
+
+.look-bingo .sbr-field {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: var(--font-weight-strong);
+}
+
+.look-bingo .sbr-field > span {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+.look-bingo .sbr-input,
+.look-bingo .sbr-select {
+  min-height: var(--hit-target);
+  width: 100%;
+  padding: 0 0.85rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.look-bingo .sbr-input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.look-bingo .sbr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-strong);
+}
+
+.look-bingo .sbr-badge-live {
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-live);
+  color: var(--color-on-live);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-heading);
+  letter-spacing: 0.06em;
+}
+
+/* Mini Games */
+.look-mini .smg-panel {
+  background: var(--sk-color-card);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  padding: var(--sk-space-3);
+}
+
+.look-mini .smg-panel--inset {
+  background: var(--sk-color-surface-2);
+}
+
+.look-mini .smg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--sk-hit-target);
+  padding: 0 1.1rem;
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-glass);
+  color: var(--sk-color-text);
+  font: inherit;
+  font-weight: var(--sk-font-weight-strong);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--sk-duration-fast) var(--sk-ease-out),
+    transform var(--sk-duration-fast) var(--sk-ease-out);
+}
+
+.look-mini .smg-btn:hover:not(:disabled) {
+  background: var(--sk-color-active-bg);
+}
+
+.look-mini .smg-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.look-mini .smg-btn:disabled {
+  border-color: var(--sk-color-border);
+  background: var(--sk-color-surface-2);
+  color: var(--sk-color-text-muted);
+  cursor: not-allowed;
+}
+
+.look-mini .smg-btn--primary {
+  border-color: transparent;
+  background: var(--sk-color-solid);
+  color: var(--sk-color-on-solid);
+}
+
+.look-mini .smg-btn--primary:hover:not(:disabled) {
+  background: var(--sk-color-solid);
+  opacity: 0.88;
+}
+
+.look-mini .smg-btn--danger {
+  border-color: var(--sk-color-danger);
+  color: var(--sk-color-danger);
+  background: transparent;
+}
+
+.look-mini .smg-btn--big {
+  min-height: 4rem;
+  padding: 0 2rem;
+  font-size: var(--sk-font-size-lead);
+}
+
+.look-mini .smg-field {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: var(--sk-font-weight-strong);
+}
+
+.look-mini .smg-field > span {
+  font-size: var(--sk-font-size-small);
+  color: var(--sk-color-text-muted);
+}
+
+.look-mini .smg-input,
+.look-mini .smg-select {
+  min-height: var(--sk-hit-target);
+  width: 100%;
+  padding: 0 0.85rem;
+  border: 1px solid var(--sk-color-border-strong);
+  border-radius: var(--sk-radius);
+  background: var(--sk-color-surface);
+  color: var(--sk-color-text);
+  font: inherit;
+}
+
+.look-mini .smg-input:disabled,
+.look-mini .smg-select:disabled {
+  border-style: dashed;
+  border-color: var(--sk-color-border-strong);
+  background: var(--sk-color-surface-2);
+  color: var(--sk-color-text-muted);
+  -webkit-text-fill-color: var(--sk-color-text-muted);
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.look-mini .smg-field:has(> .smg-field-lock) {
+  position: relative;
+}
+
+.look-mini .smg-field-lock {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--sk-color-text-muted);
+  font-size: var(--sk-font-size-small);
+  font-weight: var(--sk-font-weight-body);
+}
+
+.look-mini .smg-field-lock svg {
+  width: 0.85em;
+  height: 0.85em;
+}
+
+.look-mini .smg-input::placeholder {
+  color: var(--sk-color-text-muted);
+  opacity: 1;
+}
+
+.look-mini .smg-field--signed {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.look-mini .smg-field--signed > small {
+  grid-column: 1 / -1;
+}
+
+.look-mini .smg-field-help--error {
+  color: var(--sk-color-danger);
+}
+
+.look-mini .smg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-surface-2);
+  border: 1px solid var(--sk-color-border);
+  font-size: var(--sk-font-size-small);
+  font-weight: var(--sk-font-weight-strong);
+}
+
+.look-mini .smg-badge-live {
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--sk-radius-pill);
+  background: var(--sk-color-live);
+  color: var(--sk-color-on-live);
+  font-size: 0.75rem;
+  font-weight: var(--sk-font-weight-heading);
+  letter-spacing: 0.06em;
+}
+
+/* Seasonal Cases */
+.look-cases .button {
+  min-height: var(--hit-target);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-glass);
+  color: var(--color-text);
+  font: inherit;
+  font-size: max(var(--sk-floor-text), 15px);
+  cursor: pointer;
+}
+
+.look-cases .button:hover:not(:disabled) {
+  background: var(--color-active-bg);
+}
+
+.look-cases .button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.look-cases .button-solid {
+  border-color: transparent;
+  background: var(--color-solid);
+  color: var(--color-on-solid);
+}
+
+.look-cases .button-solid:hover:not(:disabled) {
+  background: var(--color-solid);
+  opacity: 0.9;
+}
+
+.look-cases input,
+.look-cases select {
+  min-height: var(--hit-target);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.look-cases .card {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-card);
+}

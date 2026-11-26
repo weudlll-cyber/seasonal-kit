@@ -196,6 +196,10 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   bar's text did not grow** (Bingo Royale, 2026-11-26). Closed in v0.33.0 (K94,
   `showcase/looks.spec.ts`, `showcase/cases.spec.ts`).
 - **54. ADOPTION.md's Bingo section was behind Bingo's master** (2026-11-26). Closed in v0.33.0.
+- **28. Base components: the owner's look review** (2026-11-26, K78). Taken as proposed (K95).
+  Closed in v0.34.0 (`css/components.css`, `showcase/components.spec.ts`).
+- **55. Bingo Royale's three header wishes** (2026-11-26). Closed in v0.34.0 (K96,
+  `css/header-account.css`, `css/header.css`, `showcase/looks.spec.ts`).
 - **56. A fresh install's owner role could create no temporary table** (Mini Games, 2026-11-26).
   Closed in v0.34.0 (`ops/lib/db-roles.sql`, `tests/db-roles.integration.test.ts`, K97).
 - **57. The admin restore could not restore secret files** (Mini Games, 2026-11-26). Closed in

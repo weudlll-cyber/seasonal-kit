@@ -383,6 +383,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   backup stays as it is for the server side: the units `print-units` writes keep requiring
   `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
   paths. Cases moves to Docker first, then takes the kit's backup unchanged.
+- **K78 — Base components are opt-in classes, held for the owner's look review** (2026-11-26, built,
+  not merged). `components.css` draws buttons, panels, fields and chips as `sk-` classes only, so a
+  game that imports it changes nothing until it uses one. Where the games differ, Mini Games' version
+  is proposed (its disabled button and locked field keep their text readable). Released only after
+  the owner has looked at the review page. (K77 is the shared call slot's, on its own branch.)
 - **K79 — The header's fold depends only on the width and the items** (2026-11-26, Seasonal Cases'
   finding on v0.22.0). Every decision measures the unfolded layout; a folded header is measured
   again on a new window width, a change of its own size (not by the fold itself) and loaded web
@@ -454,6 +459,13 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   Royale's planning). Only the highest badge, then none in the bar, then the fold. "Highest" is the
   first of the member's steps as the website sends them (Holder before Farmer before Investor);
   the steps are one per ladder and carry no rank across ladders.
+- **K95 — The base components are released as proposed** (decided 2026-11-26, after the owner's
+  look at the review page; ends K78's hold). Buttons, fields, panels, chips, the disabled button
+  and the locked field as the page's "Kit (proposed)" column.
+- **K96 — Three header looks for every game** (decided 2026-11-26, Bingo Royale's wishes). The
+  account chip is filled with small bold text; the back link's row on a phone is only as high as
+  its words allow while its tap area stays 44 px (as K84, no breach of K29); signed out, "Sign
+  in" is the header's one primary button. They are the kit's look, not options.
 - **K97 — The owner role may create temporary tables** (2026-11-26). A migration may move rows
   through one; `PUBLIC` and the app role still get no `TEMPORARY`.
 - **K98 — The admin restore takes the secrets folder from the game's settings** (2026-11-26):

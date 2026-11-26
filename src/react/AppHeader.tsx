@@ -18,6 +18,8 @@
  *                 5. the development tools, rendered only when the game passes them (its lazily
  *                    loaded ./dev DevSignIn, behind its dev flag);
  *                 6. the theme toggle (./theme).
+ *                 The chip is filled and signed out "Sign in" is the one primary button; on a
+ *                 phone the back link's row is lower (../../css/header.css, header-account.css, K96).
  *                 When they would not fit on one row, the navigation and the account fold
  *                 into one menu button (./MenuFold, ./useHeaderFold; since v0.11.0, measured
  *                 before the paint; the step badges give way first, since v0.33.0; a game may also name a width under which it always folds, `foldBelow`,
@@ -101,7 +103,7 @@ function Account(p: Omit<AppHeaderProps, 'brand' | 'links' | 'navExtra' | 'close
     <div className="sk-header-account" data-testid="account">
       {account === null ? (
         <>
-          <a className={button} href={signIn.href} data-testid="sign-in">
+          <a className={`${button} sk-header-primary`} href={signIn.href} data-testid="sign-in">
             Sign in
           </a>
           {p.websiteMode || signIn.registerHref === undefined ? null : (

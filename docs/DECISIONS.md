@@ -482,3 +482,6 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K107 — A privacy data list is required for every game before production** (decided
   2026-11-26, item j). `docs/PRIVACY-DATA.md` in each game, from the kit's template, answered for
   every piece of personal data; the game's test holds it with `findPrivacyGaps`.
+- **K108 — Security scans for every project, reporting first** (decided 2026-11-26, item h). The
+  website included. The kit's reusable workflow runs them and does not block; blocking is one
+  input, turned on by a later decision.

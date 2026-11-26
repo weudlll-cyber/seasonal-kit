@@ -1,0 +1,30 @@
+# @file   .github/workflows/scan-test.yml
+# @brief  Proves ./scan.yml on the kit's own test image, when the scan or the image changes.
+#
+# Responsibility: calls the reusable scan as a project does, report-only, on .github/test-image/
+#                 and the kit's lockfile. A green run with its report in the artifact is the
+#                 proof; its findings are the test image's and block nothing.
+# Depends on:     .github/workflows/scan.yml, .github/test-image/
+# Source:         new in the kit.
+name: Scan test
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - .github/workflows/scan.yml
+      - .github/workflows/scan-test.yml
+      - .github/test-image/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    uses: ./.github/workflows/scan.yml
+    with:
+      image: sk-test-image:ci
+      dockerfile: .github/test-image/Dockerfile
+      context: .github/test-image
+      url: http://localhost:8080/

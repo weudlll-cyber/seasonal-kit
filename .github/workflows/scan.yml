@@ -1,0 +1,170 @@
+# @file   .github/workflows/scan.yml
+# @brief  The security scan every Seasonal project calls: Trivy over the built image and the
+#         lockfile, an OWASP ZAP baseline against the started app; it reports and does not block.
+#
+# Responsibility: a reusable workflow (`on: workflow_call`). In the caller's checkout it builds the
+#                 image (or pulls it, `build: false`), scans the image and the lockfile with Trivy
+#                 (HIGH and CRITICAL with a fix available), starts the app (`start`, default the
+#                 image on the runner's network) and runs ZAP's passive baseline against `url`.
+#                 Every report goes into one artifact and a job summary. With `blocking: false`,
+#                 the default, the run never fails: a finding, or a scan that could not run, is a
+#                 warning and a line of the summary (K108). With `blocking: true` either fails it.
+#                 It needs no secret and writes nothing but the artifact. Call it with
+#                 `uses: weudlll-cyber/seasonal-kit/.github/workflows/scan.yml@<tag>`
+#                 (docs/OPERATIONS.md "Security scans").
+# Depends on:     docker on the runner; the caller's Dockerfile and lockfile
+# Source:         seasonal-bingo-royale .github/workflows/ci.yml job `image` at d7d841e and
+#                 seasonal-mini-games' at ae8fe40 (the Trivy image, version and flags); the ZAP
+#                 baseline as both ran it by hand (Mini Games docs/security-pass.md, ZAP 2.17.0).
+name: Security scan
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: The image's name; built here, or pulled where build is false.
+        required: true
+        type: string
+      build:
+        description: Build the image from the caller's checkout.
+        default: true
+        type: boolean
+      dockerfile:
+        default: Dockerfile
+        type: string
+      context:
+        default: .
+        type: string
+      lockfile:
+        description: The lockfile Trivy reads, from the repository's root.
+        default: pnpm-lock.yaml
+        type: string
+      start:
+        description: The command that starts the app for ZAP; empty runs the image on the runner's network.
+        default: ''
+        type: string
+      url:
+        description: Where the started app answers; ZAP begins there.
+        default: http://localhost:3000/
+        type: string
+      blocking:
+        description: Fail the run on findings or a scan that could not run. Off, it only reports.
+        default: false
+        type: boolean
+      report-name:
+        description: The artifact's name, for a caller that scans more than one image.
+        default: security-scan
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  TRIVY_IMAGE: ghcr.io/aquasecurity/trivy:0.76.0@sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222
+  ZAP_IMAGE: zaproxy/zap-stable:2.17.0@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # The inputs reach the scripts as variables only, never as text inside a command.
+    env:
+      IMAGE: ${{ inputs.image }}
+      DOCKERFILE: ${{ inputs.dockerfile }}
+      CONTEXT: ${{ inputs.context }}
+      LOCKFILE: ${{ inputs.lockfile }}
+      START: ${{ inputs.start }}
+      URL: ${{ inputs.url }}
+      BLOCKING: ${{ inputs.blocking }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Each step notes how it ended in $REPORT/results and ends well; the last step judges.
+      - name: Report folder
+        run: |
+          report="$RUNNER_TEMP/security-scan"
+          mkdir -p "$report/zap"
+          # ZAP's container writes as its own user.
+          chmod 0777 "$report/zap"
+          echo "REPORT=$report" >>"$GITHUB_ENV"
+      - name: The image
+        env:
+          BUILD: ${{ inputs.build }}
+        run: |
+          if [ "$BUILD" = true ]; then
+            docker build -f "$DOCKERFILE" -t "$IMAGE" "$CONTEXT" && result=ok || result=failed
+          else
+            docker pull "$IMAGE" && result=ok || result=failed
+          fi
+          echo "image $result" >>"$REPORT/results"
+      # Trivy's own exit code 3 means findings; any other failure means it did not run.
+      - name: Trivy, the image
+        run: |
+          status=0
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock "$TRIVY_IMAGE" image \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 3 --no-progress "$IMAGE" \
+            >"$REPORT/trivy-image.txt" || status=$?
+          case $status in 0) result=clean ;; 3) result=findings ;; *) result=failed ;; esac
+          echo "trivy-image $result" >>"$REPORT/results"
+      - name: Trivy, the lockfile
+        run: |
+          status=0
+          docker run --rm -v "$PWD:/src:ro" "$TRIVY_IMAGE" fs \
+            --severity HIGH,CRITICAL --ignore-unfixed --exit-code 3 --no-progress "/src/$LOCKFILE" \
+            >"$REPORT/trivy-lockfile.txt" || status=$?
+          # A path that is no file would be "clean" by scanning nothing.
+          [ -f "$LOCKFILE" ] || status=1
+          case $status in 0) result=clean ;; 3) result=findings ;; *) result=failed ;; esac
+          echo "trivy-lockfile $result" >>"$REPORT/results"
+      - name: Start the app
+        run: |
+          if [ -n "$START" ]; then
+            bash -c "$START" || true
+          else
+            docker run -d --name sk-scan-app --network host "$IMAGE" || true
+          fi
+          # Up to two minutes for the first answer, whatever its status.
+          for _ in $(seq 1 60); do
+            curl -s -o /dev/null --max-time 5 "$URL" && exit 0
+            sleep 2
+          done
+          echo "::warning::the app did not answer at the scan's address"
+      # ZAP: 0 clean, 1 or 2 findings (failures or warnings), anything else did not run.
+      - name: ZAP baseline
+        run: |
+          status=0
+          docker run --rm --network host -v "$REPORT/zap:/zap/wrk:rw" "$ZAP_IMAGE" \
+            zap-baseline.py -t "$URL" -r zap.html -J zap.json -w zap.md || status=$?
+          case $status in 0) result=clean ;; 1 | 2) result=findings ;; *) result=failed ;; esac
+          echo "zap $result" >>"$REPORT/results"
+      - name: Summary
+        run: |
+          {
+            echo "## Security scan of \`$IMAGE\`"
+            echo
+            echo '| Scan | Result |'
+            echo '| --- | --- |'
+            while read -r scan result; do echo "| $scan | $result |"; done <"$REPORT/results"
+            for file in trivy-image.txt trivy-lockfile.txt zap/zap.md; do
+              [ -s "$REPORT/$file" ] || continue
+              printf '\n<details><summary>%s</summary>\n\n```\n' "$file"
+              head -c 60000 "$REPORT/$file"
+              printf '\n```\n\n</details>\n'
+            done
+          } >>"$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ inputs.report-name }}
+          path: ${{ env.REPORT }}
+      - name: Verdict
+        run: |
+          bad=$(grep -Ev ' (ok|clean)$' "$REPORT/results" || true)
+          [ -n "$bad" ] || exit 0
+          printf '%s\n' "$bad" | while read -r scan result; do
+            echo "::warning::security scan: $scan $result (see the job summary)"
+          done
+          if [ "$BLOCKING" = true ]; then exit 1; fi
+      - name: Stop the app
+        if: always()
+        run: docker rm -f sk-scan-app >/dev/null 2>&1 || true

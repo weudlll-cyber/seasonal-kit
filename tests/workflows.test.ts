@@ -7,8 +7,10 @@
  * Responsibility: reads the workflow files and the local actions' action.yml under .github as text:
  *                 - a top-level `permissions:` block, and no job asking for `write` beyond
  *                   `security-events` (CodeQL's results);
- *                 - `timeout-minutes` on every job, so a hung step cannot hold a runner for the
- *                   default six hours;
+ *                 - `timeout-minutes` on every job that runs steps, so a hung step cannot hold a
+ *                   runner for the default six hours;
+ *                 - the reusable scan (./scan.yml) blocks nothing unless its caller says so
+ *                   (K108);
  *                 - every `uses:` is a local action or `owner/name@<40 hex>`;
  *                 - no `${{ … }}` expression of the event, a branch name, or a title inside a
  *                   `run:` block (an injection route); `concurrency` may use them.
@@ -46,7 +48,8 @@ describe.each(workflows)('workflow %s', (file) => {
   it('gives every job a time limit', () => {
     const jobs = jobsOf(text);
     expect(jobs.length).toBeGreaterThan(0);
-    for (const [name, body] of jobs)
+    // A job that calls a reusable workflow cannot name one: the called jobs carry theirs.
+    for (const [name, body] of jobs.filter(([, b]) => !/^ {4}uses: /m.test(b)))
       expect(body, `job ${name}`).toMatch(/^\s+timeout-minutes: \d+/m);
   });
 });
@@ -81,4 +84,16 @@ describe('every action', () => {
       expect(bad).toEqual([]);
     },
   );
+});
+
+describe('the reusable scan (K108)', () => {
+  const scan = read('workflows/scan.yml');
+
+  it('is called by other projects, and by default only reports', () => {
+    expect(scan).toMatch(/^on:\s*\n {2}workflow_call:/m);
+    expect(scan).toMatch(/^ {6}blocking:\n(?: {8}.*\n)*? {8}default: false/m);
+    expect(scan).toContain('if [ "$BLOCKING" = true ]; then exit 1; fi');
+    // Only the verdict may fail the run: every scan notes its result instead.
+    expect(scan.match(/\bexit 1\b/g)).toHaveLength(1);
+  });
 });

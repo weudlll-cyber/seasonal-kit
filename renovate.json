@@ -32,8 +32,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "The scanner images in ci.yml's env: (`*_IMAGE: <image>:<tag>@sha256:<digest>`), which no built-in manager reads (audit 2026-11-22, B6 info; tests/renovate.test.ts).",
-      "managerFilePatterns": ["/^\\.github/workflows/ci\\.yml$/"],
+      "description": "The scanner images in the workflows' env: (`*_IMAGE: <image>:<tag>@sha256:<digest>`), which no built-in manager reads (audit 2026-11-22, B6 info; tests/renovate.test.ts).",
+      "managerFilePatterns": ["/^\\.github/workflows/[\\w-]+\\.yml$/"],
       "matchStrings": [
         "[A-Z_]+_IMAGE: (?<depName>[^\\s:@]+):(?<currentValue>[^\\s@]+)@(?<currentDigest>sha256:[a-f0-9]{64})"
       ],

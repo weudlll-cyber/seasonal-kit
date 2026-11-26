@@ -11,6 +11,8 @@ Shared parts for the way to production, and three Seasonal Cases findings.
 
 ### Added
 
+- **Security scans** (K108): `.github/workflows/scan.yml`, a reusable workflow: Trivy over the
+  image and the lockfile, a ZAP baseline against the started app; report-only unless `blocking`.
 - **Privacy data list** (K107): the template `docs/templates/PRIVACY-DATA.md` and
   `findPrivacyGaps` in `@seasonal/kit/testing`, which names every unanswered column.
 

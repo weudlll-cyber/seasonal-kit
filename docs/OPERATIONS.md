@@ -345,3 +345,40 @@ migration step again (`up -d` where a migrate service runs first, not `start`), 
 | `SK_DB_SCHEMA`         | optional   | The game's schema, default the prefix.                              |
 | `SK_DB_OWNER_PASSWORD` | yes        | 16 to 128 letters, digits, `-` or `_`; sent on standard input only. |
 | `SK_DB_APP_PASSWORD`   | yes        | The same.                                                           |
+
+## Security scans (since v0.35.0, K108)
+
+Every project calls the kit's reusable workflow instead of its own scan jobs. It builds the image
+from the caller's checkout, runs Trivy over the image and the lockfile (HIGH and CRITICAL with a
+fix available), starts the app and runs a ZAP baseline against it. It reports into a job summary
+and one artifact and never fails the run; `blocking: true`, a later decision, makes findings and a
+scan that could not run fail it.
+
+```yaml
+jobs:
+  scan:
+    uses: weudlll-cyber/seasonal-kit/.github/workflows/scan.yml@v0.35.0
+    permissions:
+      contents: read
+    with:
+      image: game-app:ci
+      # An app that needs its database: its own command, then where it answers.
+      start: docker compose -f ops/compose.ci.yml up -d
+      url: http://localhost:3000/games/game/
+```
+
+| Input         | Default                  | Meaning                                                         |
+| ------------- | ------------------------ | --------------------------------------------------------------- |
+| `image`       | required                 | The image's name.                                               |
+| `build`       | `true`                   | Build it from the checkout; `false` pulls it.                   |
+| `dockerfile`  | `Dockerfile`             |                                                                 |
+| `context`     | `.`                      |                                                                 |
+| `lockfile`    | `pnpm-lock.yaml`         | The lockfile Trivy reads (`package-lock.json` for the website). |
+| `start`       | runs the image           | The command that starts the app, on the runner's network.       |
+| `url`         | `http://localhost:3000/` | Where ZAP begins.                                               |
+| `blocking`    | `false`                  | Fail the run on findings or a scan that did not run.            |
+| `report-name` | `security-scan`          | The artifact's name, for more than one call.                    |
+
+The default `start` runs the image on the runner's network with no settings; an app that needs
+settings or a database passes `start`. Settings in that command are made up for the run: no real
+secret goes into a scan.

@@ -110,11 +110,14 @@ jobs:
       - name: Trivy, the lockfile
         run: |
           status=0
-          docker run --rm -v "$PWD:/src:ro" "$TRIVY_IMAGE" fs \
+          # Development dependencies too: the shipped ones are in the image's scan already.
+          docker run --rm -v "$PWD:/src:ro" "$TRIVY_IMAGE" fs --scanners vuln --include-dev-deps \
             --severity HIGH,CRITICAL --ignore-unfixed --exit-code 3 --no-progress "/src/$LOCKFILE" \
             >"$REPORT/trivy-lockfile.txt" || status=$?
-          # A path that is no file would be "clean" by scanning nothing.
-          [ -f "$LOCKFILE" ] || status=1
+          # A path that is no lockfile Trivy knows would be "clean" by scanning nothing.
+          if [ "$status" = 0 ] && ! grep -qF "$(basename "$LOCKFILE")" "$REPORT/trivy-lockfile.txt"; then
+            status=1
+          fi
           case $status in 0) result=clean ;; 3) result=findings ;; *) result=failed ;; esac
           echo "trivy-lockfile $result" >>"$REPORT/results"
       - name: Start the app

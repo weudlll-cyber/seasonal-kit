@@ -101,7 +101,8 @@ the transitions off.
 
 `pnpm showcase`, then <http://localhost:5173/components/> (`?theme=light` or `?theme=dark`, or the
 toggle): the kit's `components.css` beside Bingo Royale's, Mini Games' and Seasonal Cases' rules
-as they are today. [`showcase/components.spec.ts`](../showcase/components.spec.ts) checks the kit's
+as they are today, and under them three questions about the app header (Bingo Royale's wishes of
+2026-11-26: text only, nothing built). [`showcase/components.spec.ts`](../showcase/components.spec.ts) checks the kit's
 column (44 px controls, axe) and saves one picture per theme to `showcase/screens/`.
 
 CI runs it on every pull request and on master (job `showcase`, `.github/workflows/ci.yml`).

@@ -31,7 +31,14 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
 - **28. Base components: the owner's look review** (2026-11-26, K78). `components.css` and the page
   that shows it beside the three games' looks are built on `feat/base-components`, not merged. Open
   question: a field's input takes its label's strong weight, as in Mini Games and Bingo. Done when:
-  the owner approves the look, and a release with a game that uses it carries it.
+  the owner approves the look, and a release with a game that uses it carries it. The same page
+  asks about three header wishes of Bingo Royale (2026-11-26): an account chip variant, a compact
+  back link, a primary sign-in button.
+- **49. Shared ops parts for every game** (owner, 2026-11-26): install, operate and secure alike.
+  Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Items a to e are
+  released: the admin command with uninstall (v0.29.0), the host baseline (v0.30.0), the container
+  hardening check (v0.31.0) and the database roles (v0.32.0). Items f to k wait for the owner's word.
+  Done when: f to k are decided.
 
 ## Part two — closed
 
@@ -104,7 +111,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   measures again in the real game and reports back; a new item then. Closed by PR #39 and v0.15.0
   without a change.
 - **20. A merged single-card `ResultFrame` option** (the concept's point 4, Bingo, 2026-11-24).
-  Decided no, K47: Bingo shows its result like the other games and drops its own `results.css`
+  Decided no, K47 (replaced by K93, 2026-11-26: the frame has a `dense` variant). Bingo drops its own `results.css`
   overrides at its next kit adoption. Nothing to build.
 - **21. The start card fits again after web fonts load** (Mini Games T404 and T423, decided
   2026-11-24, K48). `StartCard`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to
@@ -184,3 +191,14 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Closed in v0.28.0 (`AppHeader`, `showcase/steps.spec.ts`).
 - **48. The docs let an installer copy `ops/backup.sh` alone** (Seasonal Cases, 2026-11-25): it
   loads `ops/lib/`. Closed in v0.28.0 (OPERATIONS.md, ADOPTION.md).
+- **50. A restore refused a differing secret only after replacing the database** (Bingo Royale,
+  2026-11-26). Closed in v0.33.0 (`ops/lib/backup-restore.sh`, `ops/test/backup.test.sh`, K91).
+- **51. The failure brake read its rule once and let parallel guesses through** (Bingo Royale,
+  2026-11-26). Closed in v0.33.0 (`failureBrake.ts` and its test, K92).
+- **52. The result frame showed fewer places than Bingo's panel and clipped descenders** (Bingo
+  Royale, 2026-11-26). Closed in v0.33.0 (`dense`, K93; the headline's line height;
+  `showcase/looks.spec.ts`).
+- **53. A full header folded for its badges, the folded toggle left the Menu's row and the chat
+  bar's text did not grow** (Bingo Royale, 2026-11-26). Closed in v0.33.0 (K94,
+  `showcase/looks.spec.ts`, `showcase/cases.spec.ts`).
+- **54. ADOPTION.md's Bingo section was behind Bingo's master** (2026-11-26). Closed in v0.33.0.

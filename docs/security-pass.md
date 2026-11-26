@@ -63,6 +63,77 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.33.0 (branch `fix/bingo-findings`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+**Read by the session that wrote it.** The restore: the secret files are compared before the app
+is stopped and copied after the database and volumes; a file changed between the two would be
+overwritten, a window that needs write access to the secrets folder during a restore. The brake:
+a key holds at most `limit` slots, attempts under way included, and the map's bound counts those
+keys too; an attempt that is never ended ages out with the window, so a route's lost call cannot
+brake a key for longer. A sign-in that does not call `reserve` still lets parallel guesses
+through (CHANGELOG, migration). A restore without `--secrets-to` still only names the secrets.
+
+### 2026-11-26 — before v0.32.0 (branch `feat/ops-db-roles`)
+
+| Scan                         | Tool and command                                           | Result                                                                              |
+| ---------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                                                           |
+| Dependencies                 | osv-scanner (CI)                                           | `pg` and `@types/pg` 8.23.1 added, development only (the test); no runtime package. |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge.                                          |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).                                               |
+
+**Read by the session that wrote it** (SQL built from settings): names and passwords are checked
+against plain forms before they enter any statement; the passwords travel on standard input only
+and are never printed. Proven on a real PostgreSQL 17.
+
+### 2026-11-26 — before v0.31.0 (branch `feat/ops-hardening`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+Test code only: it reads an object and runs nothing. The database's capabilities were measured in
+throw-away containers (a fresh volume: first start and restart); an upgrade over existing data was
+not measured.
+
+### 2026-11-26 — before v0.30.0 (branch `feat/ops-host-baseline`)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+**Read by the session that wrote it** (it changes a server): SSH ports come from `sshd -T`, never
+assumed, and are allowed before the firewall is on; the SSH configuration is only read; nothing is
+removed or upgraded. Proven with stand-ins only: a rehearsal on a real Ubuntu 24.04 server is each
+game's adoption.
+
+### 2026-11-26 — before v0.29.0 (branch `feat/ops-admin`, PR #76)
+
+| Scan                         | Tool and command                                           | Result                                     |
+| ---------------------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                           | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge. |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).      |
+
+**Read by the session that wrote it** (it removes data): the environment name is a plain word before
+it becomes part of a path; the game's folders must be two names deep; uninstall asks for the name,
+refuses unknown options and keeps the backups unless asked; every `rm -rf` has a guarded variable.
+Proven with stand-ins; a rehearsal on a real server is each game's adoption.
+
 ### 2026-11-26 — before v0.28.0 (branch `feat/checks-icons-link-operator`, PR #74)
 
 | Scan                         | Tool and command                                                                                  | Result                                              |

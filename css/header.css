@@ -9,10 +9,13 @@
  *                   account (chip and buttons), and last the theme toggle (./shell.css). The
  *                   order shown is the DOM's, so the tab order matches it (since v0.10.0);
  *                 - sticky from 640 px, with the focus kept below it;
+ *                 - before it folds, the account's step badges give way (`data-sk-steps` all,
+ *                   one, none; since v0.33.0), still read out;
  *                 - folded (`data-sk-folded`, set before the paint when the items would take a
  *                   second row, src/react/useHeaderFold.ts; since v0.11.0, before it below
  *                   960 px) one row (brand, Menu, toggle), the navigation and the account in an
- *                   opaque panel under it (src/react/MenuFold.tsx);
+ *                   opaque panel under it (src/react/MenuFold.tsx); Menu and toggle wrap
+ *                   together (since v0.33.0);
  *                 - on a phone (≤ 640 px) the back link its own short first row (its words may
  *                   wrap, since v0.22.0), the wordmark hidden, the account chip whole; the folded
  *                   brand keeps its longest word, and the Menu and the toggle take a row of their
@@ -27,6 +30,8 @@
 
 /* The account chip's step badges, shared with every list of names (since v0.24.0). */
 @import './steps.css';
+/* The development sign-in menu's look. */
+@import './header-dev.css';
 
 .sk-header {
   position: relative;
@@ -180,33 +185,6 @@
   }
 }
 
-/* The development sign-in menu, when the game passes it. */
-.sk-dev-menu {
-  position: relative;
-}
-
-.sk-dev-menu-panel {
-  position: absolute;
-  top: calc(100% + 0.4rem);
-  right: 0;
-  z-index: 20;
-  display: grid;
-  gap: var(--sk-space-1);
-  box-sizing: border-box;
-  width: min(18rem, calc(100vw - 2 * var(--sk-gutter)));
-  padding: var(--sk-space-2);
-  border: 1px solid var(--sk-color-border);
-  border-radius: var(--sk-radius-card);
-  background: var(--sk-color-surface);
-  box-shadow: var(--sk-shadow-raised);
-}
-
-.sk-dev-menu-hint {
-  margin: 0;
-  color: var(--sk-color-text-muted);
-  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
-}
-
 /* The fold: on a wide screen no button and no box of its own. The button also is an
    `sk-bar-button` (./bar.css, `display: inline-flex`), so this rule names the header too: the
    order a game imports the two files in then makes no difference (since v0.27.0). */
@@ -214,6 +192,7 @@
   display: none;
 }
 
+.sk-header-controls,
 .sk-menu {
   display: contents;
 }
@@ -229,6 +208,15 @@
 .sk-header[data-sk-folded='true'] .sk-header-brand {
   flex: 1 1 0;
   min-width: min-content;
+}
+
+/* Folded, Menu and toggle are one group: where they do not fit beside the brand, they take the
+   next row together (since v0.33.0). */
+.sk-header[data-sk-folded='true'] .sk-header-controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--sk-space-2);
 }
 
 .sk-header[data-sk-folded='true'] .sk-menu-button {
@@ -273,17 +261,6 @@
   flex-wrap: wrap;
   white-space: normal;
   overflow-wrap: anywhere;
-}
-
-/* Inside the scrolling panel the dev menu opens in the flow, not over it (it would be cut). */
-.sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu-panel {
-  position: static;
-  width: 100%;
-  margin-top: var(--sk-space-1);
-}
-
-.sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu {
-  flex-basis: 100%;
 }
 
 /* A phone: the wordmark gone, the chip whole (the back link's own row is ./shell.css's). */

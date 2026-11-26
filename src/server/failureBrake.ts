@@ -5,14 +5,21 @@
  *
  * Responsibility: `FailureBrake`: `braked(key)` looks without counting, so a route can refuse
  *                 before the password check; `failed(key)` counts one failure once the password
- *                 was wrong. A success is not counted and nothing resets on one: there is no
- *                 call for it. A key holds at most `limit` failure times, each forgotten
- *                 `windowMs` after it happened, so the (limit + 1)th try inside the window is
- *                 refused before its password is checked and the brake lifts as the oldest
- *                 failure ages out. The rate limiter (./rateLimit) takes on every call and
- *                 cannot look first; this brake counts only failures. It takes the limiter's
- *                 rule (`RateRule`, read once into a copy, a whole limit ≥ 1 over a whole window
- *                 of 1 ms or more) and its conventions:
+ *                 was wrong. A success is not counted and no failure is ever reset. Guesses sent
+ *                 together would all pass `braked` before the first is counted, so a route calls
+ *                 `reserve(key)` instead (since v0.33.0): null while the key is braked, else one
+ *                 attempt holding a slot, which the route ends with `failed()` (the slot becomes
+ *                 a failure) or `passed()` (the slot is free again); only the first of the two
+ *                 counts. A key holds at most `limit` slots, failures and attempts under way
+ *                 together, each forgotten `windowMs` after it happened (an attempt that is never
+ *                 ended too), so the (limit + 1)th try inside the window is refused before its
+ *                 password is checked and the brake lifts as the oldest slot ages out. The rate
+ *                 limiter (./rateLimit) takes on every call and cannot look first; this brake
+ *                 counts only failures. It takes the limiter's rule and its conventions:
+ *                 - the rule (`RateRule`, a whole limit ≥ 1 over a whole window of 1 ms or more,
+ *                   a fixed one read once into a copy) may be a function that gives it, read on
+ *                   every check, so a limit an admin changes applies at once (since v0.33.0); a
+ *                   broken rule it gives later keeps the last valid one;
  *                 - keys are held as given, so a game passes short, normalised keys (an account
  *                   id, an IPv6 /64 range; never a raw login name before sign-in), and the
  *                   rules and the keys themselves stay in each game;
@@ -29,83 +36,127 @@
  * Source:         seasonal-cases apps/server/src/auth/failureBrake.ts at 073f9ad (`FailureBrake`,
  *                 D51; its `SignInBrake` rules and keys, D55, stay in the game), with the bound
  *                 made the limiter's (Cases evicted the oldest key to make room, which lets a
- *                 flood of new keys lift an old key's brake). Reused: `ruleOf` and `RateRule` of
- *                 ./rateLimit.
- * Spec:           Seasonal Cases docs/BACKLOG.md 49; kit DECISIONS K46
+ *                 flood of new keys lift an old key's brake); the live rule and the attempts under
+ *                 way from seasonal-bingo-royale apps/server/src/auth/loginBrake.ts at 712080c
+ *                 (feat/kit-0.22). Reused: `ruleReader` and `RateRuleSource` of ./rateLimit.
+ * Spec:           Seasonal Cases docs/BACKLOG.md 49; kit DECISIONS K46, K92
  */
-import { ruleOf, type RateRule } from './rateLimit.js';
+import { ruleReader, type RateRule, type RateRuleSource } from './rateLimit.js';
 
 // How many keys a brake holds at most by default, as the rate limiter's.
 const MAX_KEYS = 100_000;
 
 const RULE_ERROR = 'A failure rule needs a whole limit ≥ 1 and a whole window of 1 ms or more';
 
+// One attempt let through by `reserve`: end it with one of the two; the first call counts.
+export interface Attempt {
+  failed(): void;
+  passed(): void;
+}
+
+// A failure, or an attempt under way: one of a key's `limit` places in the window.
+interface Slot {
+  readonly at: number;
+}
+
 export class FailureBrake {
-  private readonly failures = new Map<string, number[]>();
-  private readonly rule: RateRule;
+  private readonly slots = new Map<string, Slot[]>();
+  private readonly rule: () => RateRule;
   private count = 0;
   // When a full map was last scanned for idle keys (the limiter's throttle).
   private fullScannedAt = Number.NEGATIVE_INFINITY;
 
   constructor(
-    rule: RateRule,
+    rule: RateRuleSource,
     private readonly now: () => number = Date.now,
     private readonly maxKeys = MAX_KEYS,
   ) {
-    const copy = ruleOf(rule);
-    if (copy === null || !Number.isSafeInteger(maxKeys) || maxKeys < 1) {
-      throw new RangeError(RULE_ERROR);
-    }
-    this.rule = copy;
+    this.rule = ruleReader(rule, RULE_ERROR);
+    if (!Number.isSafeInteger(maxKeys) || maxKeys < 1) throw new RangeError(RULE_ERROR);
   }
 
-  // The key's failures still inside the window, oldest first; the key goes when none is left.
-  // A time in the future (a clock that went back) is still inside the window.
-  private recent(key: string, at: number): number[] {
-    const times = (this.failures.get(key) ?? []).filter((t) => at - t < this.rule.windowMs);
-    if (times.length === 0) this.failures.delete(key);
-    else this.failures.set(key, times);
-    return times;
+  // Keeps a key's slots; the key goes when none is left.
+  private hold(key: string, slots: Slot[]): void {
+    if (slots.length === 0) this.slots.delete(key);
+    else this.slots.set(key, slots);
   }
 
-  private forgetIdle(at: number): void {
-    for (const key of [...this.failures.keys()]) this.recent(key, at);
+  // The key's slots still inside the window, oldest first. A time in the future (a clock that
+  // went back) is still inside the window.
+  private recent(key: string, at: number, rule: RateRule): Slot[] {
+    const inside = (this.slots.get(key) ?? []).filter((slot) => at - slot.at < rule.windowMs);
+    this.hold(key, inside);
+    return inside;
   }
 
-  // Whether a key without a count can be taken in: there is room, or a scan (at most once a tenth
+  private forgetIdle(at: number, rule: RateRule): void {
+    for (const key of [...this.slots.keys()]) this.recent(key, at, rule);
+  }
+
+  // Whether a key without a slot can be taken in: there is room, or a scan (at most once a tenth
   // of the window) made some. Full of active keys, it cannot, and never replaces another key.
-  private hasRoom(at: number): boolean {
-    if (this.failures.size < this.maxKeys) return true;
-    if (at - this.fullScannedAt >= this.rule.windowMs / 10) {
+  private hasRoom(at: number, rule: RateRule): boolean {
+    if (this.slots.size < this.maxKeys) return true;
+    if (at - this.fullScannedAt >= rule.windowMs / 10) {
       this.fullScannedAt = at;
-      this.forgetIdle(at);
+      this.forgetIdle(at, rule);
     }
-    return this.failures.size < this.maxKeys;
+    return this.slots.size < this.maxKeys;
   }
 
-  /** True while the key has `limit` failures inside the window: refuse before checking. */
+  private full(key: string, at: number, rule: RateRule): boolean {
+    if (this.recent(key, at, rule).length >= rule.limit) return true;
+    // A key with no slot and no room is refused, as the limiter refuses a newcomer.
+    return !this.slots.has(key) && !this.hasRoom(at, rule);
+  }
+
+  /** True while `limit` failures or attempts are inside the window: refuse before checking. */
   braked(key: string): boolean {
     const at = this.now();
-    if (!Number.isFinite(at)) return true;
-    if (this.recent(key, at).length >= this.rule.limit) return true;
-    // A key with no count and no room is refused, as the limiter refuses a newcomer.
-    return !this.failures.has(key) && !this.hasRoom(at);
+    const rule = this.rule();
+    return !Number.isFinite(at) || this.full(key, at, rule);
+  }
+
+  /** One attempt for the key, holding a slot until it is ended; null while the key is braked. */
+  reserve(key: string): Attempt | null {
+    const at = this.now();
+    const rule = this.rule();
+    if (!Number.isFinite(at) || this.full(key, at, rule)) return null;
+    const slot: Slot = { at };
+    this.hold(key, [...this.recent(key, at, rule), slot]);
+    let open = true;
+    const end = (wrong: boolean): void => {
+      if (!open) return;
+      open = false;
+      const others = (this.slots.get(key) ?? []).filter((held) => held !== slot);
+      this.hold(key, others);
+      if (wrong) this.failed(key);
+    };
+    return {
+      failed: () => {
+        end(true);
+      },
+      passed: () => {
+        end(false);
+      },
+    };
   }
 
   /** Counts one failed sign-in for the key (a success is never counted). */
   failed(key: string): void {
     const at = this.now();
     if (!Number.isFinite(at)) return;
+    const rule = this.rule();
     // Every 1000 failures, forget keys idle for a whole window.
-    if ((this.count += 1) % 1000 === 0) this.forgetIdle(at);
-    const times = this.recent(key, at);
-    if (!this.failures.has(key) && !this.hasRoom(at)) return;
+    if ((this.count += 1) % 1000 === 0) this.forgetIdle(at, rule);
+    const inside = this.recent(key, at, rule);
+    if (!this.slots.has(key) && !this.hasRoom(at, rule)) return;
     // Only the newest `limit` matter for the brake; older ones are dropped.
-    this.failures.set(key, [...times, at].slice(-this.rule.limit));
+    this.hold(key, [...inside, { at }].slice(-rule.limit));
   }
 
   // How many keys are held (tests watch the forgetting).
   get size(): number {
-    return this.failures.size;
+    return this.slots.size;
   }
 }

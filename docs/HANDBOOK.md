@@ -197,7 +197,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   `foldBelow` px (K40, `header.css`). The theme toggle is always
   last in the row; there is no configurable order (K43). `account.steps` draws the member's
   website step badges as small icons in the chip, only for the website's own icon addresses
-  (K56).
+  (K56); where the bar is too full, the badges give way (the first only, then none) before it
+  folds (K94).
 - **Game bar:** `GameBar` with `usePanels`, `useFullscreen`, `useFocusMode`, its toggles
   (`bar.css`); `back` puts the back link first (K39); the `prefs` icon; `presses` for a button
   that only sends a press (`applaud`); a panel button may name its panel with `controls`
@@ -217,12 +218,14 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   (K41).
 - **Result frame and start card:** `ResultFrame` (a page, or a `panel`) and `StartCard`
   (`frames.css`). With no `reveal` the frame has no reveal box and one column; an optional
-  `middle` card sits between the first part and "more" (K42). There is no merged single-card
-  option: every game shows its result the same way, and Bingo drops its own overrides (K47).
+  `middle` card sits between the first part and "more" (K42). `dense` makes it one card with the
+  headline on one row, for a low screen (K93); a game still overrides none of the frame's
+  classes.
 - **Sign-in:** the website sign-in in the client (`websiteSignInHref`, `signInAgain`) and on the
   server (`websiteSignInCheck`, `safeNext`, TOTP, recovery codes, `SessionEnds`).
-- **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); the
-  rules and keys stay in the game.
+- **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); a
+  route that can be tried in parallel takes `reserve(key)` and ends the attempt (K92); the rules
+  and keys stay in the game.
 - **Rate limiter:** `RateLimiter` with the game's own rules, for the routes other than sign-in.
 - **Website stand-in:** `startWebsiteStandIn` of the testing entry for the browser tests of sign-in,
   chat and call in website mode (K74); no game writes its own half of the website's contract.
@@ -233,6 +236,17 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Backups:** `ops/backup.sh` (backup, restore, drill, the nightly timer's units) and the pull scripts,
   shipped in the package and set by `SK_BACKUP_*` variables (K61, [OPERATIONS.md](OPERATIONS.md)); the
   game wires them and keeps its own compose files and key checks.
+- **Database roles** (K90): the app connects as a role that only reads and writes rows
+  (`ops/lib/db-roles.sh`, `grantAppRole` after every migration); only the migration step connects as
+  the owner ([OPERATIONS.md](OPERATIONS.md)).
+- **Container hardening** (K89): `read_only`, `no-new-privileges` and `cap_drop: ALL` on the app
+  and database ([OPERATIONS.md](OPERATIONS.md)), held by a game's test with `findWeakContainers`.
+- **The host baseline** (K88): a standalone install calls `sk_host_baseline standalone`
+  (`ops/lib/host-baseline.sh`): firewall, security updates, fail2ban; the operator guide describes
+  no manual steps for these.
+- **The admin command** (K87): the game's command sources `ops/lib/admin.sh`, so `status`, `update`,
+  `confirm`, `rollback`, `backup`, `restore`, `logs` and `uninstall` mean the same in every game; the
+  game adds its own verbs ([OPERATIONS.md](OPERATIONS.md)).
 - **The operator's address** (K85): an installer takes it from `sk_operator_email`
   (`ops/lib/operator.sh`, [OPERATIONS.md](OPERATIONS.md)) and keeps no address of its own.
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.

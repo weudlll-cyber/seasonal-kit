@@ -5,6 +5,7 @@
  * Responsibility: the same set of controls four times: the kit's (`css/components.css`), Bingo
  *                 Royale's, Mini Games' and Seasonal Cases' (their rules copied into ./looks.css).
  *                 `?theme=light|dark` as the showcase's other pages; the header's toggle switches.
+ *                 Below them, three questions about the app header, as text only.
  *                 Never shipped.
  * Source:         new in the kit (K78).
  */
@@ -112,6 +113,43 @@ function Set(c: Classes): ReactElement {
   );
 }
 
+// Seasonal Bingo Royale's three header wishes of 2026-11-26: asked here, nothing is built.
+const QUESTIONS = [
+  {
+    ask: 'A chip variant for the account?',
+    look: 'The account chip filled with the second surface colour, with smaller, bolder text.',
+    games:
+      'Bingo Royale (it restyles the chip itself today). Mini Games shows the same header and would get the choice.',
+  },
+  {
+    ask: 'A compact back link?',
+    look: 'On a phone, the back link’s first row only as high as its words, so lower than the 44 px a finger target has today.',
+    games:
+      'Bingo Royale (it does this today, as an exception the owner allowed). Mini Games, Cases and Seasonal Party show the same link.',
+  },
+  {
+    ask: 'A primary sign-in button?',
+    look: 'Signed out, “Sign in” filled in the solid colour; “Register” as today.',
+    games:
+      'Bingo Royale (it does this today). Mini Games shows the same two buttons in the same header.',
+  },
+] as const;
+
+function Questions(): ReactElement {
+  return (
+    <section className="sk-panel" aria-labelledby="questions-title">
+      <h2 id="questions-title">Three questions about the header (nothing is built)</h2>
+      <ol>
+        {QUESTIONS.map((q) => (
+          <li key={q.ask}>
+            <strong>{q.ask}</strong> {q.look} Used by: {q.games}
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 const theme = new URLSearchParams(window.location.search).get('theme');
 if (theme === 'light' || theme === 'dark') storeTheme(theme);
 
@@ -128,6 +166,7 @@ if (root !== null) {
           <Set key={c.look} {...c} />
         ))}
       </div>
+      <Questions />
     </main>,
   );
 }

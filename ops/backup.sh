@@ -15,9 +15,9 @@
 #                   older ones the newest of each of 8 weeks;
 #                 - `restore <file>`: refuses a file of another prefix or environment (by name
 #                   and by its manifest) unless `--force-env`, refuses a secret that differs from
-#                   the one on disk unless `--force-env`, unpacks only the members it knows, and
-#                   replaces the database in ONE transaction, so the live data goes only when the
-#                   restore succeeded;
+#                   the one on disk unless `--force-env`, unpacks only the members it knows,
+#                   decides every refusal before anything is replaced, and replaces the database
+#                   in ONE transaction, so the live data goes only when the restore succeeded;
 #                 - `drill <file>`: restores the database into a throw-away PostgreSQL container
 #                   and compares, table by table, the rows it holds with the rows the dump
 #                   carries (read from the dump itself, not from a live database that has moved);

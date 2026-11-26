@@ -17,7 +17,10 @@
  *                 changes its width. The header carries the answer as `data-sk-folded`
  *                 (../../css/header.css). No fixed width: what fits is measured, so a short bar
  *                 stays unfolded on a tablet and a long one (an admin's, the back link in website
- *                 mode) folds at 1280 px. A render never reads the window: the first one is
+ *                 mode) folds at 1280 px. Before it folds, the account's step badges give way
+ *                 (since v0.33.0, `data-sk-steps`): all of them, then only the first, then none
+ *                 in the bar; the fold is the last resort, and the folded menu shows all. A
+ *                 render never reads the window: the first one is
  *                 unfolded and the layout effect decides before the paint.
  *                 A game may also pass `foldBelow` (since v0.13.0, Bingo's wish, K40): under that
  *                 window width the header is always folded, on top of the measure; from it up

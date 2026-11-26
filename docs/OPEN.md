@@ -9,3 +9,5 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 14\. Framing a host chat from another https origin (T412): deferred, decided 2026-11-23.
 - 28\. Base components: built on `feat/base-components` (draft PR), waiting for the owner's look
   review.
+- 49\. Shared ops parts: a to e released; f to k wait for the owner's word
+  ([concepts/shared-ops-parts.md](concepts/shared-ops-parts.md)).

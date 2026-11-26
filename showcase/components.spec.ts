@@ -19,7 +19,9 @@ for (const theme of THEMES) {
   test(`the base components beside the games' looks, ${theme}`, async ({ page }) => {
     await page.setViewportSize({ width: 1536, height: 768 });
     await page.goto(`/components/?theme=${theme}`);
-    await expect(page.getByRole('region')).toHaveCount(4);
+    // The four columns and the questions under them.
+    await expect(page.getByRole('region')).toHaveCount(5);
+    await expect(page.getByRole('listitem')).toHaveCount(3);
     const controls = page.locator('.look-kit :is(button, input, select)');
     for (const control of await controls.all()) {
       expect((await control.boundingBox())?.height).toBeGreaterThanOrEqual(44);

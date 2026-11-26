@@ -31,6 +31,8 @@ Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.
   only the first badge, then none, before the header folds. Hidden badges are still read out; the
   folded menu shows all.
 
+ADOPTION.md's Bingo section describes its master as it is.
+
 ### Migration, per game
 
 - **Bingo Royale:** passes its admin-set limits to `FailureBrake` as the function (`liveRule`),

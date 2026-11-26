@@ -197,7 +197,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   `foldBelow` px (K40, `header.css`). The theme toggle is always
   last in the row; there is no configurable order (K43). `account.steps` draws the member's
   website step badges as small icons in the chip, only for the website's own icon addresses
-  (K56).
+  (K56); where the bar is too full, the badges give way (the first only, then none) before it
+  folds (K94).
 - **Game bar:** `GameBar` with `usePanels`, `useFullscreen`, `useFocusMode`, its toggles
   (`bar.css`); `back` puts the back link first (K39); the `prefs` icon; `presses` for a button
   that only sends a press (`applaud`); a panel button may name its panel with `controls`
@@ -217,8 +218,9 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   (K41).
 - **Result frame and start card:** `ResultFrame` (a page, or a `panel`) and `StartCard`
   (`frames.css`). With no `reveal` the frame has no reveal box and one column; an optional
-  `middle` card sits between the first part and "more" (K42). There is no merged single-card
-  option: every game shows its result the same way, and Bingo drops its own overrides (K47).
+  `middle` card sits between the first part and "more" (K42). `dense` makes it one card with the
+  headline on one row, for a low screen (K93); a game still overrides none of the frame's
+  classes.
 - **Sign-in:** the website sign-in in the client (`websiteSignInHref`, `signInAgain`) and on the
   server (`websiteSignInCheck`, `safeNext`, TOTP, recovery codes, `SessionEnds`).
 - **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); a

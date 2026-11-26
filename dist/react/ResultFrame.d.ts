@@ -21,7 +21,9 @@
  *                 `panel` (since v0.11.0, Bingo R4) makes it a panel inside a screen (a replay,
  *                 a notice, a host console): its headline a heading of the game's level instead
  *                 of the page's h1, no one-screen first part, and names broken only at their
- *                 own break points, never inside (../../css/frames.css).
+ *                 own break points, never inside (../../css/frames.css). `dense` (since v0.33.0,
+ *                 Bingo) is one card of small padding, the headline on one row with its lines
+ *                 (../../css/frames-dense.css).
  * Source:         seasonal-mini-games apps/web/src/round/ResultScreen.tsx and result.css at
  *                 866df03 (the first part's grid; its proof, placings and standings stay in the
  *                 game); seasonal-bingo-royale apps/web/src/components/Podium.tsx and results.css
@@ -48,5 +50,6 @@ export interface ResultFrameProps {
     readonly panel?: {
         readonly level: 2 | 3 | 4 | 5 | 6;
     };
+    readonly dense?: boolean;
 }
 export declare function ResultFrame(p: ResultFrameProps): ReactElement;

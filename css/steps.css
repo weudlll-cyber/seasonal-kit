@@ -8,7 +8,8 @@
  *                 ones, so the size is chosen here: 1.25rem (20 px at the default size, growing
  *                 with the player's font), well inside a 44 px row. A game that needs another
  *                 size sets `--sk-step-icon` on an element around them. ./header.css brings this
- *                 file along; a game imports it for its lists.
+ *                 file along; a game imports it for its lists. In the header's unfolded bar the
+ *                 badges give way before it folds (`data-sk-steps`, since v0.33.0).
  * Source:         ./header.css (since v0.19.0), moved here with shared class names (v0.24.0, K68).
  */
 .sk-steps {
@@ -24,4 +25,19 @@
   width: var(--sk-step-icon, 1.25rem);
   height: var(--sk-step-icon, 1.25rem);
   object-fit: contain;
+}
+
+/* Before the bar folds, the step badges give way (src/react/useHeaderFold.ts, since v0.33.0):
+   only the first, then none. A hidden one is still read out, as part of the chip's name. */
+.sk-header[data-sk-steps='one'] .sk-header-step:not(:first-child),
+.sk-header[data-sk-steps='none'] .sk-header-step {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.sk-header[data-sk-steps='none'] .sk-header-steps {
+  margin: 0;
 }

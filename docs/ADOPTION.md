@@ -220,6 +220,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **Database roles** (K90): CHANGELOG "Migration, per game"; rehearse the conversion with a copy of existing data. Only on the owner's word.
 
+### Since v0.33.0
+
+- **v0.33.0** (CHANGELOG, "Migration, per game"): nothing needed. Check the folded header and, where it shows step badges, the unfolded one once. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
@@ -326,7 +330,7 @@ reachable on every phone.
 - **Login limits** (K46): at its next kit adoption its login limits move onto `FailureBrake`: the
   route asks `braked(key)` before the password check and calls `failed(key)` on a wrong one. Its
   rules and keys stay in the game; the kit's `RateLimiter` keeps the limits that count every call.
-- **The result** (K47): there is no merged single-card option. Bingo shows its result like the
+- **The result** (K47; since v0.33.0 K93 adds `dense`): Bingo shows its result like the
   other games, the first part and "more" as the kit lays them out, and at its next kit adoption
   drops its own `results.css` overrides of the kit's result classes (`display: contents` on the
   first part, head, places and "more", `display: none` on the reveal). With no reveal the frame
@@ -396,6 +400,13 @@ reachable on every phone.
 ### Since v0.32.0
 
 - **Database roles** (K90): CHANGELOG "Migration, per game"; rehearse the conversion with a copy of existing data. Only on the owner's word.
+
+### Since v0.33.0
+
+- **Failure brake** (K92): `auth/loginBrake.ts`'s `LoginBrake` goes: `FailureBrake` takes `liveRule(...)` as its rule, and `behindBrakes` takes `reserve(key)` for each key, ending each attempt with `failed()` or `passed()` (a refused key ends the ones already taken with `passed()`).
+- **Result** (K93): `dense` on the final placement; measure the places again at the six sizes.
+- **Header** (K94): its `.sk-header .sk-theme-toggle` and `.sk-menu-button` rules are descendant selectors and keep working; compare the folded bar and the bar at 1280 x 720.
+- **Restore** (K91): its seed-key check before the kit's functions may stay; the kit's own restore now refuses first too. Only on the owner's word.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
@@ -509,6 +520,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Database roles** (K90): CHANGELOG "Migration, per game"; rehearse the conversion with a copy of existing data. Only on the owner's word.
 
+### Since v0.33.0
+
+- **v0.33.0** (CHANGELOG, "Migration, per game"): nothing breaks. Its sign-in should take `FailureBrake.reserve` (K92), or parallel guesses keep passing `braked`. Its header may now give up badges instead of folding at 1536 px. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -565,6 +580,10 @@ adopts it.
 
 - **Sign-in failures** (K46): its failed sign-ins are braked with `FailureBrake` when it adopts
   the server entry; the rules and keys stay in the game.
+
+### Since v0.33.0
+
+- **v0.33.0:** nothing to do.
 
 ## What v0.12.0 answers
 

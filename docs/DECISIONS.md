@@ -446,3 +446,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   one of the key's `limit` places until it is ended, so parallel guesses stay within the limit, and
   the brake's rule may be a function read at each check (from Bingo Royale's `loginBrake`).
   `braked` and `failed` stay for a route that cannot be tried in parallel.
+- **K93 — `ResultFrame` has a dense variant** (decided 2026-11-26, reported by Bingo Royale's
+  planning). One card with small padding, the headline on one row with its lines. It replaces K47
+  ("no merged single-card option"); the frame without `dense` is unchanged but for the headline's
+  line height.
+- **K94 — The step badges give way before the header folds** (decided 2026-11-26, reported by Bingo
+  Royale's planning). Only the highest badge, then none in the bar, then the fold. "Highest" is the
+  first of the member's steps as the website sends them (Holder before Farmer before Investor);
+  the steps are one per ladder and carry no rank across ladders.

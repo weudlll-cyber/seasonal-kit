@@ -17,16 +17,30 @@ Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.
 - **`FailureBrake` and parallel guesses** (K92): `reserve(key)` returns an attempt holding one of
   the key's `limit` places, ended with `failed()` or `passed()`, or null while braked. Guesses sent
   together passed `braked` before the first failure was counted.
+- **Result headline:** the frame sets its line height (1.3), so a game's tighter heading no longer
+  has its descenders clipped by the two-line clamp.
+- **Folded header:** the Menu button and the theme toggle wrap together, as one group.
+- **Phone chat bar:** its text and unread count grow with the player's font size.
 
 ### Added
 
 - `FailureBrake` takes its rule as a function too, read at each check, as `RateLimiter` does.
+- **`ResultFrame` `dense`** (K93): one card, small padding, the headline on one row with its
+  lines.
+- **Step badges give way** (K94): where the header's items would take a second row, the chip shows
+  only the first badge, then none, before the header folds. Hidden badges are still read out; the
+  folded menu shows all.
 
 ### Migration, per game
 
 - **Bingo Royale:** passes its admin-set limits to `FailureBrake` as the function (`liveRule`),
   and `behindBrakes` uses `reserve`; the `LoginBrake` class goes, so `auth/loginBrake.ts` goes too
   once `behindBrakes` is moved or nothing else is left in it.
+- **The header's markup:** the Menu button, the panel and the theme toggle sit in
+  `.sk-header-controls`. A game's stylesheet that addresses them as direct children of
+  `.sk-header` writes a descendant selector; `header.css` also brings `header-dev.css` along.
+- **Bingo Royale:** `dense` on its final placement; it re-measures the places and the fold at
+  1280 x 720.
 - **The others:** nothing breaks. A sign-in that calls `braked` then `failed` still lets parallel
   guesses through until it calls `reserve` instead.
 

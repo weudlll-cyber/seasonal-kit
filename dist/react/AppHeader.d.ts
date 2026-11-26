@@ -20,7 +20,7 @@
  *                 6. the theme toggle (./theme).
  *                 When they would not fit on one row, the navigation and the account fold
  *                 into one menu button (./MenuFold, ./useHeaderFold; since v0.11.0, measured
- *                 before the paint; a game may also name a width under which it always folds, `foldBelow`,
+ *                 before the paint; the step badges give way first, since v0.33.0; a game may also name a width under which it always folds, `foldBelow`,
  *                 since v0.13.0). Its sizes keep the game's floors
  *                 (../../css/header.css, K14). The words of the links, the role and the routes
  *                 are the game's; the header holds only their places.

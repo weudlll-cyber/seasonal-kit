@@ -97,6 +97,17 @@ function StepHeaders(): ReactElement {
   );
 }
 
+// The two headers of the full-window screens (./Fixtures.tsx, v0.33.0): signed out, and Bingo's
+// full bar with a member's three step badges, which give way before it folds.
+export const PLAIN_HEADER: AppHeaderProps = base;
+
+export const FULL_HEADER: AppHeaderProps = {
+  ...base,
+  websiteMode: true,
+  account: { ...account, name: 'Maximilian-Alex', role: 'organiser', steps: STEPS },
+  signIn: { href: '#/sign-in' },
+};
+
 // Seasonal Cases' bar (v0.22.0): the back link, its brand, six links (one long: "My matches") and
 // a member's chip with three steps, in website mode. Measured at 1280, 1536 and 1920 px
 // (./cases.spec.ts): the header folds only when these items do not fit one row.

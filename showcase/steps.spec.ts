@@ -6,7 +6,8 @@
  * Responsibility: at the sizes layout.spec.ts already uses (1280, 1536, 1920 and 390 px), in light
  *                 and dark, the showcase's header with three steps shows three loaded icons, each
  *                 named by its step, 20 px (1.25rem) square, inside the chip and the window, with
- *                 no sideways scroll. At 320, 360 and 375 px the header with the longest chip (a
+ *                 no sideways scroll; where the bar has given up badges to stay one row (v0.33.0),
+ *                 the ones shown are measured. At 320, 360 and 375 px the header with the longest chip (a
  *                 long name, a two-word role, three steps) does the same, and its chip ends
  *                 inside the folded menu's own panel. Where the header folds (the phone), the
  *                 icons are measured in the opened menu, beside the name. The one-row rule for
@@ -42,6 +43,8 @@ function measure(chip: Locator) {
     return {
       chipRight: box.right,
       chipLeft: box.left,
+      // How many badges the unfolded bar shows (v0.33.0); folded, the menu shows all.
+      level: el.closest('.sk-header')?.getAttribute('data-sk-steps') ?? 'all',
       menuRight: menu?.right ?? null,
       scrollWidth: document.documentElement.scrollWidth,
       images: [...el.querySelectorAll('img')].map((img) => {
@@ -63,7 +66,9 @@ type Seen = Awaited<ReturnType<typeof measure>>;
 
 function expectFits(seen: Seen, width: number): void {
   expect(seen.images.map((i) => i.alt)).toEqual(NAMES);
-  for (const image of seen.images) {
+  const shown = { all: NAMES.length, one: 1, none: 0 }[seen.level] ?? NAMES.length;
+  // The ones that gave way are still there, named, only not drawn.
+  for (const image of seen.images.slice(0, shown)) {
     expect(image.loaded, `${image.alt} is loaded`).toBe(true);
     expect(image.width).toBeCloseTo(ICON_PX, 0);
     expect(image.height).toBeCloseTo(ICON_PX, 0);

@@ -105,7 +105,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   measures again in the real game and reports back; a new item then. Closed by PR #39 and v0.15.0
   without a change.
 - **20. A merged single-card `ResultFrame` option** (the concept's point 4, Bingo, 2026-11-24).
-  Decided no, K47: Bingo shows its result like the other games and drops its own `results.css`
+  Decided no, K47 (replaced by K93, 2026-11-26: the frame has a `dense` variant). Bingo drops its own `results.css`
   overrides at its next kit adoption. Nothing to build.
 - **21. The start card fits again after web fonts load** (Mini Games T404 and T423, decided
   2026-11-24, K48). `StartCard`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to

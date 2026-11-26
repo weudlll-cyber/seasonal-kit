@@ -214,3 +214,10 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.34.0 (K102).
 - **62. The stand-in website accepted the proxy's secret** (Mini Games, 2026-11-26). Closed in
   v0.34.0 (K103).
+- **63. The stand-in's step icon showed as a blank square** (Seasonal Cases, 2026-11-26). Closed
+  in v0.35.0 (`websiteStandIn.ts` and its test).
+- **64. The route file named no trusted range and gave no reason for refusing metrics** (Seasonal
+  Cases, 2026-11-26). Closed in v0.35.0 (`website-route.sh`, `website-route.test.sh`). The four
+  cookie removals stay: none is redundant (each takes one pair).
+- **65. A running Vite kept the old kit after a pin move** (Seasonal Cases, 2026-11-26). Closed in
+  v0.35.0 (ADOPTION.md, HANDBOOK.md).

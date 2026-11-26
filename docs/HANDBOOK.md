@@ -191,6 +191,8 @@ The values are in [css/tokens.css](../css/tokens.css) and shown in the kit's sho
 The exports are in the [README](../README.md); what each replaces per game is in
 [ADOPTION.md](ADOPTION.md); the release of each addition is in the [CHANGELOG](../CHANGELOG.md).
 Each part is held by its own tests in `src/` and `tests/` and by the showcase (CI `showcase`).
+After moving the kit pin, stop the dev server, delete `node_modules/.vite` and start it again: a
+running Vite keeps serving the old pre-bundled kit.
 
 - **Header:** `AppHeader` with `BackLink` in website mode; folds into its Menu whenever its items
   do not fit (the same answer at a width however the page got there, K79), or always under

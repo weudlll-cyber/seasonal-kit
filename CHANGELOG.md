@@ -7,6 +7,19 @@ applies it.
 
 ## [Unreleased]
 
+Shared parts for the way to production, and three Seasonal Cases findings.
+
+### Fixed
+
+- **Website stand-in:** its step icon is a visible shape of its own (64 x 64), not one pixel.
+
+### Changed
+
+- **Route file** (`ops/lib/website-route.sh`): it says why `/metrics` is refused and, with
+  `SK_ROUTE_TRUSTED` set, from which addresses the app takes the proxy secret.
+- ADOPTION.md and the handbook: after moving the kit pin, delete `node_modules/.vite` and restart
+  the dev server.
+
 ## [0.34.0] - 2026-11-26
 
 The base components, as the owner took them after his look (K95), one header look for every

@@ -3,6 +3,9 @@
 How each game moves onto the kit. These are plans only: no game repository is changed from here,
 and each step is a game PR the owner approves (DECISIONS K1, K15).
 
+**After moving the kit pin** (every game): stop the dev server, delete `node_modules/.vite` and
+start it again. A running Vite keeps serving the old pre-bundled kit; a page can stay blank.
+
 **Checked on 2026-11-23** against:
 
 - Mini Games `origin/master` `21434d8`;

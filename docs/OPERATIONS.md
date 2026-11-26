@@ -140,6 +140,7 @@ first, so none can add a directive; the secret is never printed.
 | `SK_ROUTE_APP`              | The app as the proxy reaches it, `host:port`.                                                                     |
 | `SK_ROUTE_WEBSITE`          | The website as the proxy reaches it, `host:port`.                                                                 |
 | `SK_ROUTE_AUTHORIZE`        | Optional: the website's authorize path, default `/api/games/<game>/authorize`.                                    |
+| `SK_ROUTE_TRUSTED`          | optional                                                                                                          | The addresses or networks the app trusts the proxy from, commas between them: written into the file as a comment, nothing else. |
 | `SK_ROUTE_IDENTITY_HEADERS` | Optional: the identity headers passed on, default the website's seven.                                            |
 | `SK_ROUTE_MODE`             | `nginx` or `caddy` (for `sk_route_install`).                                                                      |
 | `SK_ROUTE_FILE`             | The route file's absolute path, ending `.conf` or `.caddy`.                                                       |

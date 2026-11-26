@@ -12,7 +12,8 @@
 #                 identity headers and secrets are cleared, only the sign-in route carries the
 #                 identity and the secret, the website never sees the secret, its session cookie
 #                 never reaches the app, a refusal goes to the login route, metrics are 404. Also:
-#                 settings that could add a directive are refused, and a file the proxy refuses is
+#                 settings that could add a directive are refused, the comments name the trusted
+#                 range and why metrics are refused, and a file the proxy refuses is
 #                 taken back. Run: NGINX_IMAGE=… CADDY_IMAGE=… bash ops/test/website-route.test.sh
 #                 (CI job `ops`; needs Docker). Containers and files it made are removed.
 set -euo pipefail
@@ -178,10 +179,21 @@ run_checks
 
 echo settings
 for setting in 'SK_ROUTE_SECRET=a"; return 200;' 'SK_ROUTE_APP=127.0.0.1:1;evil' 'SK_ROUTE_BASE=/games/x {' \
-  'SK_ROUTE_GAME=Bad Name' 'SK_ROUTE_SECRET_HEADER=Cookie' 'SK_ROUTE_IDENTITY_HEADERS=X-A; x' 'SK_ROUTE_AUTHORIZE=/a b'; do
+  'SK_ROUTE_GAME=Bad Name' 'SK_ROUTE_SECRET_HEADER=Cookie' 'SK_ROUTE_IDENTITY_HEADERS=X-A; x' 'SK_ROUTE_AUTHORIZE=/a b' \
+  $'SK_ROUTE_TRUSTED=10.0.0.1\nlocation / { }' 'SK_ROUTE_TRUSTED=10.0.0.1; x'; do
   if out=$( (export "${setting?}"; sk_route_nginx) 2>&1); then bad "refused: ${setting%%=*}"; else
     if [[ $out == *"test-only-proxy-secret"* ]]; then bad "the refusal of ${setting%%=*} says the secret"; else ok "refused: ${setting%%=*}"; fi
   fi
+done
+
+echo comments
+for proxy in nginx caddy; do
+  out=$(SK_ROUTE_TRUSTED='172.18.0.0/16, 10.0.0.1' "sk_route_$proxy")
+  if [[ $out == *$'# The app takes the proxy secret only from these addresses: 172.18.0.0/16, 10.0.0.1\n'* &&
+    $out == *'# /metrics is refused here:'* ]]; then ok "$proxy: names the trusted range and why metrics are refused"; else
+    bad "$proxy: the comments"; fi
+  if [[ $("sk_route_$proxy") != *'only from these addresses'* ]]; then ok "$proxy: no range named, none written"; else
+    bad "$proxy: a range without the setting"; fi
 done
 
 echo install

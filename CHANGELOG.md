@@ -7,6 +7,8 @@ applies it.
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-11-26
+
 Shared parts for the way to production, and three Seasonal Cases findings.
 
 ### Added
@@ -1747,7 +1749,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...HEAD
+[0.35.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...v0.32.0

@@ -16,7 +16,9 @@
  *                   nobody else, and `ancestors` is refused there; standalone, its own origin and
  *                   the `ancestors` (an embed allowlist of plain origins);
  *                 - `frame-src` from `frames` (plain origins, an https origin followed by a path
- *                   since v0.27.0, or `'self'`; none gives `'none'`);
+ *                   since v0.27.0, a plain-http one with a path only on a development host
+ *                   (localhost, 127.0.0.1, [::1], *.localhost, *.test; since v0.34.0), or
+ *                   `'self'`; none gives `'none'`);
  *                 - `admin`: framed by nobody (`frame-ancestors 'none'`, `X-Frame-Options: DENY`)
  *                   and Trusted Types required for scripts;
  *                 - no HSTS, ever: the website sends it in website mode (it owns the whole

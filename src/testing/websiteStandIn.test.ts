@@ -137,6 +137,20 @@ describe('what the authorize route refuses', () => {
   });
 });
 
+describe('the website and the proxy’s secret (v0.34.0)', () => {
+  it('refuses an authorize call that carries the secret, forged or right', async () => {
+    for (const secret of ['forged', 'test-secret']) {
+      const r = await get('/api/games/mini-games/authorize', {
+        ...original('GET'),
+        'x-smg-proxy-secret': secret,
+      });
+      expect(r.status).toBe(500);
+      expect(r.headers.get('x-acting-guest')).toBeNull();
+    }
+    expect((await get('/api/games/mini-games/authorize', original('GET'))).status).toBe(204);
+  });
+});
+
 describe('the proxy under /games/<slug>/ (GAME-INTEGRATION.md §2)', () => {
   const forged = {
     'x-acting-user-id': '999',

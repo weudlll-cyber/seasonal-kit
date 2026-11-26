@@ -11,7 +11,9 @@
  *                 `onAnswer` sees every answer before it is judged: a game reports a lost session
  *                 there, or sends the page to the website's sign-in (`signInAgainAfter`,
  *                 ./websiteSignIn) and returns true, and the call then never settles, as the page
- *                 is leaving. `basePathOf` is the folder the page is served from ("/" alone,
+ *                 is leaving. `retry` (since v0.34.0) is asked about a refusing answer; when it
+ *                 says true, the same method, path and body are sent once more (with the CSRF
+ *                 token as it is then), and that second answer stands. `basePathOf` is the folder the page is served from ("/" alone,
  *                 "/games/bingo/" inside the website).
  * Depends on:     nothing (the browser's fetch)
  * Source:         seasonal-bingo-royale apps/web/src/shell/http.ts at 8d20904 and
@@ -34,6 +36,7 @@ export interface ApiClientOptions {
     readonly prefix?: string;
     readonly csrf?: () => string | null;
     readonly onAnswer?: (response: Response, code: string | null) => boolean | undefined;
+    readonly retry?: (error: ApiError) => boolean | Promise<boolean>;
     readonly fetch?: typeof fetch;
 }
 export interface ApiCall {

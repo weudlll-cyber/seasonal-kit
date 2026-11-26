@@ -8,7 +8,7 @@
 --                 superuser, no CREATEROLE, no CREATEDB) with their passwords, gives the schema and
 --                 everything in it, except what belongs to an extension, to the owner (an install
 --                 made before the roles had it all owned by the superuser), and lets only the owner
---                 create in the database. The app's rights on the tables are granted by the owner
+--                 create in the database, temporary tables included (since v0.34.0). The app's rights on the tables are granted by the owner
 --                 after every migration (grantAppRole, @seasonal/kit/server). Idempotent. The
 --                 words __SCHEMA__, __OWNER__, __APP__ and the two passwords are put in by the
 --                 caller and arrive on standard input, never on a command line; psql runs it with
@@ -36,13 +36,13 @@ ALTER ROLE __APP__ WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION 
 ALTER ROLE __OWNER__ SET search_path = __SCHEMA__, public;
 ALTER ROLE __APP__ SET search_path = __SCHEMA__, public;
 
--- Only the owner creates in this database (schemas, trusted extensions); nobody else gets
--- CREATE or TEMPORARY from PUBLIC.
+-- Only the owner creates in this database (schemas, trusted extensions, and the temporary tables
+-- a migration may work with); nobody else gets CREATE or TEMPORARY from PUBLIC.
 DO $$
 BEGIN
   EXECUTE format('REVOKE CREATE, TEMPORARY ON DATABASE %I FROM PUBLIC', current_database());
   EXECUTE format('GRANT CONNECT ON DATABASE %I TO __OWNER__, __APP__', current_database());
-  EXECUTE format('GRANT CREATE ON DATABASE %I TO __OWNER__', current_database());
+  EXECUTE format('GRANT CREATE, TEMPORARY ON DATABASE %I TO __OWNER__', current_database());
 END $$;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 

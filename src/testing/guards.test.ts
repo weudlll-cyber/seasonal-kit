@@ -163,3 +163,52 @@ describe('findLowContrast', () => {
     expect(() => findLowContrast({ css: ['.x {}'], pairs: [{ text: '--a', on: [] }] })).toThrow();
   });
 });
+
+describe('findLowContrast over values written with tokens', () => {
+  const css = [
+    `:root {
+  --white: #ffffff;
+  --black: #000000;
+  --paper: var(--white);
+  --ink: var(--missing, var(--black));
+  --grey: color-mix(in srgb, var(--black) 50%, var(--paper));
+  --wash: color-mix(in srgb, var(--black) 50%, transparent);
+  --nested: color-mix(in srgb, color-mix(in srgb, var(--black), var(--white)) 100%, var(--white));
+  --lost: var(--gone);
+  --loop: var(--loop);
+  --lab: color-mix(in oklab, var(--black), var(--white));
+  --named: color-mix(in srgb, red, var(--white));
+}`,
+  ];
+  const against = (text: string, on: readonly string[], min?: number): string[] =>
+    findLowContrast({ css, pairs: [{ text, on, ...(min === undefined ? {} : { min }) }] });
+
+  it('follows var(), with its fallback', () => {
+    expect(against('--ink', ['--paper'], 20)).toEqual([]);
+  });
+
+  it('mixes in srgb as a browser does, nested and with transparency', () => {
+    // Half black on white is #808080: 3.98 on white.
+    expect(against('--grey', ['--paper'])).toEqual(
+      ['light', 'dark'].map((t) => `${t}: --grey on --paper: 3.98 < 4.5`),
+    );
+    expect(against('--nested', ['--paper'])[0]).toMatch(/3\.98 < 4\.5/);
+    // The same half black, translucent, over white.
+    expect(against('--wash', ['--paper'])[0]).toMatch(/3\.98 < 4\.5/);
+  });
+
+  it('checks a pair written as values, one share giving the other its rest', () => {
+    const text = 'color-mix(in srgb, var(--white), var(--black) 100%)';
+    expect(against(text, ['var(--paper)'], 20)).toEqual([]);
+  });
+
+  it.each(['--lost', '--loop', '--lab', '--named', 'var(--gone)'])(
+    'reports %s as unresolved, in each theme, and never passes it',
+    (value) => {
+      expect(against(value, ['--paper'], 1)).toEqual(
+        ['light', 'dark'].map((t) => `${t}: ${value} on --paper: unresolved ${value}`),
+      );
+      expect(against('--ink', [value], 1)[0]).toContain(`unresolved ${value}`);
+    },
+  );
+});

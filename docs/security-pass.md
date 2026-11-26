@@ -63,6 +63,22 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.34.0, the fixes (branch `fix/minigames-findings`)
+
+| Scan                         | Tool and command                       | Result                                     |
+| ---------------------------- | -------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                       | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)         | Read on the pull request before the merge. |
+
+**Read by the session that wrote it.** The owner role's `TEMPORARY` adds nothing it could not
+already do with `CREATE`; `PUBLIC` and the app role get neither. The secrets folder comes from the
+game's own root-owned settings and goes to the restore as one quoted argument; a differing file
+still stops it before anything changes. A frame source on plain http is matched whole against five
+local host forms, so a look-alike host is refused (tested). `retry` sends a write twice only when
+the game says so for a refusal, never after no answer. The contrast guard treats what it cannot
+work out as a finding.
+
 ### 2026-11-26 — before v0.33.0 (branch `fix/bingo-findings`)
 
 | Scan                         | Tool and command                                           | Result                                     |

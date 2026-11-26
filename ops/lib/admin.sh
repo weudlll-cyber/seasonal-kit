@@ -11,7 +11,9 @@
 #                 plain lines, `WARNING: …`, and `STOP: …` with exit 1; an unknown verb prints the
 #                 usage and exits 2. Root only. status reads and never changes; it exits 0 also
 #                 when the app is not ready. backup and restore are ./../backup.sh with the
-#                 settings of the game's `game_backup_settings`. update, confirm and rollback are
+#                 settings of the game's `game_backup_settings`; with SK_ADMIN_SECRETS_DIR set, a
+#                 restore puts the backup's secret files there (since v0.34.0), and without
+#                 --force-env stops, before anything changes, where one differs. update, confirm and rollback are
 #                 ./admin-update.sh, uninstall ./admin-uninstall.sh. No secret is printed.
 # Depends on:     bash 4, docker, systemctl, ./admin-update.sh, ./admin-uninstall.sh, ../backup.sh
 # Source:         seasonal-bingo-royale ops/sbr and ops/lib/common.sh at d7d841e (the verbs, their
@@ -151,6 +153,11 @@ sk_admin_script() {
   shift
   (
     game_backup_settings "$env"
+    # A restore puts the backup's secret files where the game keeps them, when it says where
+    # (a global setting, or the environment's own from game_backup_settings).
+    if [[ $1 == restore && -n ${SK_ADMIN_SECRETS_DIR:-} ]]; then
+      set -- "$@" --secrets-to "$SK_ADMIN_SECRETS_DIR"
+    fi
     bash "$SK_ADMIN_BACKUP" "$@"
   )
 }

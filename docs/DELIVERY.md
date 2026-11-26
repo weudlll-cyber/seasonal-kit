@@ -683,6 +683,21 @@ four tests on the installed package:
 CI on the merge commit `c864703`: `CI` and `CodeQL` passed. The scratch folders are left in the
 session's scratch directory, outside every repository.
 
+## The v0.29.0 to v0.32.0 ops releases, with pnpm and with npm (2026-11-26, the tags themselves)
+
+For each tag two scratch consumers, one with pnpm 12.14.0 and one with npm 11.19.0, both with
+`ignore-scripts=true`, installed `#<tag>` and ran that release's check on the installed files:
+
+| Tag     | Merge     | What ran on the installed package                                                                    |
+| ------- | --------- | ---------------------------------------------------------------------------------------------------- |
+| v0.29.0 | `3b64ec7` | a game command on the shipped `ops/lib/admin.sh` prints the usage with `uninstall` and exits 2       |
+| v0.30.0 | `f3829d2` | `sk_host_baseline website` from the shipped library says it changes nothing                          |
+| v0.31.0 | `c5b24d5` | `findWeakContainers` from `@seasonal/kit/testing` names the three settings a bare service lacks      |
+| v0.32.0 | `0016e86` | `grantAppRole` is exported; `sk_db_roles_apply` fills the shipped SQL with the names (sent to `cat`) |
+
+All eight installs and checks passed. `CI` and `CodeQL` passed on each merge commit. The scratch
+folders are left in the session's scratch directory, outside every repository.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

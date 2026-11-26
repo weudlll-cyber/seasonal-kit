@@ -233,6 +233,9 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Backups:** `ops/backup.sh` (backup, restore, drill, the nightly timer's units) and the pull scripts,
   shipped in the package and set by `SK_BACKUP_*` variables (K61, [OPERATIONS.md](OPERATIONS.md)); the
   game wires them and keeps its own compose files and key checks.
+- **Database roles** (K90): the app connects as a role that only reads and writes rows
+  (`ops/lib/db-roles.sh`, `grantAppRole` after every migration); only the migration step connects as
+  the owner ([OPERATIONS.md](OPERATIONS.md)).
 - **Container hardening** (K89): `read_only`, `no-new-privileges` and `cap_drop: ALL` on the app
   and database ([OPERATIONS.md](OPERATIONS.md)), held by a game's test with `findWeakContainers`.
 - **The host baseline** (K88): a standalone install calls `sk_host_baseline standalone`

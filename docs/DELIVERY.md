@@ -698,6 +698,20 @@ For each tag two scratch consumers, one with pnpm 12.14.0 and one with npm 11.19
 All eight installs and checks passed. `CI` and `CodeQL` passed on each merge commit. The scratch
 folders are left in the session's scratch directory, outside every repository.
 
+## v0.33.0, with pnpm and with npm (2026-11-26, the tag itself)
+
+Scratch consumers outside every repository, with `ignore-scripts=true`, installed `#v0.33.0`
+(merge `4261eb9`):
+
+- one with pnpm and one with npm typechecked and ran three tests on the installed files: the failure
+  brake's `reserve` and live rule, the dense result and the header's controls group rendered, and
+  the two new stylesheets and the restore shipped;
+- one with pnpm and one with npm ran the shipped backup script's secret check: it refuses a
+  differing secret, names the secrets without a folder and writes nothing.
+
+All four passed, and `CI` and `CodeQL` passed on the merge commit. The scratch folders are left in
+the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

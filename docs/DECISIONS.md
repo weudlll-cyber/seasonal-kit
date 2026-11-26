@@ -479,3 +479,6 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   what it cannot work out is a finding, and a pair naming a missing token still throws.
 - **K103 — The stand-in website refuses the proxy's secret** (2026-11-26): its `authorize` answers
   500 to a request carrying it, as a game's own stub did; the proxy half still clears it.
+- **K107 — A privacy data list is required for every game before production** (decided
+  2026-11-26, item j). `docs/PRIVACY-DATA.md` in each game, from the kit's template, answered for
+  every piece of personal data; the game's test holds it with `findPrivacyGaps`.

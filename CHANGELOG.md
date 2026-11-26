@@ -9,6 +9,11 @@ applies it.
 
 Shared parts for the way to production, and three Seasonal Cases findings.
 
+### Added
+
+- **Privacy data list** (K107): the template `docs/templates/PRIVACY-DATA.md` and
+  `findPrivacyGaps` in `@seasonal/kit/testing`, which names every unanswered column.
+
 ### Fixed
 
 - **Website stand-in:** its step icon is a visible shape of its own (64 x 64), not one pixel.

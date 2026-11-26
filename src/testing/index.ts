@@ -4,8 +4,8 @@
  *
  * Responsibility: name the test tools: the sizes, the theme switch, the screenshots of a look,
  *                 the probe and the sweep, the load check's measuring helpers, the website's
- *                 stand-in, the container hardening check, and the static guards for colours,
- *                 token contrast and text size. Test code only:
+ *                 stand-in, the container hardening check, the privacy data list's check, and the
+ *                 static guards for colours, token contrast and text size. Test code only:
  *                 no other entry of the kit imports it, so it never reaches a game's bundle
  *                 (tests/package.test.ts), and it imports nothing at run time but Node's own
  *                 modules (Playwright is a type here, and an optional peer for that).
@@ -32,6 +32,7 @@ export {
   type Size,
   type Theme,
 } from './screens.js';
+export { findPrivacyGaps } from './privacyData.js';
 export { probe, type Probe } from './probe.js';
 export type { OpenRoundsRead, StandInMember } from './standInContract.js';
 export type { StandInGame } from './standInProxy.js';

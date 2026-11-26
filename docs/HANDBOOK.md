@@ -221,8 +221,9 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
   option: every game shows its result the same way, and Bingo drops its own overrides (K47).
 - **Sign-in:** the website sign-in in the client (`websiteSignInHref`, `signInAgain`) and on the
   server (`websiteSignInCheck`, `safeNext`, TOTP, recovery codes, `SessionEnds`).
-- **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); the
-  rules and keys stay in the game.
+- **Failure brake:** `FailureBrake` for the failed tries of a sign-in, in every game (K46); a
+  route that can be tried in parallel takes `reserve(key)` and ends the attempt (K92); the rules
+  and keys stay in the game.
 - **Rate limiter:** `RateLimiter` with the game's own rules, for the routes other than sign-in.
 - **Website stand-in:** `startWebsiteStandIn` of the testing entry for the browser tests of sign-in,
   chat and call in website mode (K74); no game writes its own half of the website's contract.

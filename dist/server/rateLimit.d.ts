@@ -38,16 +38,15 @@ export interface RateDecision {
 }
 export declare function ruleOf(read: unknown): RateRule | null;
 export type RateRuleSource = RateRule | (() => RateRule);
+export declare function ruleReader(source: RateRuleSource, error: string): () => RateRule;
 export declare class RateLimiter {
-    private readonly source;
     private readonly now;
     private readonly maxKeys;
     private readonly buckets;
     private takes;
     private fullPrunedAt;
-    private rule;
+    private readonly ruleNow;
     constructor(source: RateRuleSource, now?: () => number, maxKeys?: number);
-    private ruleNow;
     private bucketOf;
     take(key: string): RateDecision;
     get size(): number;

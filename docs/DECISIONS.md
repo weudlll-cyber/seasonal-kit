@@ -442,3 +442,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K91 — A restore refuses before it replaces** (2026-11-26). Everything that can refuse a restore
   is decided before the app is stopped. The kit's restore reads only the kit's backups; an older
   backup needs the game's documented rewrite and ages out (decided 2026-11-25).
+- **K92 — The failure brake counts attempts under way** (2026-11-26). `reserve` gives an attempt
+  one of the key's `limit` places until it is ended, so parallel guesses stay within the limit, and
+  the brake's rule may be a function read at each check (from Bingo Royale's `loginBrake`).
+  `braked` and `failed` stay for a route that cannot be tried in parallel.

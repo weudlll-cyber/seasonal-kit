@@ -14,6 +14,21 @@ Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.
 - **Restore order** (K91): `ops/backup.sh restore` decides every refusal (a differing secret file,
   a `--secrets-to` that is no folder, a missing setting, the manifest) before the app is stopped or
   anything replaced. Until now a differing secret stopped it after the database was overwritten.
+- **`FailureBrake` and parallel guesses** (K92): `reserve(key)` returns an attempt holding one of
+  the key's `limit` places, ended with `failed()` or `passed()`, or null while braked. Guesses sent
+  together passed `braked` before the first failure was counted.
+
+### Added
+
+- `FailureBrake` takes its rule as a function too, read at each check, as `RateLimiter` does.
+
+### Migration, per game
+
+- **Bingo Royale:** passes its admin-set limits to `FailureBrake` as the function (`liveRule`),
+  and `behindBrakes` uses `reserve`; the `LoginBrake` class goes, so `auth/loginBrake.ts` goes too
+  once `behindBrakes` is moved or nothing else is left in it.
+- **The others:** nothing breaks. A sign-in that calls `braked` then `failed` still lets parallel
+  guesses through until it calls `reserve` instead.
 
 ## [0.32.0] - 2026-11-26
 

@@ -19,7 +19,10 @@
  *                 - on a phone (≤ 640 px) the back link its own short first row (its words may
  *                   wrap, since v0.22.0), the wordmark hidden, the account chip whole; the folded
  *                   brand keeps its longest word, and the Menu and the toggle take a row of their
- *                   own when they do not share the brand's (since v0.22.0).
+ *                   own when they do not share the brand's (since v0.22.0); the back link's row
+ *                   is as low as its 44 px target allows (K96);
+ *                 - the account's buttons and chip are ./header-account.css's, which this file
+ *                   brings along.
  *                 Text never below the game's floor (`--sk-floor-text`, ./fit.css); targets
  *                 44 px. Colours only from ./tokens.css, so light and dark both work. The buttons
  *                 are ./bar.css's `sk-bar-button` and the back link and toggle ./shell.css's: a
@@ -32,15 +35,18 @@
 @import './steps.css';
 /* The development sign-in menu's look. */
 @import './header-dev.css';
+/* The account: its buttons and chip. */
+@import './header-account.css';
 
 .sk-header {
+  --sk-header-pad: 0.6rem;
   position: relative;
   z-index: 10;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--sk-space-1) var(--sk-space-2);
-  padding: 0.6rem var(--sk-gutter);
+  padding: var(--sk-header-pad) var(--sk-gutter);
   background: var(--sk-sidebar-background);
   border-bottom: 1px solid var(--sk-color-border);
 }
@@ -129,62 +135,6 @@
   color: var(--sk-color-on-solid);
 }
 
-.sk-header-account {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-/* "Sign in" and "Register" are links that look like the bar's buttons; no button label wraps. */
-.sk-header-account a.sk-bar-button {
-  text-decoration: none;
-}
-
-/* The header's buttons carry words: on a phone ./bar.css makes `sk-bar-button` an icon-only
-   square, so here they keep their width and padding, at least the 44 px target. */
-.sk-header .sk-bar-button {
-  width: auto;
-  min-height: var(--sk-hit-target);
-  padding-inline: 0.65rem;
-  white-space: nowrap;
-}
-
-/* The account chip leads to the account page: a chip that reacts like a button. */
-.sk-header-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--sk-hit-target);
-  padding: 0 0.8rem;
-  border: 1px solid var(--sk-color-border);
-  border-radius: var(--sk-radius-pill);
-  background: var(--sk-color-glass);
-  color: var(--sk-color-text);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-/* The step badges' size in the chip (./steps.css); a game may set its own here. */
-.sk-header-chip {
-  --sk-step-icon: 1.25rem;
-}
-
-.sk-header-chip:hover {
-  background: var(--sk-color-active-bg);
-}
-
-/* "Signed in as" is read out, not shown, up to wide screens (a host's bar stays one row). */
-@media (max-width: 1440px) {
-  .sk-header-chip-prefix {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-
 /* The fold: on a wide screen no button and no box of its own. The button also is an
    `sk-bar-button` (./bar.css, `display: inline-flex`), so this rule names the header too: the
    order a game imports the two files in then makes no difference (since v0.27.0). */
@@ -263,8 +213,26 @@
   overflow-wrap: anywhere;
 }
 
-/* A phone: the wordmark gone, the chip whole (the back link's own row is ./shell.css's). */
+/* A phone: the wordmark gone, the chip whole, and the back link's own row (./shell.css) as low
+   as a 44 px target allows (K96), made as the brand's is (K84): the link's box grows by padding
+   and a negative margin takes it back. It reaches 0.25rem under the words, which the brand's box
+   leaves free, and the rest up into the header's padding; only what the padding lacks stays as
+   room in the row (none from about 150 % text). The focus ring is drawn inside the box, whose top
+   can be the page's edge. */
 @media (max-width: 640px) {
+  .sk-header > .sk-back-link {
+    --sk-back-above: max(0px, calc(var(--sk-hit-target) - 1lh - 0.25rem));
+    /* Positioned, so the pixel it shares with the brand's edge is its own. */
+    position: relative;
+    box-sizing: border-box;
+    padding-block: var(--sk-back-above) 0.25rem;
+    margin-block: calc(-1 * min(var(--sk-back-above), var(--sk-header-pad))) -0.25rem;
+  }
+
+  .sk-header > .sk-back-link:focus-visible {
+    outline-offset: -2px;
+  }
+
   .sk-header-brand small {
     display: none;
   }

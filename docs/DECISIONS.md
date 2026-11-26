@@ -459,3 +459,10 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   Royale's planning). Only the highest badge, then none in the bar, then the fold. "Highest" is the
   first of the member's steps as the website sends them (Holder before Farmer before Investor);
   the steps are one per ladder and carry no rank across ladders.
+- **K95 — The base components are released as proposed** (decided 2026-11-26, after the owner's
+  look at the review page; ends K78's hold). Buttons, fields, panels, chips, the disabled button
+  and the locked field as the page's "Kit (proposed)" column.
+- **K96 — Three header looks for every game** (decided 2026-11-26, Bingo Royale's wishes). The
+  account chip is filled with small bold text; the back link's row on a phone is only as high as
+  its words allow while its tap area stays 44 px (as K84, no breach of K29); signed out, "Sign
+  in" is the header's one primary button. They are the kit's look, not options.

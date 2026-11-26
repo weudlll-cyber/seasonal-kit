@@ -28,12 +28,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **28. Base components: the owner's look review** (2026-11-26, K78). `components.css` and the page
-  that shows it beside the three games' looks are built on `feat/base-components`, not merged. Open
-  question: a field's input takes its label's strong weight, as in Mini Games and Bingo. Done when:
-  the owner approves the look, and a release with a game that uses it carries it. The same page
-  asks about three header wishes of Bingo Royale (2026-11-26): an account chip variant, a compact
-  back link, a primary sign-in button.
 - **49. Shared ops parts for every game** (owner, 2026-11-26): install, operate and secure alike.
   Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Items a to e are
   released: the admin command with uninstall (v0.29.0), the host baseline (v0.30.0), the container
@@ -202,3 +196,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   bar's text did not grow** (Bingo Royale, 2026-11-26). Closed in v0.33.0 (K94,
   `showcase/looks.spec.ts`, `showcase/cases.spec.ts`).
 - **54. ADOPTION.md's Bingo section was behind Bingo's master** (2026-11-26). Closed in v0.33.0.
+- **28. Base components: the owner's look review** (2026-11-26, K78). Taken as proposed (K95).
+  Closed in v0.34.0 (`css/components.css`, `showcase/components.spec.ts`).
+- **55. Bingo Royale's three header wishes** (2026-11-26). Closed in v0.34.0 (K96,
+  `css/header-account.css`, `css/header.css`, `showcase/looks.spec.ts`).

@@ -7,16 +7,51 @@ applies it.
 
 ## [Unreleased]
 
+The base components, as the owner took them after his look (K95), and one header look for every
+game (K96).
+
 ### Added
 
-- **`components.css`** (K78): opt-in classes `sk-btn` (`--primary`, `--danger`, `--big`),
+- **`components.css`** (K95): opt-in classes `sk-btn` (`--primary`, `--danger`, `--big`),
   `sk-panel` (`--inset`), `sk-field`, `sk-input`, `sk-select`, `sk-field-help--error`, `sk-chip`
   and `sk-badge-live`. From the base styles of Mini Games and Bingo Royale.
 
+### Changed
+
+- **The header's account chip** is filled (second surface colour) with small bold text.
+- **"Sign in"** in the header, signed out, is the solid button, the only primary one there
+  (class `sk-header-primary`).
+- **The back link in the header on a phone** takes a lower row (30 px instead of 44 px at the
+  default text, the words' own lines from about 150 %); its tap area stays 44 px.
+- `header.css` brings `header-account.css` along (the account's rules moved there).
+
 ### Migration, per game
 
-- **All three games:** nothing is required; see [docs/ADOPTION.md](docs/ADOPTION.md) "Since the base
-  components' release".
+- **Bingo Royale:**
+  - buttons, panels, fields, chips: `.sbr-btn` (`--primary`, `--danger`, `--big`), `.sbr-panel`
+    (`--inset`), `.sbr-field`, `.sbr-input`, `.sbr-select`, `.sbr-chip` and `.sbr-badge-live` of
+    `packages/ui/src/base.css` give way to the `sk-` classes. Looks different: a disabled button is
+    muted on the second surface instead of faded, a disabled field looks locked;
+  - back link and sign-in: `shell/header.css` drops its `.sk-header-chip` rules, its solid "Sign
+    in" rule and its phone `.sk-back-link { min-height: 0 }` (which would cut the tap area).
+    Looks different: the chip's padding is the kit's (it stays on one line on a phone, and wraps in
+    the folded menu), and the phone's back-link row is about 11 px higher than Bingo's own at the
+    default text. Its wider button padding stays its own rule, if it keeps it.
+- **Mini Games:**
+  - buttons, panels, fields, chips: `.smg-btn` (`--primary`, `--danger`, `--big`), `.smg-panel`
+    (`--inset`), `.smg-field`, `.smg-input`, `.smg-select`, `.smg-field-help--error`, `.smg-chip`
+    and `.smg-badge-live` give way to the `sk-` classes; the field lock and the signed field stay
+    its own. No look change intended;
+  - back link and sign-in: nothing to remove. Looks different with the pin: the chip filled with
+    small bold text, "Sign in" solid when signed out, a lower back-link row on phones.
+- **Seasonal Cases:**
+  - buttons, panels, fields: `.button` (and `.button-solid`), `.card` and the bare `input` and
+    `select` rules of `shell/shell.css` give way to `sk-btn` (`--primary`), `sk-panel`,
+    `sk-input` and `sk-select`. Looks different: bolder, larger button text, a danger button, the
+    locked look of disabled controls. It has no chip or live badge of its own;
+  - back link and sign-in: its `ShellBar` is not the kit's header, so its back link keeps its
+    44 px row, and its "Sign in" stays its own button (it may take `sk-btn sk-btn--primary`).
+- **Seasonal Party:** nothing; its back link sits in its own bar and is unchanged.
 
 ## [0.33.0] - 2026-11-26
 

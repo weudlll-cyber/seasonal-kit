@@ -29,10 +29,10 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   kit has it with a test and a security pass.
 
 - **49. Shared ops parts for every game** (owner, 2026-11-26): install, operate and secure alike.
-  Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Being built: the admin
-  command with uninstall, the host baseline, the container hardening check and the database roles
-  (its items a to e). Items f to k wait for the owner's word. Done when: a to e are released and f to
-  k are decided.
+  Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Items a to e are
+  released: the admin command with uninstall (v0.29.0), the host baseline (v0.30.0), the container
+  hardening check (v0.31.0) and the database roles (v0.32.0). Items f to k wait for the owner's word.
+  Done when: f to k are decided.
 
 ## Part two — closed
 

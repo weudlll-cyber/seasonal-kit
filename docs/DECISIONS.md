@@ -435,3 +435,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   read-only root, `no-new-privileges` and all capabilities dropped; the database adds back only
   CHOWN, DAC_OVERRIDE, SETGID and SETUID, measured on `postgres:17-alpine`. A game's own test holds
   its Compose file to it with `findWeakContainers`; the kit adds no CI guard.
+- **K90 — The running game connects as a role that only reads and writes rows** (2026-11-26). An
+  owner role migrates and then grants the app role (`grantAppRole`), with tables a game names as
+  append-only or read-only; the kit's SQL, from Bingo Royale's, sets both roles up and takes the
+  passwords on standard input only.

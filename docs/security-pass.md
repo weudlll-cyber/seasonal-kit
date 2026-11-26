@@ -63,6 +63,19 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.32.0 (branch `feat/ops-db-roles`)
+
+| Scan                         | Tool and command                                           | Result                                                                              |
+| ---------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                     | No leaks.                                                                           |
+| Dependencies                 | osv-scanner (CI)                                           | `pg` and `@types/pg` 8.23.1 added, development only (the test); no runtime package. |
+| Code                         | CodeQL (javascript-typescript)                             | Read on the pull request before the merge.                                          |
+| Install behaviour            | pnpm and npm, scratch consumers with `ignore-scripts=true` | Proven on the tag (docs/DELIVERY.md).                                               |
+
+**Read by the session that wrote it** (SQL built from settings): names and passwords are checked
+against plain forms before they enter any statement; the passwords travel on standard input only
+and are never printed. Proven on a real PostgreSQL 17.
+
 ### 2026-11-26 — before v0.31.0 (branch `feat/ops-hardening`)
 
 | Scan                         | Tool and command                                           | Result                                     |

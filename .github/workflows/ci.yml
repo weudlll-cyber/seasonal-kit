@@ -125,7 +125,7 @@ jobs:
           # The job token stays off the disk: no step pushes (audit 2026-11-22).
           persist-credentials: false
       - name: shellcheck
-        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/lib/operator.sh ops/lib/admin.sh ops/lib/admin-update.sh ops/lib/admin-uninstall.sh ops/lib/host-baseline.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/backup-url.test.sh ops/test/backup-units.test.sh ops/test/website-route.test.sh ops/test/operator.test.sh ops/test/admin.test.sh ops/test/host-baseline.test.sh
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt "$SHELLCHECK_IMAGE" -x ops/backup.sh ops/lib/backup-core.sh ops/lib/backup-restore.sh ops/lib/website-route.sh ops/lib/operator.sh ops/lib/admin.sh ops/lib/admin-update.sh ops/lib/admin-uninstall.sh ops/lib/host-baseline.sh ops/lib/db-roles.sh ops/pull-backups.sh ops/test/backup.test.sh ops/test/backup-url.test.sh ops/test/backup-units.test.sh ops/test/website-route.test.sh ops/test/operator.test.sh ops/test/admin.test.sh ops/test/host-baseline.test.sh
       - name: age
         run: sudo apt-get install -y -q age
       - name: A database URL's password stays off the command lines

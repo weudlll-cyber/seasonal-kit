@@ -7,6 +7,26 @@ applies it.
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-11-26
+
+Two database roles for every game (K90), from Bingo Royale.
+
+### Added
+
+- **`ops/lib/db-roles.sh`** and **`db-roles.sql`**: `sk_db_roles_apply` sets up the owner and app
+  roles and gives the schema to the owner; passwords on standard input only.
+- **`grantAppRole`** in `@seasonal/kit/server`: the app role's rights after every migration, with
+  append-only and read-only tables.
+
+### Migration, per game
+
+- **Bingo Royale:** `ops/lib/db-roles.sql` and `db/roles.ts` give way to the kit's (prefix `sbr`,
+  its four append-only tables, `schema_migrations` read-only).
+- **Mini Games and Seasonal Cases:** a migration step that connects as the owner (a command or a
+  service that runs before the app), the two passwords in the settings, `sk_db_roles_apply` in the
+  installer and after a restore, `grantAppRole` after migrating; the app's `DATABASE_URL` becomes
+  the app role's. Convert an existing install once, with a backup first.
+
 ## [0.31.0] - 2026-11-26
 
 The hardening of a game's containers (K89).
@@ -1566,7 +1586,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...HEAD
+[0.32.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.28.0...v0.29.0

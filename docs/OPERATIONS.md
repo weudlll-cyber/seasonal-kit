@@ -299,3 +299,41 @@ expect(findWeakContainers(compose, { services: { app: 'app', postgres: 'database
 Every service of the file is named: `app`, `database` or `{ unchecked: 'why' }`. A capability a
 service is shown to need beyond its role's goes into `capabilities`, with the reason in a comment.
 A parsed YAML file works in place of `docker compose config`.
+
+## Database roles
+
+A game's database has two roles beside the superuser (K90): an **owner** that runs the migrations and
+an **app** role the running game connects as, which only reads and writes rows. Neither is a
+superuser or may create roles or databases.
+
+1. `ops/lib/db-roles.sh`, sourced by the installer or the admin command, sends
+   `ops/lib/db-roles.sql` to a superuser's psql, on install, once when an older install is converted,
+   and after every restore (a restored dump belongs to the superuser):
+
+   ```sh
+   source "$KIT/ops/lib/db-roles.sh"
+   sk_db_roles_apply game_compose "$env" exec -T postgres psql -X -q -v ON_ERROR_STOP=1 -U super -d game
+   ```
+
+2. The migration step connects as the owner and, after migrating, grants the app role:
+
+   ```ts
+   import { grantAppRole } from '@seasonal/kit/server';
+
+   await grantAppRole(ownerPool, {
+     schema: 'game',
+     role: 'gm_app',
+     appendOnly: ['audit_log'],
+     readOnly: ['schema_migrations'],
+   });
+   ```
+
+Because the kit's restore brings back no ownership or grants, a restore's start command must run the
+migration step again (`up -d` where a migrate service runs first, not `start`), after the roles.
+
+| Variable               | Needed for | Meaning                                                             |
+| ---------------------- | ---------- | ------------------------------------------------------------------- |
+| `SK_DB_PREFIX`         | yes        | The roles are `<prefix>_owner` and `<prefix>_app`.                  |
+| `SK_DB_SCHEMA`         | optional   | The game's schema, default the prefix.                              |
+| `SK_DB_OWNER_PASSWORD` | yes        | 16 to 128 letters, digits, `-` or `_`; sent on standard input only. |
+| `SK_DB_APP_PASSWORD`   | yes        | The same.                                                           |

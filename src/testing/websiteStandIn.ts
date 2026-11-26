@@ -64,8 +64,12 @@ export interface WebsiteStandIn {
   readonly close: () => Promise<void>;
 }
 
-// A 1x1 WebP, the shape of a step icon.
-const ICON = Buffer.from('UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=', 'base64');
+// Every step icon: the stand-in's own plain shape, a blue-grey diamond on 64 x 64 (the website's
+// size), so a header and a board show something. No Seasonal Tokens drawing.
+const ICON = Buffer.from(
+  'UklGRsAAAABXRUJQVlA4TLMAAAAvP8APEA8wiqM3qvMf8HBU27bT0Bki4UtBGkhDChIYpt+Uc7KQENF/Rm7bONKctsopr6jOnLUmW0v2kRwTuRTymMlrIQmlSQ1p0kKajJAmE6RJgTSZIU0WShNKkxpSBN9/jJAi+OVHgRTBXz8WShNKk3oj7U7Gg0wXUh5kNr7wK/6R87se1ed6Xb/74f64X+6f+6n+ut/uv+fh+Xhenp/nqfl63p6/98H74X3x/vzZpxOnAgA=',
+  'base64',
+);
 
 // The one folder a login may return to.
 const GAMES = '/games/';

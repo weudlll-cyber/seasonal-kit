@@ -279,7 +279,12 @@ describe('the login and the public routes', () => {
   it('serves a step icon', async () => {
     const r = await get(ICON);
     expect(r.headers.get('content-type')).toBe('image/webp');
-    expect((await r.arrayBuffer()).byteLength).toBeGreaterThan(20);
+    const bytes = Buffer.from(await r.arrayBuffer());
+    expect(bytes.subarray(8, 16).toString('latin1')).toBe('WEBPVP8L');
+    // A lossless WebP names its size after the 0x2f mark, each side minus one in 14 bits: not
+    // the single pixel that showed as a blank square.
+    const size = bytes.readUInt32LE(21);
+    expect([(size & 0x3fff) + 1, ((size >>> 14) & 0x3fff) + 1]).toEqual([64, 64]);
   });
 });
 

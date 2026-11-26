@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -124,6 +124,7 @@
     "ops/lib/db-roles.sh",
     "ops/lib/db-roles.sql",
     "ops/lib/host-baseline.sh",
+    "ops/lib/image.sh",
     "ops/lib/operator.sh",
     "ops/lib/website-route.sh",
     "ops/pull-backups.sh",

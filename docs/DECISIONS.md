@@ -479,3 +479,21 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   what it cannot work out is a finding, and a pair naming a missing token still throws.
 - **K103 — The stand-in website refuses the proxy's secret** (2026-11-26): its `authorize` answers
   500 to a request carrying it, as a game's own stub did; the proxy half still clears it.
+- **K104 — Games load-test with the kit's helpers** (decided 2026-11-26, item i). `latencies`,
+  `inBatches` and `watchServer` (K73); the kit builds nothing further.
+- **K105 — The outage e-mail for games is the website's job** (decided 2026-11-26, item f). No kit
+  part.
+- **K106 — Full browser suites run nightly** (decided 2026-11-26, item k): on a schedule and on
+  demand, not on every pull request, which runs the unit tests, the static checks and the browser
+  specs of what it changed. The kit's own showcase stays a required check of its pull requests
+  (K19) until a decision says otherwise.
+- **K107 — A privacy data list is required for every game before production** (decided
+  2026-11-26, item j). `docs/PRIVACY-DATA.md` in each game, from the kit's template, answered for
+  every piece of personal data; the game's test holds it with `findPrivacyGaps`.
+- **K108 — Security scans for every project, reporting first** (decided 2026-11-26, item h). The
+  website included. The kit's reusable workflow runs them and does not block; blocking is one
+  input, turned on by a later decision.
+- **K109 — Signed release images before the first game goes to production** (decided 2026-11-26,
+  item g). The server pulls and verifies instead of building. Signing is keyless (GitHub's
+  identity, no keys). Public or private images are decided later: it is the registry package's one
+  setting.

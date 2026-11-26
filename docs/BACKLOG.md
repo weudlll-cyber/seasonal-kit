@@ -28,12 +28,6 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
-- **49. Shared ops parts for every game** (owner, 2026-11-26): install, operate and secure alike.
-  Compared in [concepts/shared-ops-parts.md](concepts/shared-ops-parts.md). Items a to e are
-  released: the admin command with uninstall (v0.29.0), the host baseline (v0.30.0), the container
-  hardening check (v0.31.0) and the database roles (v0.32.0). Items f to k wait for the owner's word.
-  Done when: f to k are decided.
-
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -214,3 +208,12 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.34.0 (K102).
 - **62. The stand-in website accepted the proxy's secret** (Mini Games, 2026-11-26). Closed in
   v0.34.0 (K103).
+- **63. The stand-in's step icon showed as a blank square** (Seasonal Cases, 2026-11-26). Closed
+  in v0.35.0 (`websiteStandIn.ts` and its test).
+- **64. The route file named no trusted range and gave no reason for refusing metrics** (Seasonal
+  Cases, 2026-11-26). Closed in v0.35.0 (`website-route.sh`, `website-route.test.sh`). The four
+  cookie removals stay: none is redundant (each takes one pair).
+- **65. A running Vite kept the old kit after a pin move** (Seasonal Cases, 2026-11-26). Closed in
+  v0.35.0 (ADOPTION.md, HANDBOOK.md).
+- **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
+  v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

@@ -97,11 +97,16 @@ Windows computer, backup included, runs in a Linux container.
 - It refuses a file of another prefix or environment, by its name and by its manifest, unless
   `--force-env`.
 - It refuses to unpack an archive with a member it does not know.
+- **Every refusal is decided before anything is stopped or replaced** (since v0.33.0): the
+  manifest, the database address and schema name, the volume settings, a `--secrets-to` that is no
+  folder, and a secret file that differs from the one there (unless `--force-env`). Without
+  `--secrets-to` the secret files are only named, also before the question.
 - It asks before it replaces live data (`--yes` skips the question).
 - It runs `SK_BACKUP_STOP_CMD`, replaces the database **in one transaction** (the live data goes only
   when the restore succeeded), refills the volumes (leaving the excluded live-state files as they
-  are), puts the secret files into `--secrets-to` (a file that differs from the one there stops it
-  unless `--force-env`), and runs `SK_BACKUP_START_CMD`.
+  are), puts the secret files into `--secrets-to`, and runs `SK_BACKUP_START_CMD`.
+- It reads **only backups made by this script**. A backup made by a game's own earlier script needs
+  that game's documented rewrite, or ages out (decided 2026-11-25).
 
 ## What is never done
 

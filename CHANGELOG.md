@@ -7,6 +7,14 @@ applies it.
 
 ## [Unreleased]
 
+Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.
+
+### Fixed
+
+- **Restore order** (K91): `ops/backup.sh restore` decides every refusal (a differing secret file,
+  a `--secrets-to` that is no folder, a missing setting, the manifest) before the app is stopped or
+  anything replaced. Until now a differing secret stopped it after the database was overwritten.
+
 ## [0.32.0] - 2026-11-26
 
 Two database roles for every game (K90), from Bingo Royale.

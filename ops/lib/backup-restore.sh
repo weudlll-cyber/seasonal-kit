@@ -52,11 +52,12 @@ check_manifest() {
     die "this is a backup of $prefix/$env, not of $SK_BACKUP_PREFIX/$(env_name); pass --force-env to restore it anyway"
 }
 
-# restore_secrets <dir> <target dir> <force>: puts the backup's secret files into <target dir>.
-# A file that is already there and differs stops the restore unless forced (a restored database
-# is sealed with the backup's key). Only names are said.
-restore_secrets() {
+# check_secrets <dir> <target dir> <force>: every refusal about the secret files, and the notice
+# that they are only named without a target dir. A file that is already there and differs stops the
+# restore unless forced (a restored database is sealed with the backup's key). Only names are said.
+check_secrets() {
   local f name dest
+  [[ -z $2 || ! -e $2 || -d $2 ]] || die "$2 is not a folder: --secrets-to needs a folder"
   for f in "$1"/secret-*; do
     [[ -e $f ]] || continue
     name=${f##*/secret-}
@@ -68,10 +69,41 @@ restore_secrets() {
     if [[ -e $dest ]] && ! cmp -s "$f" "$dest" && [[ $3 != 1 ]]; then
       die "the backup's $name differs from $dest; pass --force-env to replace it with the backup's"
     fi
+  done
+}
+
+# restore_secrets <dir> <target dir>: puts the backup's secret files into <target dir>, if one is
+# given. check_secrets has run first.
+restore_secrets() {
+  local f name
+  [[ -n $2 ]] || return 0
+  for f in "$1"/secret-*; do
+    [[ -e $f ]] || continue
+    name=${f##*/secret-}
     install -d -m 0700 "$2"
-    install -m 0600 "$f" "$dest"
+    install -m 0600 "$f" "$2/$name"
     info "the secret file $name is restored to $2"
   done
+}
+
+# check_database_settings: refuses a database address or schema name the restore cannot use.
+check_database_settings() {
+  split_db_url
+  pg_target >/dev/null
+  [[ -z ${SK_BACKUP_DB_SCHEMA:-} || ${SK_BACKUP_DB_SCHEMA} =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] ||
+    die "SK_BACKUP_DB_SCHEMA is not a plain schema name"
+}
+
+# check_restore <dir> <secrets-to> <force>: everything that can refuse a restore, decided while
+# nothing is stopped or replaced yet.
+check_restore() {
+  check_manifest "$1" "$3"
+  check_database_settings
+  if [[ -n ${SK_BACKUP_VOLUMES:-} ]]; then
+    need SK_BACKUP_HELPER_IMAGE
+    volume_excludes >/dev/null
+  fi
+  check_secrets "$1" "$2" "$3"
 }
 
 # restore_database <dump>: in ONE transaction: pg_restore turns the dump into SQL (dropping what it
@@ -80,10 +112,8 @@ restore_secrets() {
 # ends the input without COMMIT, and pipefail returns the failure.
 restore_database() {
   local target=()
-  split_db_url
+  check_database_settings
   mapfile -t target < <(pg_target)
-  [[ -z ${SK_BACKUP_DB_SCHEMA:-} || ${SK_BACKUP_DB_SCHEMA} =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] ||
-    die "SK_BACKUP_DB_SCHEMA is not a plain schema name"
   {
     printf 'SET client_min_messages = warning;\nBEGIN;\n'
     [[ -z ${SK_BACKUP_DB_SCHEMA:-} ]] || printf 'DROP SCHEMA IF EXISTS %s CASCADE;\n' "$SK_BACKUP_DB_SCHEMA"
@@ -113,7 +143,7 @@ do_restore() {
   new_work
   work=$WORK
   unpack "$file" "$2" "$work"
-  check_manifest "$work" "$3"
+  check_restore "$work" "$5" "$3"
   if [[ $4 != 1 ]]; then
     read -r -p "Restore $(basename "$file") over the live $(env_name) data? Everything since that backup is lost. [y/N] " answer
     [[ $answer == y || $answer == Y ]] || die "not restored"
@@ -121,7 +151,7 @@ do_restore() {
   [[ -z ${SK_BACKUP_STOP_CMD:-} ]] || bash -c "$SK_BACKUP_STOP_CMD"
   restore_database "$work/db.dump"
   restore_volumes "$work"
-  restore_secrets "$work" "$5" "$3"
+  restore_secrets "$work" "$5"
   [[ -z ${SK_BACKUP_START_CMD:-} ]] || bash -c "$SK_BACKUP_START_CMD"
   info "restored $(basename "$file")"
 }

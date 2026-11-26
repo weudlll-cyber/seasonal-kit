@@ -14,8 +14,10 @@
 #                   the volume's files back (but not a live-state file it excludes) and the
 #                   secret file back; the drill compares each table with the dump and passes;
 #                 - a restore of another environment's backup is refused (by name, and for a
-#                   renamed file by its manifest) and touches nothing; a differing secret and an
-#                   archive with a member the script does not know are refused;
+#                   renamed file by its manifest) and touches nothing; a differing secret, a
+#                   --secrets-to that is no folder and a missing setting are refused before the
+#                   app is stopped or anything replaced; an archive with a member the script does
+#                   not know is refused;
 #                 - no output ever holds the secret.
 # Source:         new in the kit; the digest of the image is the one in seasonal-bingo-royale
 #                 ops/compose.yml and seasonal-mini-games ops/compose.yml.
@@ -153,10 +155,29 @@ renamed="$tmp/backups/sk-prod-20260101T000000Z.tar.age"
 cp "$other" "$renamed"
 refused "a renamed file is refused by its manifest" "not of sk/prod" \
   bash "$script" restore "$renamed" --identity "$tmp/key.txt" --yes
+# A differing secret: refused while nothing is stopped or replaced; forced, all three are replaced.
 printf 'a different key\n' >"$tmp/restored/seed.key"
-refused "a secret that differs from the one on disk stops the restore" "differs from" \
-  bash "$script" restore "$file" --identity "$tmp/key.txt" --yes --secrets-to "$tmp/restored"
-check "unless forced, and then the backup's replaces it" bash -c "SK_BACKUP_SOURCE_ONLY=0 bash '$script' restore '$file' --identity '$tmp/key.txt' --yes --force-env --secrets-to '$tmp/restored' >/dev/null 2>&1 && cmp -s '$tmp/seed.key' '$tmp/restored/seed.key'"
+docker run --rm -v "$vol:/data" "$PG_IMAGE" sh -c 'echo kept > /data/kept.txt; rm /data/a.txt' >/dev/null
+marker() { docker exec "$dst" psql -U app -d app -tA -c "SELECT name FROM app.accounts WHERE id=99"; }
+listing() { docker run --rm -v "$vol:/data" "$PG_IMAGE" ls /data | tr '\n' ' '; }
+with_secrets=(bash "$script" restore "$file" --identity "$tmp/key.txt" --yes --secrets-to "$tmp/restored")
+export SK_BACKUP_STOP_CMD="touch '$tmp/stopped'"
+refused "a secret that differs from the one on disk stops the restore" "differs from" "${with_secrets[@]}"
+check "before the database is replaced: the marker row is still there" test "$(marker)" = marker
+check "before the volume is replaced" test "$(listing)" = 'kept.txt maintenance sub '
+check "the secret on disk is untouched" test "$(cat "$tmp/restored/seed.key")" = 'a different key'
+check "and the app was never stopped" test ! -e "$tmp/stopped"
+: >"$tmp/a-file"
+refused "a --secrets-to that is a file is refused" "is not a folder" \
+  bash "$script" restore "$file" --identity "$tmp/key.txt" --yes --secrets-to "$tmp/a-file"
+refused "a missing helper image is refused" "SK_BACKUP_HELPER_IMAGE is not set" \
+  env -u SK_BACKUP_HELPER_IMAGE "${with_secrets[@]}" --force-env
+check "both before the database is replaced" test "$(marker)" = marker
+unset SK_BACKUP_STOP_CMD
+check "forced, the restore runs" "${with_secrets[@]}" --force-env
+check "the database is replaced" test -z "$(marker)"
+check "the volume is replaced" test "$(listing)" = 'a.txt maintenance sub '
+check "and the backup's secret replaces the one on disk" cmp -s "$tmp/seed.key" "$tmp/restored/seed.key"
 refused "a restore needs the key" "pass your age key file" bash "$script" restore "$file" --yes
 
 evil="$tmp/evil"

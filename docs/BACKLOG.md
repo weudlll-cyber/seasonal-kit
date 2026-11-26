@@ -105,7 +105,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   measures again in the real game and reports back; a new item then. Closed by PR #39 and v0.15.0
   without a change.
 - **20. A merged single-card `ResultFrame` option** (the concept's point 4, Bingo, 2026-11-24).
-  Decided no, K47: Bingo shows its result like the other games and drops its own `results.css`
+  Decided no, K47 (replaced by K93, 2026-11-26: the frame has a `dense` variant). Bingo drops its own `results.css`
   overrides at its next kit adoption. Nothing to build.
 - **21. The start card fits again after web fonts load** (Mini Games T404 and T423, decided
   2026-11-24, K48). `StartCard`'s optional `fit` prop passes `FitOptions` (`afterFonts`) to
@@ -185,3 +185,14 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Closed in v0.28.0 (`AppHeader`, `showcase/steps.spec.ts`).
 - **48. The docs let an installer copy `ops/backup.sh` alone** (Seasonal Cases, 2026-11-25): it
   loads `ops/lib/`. Closed in v0.28.0 (OPERATIONS.md, ADOPTION.md).
+- **50. A restore refused a differing secret only after replacing the database** (Bingo Royale,
+  2026-11-26). Closed in v0.33.0 (`ops/lib/backup-restore.sh`, `ops/test/backup.test.sh`, K91).
+- **51. The failure brake read its rule once and let parallel guesses through** (Bingo Royale,
+  2026-11-26). Closed in v0.33.0 (`failureBrake.ts` and its test, K92).
+- **52. The result frame showed fewer places than Bingo's panel and clipped descenders** (Bingo
+  Royale, 2026-11-26). Closed in v0.33.0 (`dense`, K93; the headline's line height;
+  `showcase/looks.spec.ts`).
+- **53. A full header folded for its badges, the folded toggle left the Menu's row and the chat
+  bar's text did not grow** (Bingo Royale, 2026-11-26). Closed in v0.33.0 (K94,
+  `showcase/looks.spec.ts`, `showcase/cases.spec.ts`).
+- **54. ADOPTION.md's Bingo section was behind Bingo's master** (2026-11-26). Closed in v0.33.0.

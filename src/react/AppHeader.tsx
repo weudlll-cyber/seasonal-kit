@@ -20,7 +20,7 @@
  *                 6. the theme toggle (./theme).
  *                 When they would not fit on one row, the navigation and the account fold
  *                 into one menu button (./MenuFold, ./useHeaderFold; since v0.11.0, measured
- *                 before the paint; a game may also name a width under which it always folds, `foldBelow`,
+ *                 before the paint; the step badges give way first, since v0.33.0; a game may also name a width under which it always folds, `foldBelow`,
  *                 since v0.13.0). Its sizes keep the game's floors
  *                 (../../css/header.css, K14). The words of the links, the role and the routes
  *                 are the game's; the header holds only their places.
@@ -154,16 +154,20 @@ export function AppHeader(p: AppHeaderProps): ReactElement {
           <small>Seasonal Entertainment</small>
         </span>
       </a>
-      <MenuFold
-        closeKey={p.closeKey}
-        {...(p.buttonClassName === undefined ? {} : { buttonClassName: p.buttonClassName })}
-        {...(p.foldBelow === undefined ? {} : { foldBelow: p.foldBelow })}
-      >
-        <Nav links={p.links} navExtra={p.navExtra} />
-        <Account {...p} />
-      </MenuFold>
-      {/* Last in the DOM as on screen, so Tab meets it where the eye does (WCAG 2.4.3). */}
-      <ThemeToggle />
+      {/* Folded, the Menu button and the toggle are one group that wraps together (since
+          v0.33.0); unfolded the group has no box of its own. */}
+      <div className="sk-header-controls">
+        <MenuFold
+          closeKey={p.closeKey}
+          {...(p.buttonClassName === undefined ? {} : { buttonClassName: p.buttonClassName })}
+          {...(p.foldBelow === undefined ? {} : { foldBelow: p.foldBelow })}
+        >
+          <Nav links={p.links} navExtra={p.navExtra} />
+          <Account {...p} />
+        </MenuFold>
+        {/* Last in the DOM as on screen, so Tab meets it where the eye does (WCAG 2.4.3). */}
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

@@ -51,7 +51,6 @@ const MAX_KEYS = 100_000;
 // The rule read once into a frozen copy of its own, or null when it is no valid rule: a whole
 // limit ≥ 1 over a whole window of 1 ms or more. A copy, because a rule the game changes in
 // place (or a getter) would otherwise skip this check (v0.11.0 pass, findings 9, 10 and 12).
-// Exported for ./failureBrake, which takes the same rule (since v0.15.0); not part of the entry.
 export function ruleOf(read: unknown): RateRule | null {
   if (typeof read !== 'object' || read === null) return null;
   const { limit, windowMs } = read as Record<string, unknown>;
@@ -66,6 +65,26 @@ const RULE_ERROR = 'A rate rule needs a whole limit ≥ 1 and a whole window of 
 // game's admin area) applies at once (since v0.11.0, Bingo R3).
 export type RateRuleSource = RateRule | (() => RateRule);
 
+// The rule of a source, for each request: the source's now, or the last valid one when it gives a
+// broken rule or throws (an admin's typo or a settings read that fails never lifts the limit nor
+// throws inside a request). A fixed rule is read once, so one the game changes in place is never
+// read again. A source whose first rule is broken throws `error`. Exported for ./failureBrake,
+// which takes the same rule; not part of the entry.
+export function ruleReader(source: RateRuleSource, error: string): () => RateRule {
+  const first = ruleOf(typeof source === 'function' ? source() : source);
+  if (first === null) throw new RangeError(error);
+  let rule = first;
+  if (typeof source !== 'function') return () => rule;
+  return () => {
+    try {
+      rule = ruleOf(source()) ?? rule;
+    } catch {
+      // Kept: the last valid rule.
+    }
+    return rule;
+  };
+}
+
 export class RateLimiter {
   private readonly buckets = new Map<string, Bucket>();
   private takes = 0;
@@ -73,35 +92,16 @@ export class RateLimiter {
   // flood of new keys against a full map costs nothing per request (v0.8.0 pass, review 2, finding
   // 1).
   private fullPrunedAt = Number.NEGATIVE_INFINITY;
-
-  // The last valid rule read, as a copy: a source that gives a broken one later keeps this one,
-  // and a fixed rule changed in place by the game is never read again.
-  private rule: RateRule;
+  // The rule for this request (ruleReader above).
+  private readonly ruleNow: () => RateRule;
 
   constructor(
-    private readonly source: RateRuleSource,
+    source: RateRuleSource,
     private readonly now: () => number = Date.now,
     private readonly maxKeys = MAX_KEYS,
   ) {
-    const first = ruleOf(typeof source === 'function' ? source() : source);
-    if (first === null || !Number.isSafeInteger(maxKeys) || maxKeys < 1) {
-      throw new RangeError(RULE_ERROR);
-    }
-    this.rule = first;
-  }
-
-  // The rule for this request: the source's now, or the last valid one when it gives a broken
-  // rule or throws (an admin's typo or a settings read that fails never lifts the limit nor
-  // throws inside a request).
-  private ruleNow(): RateRule {
-    if (typeof this.source !== 'function') return this.rule;
-    try {
-      const read = ruleOf(this.source());
-      if (read !== null) this.rule = read;
-    } catch {
-      // Kept: the last valid rule.
-    }
-    return this.rule;
+    this.ruleNow = ruleReader(source, RULE_ERROR);
+    if (!Number.isSafeInteger(maxKeys) || maxKeys < 1) throw new RangeError(RULE_ERROR);
   }
 
   // The key's bucket, a new full one, or null when the map is full of active keys.

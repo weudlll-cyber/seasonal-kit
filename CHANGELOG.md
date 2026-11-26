@@ -7,6 +7,47 @@ applies it.
 
 ## [Unreleased]
 
+## [0.33.0] - 2026-11-26
+
+Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.
+
+### Fixed
+
+- **Restore order** (K91): `ops/backup.sh restore` decides every refusal (a differing secret file,
+  a `--secrets-to` that is no folder, a missing setting, the manifest) before the app is stopped or
+  anything replaced. Until now a differing secret stopped it after the database was overwritten.
+- **`FailureBrake` and parallel guesses** (K92): `reserve(key)` returns an attempt holding one of
+  the key's `limit` places, ended with `failed()` or `passed()`, or null while braked. Guesses sent
+  together passed `braked` before the first failure was counted.
+- **Result headline:** the frame sets its line height (1.3), so a game's tighter heading no longer
+  has its descenders clipped by the two-line clamp.
+- **Folded header:** the Menu button and the theme toggle wrap together, as one group.
+- **Phone chat bar:** its text and unread count grow with the player's font size.
+
+### Added
+
+- `FailureBrake` takes its rule as a function too, read at each check, as `RateLimiter` does.
+- **`ResultFrame` `dense`** (K93): one card, small padding, the headline on one row with its
+  lines.
+- **Step badges give way** (K94): where the header's items would take a second row, the chip shows
+  only the first badge, then none, before the header folds. Hidden badges are still read out; the
+  folded menu shows all.
+
+ADOPTION.md's Bingo section describes its master as it is.
+
+### Migration, per game
+
+- **Bingo Royale:** passes its admin-set limits to `FailureBrake` as the function (`liveRule`),
+  and `behindBrakes` uses `reserve`; the `LoginBrake` class goes, so `auth/loginBrake.ts` goes too
+  once `behindBrakes` is moved or nothing else is left in it.
+- **The header's markup:** the Menu button, the panel and the theme toggle sit in
+  `.sk-header-controls`. A game's stylesheet that addresses them as direct children of
+  `.sk-header` writes a descendant selector; `header.css` also brings `header-dev.css` along.
+- **Bingo Royale:** `dense` on its final placement; it re-measures the places and the fold at
+  1280 x 720.
+- **The others:** nothing breaks. A sign-in that calls `braked` then `failed` still lets parallel
+  guesses through until it calls `reserve` instead.
+
 ## [0.32.0] - 2026-11-26
 
 Two database roles for every game (K90), from Bingo Royale.
@@ -1586,7 +1627,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...HEAD
+[0.33.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.29.0...v0.30.0

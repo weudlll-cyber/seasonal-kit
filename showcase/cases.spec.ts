@@ -6,13 +6,15 @@
  *                 and settings it named (1536x768, 1280x720, 390x844, 375x667, 360x780; root font
  *                 100 % and 200 %; light and dark):
  *                 - the header folds only where Cases' bar (back link, brand, six links, a member
- *                   with three steps) does not fit one row: forced open it takes two rows at 1280
- *                   and 1536 px and one at 1920 px; Cases' own brand rule changes no box there;
+ *                   with three steps) does not fit one row, with the badges given way (v0.33.0):
+ *                   forced open it takes two rows at 1280 px and one at 1536 and 1920 px; Cases'
+ *                   own brand rule changes no box there;
  *                 - at one width every header folds alike, loaded there or resized to it
  *                   (v0.27.0);
  *                 - the folded brand never lies under the Menu button, at any phone width and at
  *                   200 %: when the brand and the controls do not share a row, the controls take
- *                   a row of their own below it; the header ends inside the window;
+ *                   a row of their own below it, the Menu and the toggle together (v0.33.0, also
+ *                   at 150 %); the header ends inside the window;
  *                 - the longest member's chip (24 characters, a rank, three steps) ends inside
  *                   the folded menu's panel and the window, its three icons inside the chip;
  *                 - the game bar's facts wrap instead of ending in "…", never narrower than their
@@ -55,7 +57,7 @@ function rowsWhenOpen(page: Page) {
   return casesHeader(page).evaluate((h) => {
     const was = h.getAttribute('data-sk-folded');
     h.setAttribute('data-sk-folded', 'false');
-    const items = [...h.children, ...(h.querySelector('.sk-menu')?.children ?? [])]
+    const items = [...h.querySelectorAll(':scope > *, .sk-header-controls > *, .sk-menu > *')]
       .filter((e) => getComputedStyle(e).display !== 'contents')
       .map((e) => e.getBoundingClientRect())
       .filter((r) => r.height > 0);
@@ -77,7 +79,8 @@ function brandBoxes(page: Page) {
 for (const theme of THEMES) {
   for (const [width, height, folded] of [
     [1920, 1080, 'false'],
-    [1536, 768, 'true'],
+    // Since v0.33.0 the step badges give way first: at 1536 px the bar then fits one row.
+    [1536, 768, 'false'],
     [1280, 720, 'true'],
   ] as const) {
     const size = `${String(width)}x${String(height)}, ${theme}`;
@@ -141,13 +144,15 @@ function folded(page: Page) {
       nameInsideBrand: name.right <= brand.right + 0.5,
       controlsBelow: menu.top >= brand.bottom - 1,
       controlsBeside: menu.top < brand.bottom - 1 && menu.left >= brand.right - 0.5,
+      controlsTogether: Math.abs(menu.top - toggle.top) < 1,
       headerWidth: h.getBoundingClientRect().width,
     };
   });
 }
 
 for (const theme of THEMES) {
-  for (const font of FONTS) {
+  // 150 % too: where Bingo saw the toggle leave the Menu's row (v0.33.0).
+  for (const font of [...FONTS, 24]) {
     for (const width of PHONES) {
       test(`the brand is never under the Menu: ${String(width)} px, ${label(font)}, ${theme}`, async ({
         page,
@@ -160,6 +165,7 @@ for (const theme of THEMES) {
         expect(seen.nameInsideBrand, 'the name stays inside the brand').toBe(true);
         // Beside it when they fit one row, else the controls take a row of their own below.
         expect(seen.controlsBelow || seen.controlsBeside).toBe(true);
+        expect(seen.controlsTogether, 'the Menu and the toggle share a row').toBe(true);
         expect(seen.headerWidth, 'the header is no wider than the window').toBeLessThanOrEqual(
           width + 0.5,
         );

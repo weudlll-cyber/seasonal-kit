@@ -232,8 +232,8 @@ describe('the failure brake', () => {
       at.now = i;
       brake.failed('a');
     }
-    const held = (brake as unknown as { failures: Map<string, number[]> }).failures.get('a');
-    expect(held).toEqual([4, 5]);
+    const held = (brake as unknown as { slots: Map<string, { at: number }[]> }).slots.get('a');
+    expect(held).toEqual([{ at: 4 }, { at: 5 }]);
   });
 
   it('prunes idle keys on the 1000th failure only', () => {

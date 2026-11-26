@@ -439,3 +439,18 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   owner role migrates and then grants the app role (`grantAppRole`), with tables a game names as
   append-only or read-only; the kit's SQL, from Bingo Royale's, sets both roles up and takes the
   passwords on standard input only.
+- **K91 — A restore refuses before it replaces** (2026-11-26). Everything that can refuse a restore
+  is decided before the app is stopped. The kit's restore reads only the kit's backups; an older
+  backup needs the game's documented rewrite and ages out (decided 2026-11-25).
+- **K92 — The failure brake counts attempts under way** (2026-11-26). `reserve` gives an attempt
+  one of the key's `limit` places until it is ended, so parallel guesses stay within the limit, and
+  the brake's rule may be a function read at each check (from Bingo Royale's `loginBrake`).
+  `braked` and `failed` stay for a route that cannot be tried in parallel.
+- **K93 — `ResultFrame` has a dense variant** (decided 2026-11-26, reported by Bingo Royale's
+  planning). One card with small padding, the headline on one row with its lines. It replaces K47
+  ("no merged single-card option"); the frame without `dense` is unchanged but for the headline's
+  line height.
+- **K94 — The step badges give way before the header folds** (decided 2026-11-26, reported by Bingo
+  Royale's planning). Only the highest badge, then none in the bar, then the fold. "Highest" is the
+  first of the member's steps as the website sends them (Holder before Farmer before Investor);
+  the steps are one per ladder and carry no rank across ladders.

@@ -9,8 +9,9 @@
  *                 drains nothing and one that is not finite brakes and counts nothing. The map
  *                 is bounded as the rate limiter's is: idle keys are forgotten, and when it is
  *                 full of active keys a new key is refused (braked) without touching another
- *                 key's count. A broken rule or bound fails at construction, and the rule is read
- *                 once into a copy.
+ *                 key's count. A broken rule or bound fails at construction, and a fixed rule is
+ *                 read once into a copy; a function is read at each check. `reserve` holds a slot
+ *                 for an attempt under way, so parallel guesses cannot pass the limit.
  * Depends on:     vitest
  * Source:         seasonal-cases apps/server/src/auth/failureBrake.ts at 073f9ad (D51), without
  *                 its sign-in rules and keys, which stay in the game; the bounding as
@@ -56,6 +57,115 @@ describe('looking and counting', () => {
     for (let i = 0; i < 3; i += 1) b.failed('ann');
     expect(b.braked('ann')).toBe(true);
     expect(b.braked('bob')).toBe(false);
+  });
+});
+
+describe('attempts under way', () => {
+  it('lets exactly `limit` of many parallel wrong attempts through', async () => {
+    const { b } = brake();
+    let checked = 0;
+    const guess = async (): Promise<void> => {
+      const attempt = b.reserve('ann');
+      if (attempt === null) return;
+      checked += 1;
+      // The password is judged later, as a hash takes its time.
+      await Promise.resolve();
+      attempt.failed();
+    };
+    await Promise.all(Array.from({ length: 20 }, guess));
+    expect(checked).toBe(3);
+    expect(b.braked('ann')).toBe(true);
+  });
+
+  it('counts attempts under way against the limit, also for `braked`', () => {
+    const { b } = brake();
+    b.failed('ann');
+    expect(b.reserve('ann')).not.toBeNull();
+    expect(b.reserve('ann')).not.toBeNull();
+    expect(b.braked('ann')).toBe(true);
+    expect(b.reserve('ann')).toBeNull();
+  });
+
+  it('frees the slot of a success, and counts a failure once', () => {
+    const { b } = brake();
+    for (let i = 0; i < 10; i += 1) b.reserve('ann')?.passed();
+    expect(b.size).toBe(0);
+    const attempt = b.reserve('ann');
+    attempt?.failed();
+    attempt?.failed();
+    attempt?.passed();
+    b.failed('ann');
+    expect(b.braked('ann')).toBe(false);
+    b.failed('ann');
+    expect(b.braked('ann')).toBe(true);
+  });
+});
+
+describe('an attempt over time', () => {
+  it('dates the failure when it is judged, not when the attempt began', () => {
+    const { b, clock } = brake({ limit: 1, windowMs: 100 });
+    const attempt = b.reserve('ann');
+    clock.now = 60;
+    attempt?.failed();
+    clock.now = 130;
+    expect(b.braked('ann')).toBe(true);
+  });
+
+  it('lets an attempt that is never ended age out with the window', () => {
+    const { b, clock } = brake({ limit: 1, windowMs: 100 });
+    const lost = b.reserve('ann');
+    expect(b.braked('ann')).toBe(true);
+    clock.now = 100;
+    expect(b.braked('ann')).toBe(false);
+    // Ended late, a wrong one still counts.
+    lost?.failed();
+    expect(b.braked('ann')).toBe(true);
+  });
+
+  it('holds a place for the attempt in a full map, and gives none on a broken clock', () => {
+    const { b, clock } = brake(RULE, 1);
+    const attempt = b.reserve('ann');
+    expect(b.reserve('bob')).toBeNull();
+    attempt?.passed();
+    expect(b.reserve('bob')).not.toBeNull();
+    clock.now = Number.NaN;
+    expect(b.reserve('bob')).toBeNull();
+  });
+});
+
+describe('a live rule', () => {
+  it('reads a function at each check, so a changed limit applies between two attempts', () => {
+    const rule = { limit: 3, windowMs: 100 };
+    const b = new FailureBrake(
+      () => rule,
+      () => 0,
+    );
+    b.reserve('ann')?.failed();
+    expect(b.braked('ann')).toBe(false);
+    rule.limit = 1;
+    expect(b.reserve('ann')).toBeNull();
+    rule.limit = 2;
+    expect(b.reserve('ann')).not.toBeNull();
+    expect(b.braked('ann')).toBe(true);
+  });
+
+  it('keeps the last valid rule when the function gives a broken one or throws', () => {
+    let read = (): { limit: number; windowMs: number } => ({ limit: 1, windowMs: 100 });
+    const b = new FailureBrake(
+      () => read(),
+      () => 0,
+    );
+    b.failed('ann');
+    read = () => ({ limit: 0, windowMs: 100 });
+    expect(b.braked('ann')).toBe(true);
+    read = () => {
+      throw new Error('settings unreadable');
+    };
+    expect(b.braked('ann')).toBe(true);
+  });
+
+  it('fails at construction when the function first gives a broken rule', () => {
+    expect(() => new FailureBrake(() => ({ limit: 0, windowMs: 1 }))).toThrow(RangeError);
   });
 });
 

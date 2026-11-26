@@ -1,0 +1,46 @@
+/**
+ * @file   css/header-dev.css
+ * @brief  The header's development sign-in menu (src/react/dev/DevSignIn.tsx), drawn only where
+ *         a game passes it.
+ *
+ * Responsibility: the menu's panel under its button; inside the folded header's scrolling menu
+ *                 it opens in the flow. ./header.css brings this file along.
+ * Source:         ./header.css, moved here unchanged (v0.33.0).
+ */
+/* The development sign-in menu, when the game passes it. */
+.sk-dev-menu {
+  position: relative;
+}
+
+.sk-dev-menu-panel {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  gap: var(--sk-space-1);
+  box-sizing: border-box;
+  width: min(18rem, calc(100vw - 2 * var(--sk-gutter)));
+  padding: var(--sk-space-2);
+  border: 1px solid var(--sk-color-border);
+  border-radius: var(--sk-radius-card);
+  background: var(--sk-color-surface);
+  box-shadow: var(--sk-shadow-raised);
+}
+
+.sk-dev-menu-hint {
+  margin: 0;
+  color: var(--sk-color-text-muted);
+  font-size: max(var(--sk-floor-text), var(--sk-font-size-small));
+}
+
+/* Inside the scrolling panel the dev menu opens in the flow, not over it (it would be cut). */
+.sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu-panel {
+  position: static;
+  width: 100%;
+  margin-top: var(--sk-space-1);
+}
+
+.sk-header[data-sk-folded='true'] .sk-menu .sk-dev-menu {
+  flex-basis: 100%;
+}

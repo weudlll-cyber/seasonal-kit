@@ -202,7 +202,8 @@ describe('the tab order in the header (audit B7, DECISIONS K29)', () => {
   it('puts the theme toggle last in the DOM, where it is shown, so Tab meets it there', () => {
     render(<AppHeader {...base} />);
     const header = screen.getByTestId('app-header');
-    expect(header.lastElementChild).toBe(screen.getByTestId('theme-toggle'));
+    // In the controls' group (since v0.33.0), which is itself the header's last part.
+    expect(header.lastElementChild?.lastElementChild).toBe(screen.getByTestId('theme-toggle'));
   });
 });
 

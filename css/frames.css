@@ -25,6 +25,9 @@
  *                 `--sk-start-title`, the same value)
  */
 
+/* The result's dense variant (since v0.33.0). */
+@import './frames-dense.css';
+
 /* The game's bar and gaps above the result, which the game sets on its own root: Mini Games
    computes it (`--result-top`), the default is its fallback. */
 :root {
@@ -190,10 +193,13 @@
   margin: 0;
 }
 
-/* The headline at about half the page title's size, at most two lines (balanced). */
+/* The headline at about half the page title's size, at most two lines (balanced). The line
+   height is the frame's own: the clamp cuts at the box's edge, and a game's tighter one cut the
+   descenders (since v0.33.0, Bingo). */
 .sk-result-head > :is(h1, h2, h3, h4, h5, h6):first-child {
   margin: 0;
   font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * clamp(1.25rem, 1rem + 0.6vw, 1.5rem)));
+  line-height: 1.3;
   text-wrap: balance;
   display: -webkit-box;
   -webkit-line-clamp: 2;

@@ -19,6 +19,9 @@ A path and line count below that this check did not change is as it was at the f
 Bingo Royale `2380ea7` and Seasonal Cases `073f9ad` pin v0.11.1; Seasonal Party `a09f803` pins
 none. The bullets below are the 2026-11-23 state, kept as the plan's history.
 
+**Bingo's section** was brought to its master `d7d841e` on 2026-11-26; it, and not the bullets
+below, says where Bingo stands.
+
 Where each game stood on 2026-11-23:
 
 - **Mini Games** used no kit release yet.
@@ -220,59 +223,68 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **Database roles** (K90): CHANGELOG "Migration, per game"; rehearse the conversion with a copy of existing data. Only on the owner's word.
 
+### Since v0.33.0
+
+- **v0.33.0** (CHANGELOG, "Migration, per game"): nothing needed. Check the folded header and, where it shows step badges, the unfolded one once. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
-### Where the adoption branch stands (`feat/kit-adoption` `5c613c0`, PR #58)
+### Where Bingo stands (master `d7d841e`, read 2026-11-26)
 
-- **It pins `#v0.10.1`** in `apps/web` and in `apps/server` (a dev dependency, bundled by
-  `build.mjs`).
-- **Moved onto the kit:**
-  - the CSS (fonts, tokens, shell, motion) and `themeInit`;
-  - `ThemeToggle`, `WebsiteChatFrame`, `DevSignIn`;
-  - on the server: the website sign-in checks, `mappedRoles`, TOTP, `'hex'` recovery codes
-    under `SBR_RECOVERY_KEY`, `SessionEnds`, and the dev tools.
-- **Removed:**
-  - `websiteIdentity.ts`, `totp.ts`, `sessionEnds.ts`, `ThemeToggle.tsx`, `shell/theme.ts`,
-    `theme-init.js`, `fonts.css`;
-  - `tokens.css` shrank from 142 to 32 lines.
-- **Kept, until v0.11.0 had its requests:**
+- **It pins `#v0.11.1`**: `apps/web` as a dependency, `apps/server` as a dev dependency (bundled
+  by `build.mjs`). Its branch `feat/kit-0.22` (`712080c`, not merged) moves further; this section
+  describes master.
+- **On the kit since v0.10.1:** the CSS of fonts, tokens, shell and motion, `themeInit`,
+  `ThemeToggle`, `WebsiteChatFrame`, `DevSignIn`, and on the server the website sign-in checks,
+  `mappedRoles`, TOTP, `'hex'` recovery codes under `SBR_RECOVERY_KEY`, `SessionEnds` and the dev
+  tools. `packages/ui/src/tokens.css` is 32 lines (the arena's tokens, `--gutter`,
+  `--panel-padding`).
+- **Moved with v0.11.1** (what the plan below once called R1 to R4):
+  - the header: `AppHeader` in `shell/Header.tsx` (124) with its look in `shell/header.css` (167);
+    `MenuFold.tsx`, `useBarFold.ts` and `menu.css` are gone;
+  - the back link: the kit's `BackLink` inside that header;
+  - the limiter: `RateLimiter` with `liveRule`'s function rule; `auth/rateLimit.ts` (60) holds the
+    rules;
+  - the result frame: `ResultFrame` as a panel (`level: 3`) in `components/FinalPlacement.tsx`
+    (174); `Podium.tsx` (59) and `podium.css` (140) are its `placings`.
+- **Open rounds:** `http/routes/openRounds.ts` answers with `openRoundsPage`. The admin setting
+  "Open sign-ups for the website" is 1 to 20, the website's cap (`MAX_OPEN_ROUNDS`; it was 1 to
+  100 until 2026-11-23).
+- **Docked layout, step 1, is on master** (website mode): `shell/DockedChat.tsx` (63) holds the
+  kit's `DockedScreen` and `WebsiteChatFrame`; `ChatDock.tsx` and `chat.css` are gone; its test is
+  `shell/dockedChat.test.tsx`. Steps 2 (start card) and 3 (game bar, focus mode) are not built.
 
-  | Request | What Bingo keeps                                                                     | In v0.11.0                               |
-  | ------- | ------------------------------------------------------------------------------------ | ---------------------------------------- |
-  | R1      | its header: `AppShell.tsx` 293, `MenuFold.tsx` 90, `useBarFold.ts` 75, `menu.css` 72 | a header that folds when it does not fit |
-  | R2      | its `.shell-back` link                                                               | the back link's space                    |
-  | R3      | `auth/rateLimit.ts` 114, with `liveRule`                                             | `RateLimiter` with a `RateRuleSource`    |
-  | R4      | `FinalPlacement.tsx` 134, `Podium.tsx` 51, `podium.css` 133                          | `ResultFrame`'s `panel`                  |
+### Still its own on master, and what its next adoption changes
 
-  Each can now go, in a step that pins v0.11.0.
+- **The header's order** (K43): `shell/header.css` still puts the theme toggle before the account
+  with `order`; the kit's order has it last. Those rules go.
+- **The fold below 960 px:** a media query of its own in `shell/header.css`; `foldBelow={960}`
+  replaces it (K40, v0.13.0).
+- **The result's tightening in the dock:** `shell/dockResults.css:23-45` overrides the kit's panel
+  (padding, gap, the heading on the line's row, its size). `dense` (K93) is the kit's own form;
+  count the places again before the rules go.
+- **Writes without a browser** (K60): `writeCheck` refuses a write that names neither `Origin` nor
+  `Sec-Fetch-Site`. Before it goes in, the scripts and tests that write send one of them:
+  the e2e specs' request contexts, `load/common.mjs`, `load/asyncJump.mjs`,
+  `apps/server/demo-league.mjs` and the server's integration tests.
+- **The backup scripts:** the kit's `ops/backup.sh` loads `lib/` beside itself, so the kit's whole
+  `ops/` folder is installed as one folder (say `ops/kit/`), not file by file. Bingo's
+  `sbr update` installs `lib/*.sh` and `lib/*.sql` only (`ops/lib/config.sh:186`), and the update
+  that brings a new version runs the **old** `install_files`. So: `install_files` copies
+  `ops/kit/` whole and `STACK_FILES` names it (`save_stack` skips it where it does not exist
+  yet), in an update of its own before the one that needs the folder; an install made before that
+  runs the installer again instead.
 
-- **Its open rounds** (`apps/server/src/http/routes/openRounds.ts` on master) can take
-  `openRoundsPage`. Its limit setting goes up to 100, and the kit keeps at most 20 whatever it
-  is given.
-
-### What each export replaces
-
-| Kit export                                                           | Replaces in Bingo (lines)                                                                                                                                                                                                                                                                                                                                                        | Stays in the game                                                                                                                                                    |
-| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tokens.css`                                                         | the 49 shared tokens of `packages/ui/src/tokens.css` (142)                                                                                                                                                                                                                                                                                                                       | the ball's two tokens, its arena; **its own `--gutter` and `--panel-padding` after the kit's**: they differ from Mini Games under 356 px                             |
-| `fonts.css`, `motion.css`, theme                                     | `packages/ui/src/fonts.css` (26), the shared part of `motion.css` (114), `apps/web/public/theme-init.js` (28), `apps/web/src/shell/theme.ts` (73)                                                                                                                                                                                                                                | `sbr-anim-draw`, the ball keyframes                                                                                                                                  |
-| `ThemeToggle`, `BackLink`, `shell.css`                               | `apps/web/src/shell/ThemeToggle.tsx` (52); the `.shell-back` link in `AppShell.tsx` (280) and its rules and `.theme-toggle` in `shell.css` (274)                                                                                                                                                                                                                                 | the bar's layout: `order` on `.sk-back-link` and `.sk-theme-toggle`, the phone's first row                                                                           |
-| `websiteLoginHref`, `signInAgain`                                    | `websiteSignInHref` and the resign in `apps/web/src/account/WebsiteSignIn.tsx` (114)                                                                                                                                                                                                                                                                                             | `useSignInToPlay`, `SignInLinks`, `SignInPage`                                                                                                                       |
-| `WebsiteChatFrame`, `chatEmbedUrl`                                   | the frame of `apps/web/src/shell/ChatDock.tsx` (166)                                                                                                                                                                                                                                                                                                                             | its side panel and phone drawer, `chat.css` (101), until the docked step; the sandbox, now on (K17)                                                                  |
-| `ResultFrame` with `panel={{ level: 3 }}` (v0.11.0)                  | the frame around `components/FinalPlacement.tsx` (134)                                                                                                                                                                                                                                                                                                                           | `Podium.tsx` (51) and `podium.css` (133) as `placings`, its rank rows as `more`                                                                                      |
-| `fit.css`                                                            | nothing: Bingo has no screen scale                                                                                                                                                                                                                                                                                                                                               | `data-sk-game="bingo"`: floor 1, 14 px text, 44 px targets                                                                                                           |
-| `@seasonal/kit/server`                                               | most of `apps/server/src/auth/websiteIdentity.ts` (125); `safeNext`, `proxySecret` in `http/routes/websiteSignIn.ts` (118); `totp.ts` (73); `hashOf` and the code draw in `twoFactor.ts` (151); `rateLimit.ts` (114 on the branch, its class; `liveRule` passes a function rule since v0.11.0); `sessionEnds.ts` (28); `packages/contracts/src/http/steps.ts` (76) in the server | the route; `steps: 'all'`, logging `badSteps` once; `'hex'` recovery codes and its recovery key (K20); answering `guest` and `invalid` with its login hop; its rules |
-| `AppHeader`, `header.css` (v0.9.0, K21)                              | the bar of `AppShell.tsx` (280), `MenuFold.tsx` (86) and its test (72), `menu.css` (72), the bar's rules in `shell.css` (274)                                                                                                                                                                                                                                                    | its emblem, links, routes as `closeKey`; `buttonClassName="sbr-btn"`                                                                                                 |
-| `DevSignIn`, `@seasonal/kit/devtools` (v0.9.0)                       | `apps/web/src/shell/DevTools.tsx` (92); the account check of `routes/devSignIn.ts` (78); `devStub.mjs` (24) and the scan of `productionBundle.test.ts` (76)                                                                                                                                                                                                                      | the route and its dev switch, the accounts (host, three players, the `load-NNN` pattern), Quick Test and its simulation                                              |
-| `DockedScreen`, `ChatDock`, `StartCard`, `GameBar`, focus mode (K18) | the side panel and phone drawer of `ChatDock.tsx` (166) and `chat.css` (101); the match screen's own bar                                                                                                                                                                                                                                                                         | the board, the balls, the claim; its panels' contents                                                                                                                |
+**Tests to run at that step:** `apps/web/src/minTextSize.test.ts`, `shell/dockedChat.test.tsx`,
+`e2e/chatEmbed.spec.ts`, the fit audit (`e2e/acceptance/fitAudit.spec.ts`), and the screens at
+1280 x 720, 959 x 700 and 390 x 844 before and after.
 
 ### The docked layout (DECISIONS K18)
 
 The owner decided that Bingo moves to the docked chat strip, the start card and the game bar with
 focus mode. The steps, each a game PR:
 
-1. The docked screen around the match: `DockedScreen` with `WebsiteChatFrame` in the strip, the
-   side panel and drawer removed.
+1. The docked screen around the match: done (above).
 2. The start card before a match opens: `StartCard` with Bingo's season, pattern and facts.
 3. The game bar and focus mode: `GameBar`, `usePanels`, `useFocusMode`, the players and host
    panels.
@@ -283,50 +295,15 @@ at the sweep sizes, in light and in dark:
 - desktop: 1280×720, 1366×768, 1536×768, 1440×900, 1900×860, 1920×1080;
 - phone: 375×667, 360×780, 390×844, 430×932.
 
-The check is Bingo's fit audit (`e2e/acceptance/fitAudit.spec.ts`) extended to these sizes. The
-board must stay whole without scrolling at every desktop size, and the chat bar must stay
-reachable on every phone.
-
-### Order
-
-1. Tokens, fonts, motion, theme.
-2. The shell parts: toggle and back link.
-3. The chat frame (`WebsiteChatFrame` in its side panel).
-4. The server's checks.
-5. `ResultFrame` around its final placement.
-6. The header and the dev tools (v0.9): `AppHeader` replaces its bar; the server's dev sign-in
-   and bundle test take `@seasonal/kit/devtools`.
-7. The docked layout, in the three steps above, each after the sweep.
-
-### Risks and the tests to run
-
-- **The token override.** Since v0.14.0 the kit's tokens are `--sk-…` (`--sk-gutter`), so Bingo's
-  own `--gutter` / `--panel-padding` no longer meet the kit's by name. A game that wants the kit's
-  value for its own name writes `--gutter: var(--sk-gutter)`; a 320 px phone must still get
-  14.4 px, not 16 px. Run `minTextSize.test.ts` and the fit audit
-  (`e2e/acceptance/fitAudit.spec.ts`).
-- **The chat frame now sends `strict-origin`,** as GAME-INTEGRATION §5 requires, and is
-  sandboxed (K17): scripts, its own origin, forms and popups are allowed, nothing else (no
-  top navigation). Run `chatDock.test.tsx` and `e2e/chatEmbed.spec.ts`, and send, report and
-  open a link in the chat by hand once.
-- **Recovery codes:** new codes are stored keyed (K20); the stored hex codes still verify. Run
-  `twoFactor.integration.test.ts` once with a code stored before the change.
-- **The header is the same bar:** the kit's is a port of Bingo's, so its look must not change.
-  Compare the e2e screens before and after at 1280 × 720, 959 × 700 and 390 × 844.
-- **The login hop's `next`** becomes the page's path, query and hash. It no longer adds `#/` to an
-  empty hash; the base path is the same lobby. Run `websiteSignIn.test.tsx` and
-  `websiteLogin.integration.test.ts`.
-- **The server's stricter role header and user id:** the kit takes only a positive safe integer.
-  Bingo's own rule allowed letters, which the website never sends. Run
-  `websiteLogin.integration.test.ts`, `websiteRules.integration.test.ts` and
-  `twoFactor.integration.test.ts`.
+The check is Bingo's fit audit extended to these sizes. The board must stay whole without
+scrolling at every desktop size, and the chat bar must stay reachable on every phone.
 
 ### Since v0.15.0
 
 - **Login limits** (K46): at its next kit adoption its login limits move onto `FailureBrake`: the
   route asks `braked(key)` before the password check and calls `failed(key)` on a wrong one. Its
   rules and keys stay in the game; the kit's `RateLimiter` keeps the limits that count every call.
-- **The result** (K47): there is no merged single-card option. Bingo shows its result like the
+- **The result** (K47; since v0.33.0 K93 adds `dense`): Bingo shows its result like the
   other games, the first part and "more" as the kit lays them out, and at its next kit adoption
   drops its own `results.css` overrides of the kit's result classes (`display: contents` on the
   first part, head, places and "more", `display: none` on the reveal). With no reveal the frame
@@ -346,7 +323,7 @@ reachable on every phone.
 - **Health routes** (K64): `routes/health.ts` answers with `readiness`; its `openRouteLimit` and names stay. Only on the owner's word.
 - **Session cookie, CSRF, headers** (K63): `cookieConfig`, `setSessionCookie` and `clearSessionCookie` become `sessionCookie` and `sessionCookieOptions` (the same names and lifetime); `writeCheck` is added next to its token; `securityHeaders.ts` becomes `securityHeaderSet({ mode, devPage as inlineStyles, blobImages: true })`. Only on the owner's word.
 - **Guarded fetch** (K62): Bingo has no guarded fetch of its own today (`git grep` for an address block list or `redirect: 'error'` over `origin/master` finds none in `apps/`). Where it later calls an address it was handed (a webhook, a feed), it takes the kit's `guardedFetch`, with `allowLocal` only in development and tests. Only on the owner's word.
-- **Backups** (K61): `ops/lib/backup.sh` (248 lines) is the kit's script's source: it moves to `ops/backup.sh` with `SK_BACKUP_PREFIX=sbr`, its seed and recovery keys as `SK_BACKUP_SECRET_FILES`, its schema as `SK_BACKUP_DB_SCHEMA=sbr`. What stays in Bingo: the compose calls, `apply_db_roles` after a restore, and the seed-key check of its drill (run after the kit's drill, or in `SK_BACKUP_START_CMD`). Only on the owner's word.
+- **Backups** (K61): `ops/lib/backup.sh` (248 lines) is the kit's script's source: it moves to the kit's `ops/backup.sh` (its `ops/` folder installed whole, as above) with `SK_BACKUP_PREFIX=sbr`, its seed and recovery keys as `SK_BACKUP_SECRET_FILES`, its schema as `SK_BACKUP_DB_SCHEMA=sbr`. What stays in Bingo: the compose calls, `apply_db_roles` after a restore, and the seed-key check of its drill (run after the kit's drill, or in `SK_BACKUP_START_CMD`). Only on the owner's word.
 
 ### Since v0.22.0
 
@@ -396,6 +373,13 @@ reachable on every phone.
 ### Since v0.32.0
 
 - **Database roles** (K90): CHANGELOG "Migration, per game"; rehearse the conversion with a copy of existing data. Only on the owner's word.
+
+### Since v0.33.0
+
+- **Failure brake** (K92): `auth/loginBrake.ts`'s `LoginBrake` goes: `FailureBrake` takes `liveRule(...)` as its rule, and `behindBrakes` takes `reserve(key)` for each key, ending each attempt with `failed()` or `passed()` (a refused key ends the ones already taken with `passed()`).
+- **Result** (K93): `dense` on the final placement; measure the places again at the six sizes.
+- **Header** (K94): its `.sk-header .sk-theme-toggle` and `.sk-menu-button` rules are descendant selectors and keep working; compare the folded bar and the bar at 1280 x 720.
+- **Restore** (K91): its seed-key check before the kit's functions may stay; the kit's own restore now refuses first too. Only on the owner's word.
 
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
@@ -509,6 +493,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Database roles** (K90): CHANGELOG "Migration, per game"; rehearse the conversion with a copy of existing data. Only on the owner's word.
 
+### Since v0.33.0
+
+- **v0.33.0** (CHANGELOG, "Migration, per game"): nothing breaks. Its sign-in should take `FailureBrake.reserve` (K92), or parallel guesses keep passing `braked`. Its header may now give up badges instead of folding at 1536 px. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -565,6 +553,10 @@ adopts it.
 
 - **Sign-in failures** (K46): its failed sign-ins are braked with `FailureBrake` when it adopts
   the server entry; the rules and keys stay in the game.
+
+### Since v0.33.0
+
+- **v0.33.0:** nothing to do.
 
 ## What v0.12.0 answers
 

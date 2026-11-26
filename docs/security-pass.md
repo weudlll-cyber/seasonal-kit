@@ -63,6 +63,22 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-26 — before v0.35.0 (branch `feat/production-parts`)
+
+| Scan                         | Tool and command                              | Result                                             |
+| ---------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI        | No leaks.                                          |
+| Dependencies                 | osv-scanner (CI)                              | No dependency was added.                           |
+| Code                         | CodeQL (javascript-typescript)                | Read on the pull request before the merge.         |
+| The new workflows            | tests/workflows.test.ts; proof runs on GitHub | Pinned actions and images; no input in a run line. |
+
+**Read by the session that wrote it.** The scan takes a caller's `start` command and runs it on
+the runner: the caller's own workflow, with a read-only token and no secret. Inputs reach scripts
+as variables. The release workflow writes packages and takes the signing identity, only on a tag;
+it holds no key. A signature proves which workflow ran in which repository, not that the code is
+good: who may push a tag in a project may release its image. Keyless signatures are public in
+Sigstore's log, also for a private image. `sk_image_verify` checks the exact digest it prints.
+
 ### 2026-11-26 — before v0.34.0, the base components and header looks (branch `feat/base-components`)
 
 | Scan                         | Tool and command                                           | Result                                     |

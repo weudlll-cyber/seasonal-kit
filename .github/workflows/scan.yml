@@ -35,6 +35,10 @@ on:
       context:
         default: .
         type: string
+      build-args:
+        description: The build's arguments, one NAME=value a line; never a secret.
+        default: ''
+        type: string
       lockfile:
         description: The lockfile Trivy reads, from the repository's root.
         default: pnpm-lock.yaml
@@ -91,9 +95,12 @@ jobs:
       - name: The image
         env:
           BUILD: ${{ inputs.build }}
+          BUILD_ARGS: ${{ inputs.build-args }}
         run: |
           if [ "$BUILD" = true ]; then
-            docker build -f "$DOCKERFILE" -t "$IMAGE" "$CONTEXT" && result=ok || result=failed
+            args=()
+            while read -r line; do [ -z "$line" ] || args+=(--build-arg "$line"); done <<<"$BUILD_ARGS"
+            docker build "${args[@]}" -f "$DOCKERFILE" -t "$IMAGE" "$CONTEXT" && result=ok || result=failed
           else
             docker pull "$IMAGE" && result=ok || result=failed
           fi

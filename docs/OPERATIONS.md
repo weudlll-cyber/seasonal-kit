@@ -374,6 +374,7 @@ jobs:
 | `dockerfile`  | `Dockerfile`             |                                                                 |
 | `context`     | `.`                      |                                                                 |
 | `lockfile`    | `pnpm-lock.yaml`         | The lockfile Trivy reads (`package-lock.json` for the website). |
+| `build-args`  | none                     | The build's arguments, one `NAME=value` a line; never a secret. |
 | `start`       | runs the image           | The command that starts the app, on the runner's network.       |
 | `url`         | `http://localhost:3000/` | Where ZAP begins.                                               |
 | `blocking`    | `false`                  | Fail the run on findings or a scan that did not run.            |
@@ -408,7 +409,8 @@ jobs:
 ```
 
 Inputs, all optional: `image` (default `ghcr.io/<owner>/<repository>`), `dockerfile`, `context`,
-`platforms` (default amd64 and arm64; the SBOM describes the amd64 one) and `version` (default the
+`build-args` (one `NAME=value` a line, never a secret), `platforms` (default amd64 and arm64; the
+SBOM describes the amd64 one) and `version` (default the
 tag without its `v`). Output: `reference`, the image as `name@sha256:…`.
 
 **Public or private** is one setting, the package's visibility in the registry (the package's

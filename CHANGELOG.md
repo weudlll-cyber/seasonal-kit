@@ -29,6 +29,30 @@ Shared parts for the way to production, and three Seasonal Cases findings.
   `SK_ROUTE_TRUSTED` set, from which addresses the app takes the proxy secret.
 - ADOPTION.md and the handbook: after moving the kit pin, delete `node_modules/.vite` and restart
   the dev server.
+- **Handbook** (K106): a game's full browser suite runs nightly and on demand, not on every pull
+  request.
+
+### Migration, per project
+
+Nothing in a project's code changes by taking the pin; these are the steps to production.
+
+- **Bingo Royale:** checks `docs/PRIVACY-DATA.md` against the template (its columns are Table,
+  Field, Purpose, How long, Deleted when: it renames them and adds "Seen by" and "Leaves the
+  server") and adds the test; its Trivy step of the `image` job gives way to a call of
+  `scan.yml`; `release.yml` becomes a call of `release-image.yml` (its tag check stays as a job
+  before it) and the installer pulls with `sk_image_verify` before production; adds a nightly
+  `browsers.yml` and drops the full browser jobs from pull requests. Sets `SK_ROUTE_TRUSTED`.
+- **Mini Games:** writes `docs/PRIVACY-DATA.md` before production and adds the test; replaces the
+  Trivy step with the scan call; adds the release call, and its installer verifies and pulls
+  before production; keeps `browsers.yml` and runs no full browser suite on pull requests. Sets
+  `SK_ROUTE_TRUSTED`.
+- **Seasonal Cases:** writes `docs/PRIVACY-DATA.md` before production and adds the test; replaces
+  its Trivy step with the scan call (its check for development tools in the image stays); the
+  release call and `sk_image_verify` before production (one image per mode: two calls, each with
+  its own `image` and `build-args`, `SC_MODE=…`); keeps `browsers.yml`, no full suite on pull
+  requests. Sets `SK_ROUTE_TRUSTED`.
+- **The website:** adds the scan call (`dockerfile: deploy/site/Dockerfile`, its `build-args`,
+  `lockfile: package-lock.json`, its own `start`).
 
 ## [0.34.0] - 2026-11-26
 

@@ -238,6 +238,10 @@ Each step pins the newest tag; a step never mixes two tags.
   `GRANT TEMPORARY`, its admin fetch wrapper, its own contrast test for the own-row tint and its
   stub's secret check go. Only on the owner's word.
 
+### Since v0.35.0
+
+- **The way to production** (K106 to K109; CHANGELOG, "Migration, per project"): the privacy list and its test, the scan call in place of its Trivy step, the signed release and `sk_image_verify`; `browsers.yml` stays, no full browser suite on pull requests. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where Bingo stands (master `d7d841e`, read 2026-11-26)
@@ -397,6 +401,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 - **Base components** (K95): `packages/ui/src/base.css`’s button, panel, field, input, select, chip and badge rules are replaced by `components.css`. Visible changes: a disabled button is muted on the second surface instead of faded, a disabled field looks locked. Only on the owner's word.
 - **Header looks** (K96): `shell/header.css` drops its chip rules, its solid "Sign in" rule and its phone `.sk-back-link { min-height: 0 }`; compare the phone header at 375 x 667 in website mode. Only on the owner's word.
 
+### Since v0.35.0
+
+- **The way to production** (K106 to K109; CHANGELOG, "Migration, per project"): its privacy list on the template's columns with the test, the scan and release calls in place of its own steps, `sk_image_verify` in the installer, a nightly browser workflow. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -517,6 +525,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **Base components** (K95): `shell.css`’s `.button`, `.card` and bare input rules give way to `sk-btn`, `sk-panel`, `sk-input` and `sk-select`. Visible changes: bolder, larger button text, a danger button, the locked look of disabled controls. Only on the owner's word.
 - **Header looks** (K96): its `ShellBar` is its own header, so nothing changes there; its "Sign in" may take `sk-btn sk-btn--primary`. Only on the owner's word.
+
+### Since v0.35.0
+
+- **The way to production** (K106 to K109; CHANGELOG, "Migration, per project"): the privacy list and its test, the scan call in place of its Trivy step, one signed image per mode and `sk_image_verify`. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

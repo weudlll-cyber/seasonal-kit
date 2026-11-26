@@ -32,6 +32,10 @@ on:
       context:
         default: .
         type: string
+      build-args:
+        description: The build's arguments, one NAME=value a line; never a secret.
+        default: ''
+        type: string
       platforms:
         default: linux/amd64,linux/arm64
         type: string
@@ -92,6 +96,7 @@ jobs:
         with:
           context: ${{ inputs.context }}
           file: ${{ inputs.dockerfile }}
+          build-args: ${{ inputs.build-args }}
           platforms: ${{ inputs.platforms }}
           push: true
           tags: ${{ env.IMAGE }}:${{ env.VERSION }}

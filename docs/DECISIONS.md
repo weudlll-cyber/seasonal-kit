@@ -466,3 +466,16 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   account chip is filled with small bold text; the back link's row on a phone is only as high as
   its words allow while its tap area stays 44 px (as K84, no breach of K29); signed out, "Sign
   in" is the header's one primary button. They are the kit's look, not options.
+- **K97 — The owner role may create temporary tables** (2026-11-26). A migration may move rows
+  through one; `PUBLIC` and the app role still get no `TEMPORARY`.
+- **K98 — The admin restore takes the secrets folder from the game's settings** (2026-11-26):
+  `SK_ADMIN_SECRETS_DIR`. A differing secret still needs `--force-env` (K91).
+- **K99 — `SeasonIcon` takes any CSS length and has a one-colour form** (2026-11-26).
+- **K100 — A refused call may be sent once more** (2026-11-26): `createApiClient`'s `retry`,
+  never twice and never without an answer.
+- **K101 — Plain http with a path only on a development host** (2026-11-26): `localhost`,
+  `127.0.0.1`, `[::1]`, `*.localhost`, `*.test`; every other frame source with a path is https.
+- **K102 — The contrast guard works out tokens** (2026-11-26): `var()` and `color-mix()` in srgb;
+  what it cannot work out is a finding, and a pair naming a missing token still throws.
+- **K103 — The stand-in website refuses the proxy's secret** (2026-11-26): its `authorize` answers
+  500 to a request carrying it, as a game's own stub did; the proxy half still clears it.

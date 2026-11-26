@@ -200,3 +200,17 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   Closed in v0.34.0 (`css/components.css`, `showcase/components.spec.ts`).
 - **55. Bingo Royale's three header wishes** (2026-11-26). Closed in v0.34.0 (K96,
   `css/header-account.css`, `css/header.css`, `showcase/looks.spec.ts`).
+- **56. A fresh install's owner role could create no temporary table** (Mini Games, 2026-11-26).
+  Closed in v0.34.0 (`ops/lib/db-roles.sql`, `tests/db-roles.integration.test.ts`, K97).
+- **57. The admin restore could not restore secret files** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (`ops/lib/admin.sh`, `ops/test/admin.test.sh`, K98).
+- **58. `SeasonIcon` took pixels only and had no one-colour form** (Mini Games, 2026-11-26).
+  Closed in v0.34.0 (K99).
+- **59. No way to send a request again after a step-up** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (K100).
+- **60. No plain-http frame source with a path in development** (Mini Games, 2026-11-26). Closed
+  in v0.34.0 (K101).
+- **61. The contrast guard read no `var()` or `color-mix()`** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (K102).
+- **62. The stand-in website accepted the proxy's secret** (Mini Games, 2026-11-26). Closed in
+  v0.34.0 (K103).

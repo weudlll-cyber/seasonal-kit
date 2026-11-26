@@ -227,10 +227,13 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **v0.33.0** (CHANGELOG, "Migration, per game"): nothing needed. Check the folded header and, where it shows step badges, the unfolded one once. Only on the owner's word.
 
-### Since the base components’ release (v0.34.0)
+### Since v0.34.0
 
 - **Base components** (K95): `packages/ui/src/base.css`’s button, panel, field, input, select, chip and badge rules are replaced by `components.css` and the `sk-` class names; the field lock and the signed field stay. No look change intended. Only on the owner's word.
 - **Header looks** (K96): nothing to remove; check the chip, "Sign in" signed out and the phone's back-link row once. Only on the owner's word.
+- **Its findings** (K97 to K103; CHANGELOG, "Migration, per game: the fixes"): its own
+  `GRANT TEMPORARY`, its admin fetch wrapper, its own contrast test for the own-row tint and its
+  stub's secret check go. Only on the owner's word.
 
 ## Seasonal Bingo Royale
 
@@ -386,7 +389,7 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 - **Header** (K94): its `.sk-header .sk-theme-toggle` and `.sk-menu-button` rules are descendant selectors and keep working; compare the folded bar and the bar at 1280 x 720.
 - **Restore** (K91): its seed-key check before the kit's functions may stay; the kit's own restore now refuses first too. Only on the owner's word.
 
-### Since the base components’ release (v0.34.0)
+### Since v0.34.0
 
 - **Base components** (K95): `packages/ui/src/base.css`’s button, panel, field, input, select, chip and badge rules are replaced by `components.css`. Visible changes: a disabled button is muted on the second surface instead of faded, a disabled field looks locked. Only on the owner's word.
 - **Header looks** (K96): `shell/header.css` drops its chip rules, its solid "Sign in" rule and its phone `.sk-back-link { min-height: 0 }`; compare the phone header at 375 x 667 in website mode. Only on the owner's word.
@@ -507,7 +510,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **v0.33.0** (CHANGELOG, "Migration, per game"): nothing breaks. Its sign-in should take `FailureBrake.reserve` (K92), or parallel guesses keep passing `braked`. Its header may now give up badges instead of folding at 1536 px. Only on the owner's word.
 
-### Since the base components’ release (v0.34.0)
+### Since v0.34.0
 
 - **Base components** (K95): `shell.css`’s `.button`, `.card` and bare input rules give way to `sk-btn`, `sk-panel`, `sk-input` and `sk-select`. Visible changes: bolder, larger button text, a danger button, the locked look of disabled controls. Only on the owner's word.
 - **Header looks** (K96): its `ShellBar` is its own header, so nothing changes there; its "Sign in" may take `sk-btn sk-btn--primary`. Only on the owner's word.

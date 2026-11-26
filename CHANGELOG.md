@@ -7,14 +7,27 @@ applies it.
 
 ## [Unreleased]
 
-The base components, as the owner took them after his look (K95), and one header look for every
-game (K96).
+## [0.34.0] - 2026-11-26
+
+The base components, as the owner took them after his look (K95), one header look for every
+game (K96), and seven fixes from Seasonal Mini Games' v0.32.0 adoption (K97 to K103).
 
 ### Added
 
 - **`components.css`** (K95): opt-in classes `sk-btn` (`--primary`, `--danger`, `--big`),
   `sk-panel` (`--inset`), `sk-field`, `sk-input`, `sk-select`, `sk-field-help--error`, `sk-chip`
   and `sk-badge-live`. From the base styles of Mini Games and Bingo Royale.
+- **Admin restore** (K98): `SK_ADMIN_SECRETS_DIR` makes `restore` put the backup's secret files
+  there (`--secrets-to`); without it, as before.
+- **`SeasonIcon`** (K99): `size` takes any CSS length as text; `mono` draws the icon in
+  `currentColor` (`seasons.css`).
+- **`createApiClient`** (K100): `retry(error)` may send a refused request once more, e.g. after a
+  two-factor step-up.
+- **`securityHeaderSet`** (K101): a plain-http frame source with a path on a development host
+  (`localhost`, `127.0.0.1`, `[::1]`, `*.localhost`, `*.test`). Browsers' policies know no IPv6
+  literal and may ignore a `[::1]` source.
+- **`findLowContrast`** (K102): follows `var()`, works out `color-mix(in srgb, …)`, takes such
+  values in pairs, and reports what it cannot work out.
 
 ### Changed
 
@@ -24,6 +37,13 @@ game (K96).
 - **The back link in the header on a phone** takes a lower row (30 px instead of 44 px at the
   default text, the words' own lines from about 150 %); its tap area stays 44 px.
 - `header.css` brings `header-account.css` along (the account's rules moved there).
+- **`startWebsiteStandIn`** (K103): its `authorize` route answers 500 to a request carrying the
+  game's proxy secret header.
+
+### Fixed
+
+- **Database roles** (K97): the owner may create temporary tables, so a migration that uses one
+  runs on a fresh install. The app role still creates nothing.
 
 ### Migration, per game
 
@@ -37,6 +57,8 @@ game (K96).
     Looks different: the chip's padding is the kit's (it stays on one line on a phone, and wraps in
     the folded menu), and the phone's back-link row is about 11 px higher than Bingo's own at the
     default text. Its wider button padding stays its own rule, if it keeps it.
+  - the fixes: nothing required. Its `db-roles.sql` copy gives way to the kit's as before; a
+    `findLowContrast` pair that now meets a `var()` is checked instead of throwing.
 - **Mini Games:**
   - buttons, panels, fields, chips: `.smg-btn` (`--primary`, `--danger`, `--big`), `.smg-panel`
     (`--inset`), `.smg-field`, `.smg-input`, `.smg-select`, `.smg-field-help--error`, `.smg-chip`
@@ -44,6 +66,11 @@ game (K96).
     its own. No look change intended;
   - back link and sign-in: nothing to remove. Looks different with the pin: the chip filled with
     small bold text, "Sign in" solid when signed out, a lower back-link row on phones.
+  - the fixes: drops its own `GRANT TEMPORARY` for the owner role; sets `SK_ADMIN_SECRETS_DIR`
+    in its admin command's settings and drops its own tool for the secrets; its season icon is the
+    kit's (`size="1rem"`, `mono`); the admin app's `api` becomes `createApiClient` with
+    `retry: async (e) => e.code === 'AUTH_STEP_UP_REQUIRED' && (await askStepUp())`; its own-row tint
+    test becomes `findLowContrast` pairs with `color-mix()`; its stub's secret check goes.
 - **Seasonal Cases:**
   - buttons, panels, fields: `.button` (and `.button-solid`), `.card` and the bare `input` and
     `select` rules of `shell/shell.css` give way to `sk-btn` (`--primary`), `sk-panel`,
@@ -1673,7 +1700,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...HEAD
+[0.34.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.30.0...v0.31.0

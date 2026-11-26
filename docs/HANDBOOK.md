@@ -252,7 +252,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **Open-rounds publisher:** `openRoundsPage` behind the game's `GET /api/public/open-rounds`.
 - **Season feed:** `seasonFeedReader` with `guardedFetch({ allowedHosts })` or the game's own (K62).
 - **API calls** (K70): `createApiClient` with `ApiError` as the one error shape, and `useApiGet` for a
-  screen's answer; the game keeps its rule for a lost session and its error sentences.
+  screen's answer; the game keeps its rule for a lost session and its error sentences. A request
+  that needs a second sending (a two-factor step-up) uses its `retry` (K100), no wrapper.
 - **Countdowns** (K69): `useCountdown` (or `StartCard`'s `opensAt`) with the offset `clockOffset`
   measures; never the page's clock alone.
 - **Season icons** (K83): `SeasonIcon` with `seasons.css`, or the files by their package paths; the
@@ -264,7 +265,8 @@ Each part is held by its own tests in `src/` and `tests/` and by the showcase (C
 - **The header's look** (K96) is the kit's in every game: a game restyles neither the account
   chip, the solid "Sign in" nor the back link's height.
 - **Test tools** (K66): `@seasonal/kit/testing`, for a game's own suites only: `setTheme`,
-  `captureLook`, the sizes, the guards `findFixedColours`, `findSmallText` and `findLowContrast`, and
+  `captureLook`, the sizes, the guards `findFixedColours`, `findSmallText` and `findLowContrast`
+  (token mixes included, K102), and
   `sweep` (every screen at seven sizes, 100 % and 200 %, light and dark, with axe; K67).
 - **Calls to the website on the same machine** (v0.27.0): `guardedFetch({ localOrigins })` with the
   origins from the server's configuration, never from a user's or admin's input; no plain `fetch`

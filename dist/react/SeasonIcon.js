@@ -8,7 +8,7 @@ const NAMES = {
 export function SeasonIcon(p) {
     if (!Object.hasOwn(NAMES, p.season))
         throw new RangeError(`Not a season: ${p.season}`);
-    return (_jsx("span", { className: ['sk-season-icon', p.className].filter(Boolean).join(' '), "data-sk-season": p.season, style: { width: p.size, height: p.size }, ...(p.decorative === true
+    return (_jsx("span", { className: ['sk-season-icon', p.className].filter(Boolean).join(' '), "data-sk-season": p.season, "data-sk-mono": p.mono === true ? '' : undefined, style: { width: p.size, height: p.size }, ...(p.decorative === true
             ? { 'aria-hidden': true }
             : { role: 'img', 'aria-label': NAMES[p.season] }) }));
 }

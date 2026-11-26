@@ -11,7 +11,9 @@
  *                 `onAnswer` sees every answer before it is judged: a game reports a lost session
  *                 there, or sends the page to the website's sign-in (`signInAgainAfter`,
  *                 ./websiteSignIn) and returns true, and the call then never settles, as the page
- *                 is leaving. `basePathOf` is the folder the page is served from ("/" alone,
+ *                 is leaving. `retry` (since v0.34.0) is asked about a refusing answer; when it
+ *                 says true, the same method, path and body are sent once more (with the CSRF
+ *                 token as it is then), and that second answer stands. `basePathOf` is the folder the page is served from ("/" alone,
  *                 "/games/bingo/" inside the website).
  * Depends on:     nothing (the browser's fetch)
  * Source:         seasonal-bingo-royale apps/web/src/shell/http.ts at 8d20904 and
@@ -48,6 +50,9 @@ export interface ApiClientOptions {
   readonly csrf?: () => string | null;
   // Every answer, before it is judged. Return true when the page is leaving for a sign-in.
   readonly onAnswer?: (response: Response, code: string | null) => boolean | undefined;
+  // A refused call: true (after whatever the game does first, e.g. a two-factor step-up) sends
+  // the same request once more. Never asked a second time, nor when no answer came.
+  readonly retry?: (error: ApiError) => boolean | Promise<boolean>;
   // Tests: the fetch to use.
   readonly fetch?: typeof fetch;
 }
@@ -59,17 +64,17 @@ export interface ApiCall {
 
 export type Api = <T>(path: string, call?: ApiCall) => Promise<T>;
 
-function requestOf(call: ApiCall, token: string | null): RequestInit {
+function requestOf(call: ReturnType<typeof written>, token: string | null): RequestInit {
   const method = call.method ?? 'GET';
   const headers: Record<string, string> = {};
-  if (call.body !== undefined) headers['content-type'] = 'application/json';
+  if (call.text !== undefined) headers['content-type'] = 'application/json';
   const writes = method !== 'GET' && method !== 'HEAD';
   if (writes && token !== null) headers['x-csrf-token'] = token;
   return {
     method,
     headers,
     credentials: 'same-origin',
-    ...(call.body === undefined ? {} : { body: JSON.stringify(call.body) }),
+    ...(call.text === undefined ? {} : { body: call.text }),
   };
 }
 
@@ -91,9 +96,21 @@ async function answerTo(send: typeof fetch, url: string, init: RequestInit): Pro
   }
 }
 
+// The call with its body written out once, so a second sending carries the same bytes.
+const written = (call: ApiCall): ApiCall & { readonly text: string | undefined } => ({
+  ...call,
+  text: call.body === undefined ? undefined : JSON.stringify(call.body),
+});
+
+// Whether a refused call goes out again: only for a real answer, and only when the game says so.
+async function again(options: ApiClientOptions, error: unknown): Promise<boolean> {
+  if (!(error instanceof ApiError) || error.status === 0) return false;
+  return (await options.retry?.(error)) === true;
+}
+
 export function createApiClient(options: ApiClientOptions = {}): Api {
   const prefix = options.prefix ?? 'api/v1';
-  return async <T>(path: string, call: ApiCall = {}): Promise<T> => {
+  const once = async <T>(path: string, call: ReturnType<typeof written>): Promise<T> => {
     const base = options.basePath ?? basePathOf(document.baseURI);
     const url = `${base}${prefix}${path}`;
     // Read at call time, so a test or a page that replaces fetch is heard.
@@ -110,5 +127,14 @@ export function createApiClient(options: ApiClientOptions = {}): Api {
       throw new ApiError(response.status, code ?? 'ERROR', textOf(body, 'reason'), body);
     }
     return (response.status === 204 ? undefined : (body ?? {})) as T;
+  };
+  return async <T>(path: string, call: ApiCall = {}): Promise<T> => {
+    const sent = written(call);
+    try {
+      return await once<T>(path, sent);
+    } catch (error) {
+      if (!(await again(options, error))) throw error;
+      return once<T>(path, sent);
+    }
   };
 }

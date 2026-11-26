@@ -102,6 +102,9 @@ game_compose() { local env=\$1; shift; docker compose -p "gm-\$env" "\$@"; }
 game_backup_settings() {
   export SK_BACKUP_PREFIX=gm SK_BACKUP_ENV=\$1 SK_BACKUP_DIR=$work/srv/backups/\$1
   export SK_BACKUP_AGE_RECIPIENT=age1standin SK_BACKUP_DB_URL=postgresql://gm@db/gm
+  # The secret file the backup carries, and, when the test asks for it, where it is restored to.
+  [[ ! -e \$W/secrets ]] || export SK_BACKUP_SECRET_FILES=\$W/secrets/seed.key
+  [[ ! -e \$W/restore-secrets ]] || SK_ADMIN_SECRETS_DIR=\$W/restore-to/\$1
 }
 game_build() { printf 'build %s\n' "\$2" >>"\$LOG"; SK_ADMIN_NEW_IMAGE=gm-app:\$2; echo "gm-app:\$2" >>"\$W/images"; }
 game_migrations() { cat "\$W/migrations"; }
@@ -184,6 +187,28 @@ equals 'restore refuses an unknown option' "$status" 1
 backup=$(find "$work/srv/backups/prod" -name '*.tar.age' -size +0 | head -n 1)
 game --yes restore "$backup" --identity "$work/game"
 said 'restore goes through the kit' "restored $(basename "$backup")"
+
+# The backup's secret files: only named without the setting, put there with it (v0.34.0).
+fresh
+mkdir -p "$work/secrets"
+echo 'seed-test-only' >"$work/secrets/seed.key"
+game backup
+backup=$(find "$work/srv/backups/prod" -name '*.tar.age' -size +0 | head -n 1)
+game --yes restore "$backup" --identity "$work/game"
+said 'without the setting the secret is only named' 'pass --secrets-to <folder> to restore it'
+equals 'and nothing is written' "$([[ -e $work/restore-to ]] && echo written)" ''
+touch "$work/restore-secrets"
+game --yes restore "$backup" --identity "$work/game"
+said 'with it the secret is restored' "the secret file seed.key is restored to $work/restore-to/prod"
+equals 'byte for byte' "$(cat "$work/restore-to/prod/seed.key")" 'seed-test-only'
+echo 'another key' >"$work/restore-to/prod/seed.key"
+: >"$LOG"
+game --yes restore "$backup" --identity "$work/game"
+equals 'a differing secret stops the restore' "$status" 1
+uncalled 'before the data is touched' 'pg_restore'
+game --yes restore "$backup" --identity "$work/game" --force-env
+equals 'forced, it is replaced' "$(cat "$work/restore-to/prod/seed.key")" 'seed-test-only'
+rm -rf "$work/secrets" "$work/restore-secrets" "$work/restore-to"
 
 fresh
 game update

@@ -485,3 +485,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K108 — Security scans for every project, reporting first** (decided 2026-11-26, item h). The
   website included. The kit's reusable workflow runs them and does not block; blocking is one
   input, turned on by a later decision.
+- **K109 — Signed release images before the first game goes to production** (decided 2026-11-26,
+  item g). The server pulls and verifies instead of building. Signing is keyless (GitHub's
+  identity, no keys). Public or private images are decided later: it is the registry package's one
+  setting.

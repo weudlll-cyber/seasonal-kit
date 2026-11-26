@@ -6,7 +6,9 @@
  *
  * Responsibility: reads the workflow files and the local actions' action.yml under .github as text:
  *                 - a top-level `permissions:` block, and no job asking for `write` beyond
- *                   `security-events` (CodeQL's results);
+ *                   `security-events` (CodeQL's results), except the release image's two
+ *                   workflows, which write packages and take the signing identity (K109);
+ *                 - the release image is signed without a key, only on a tag (K109);
  *                 - `timeout-minutes` on every job that runs steps, so a hung step cannot hold a
  *                   runner for the default six hours;
  *                 - the reusable scan (./scan.yml) blocks nothing unless its caller says so
@@ -27,6 +29,10 @@ const read = (path: string): string => readFileSync(new URL(path, root), 'utf8')
 const workflows = readdirSync(new URL('workflows/', root)).filter((f) => f.endsWith('.yml'));
 const actions = readdirSync(new URL('actions/', root)).map((d) => `actions/${d}/action.yml`);
 
+// The release image's workflow and its proof push and sign, and delete the test image (K109).
+const RELEASES = ['release-image.yml', 'release-image-test.yml'];
+const RELEASE_WRITES = ['packages', 'id-token'];
+
 // The text of each job under `jobs:`, by name.
 function jobsOf(text: string): [string, string][] {
   const after = text.split(/^jobs:\s*$/m)[1] ?? '';
@@ -42,7 +48,8 @@ describe.each(workflows)('workflow %s', (file) => {
   it('has top-level permissions, and no write beyond the analysis results', () => {
     expect(text).toMatch(/^permissions:\s*\n\s+contents: read/m);
     const writes = [...text.matchAll(/^\s+([\w-]+): write/gm)].map((m) => m[1]);
-    expect(writes.filter((w) => w !== 'security-events')).toEqual([]);
+    const allowed = ['security-events', ...(RELEASES.includes(file) ? RELEASE_WRITES : [])];
+    expect(writes.filter((w) => !allowed.includes(w ?? ''))).toEqual([]);
   });
 
   it('gives every job a time limit', () => {
@@ -95,5 +102,24 @@ describe('the reusable scan (K108)', () => {
     expect(scan).toContain('if [ "$BLOCKING" = true ]; then exit 1; fi');
     // Only the verdict may fail the run: every scan notes its result instead.
     expect(scan.match(/\bexit 1\b/g)).toHaveLength(1);
+  });
+});
+
+describe('the release image (K109)', () => {
+  const release = read('workflows/release-image.yml');
+
+  it('is built on a tag only, and signs the image and its SBOM without a key', () => {
+    expect(release).toContain('if [ "$GITHUB_REF_TYPE" != tag ]');
+    expect(release).toContain('cosign sign --yes "$IMAGE@$DIGEST"');
+    expect(release).toContain('cosign attest --yes --type cyclonedx');
+    // Keyless: no key file, no secret of its own.
+    expect(release).not.toMatch(/--key\b|\bsecrets\.|COSIGN_(PASSWORD|PRIVATE)/);
+    expect(release).toMatch(/^ {6}id-token: write/m);
+  });
+
+  it('is proven on a throw-away tag that removes its image whatever happens', () => {
+    const proof = read('workflows/release-image-test.yml');
+    expect(proof).toContain("tags: ['sk-test-image-*']");
+    expect(proof).toMatch(/if: always\(\)[\s\S]*gh api -X DELETE "\$PACKAGE"/);
   });
 });

@@ -382,3 +382,49 @@ jobs:
 The default `start` runs the image on the runner's network with no settings; an app that needs
 settings or a database passes `start`. Settings in that command are made up for the run: no real
 secret goes into a scan.
+
+## Signed release images (since v0.35.0, K109)
+
+Before a game goes to production its server pulls a signed release image instead of building. Two
+parts; nothing changes in a game until it takes them.
+
+**1. The release**, on a version tag, calls the kit's workflow. It builds and pushes the image to
+the GitHub container registry, writes a CycloneDX SBOM, and signs both with cosign keyless: the
+run's GitHub identity is the proof, and no key exists.
+
+```yaml
+on:
+  push:
+    tags: ['v*.*.*']
+permissions:
+  contents: read
+jobs:
+  release:
+    uses: weudlll-cyber/seasonal-kit/.github/workflows/release-image.yml@v0.35.0
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+```
+
+Inputs, all optional: `image` (default `ghcr.io/<owner>/<repository>`), `dockerfile`, `context`,
+`platforms` (default amd64 and arm64; the SBOM describes the amd64 one) and `version` (default the
+tag without its `v`). Output: `reference`, the image as `name@sha256:…`.
+
+**Public or private** is one setting, the package's visibility in the registry (the package's
+settings page). A private image needs a `docker login ghcr.io` on the server with a token that may
+read packages. Either way the signature is entered in Sigstore's public log, which names the
+repository and the workflow.
+
+**2. The installer** verifies before it pulls (`ops/lib/image.sh`, cosign 3 or later):
+
+```sh
+source "$KIT/ops/lib/image.sh"
+image=$(SK_IMAGE_REPOSITORY=owner/game sk_image_verify ghcr.io/owner/game:1.2.0) || exit 1
+docker pull "$image"
+```
+
+It prints the image by digest only when that digest carries a signature of the kit's release
+workflow, at a version tag or a full commit, run in that repository. So a project calls the
+workflow at a tag (`@v0.35.0`) or a commit, not at a branch. Anything else stops with one
+sentence.

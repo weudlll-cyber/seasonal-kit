@@ -31,6 +31,7 @@ const SHIPPED = [
   'ops/lib/host-baseline.sh',
   'ops/lib/db-roles.sh',
   'ops/lib/db-roles.sql',
+  'ops/lib/image.sh',
   'ops/pull-backups.sh',
   'ops/pull-backups.ps1',
 ];

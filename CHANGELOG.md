@@ -11,6 +11,9 @@ Shared parts for the way to production, and three Seasonal Cases findings.
 
 ### Added
 
+- **Signed release images** (K109): `.github/workflows/release-image.yml` builds on a tag, pushes
+  to the container registry with an SBOM and signs both keyless; `ops/lib/image.sh`'s
+  `sk_image_verify` refuses an unsigned or foreign image.
 - **Security scans** (K108): `.github/workflows/scan.yml`, a reusable workflow: Trivy over the
   image and the lockfile, a ZAP baseline against the started app; report-only unless `blocking`.
 - **Privacy data list** (K107): the template `docs/templates/PRIVACY-DATA.md` and

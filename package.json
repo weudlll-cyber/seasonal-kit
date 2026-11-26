@@ -124,6 +124,7 @@
     "ops/lib/db-roles.sh",
     "ops/lib/db-roles.sql",
     "ops/lib/host-baseline.sh",
+    "ops/lib/image.sh",
     "ops/lib/operator.sh",
     "ops/lib/website-route.sh",
     "ops/pull-backups.sh",

@@ -712,6 +712,15 @@ Scratch consumers outside every repository, with `ignore-scripts=true`, installe
 All four passed, and `CI` and `CodeQL` passed on the merge commit. The scratch folders are left in
 the session's scratch directory.
 
+## v0.34.0, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.34.0` (merge `7c1e97f`), typechecked and ran three tests on
+the installed files: the new stylesheets, the two shipped ops files, the primary "Sign in" and the
+one-colour season icon; the client's `retry`, a local frame path and a token mix in the contrast
+guard; the website stand-in's refusal of the proxy secret. Both passed. The scratch folders are
+left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

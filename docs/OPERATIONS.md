@@ -206,24 +206,25 @@ Copy the kit's whole `ops/` folder, keeping its layout.
 with exit 1; an unknown command prints the usage and exits 2. Root only. Any other command runs the
 game's `game_cmd_<word> <env> …`.
 
-| Setting                | Needed   | Meaning                                                                                |
-| ---------------------- | -------- | -------------------------------------------------------------------------------------- |
-| `SK_ADMIN_NAME`        | yes      | The command's name, in messages.                                                       |
-| `SK_ADMIN_PREFIX`      | yes      | The backup units' prefix (`<prefix>-backup@<env>.timer`, as `print-units` names them). |
-| `SK_ADMIN_ETC`         | yes      | The settings folder: `<env>.env` per environment and `install.conf`.                   |
-| `SK_ADMIN_STATE`       | yes      | Per environment: the rollback data.                                                    |
-| `SK_ADMIN_ROOT`        | yes      | The installed files.                                                                   |
-| `SK_ADMIN_IMAGE_REPO`  | yes      | The image's repository name; unused images of it are removed.                          |
-| `SK_ADMIN_IMAGE_KEY`   | yes      | The key of `<env>.env` naming the running image.                                       |
-| `SK_ADMIN_REF_KEY`     | yes      | The key of `install.conf` naming the installed git ref.                                |
-| `SK_ADMIN_DEFAULT_ENV` | optional | The environment without `--env`.                                                       |
-| `SK_ADMIN_APP_SERVICE` | optional | The app's Compose service, default `app`.                                              |
-| `SK_ADMIN_READY_URL`   | optional | Default `http://127.0.0.1:3000/readyz`, asked inside the app's container.              |
-| `SK_ADMIN_WAIT_TRIES`  | optional | Two-second tries for the app to be ready, default 90.                                  |
-| `SK_ADMIN_STACK_FILES` | optional | Files under the root an update replaces; kept for a rollback.                          |
-| `SK_ADMIN_BACKUP`      | optional | The backup script, default `../backup.sh` beside the library.                          |
-| `SK_ADMIN_UNIT_DIR`    | optional | Default `/etc/systemd/system`.                                                         |
-| `SK_ADMIN_COMMAND`     | optional | The command's link to remove, default `/usr/local/bin/<name>`.                         |
+| Setting                | Needed   | Meaning                                                                                                                                                                                                                                   |
+| ---------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SK_ADMIN_NAME`        | yes      | The command's name, in messages.                                                                                                                                                                                                          |
+| `SK_ADMIN_PREFIX`      | yes      | The backup units' prefix (`<prefix>-backup@<env>.timer`, as `print-units` names them).                                                                                                                                                    |
+| `SK_ADMIN_ETC`         | yes      | The settings folder: `<env>.env` per environment and `install.conf`.                                                                                                                                                                      |
+| `SK_ADMIN_STATE`       | yes      | Per environment: the rollback data.                                                                                                                                                                                                       |
+| `SK_ADMIN_ROOT`        | yes      | The installed files.                                                                                                                                                                                                                      |
+| `SK_ADMIN_IMAGE_REPO`  | yes      | The image's repository name; unused images of it are removed.                                                                                                                                                                             |
+| `SK_ADMIN_IMAGE_KEY`   | yes      | The key of `<env>.env` naming the running image.                                                                                                                                                                                          |
+| `SK_ADMIN_REF_KEY`     | yes      | The key of `install.conf` naming the installed git ref.                                                                                                                                                                                   |
+| `SK_ADMIN_DEFAULT_ENV` | optional | The environment without `--env`.                                                                                                                                                                                                          |
+| `SK_ADMIN_APP_SERVICE` | optional | The app's Compose service, default `app`.                                                                                                                                                                                                 |
+| `SK_ADMIN_READY_URL`   | optional | Default `http://127.0.0.1:3000/readyz`, asked inside the app's container.                                                                                                                                                                 |
+| `SK_ADMIN_WAIT_TRIES`  | optional | Two-second tries for the app to be ready, default 90.                                                                                                                                                                                     |
+| `SK_ADMIN_STACK_FILES` | optional | Files under the root an update replaces; kept for a rollback.                                                                                                                                                                             |
+| `SK_ADMIN_BACKUP`      | optional | The backup script, default `../backup.sh` beside the library.                                                                                                                                                                             |
+| `SK_ADMIN_SECRETS_DIR` | optional | Where a restore puts the backup's secret files (`--secrets-to`), set for all environments or by `game_backup_settings`. A differing file stops the restore before anything changes, unless `--force-env`. Without it they are only named. |
+| `SK_ADMIN_UNIT_DIR`    | optional | Default `/etc/systemd/system`.                                                                                                                                                                                                            |
+| `SK_ADMIN_COMMAND`     | optional | The command's link to remove, default `/usr/local/bin/<name>`.                                                                                                                                                                            |
 
 | Hook                              | Needed for              | What it does                                                                                                                                 |
 | --------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -309,7 +310,8 @@ A parsed YAML file works in place of `docker compose config`.
 
 A game's database has two roles beside the superuser (K90): an **owner** that runs the migrations and
 an **app** role the running game connects as, which only reads and writes rows. Neither is a
-superuser or may create roles or databases.
+superuser or may create roles or databases. Only the owner may create in the database, temporary
+tables included (K97); the app role creates nothing.
 
 1. `ops/lib/db-roles.sh`, sourced by the installer or the admin command, sends
    `ops/lib/db-roles.sql` to a superuser's psql, on install, once when an older install is converted,

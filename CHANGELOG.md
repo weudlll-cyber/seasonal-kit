@@ -7,6 +7,43 @@ applies it.
 
 ## [Unreleased]
 
+Seven fixes from Seasonal Mini Games' v0.32.0 adoption.
+
+### Fixed
+
+- **Database roles** (K97): the owner may create temporary tables, so a migration that uses one
+  runs on a fresh install. The app role still creates nothing.
+
+### Added
+
+- **Admin restore** (K98): `SK_ADMIN_SECRETS_DIR` makes `restore` put the backup's secret files
+  there (`--secrets-to`); without it, as before.
+- **`SeasonIcon`** (K99): `size` takes any CSS length as text; `mono` draws the icon in
+  `currentColor` (`seasons.css`).
+- **`createApiClient`** (K100): `retry(error)` may send a refused request once more, e.g. after a
+  two-factor step-up.
+- **`securityHeaderSet`** (K101): a plain-http frame source with a path on a development host
+  (`localhost`, `127.0.0.1`, `[::1]`, `*.localhost`, `*.test`). Browsers' policies know no IPv6
+  literal and may ignore a `[::1]` source.
+- **`findLowContrast`** (K102): follows `var()`, works out `color-mix(in srgb, …)`, takes such
+  values in pairs, and reports what it cannot work out.
+
+### Changed
+
+- **`startWebsiteStandIn`** (K103): its `authorize` route answers 500 to a request carrying the
+  game's proxy secret header.
+
+### Migration, per game: the fixes
+
+- **Mini Games:** drops its own `GRANT TEMPORARY` for the owner role; sets `SK_ADMIN_SECRETS_DIR`
+  in its admin command's settings and drops its own tool for the secrets; its season icon is the
+  kit's (`size="1rem"`, `mono`); the admin app's `api` becomes `createApiClient` with
+  `retry: async (e) => e.code === 'AUTH_STEP_UP_REQUIRED' && (await askStepUp())`; its own-row tint
+  test becomes `findLowContrast` pairs with `color-mix()`; its stub's secret check goes.
+- **Bingo Royale:** nothing required. Its `db-roles.sql` copy gives way to the kit's as before; a
+  `findLowContrast` pair that now meets a `var()` is checked instead of throwing.
+- **Seasonal Cases and Seasonal Party:** nothing required.
+
 ## [0.33.0] - 2026-11-26
 
 Fixes from Seasonal Bingo Royale's v0.22.0 adoption report.

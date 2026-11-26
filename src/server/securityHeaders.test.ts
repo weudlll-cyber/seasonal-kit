@@ -112,6 +112,33 @@ describe('a frame source with a path (v0.27.0)', () => {
     expect(() => securityHeaderSet({ mode: 'website', frames: [source] })).toThrow(RangeError);
   });
 
+  // v0.34.0: a development host on this machine may be plain http with a path.
+  it.each([
+    'http://localhost/embed/chat',
+    'http://localhost:5173/embed/chat',
+    'http://127.0.0.1:3000/embed/',
+    'http://[::1]:3000/embed/chat',
+    'http://web.localhost/embed/chat',
+    'http://site.dev.test:8080/embed/chat',
+  ])('takes the local %s', (source) => {
+    const set = securityHeaderSet({ mode: 'website', frames: [source] });
+    expect(set.directives['frame-src']).toEqual([source]);
+  });
+
+  it.each([
+    'http://localhost.example/embed',
+    'http://test/embed',
+    'http://site.testing/embed',
+    'http://127.0.0.2/embed',
+    'http://127.0.0.1.example/embed',
+    'http://[::2]/embed',
+    'http://localhost@site.example/embed',
+    'http://localhost/embed?x=1',
+    'http://localhost/a;script-src',
+  ])('refuses the look-alike %j', (source) => {
+    expect(() => securityHeaderSet({ mode: 'website', frames: [source] })).toThrow(RangeError);
+  });
+
   it('is for frames only: an ancestor stays a plain origin', () => {
     const ancestors = ['https://site.example/embed'];
     expect(() => securityHeaderSet({ mode: 'standalone', ancestors })).toThrow(RangeError);

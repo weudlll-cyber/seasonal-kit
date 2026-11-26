@@ -6,7 +6,8 @@
  *                 made and filled by the superuser (an install before the roles) is converted by
  *                 ops/lib/db-roles.sql through ops/lib/db-roles.sh, twice; the owner then owns the
  *                 schema's tables, views, sequences, functions and types, but not an extension's.
- *                 The owner adds tables and `grantAppRole` gives the app its rights: rows read and
+ *                 The owner works with temporary tables, as a migration may (the app may not), and
+ *                 adds tables, and `grantAppRole` gives the app its rights: rows read and
  *                 written, append-only and read-only tables as named, no change to the schema or
  *                 the roles, a later table after the next grant. Neither role is a superuser or may
  *                 create roles or databases. Bad names and passwords are refused without being
@@ -164,6 +165,20 @@ describe('the database roles', () => {
     await grantAppRole(owner, GRANTS);
     expect(await refusal(app, 'SELECT * FROM later')).toBe('');
     expect(await refusal(app, 'DELETE FROM events')).toMatch(/permission denied/);
+  });
+});
+
+describe('the owner’s migrations', () => {
+  it('let a migration of the owner work with a temporary table', async () => {
+    // As a game's migration moves rows (Mini Games), on the fresh database's own grants.
+    await owner.query(`
+      BEGIN;
+      CREATE TEMP TABLE moves ON COMMIT DROP AS SELECT 1 AS id;
+      INSERT INTO events SELECT id FROM moves;
+      COMMIT;`);
+    expect((await app.query('SELECT count(*)::int AS n FROM events')).rows[0]).not.toEqual({
+      n: 0,
+    });
   });
 });
 

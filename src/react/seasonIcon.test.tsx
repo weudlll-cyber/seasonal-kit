@@ -4,10 +4,15 @@
  * @brief  `SeasonIcon` shows each season under its English name and refuses any other (K83).
  *
  * Responsibility: each of the four is an image named for its season, at the size asked, carrying
- *                 the season for the stylesheet; `decorative` hides it; anything else throws.
+ *                 the season for the stylesheet; any CSS length is its size; `mono` marks the
+ *                 one-colour form css/seasons.css draws; `decorative` hides it; anything else
+ *                 throws.
  * Depends on:     vitest, jsdom, @testing-library/react
  * Source:         new in the kit.
  */
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -41,6 +46,27 @@ describe('SeasonIcon', () => {
     const icon = container.firstElementChild;
     expect(icon?.getAttribute('aria-hidden')).toBe('true');
     expect(icon?.className).toBe('sk-season-icon mine');
+  });
+
+  it.each(['1rem', 'min(2em, 40px)', '12%'])('takes the CSS length %s as it is', (size) => {
+    render(<SeasonIcon season="spring" size={size} />);
+    const { style } = screen.getByRole('img', { name: 'Spring' });
+    expect([style.width, style.height]).toEqual([size, size]);
+  });
+
+  it('marks the one-colour form, which the stylesheet draws in the text’s colour', () => {
+    const { rerender } = render(<SeasonIcon season="autumn" size={16} mono />);
+    const icon = () => screen.getByRole('img', { name: 'Autumn' });
+    expect(icon().hasAttribute('data-sk-mono')).toBe(true);
+    rerender(<SeasonIcon season="autumn" size={16} />);
+    expect(icon().hasAttribute('data-sk-mono')).toBe(false);
+    const css = readFileSync(path.resolve('css', 'seasons.css'), 'utf8');
+    expect(css).toMatch(/\[data-sk-mono\] \{[^}]*background-color: currentColor/);
+    for (const season of ['spring', 'summer', 'autumn', 'winter']) {
+      expect(css).toContain(
+        `[data-sk-mono][data-sk-season='${season}'] {\n  background-image: none;`,
+      );
+    }
   });
 
   it.each(['monsoon', 'SPRING', '', 'toString'])('refuses the season %j', (season) => {

@@ -227,6 +227,12 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **v0.33.0** (CHANGELOG, "Migration, per game"): nothing needed. Check the folded header and, where it shows step badges, the unfolded one once. Only on the owner's word.
 
+### Since v0.34.0
+
+- **Its findings** (K97 to K103; CHANGELOG, "Migration, per game: the fixes"): its own
+  `GRANT TEMPORARY`, its admin fetch wrapper, its own contrast test for the own-row tint and its
+  stub's secret check go. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where Bingo stands (master `d7d841e`, read 2026-11-26)

@@ -61,6 +61,57 @@ describe('createApiClient', () => {
   });
 });
 
+describe('retry (v0.34.0)', () => {
+  const stepUp = { code: 'AUTH_STEP_UP_REQUIRED' };
+  const refusedThen = (second: number) => {
+    const send = vi
+      .fn()
+      .mockResolvedValueOnce(answer(403, stepUp))
+      .mockResolvedValue(answer(second, second === 200 ? { done: true } : stepUp));
+    const retry = vi.fn((error: ApiError) => Promise.resolve(error.code === stepUp.code));
+    let token = 'before';
+    const api = createApiClient({ basePath: '/', fetch: send, retry, csrf: () => token });
+    retry.mockImplementationOnce((error) => {
+      token = 'after';
+      return Promise.resolve(error.code === stepUp.code);
+    });
+    return { send, retry, api };
+  };
+
+  it('sends the same method, path and body once more, with the token of then', async () => {
+    const { send, retry, api } = refusedThen(200);
+    const body = { amount: 5 };
+    expect(await api('/pay', { method: 'POST', body })).toEqual({ done: true });
+    expect(retry).toHaveBeenCalledTimes(1);
+    const calls = send.mock.calls as [string, RequestInit & { headers: Record<string, string> }][];
+    expect(calls.map(([url, init]) => [url, init.method, init.body])).toEqual([
+      ['/api/v1/pay', 'POST', '{"amount":5}'],
+      ['/api/v1/pay', 'POST', '{"amount":5}'],
+    ]);
+    expect(calls.map(([, init]) => init.headers['x-csrf-token'])).toEqual(['before', 'after']);
+  });
+
+  it('retries once, never twice: the second refusal stands', async () => {
+    const { send, retry, api } = refusedThen(403);
+    await expect(api('/pay', { method: 'POST' })).rejects.toMatchObject({ code: stepUp.code });
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(retry).toHaveBeenCalledTimes(1);
+  });
+
+  it('sends nothing again when the game says no, without an answer, or without the option', async () => {
+    const no = vi.fn(() => false);
+    const refused = client(answer(403, stepUp), { retry: no });
+    await expect(refused.api('/a')).rejects.toBeInstanceOf(ApiError);
+    expect(refused.send).toHaveBeenCalledTimes(1);
+    const silent = client(new TypeError('offline'), { retry: no });
+    await expect(silent.api('/a')).rejects.toMatchObject({ code: 'NO_ANSWER' });
+    expect(no).toHaveBeenCalledTimes(1);
+    const plain = client(answer(403, stepUp));
+    await expect(plain.api('/a')).rejects.toBeInstanceOf(ApiError);
+    expect(plain.send).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('the one error shape', () => {
   it('throws one error shape for a refusal, with the code, reason and body', async () => {
     const body = { code: 'PASSWORD_WEAK', reason: 'tooShort', field: 'password' };

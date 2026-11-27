@@ -263,5 +263,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   2026-11-27). Closed in v0.39.0 (`DockedScreen.tsx`, `sweep.ts`, `layout.spec.ts`).
 - **83. The restore drill asked for its database on the socket and then waited a fixed time**
   (Cases, 2026-11-27). Closed in v0.39.0 (`backup-restore.sh`, `admin.test.sh`, OPERATIONS.md).
+- **84. An exemption for hidden rows also hid a cut name in a visible one** (Mini Games,
+  2026-11-27). Closed in v0.39.0 (`sweep.ts`, `probeBase.ts`).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

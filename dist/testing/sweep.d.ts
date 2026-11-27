@@ -28,12 +28,16 @@ import type { Page } from '@playwright/test';
 import { type Size, type Theme } from './screens.js';
 import { type VisibleFloor } from './sweepFloors.js';
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
+export type Allowed = string | {
+    readonly finding: string;
+    readonly onlyNotVisible: true;
+};
 export interface SweepScreen {
     readonly name: string;
     readonly open: (page: Page) => Promise<void>;
     readonly setup?: (page: Page) => Promise<void>;
     readonly floors?: readonly VisibleFloor[];
-    readonly allow?: readonly string[];
+    readonly allow?: readonly Allowed[];
 }
 export interface SweepOptions {
     readonly axe: AxeFinder | false;

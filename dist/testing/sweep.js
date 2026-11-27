@@ -1,4 +1,5 @@
 import { probe } from './probe.js';
+import { notVisible } from './probeBase.js';
 import { setTheme, SWEEP_SIZES } from './screens.js';
 import { floorLines, uncheckedFloor } from './sweepFloors.js';
 import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
@@ -32,6 +33,11 @@ function linesOf(seen) {
 }
 // An error's first line: the rest is a call log or a stack.
 const firstLine = (error) => (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
+function allows(known, line) {
+    if (typeof known === 'string')
+        return line.includes(known);
+    return line.includes(known.finding) && line.endsWith(notVisible());
+}
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
@@ -63,7 +69,7 @@ async function findingsOf(page, screen, look, options) {
         ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
     ];
     return found
-        .filter((line) => !(screen.allow ?? []).some((known) => line.includes(known)))
+        .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
         .map((line) => `${where}: ${line}`);
 }
 function looksOf(options) {

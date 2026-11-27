@@ -72,6 +72,14 @@ export function isEmpty(box) {
 export function inSight(el) {
     return !isEmpty(meet(seenBox(el), windowBox()));
 }
+// What a finding ends with when nothing of its element can be seen (a function, so the page's
+// copy and the sweep's read the same words).
+export function notVisible() {
+    return ' (not visible)';
+}
+export function marked(el, finding) {
+    return inSight(el) ? finding : `${finding}${notVisible()}`;
+}
 // The helpers as one object, handed to the rules.
 export const BASE = {
     nameOf,
@@ -85,4 +93,6 @@ export const BASE = {
     windowBox,
     isEmpty,
     inSight,
+    notVisible,
+    marked,
 };

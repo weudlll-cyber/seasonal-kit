@@ -261,6 +261,20 @@ describe('sweep on a screen that does not open, or still moves', () => {
   });
 });
 
+describe('an exemption only for what is not visible', () => {
+  it('leaves out the hidden row and still reports the visible one', async () => {
+    const w = walker({ cut: ['[list] span.name "a"', '[list] span.name "b" (not visible)'] });
+    const run = sweep(
+      w.page,
+      [{ ...screen, allow: [{ finding: 'cut text: [list]', onlyNotVisible: true }] }],
+      { axe: false, sizes: [{ width: 320, height: 568 }], fonts: [16], themes: ['light'] },
+    );
+    await expect(run).rejects.toThrow(
+      'the sweep found 1:\nlobby 320x568 16px light: cut text: [list] span.name "a"',
+    );
+  });
+});
+
 describe('axeFinder', () => {
   it('runs the WCAG tags and the landmark rules, and names each rule with its targets', async () => {
     let run: unknown;

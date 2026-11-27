@@ -19,7 +19,9 @@
  *                 - `clippedFits`: a fitted root (`[data-sk-fit-scale]`, ../fit.ts) with a part
  *                   outside its padding box, where it is cut: even at its floor it does not fit
  *                   (a root that scrolls hides nothing, since v0.36.0).
- *                 Hidden elements and text only for screen readers (a 1 px box) are left out.
+ *                 Hidden elements and text only for screen readers (a 1 px box) are left out. A
+ *                 finding about an element of which nothing is in the window and unclipped ends
+ *                 with " (not visible)" (since v0.39.0).
  *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
  *                 sight, for the sweep's floors (./sweepFloors).
  *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets and those
@@ -94,7 +96,7 @@ export function runProbe(
   const cut = [...document.body.querySelectorAll('*')].flatMap((el) => {
     if (!b.shown(el)) return [];
     const boxes = b.textBoxes(el);
-    return boxes.length > 0 && r.isCut(b, el, boxes) ? [b.nameOf(el)] : [];
+    return boxes.length > 0 && r.isCut(b, el, boxes) ? [b.marked(el, b.nameOf(el))] : [];
   });
   return {
     hScroll: page.scrollWidth > width + 1,

@@ -34,7 +34,7 @@ export function outermost(b, past) {
         }
         else if (!b.clipsOf(el).scrolls) {
             marked.add(el);
-            out.push(`${b.nameOf(el)} ${where}`);
+            out.push(b.marked(el, `${b.nameOf(el)} ${where}`));
         }
     }
     return out;
@@ -87,7 +87,9 @@ export function overlaps(b) {
         if (!b.shown(control) || b.inText(control))
             return [];
         const other = overlapOf(b, control);
-        return other === null ? [] : [`${b.nameOf(control)} over ${b.nameOf(other)}`];
+        return other === null
+            ? []
+            : [b.marked(control, `${b.nameOf(control)} over ${b.nameOf(other)}`)];
     });
 }
 // The elements of a selector the reader sees whole: nothing of them past the window or a box.

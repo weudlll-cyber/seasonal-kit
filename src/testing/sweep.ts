@@ -27,11 +27,16 @@
 import type { Page } from '@playwright/test';
 
 import { probe, type Probe } from './probe.js';
+import { notVisible } from './probeBase.js';
 import { setTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
 import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
+
+// A finding a screen accepts: a part of its text, or such a part only where nothing of the
+// element can be seen (since v0.39.0): the same finding on a visible one is still reported.
+export type Allowed = string | { readonly finding: string; readonly onlyNotVisible: true };
 
 export interface SweepScreen {
   readonly name: string;
@@ -39,8 +44,8 @@ export interface SweepScreen {
   // Runs once before the screen's first look. Where it fails, the screen is not looked at.
   readonly setup?: (page: Page) => Promise<void>;
   readonly floors?: readonly VisibleFloor[];
-  // Findings this screen is known to have and accepts: parts of their text.
-  readonly allow?: readonly string[];
+  // Findings this screen is known to have and accepts.
+  readonly allow?: readonly Allowed[];
 }
 
 export interface SweepOptions {
@@ -117,6 +122,11 @@ interface Look {
 const firstLine = (error: unknown): string =>
   (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
 
+function allows(known: Allowed, line: string): boolean {
+  if (typeof known === 'string') return line.includes(known);
+  return line.includes(known.finding) && line.endsWith(notVisible());
+}
+
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(
   page: Page,
@@ -154,7 +164,7 @@ async function findingsOf(
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
   ];
   return found
-    .filter((line) => !(screen.allow ?? []).some((known) => line.includes(known)))
+    .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
     .map((line) => `${where}: ${line}`);
 }
 

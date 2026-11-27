@@ -19,4 +19,4 @@ export { captureLook, DESKTOP, PHONE, setTheme, settle, SWEEP_SIZES, } from './s
 export { findPrivacyGaps } from './privacyData.js';
 export { probe } from './probe.js';
 export { startWebsiteStandIn } from './websiteStandIn.js';
-export { axeFinder, sweep } from './sweep.js';
+export { axeFinder, sweep, } from './sweep.js';

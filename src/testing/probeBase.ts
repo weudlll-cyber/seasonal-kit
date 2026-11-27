@@ -9,7 +9,8 @@
  *                 `inText` WCAG 2.5.8's inline exception; `controls` what can be pressed or typed
  *                 into; `seenBox` what the ancestors leave of an element's box; `windowBox` the
  *                 window; `isEmpty` a box with nothing in it; `inSight` whether any of an element
- *                 is in the window and unclipped. ./probe puts these functions into the page as
+ *                 is in the window and unclipped; `marked` adds `notVisible`'s words to a finding
+ *                 about an element that is not (since v0.39.0). ./probe puts these functions into the page as
  *                 source text, where they call each other by name, so they use nothing imported;
  *                 the rules (./probeRules, ./probeTargets) get them as the object `BASE`, since a
  *                 test's or Playwright's own build renames imported names inside a function's
@@ -108,6 +109,16 @@ export function inSight(el: Element): boolean {
   return !isEmpty(meet(seenBox(el), windowBox()));
 }
 
+// What a finding ends with when nothing of its element can be seen (a function, so the page's
+// copy and the sweep's read the same words).
+export function notVisible(): string {
+  return ' (not visible)';
+}
+
+export function marked(el: Element, finding: string): string {
+  return inSight(el) ? finding : `${finding}${notVisible()}`;
+}
+
 // The helpers as one object, handed to the rules.
 export const BASE = {
   nameOf,
@@ -121,5 +132,7 @@ export const BASE = {
   windowBox,
   isEmpty,
   inSight,
+  notVisible,
+  marked,
 };
 export type Base = typeof BASE;

@@ -45,7 +45,7 @@ export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }) {
         if (!b.shown(el))
             return [];
         const boxes = b.textBoxes(el);
-        return boxes.length > 0 && r.isCut(b, el, boxes) ? [b.nameOf(el)] : [];
+        return boxes.length > 0 && r.isCut(b, el, boxes) ? [b.marked(el, b.nameOf(el))] : [];
     });
     return {
         hScroll: page.scrollWidth > width + 1,

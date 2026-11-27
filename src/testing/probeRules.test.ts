@@ -116,6 +116,21 @@ describe('the kit’s own ellipsis', () => {
   });
 });
 
+describe('what is not visible', () => {
+  // A cut name in a row on the page, and one in a row clipped away.
+  const rows = (): string =>
+    '<div style="overflow: hidden" data-box="0 0 90 30">' +
+    '<span class="seen" style="text-overflow: ellipsis" data-box="0 0 50 20" data-scrollwidth="300">a</span>' +
+    '<span class="gone" style="text-overflow: ellipsis" data-box="0 40 50 20" data-scrollwidth="300">b</span>' +
+    '</div>';
+
+  it('is said at the end of its finding, and nothing else changes', () => {
+    Range.prototype.getClientRects = () => [{ width: 20, height: 10 }] as unknown as DOMRectList;
+    expect(look(rows()).cut).toEqual(['span.seen "a"', 'span.gone "b" (not visible)']);
+    Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
+  });
+});
+
 describe('a dense list', () => {
   const link = (y: number, height = 24): string =>
     `<li><a href="#p" style="display: block" data-box="0 ${String(y)} 80 ${String(height)}">p</a></li>`;

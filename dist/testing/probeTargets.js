@@ -42,7 +42,7 @@ export function smallTargets(b, least) {
         if (Math.min(r.width, r.height) >= least - 0.5 || denseEnough(b, target, r))
             return [];
         const size = `${String(Math.round(r.width))}x${String(Math.round(r.height))}`;
-        return [`${b.nameOf(target)} ${size}${missingStyle(target)}`];
+        return [b.marked(target, `${b.nameOf(target)} ${size}${missingStyle(target)}`)];
     });
 }
 // The rules as one object, in the order the page defines them.

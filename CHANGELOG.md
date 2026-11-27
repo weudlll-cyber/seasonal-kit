@@ -9,6 +9,13 @@ applies it.
 
 Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Games).
 
+### Added, operations
+
+- **`sk_cosign_install`** (`ops/lib/image.sh`): installs cosign 3.1.6, only where the download
+  carries the pinned published checksum.
+- **`SK_IMAGE_COMMIT`:** `sk_image_verify` refuses an image whose signature names another source
+  commit. Unset, as before.
+
 ### Fixed, operations
 
 - **Restore** has the game write its secret files (`game_backup_secrets`) before it compares them,

@@ -15,18 +15,23 @@
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
  *                 and transitions end before the screen is probed, and `axeFinder` takes
- *                 selectors to leave out.
- * Depends on:     ./probe, ./screens; @playwright/test (types)
+ *                 selectors to leave out. Since v0.38.0 a screen may have a `setup`, run once
+ *                 before its looks (a fresh sign-in, say, where many looks would pass a server's
+ *                 request limit), and `floors`: at least so many items wholly in sight.
+ * Depends on:     ./probe, ./screens, ./sweepFloors; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
  *                 seasonal-mini-games e2e/access.spec.ts at 9e3c6f3 (the axe tags).
  */
 import type { Page } from '@playwright/test';
 import { type Size, type Theme } from './screens.js';
+import { type VisibleFloor } from './sweepFloors.js';
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 export interface SweepScreen {
     readonly name: string;
     readonly open: (page: Page) => Promise<void>;
+    readonly setup?: (page: Page) => Promise<void>;
+    readonly floors?: readonly VisibleFloor[];
     readonly allow?: readonly string[];
 }
 export interface SweepOptions {

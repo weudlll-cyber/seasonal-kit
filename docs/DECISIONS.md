@@ -530,3 +530,10 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   shared view where a linked call's view sits (GAME-INTEGRATION.md §9, "the same slot"), because
   every game uses the docked screen. The slot shows only while the shared call is live (K77), also
   where the website's `ready` says `scheduled`. Standalone, a game passes nothing.
+- **K115 — The sweep sets a screen up; no limit is loosened for it** (decided 2026-11-27, Mini
+  Games' report). A screen's `setup` runs once before it is opened, for a fresh sign-in where the
+  sweep's looks would pass a server's request limit. The server's limit stays as in production.
+- **K116 — An owner's floor of visible items is declared to the sweep** (decided 2026-11-27).
+  A screen names a selector, the least number wholly in sight and the decision's number; the sweep
+  reports a look that shows fewer. At 16 px unless the floor names other fonts. A floor that no
+  look would check stops the sweep.

@@ -1,5 +1,6 @@
 import { probe } from './probe.js';
 import { setTheme, SWEEP_SIZES } from './screens.js';
+import { floorLines, uncheckedFloor } from './sweepFloors.js';
 export function axeFinder(builder, options = {}) {
     return async (page) => {
         const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
@@ -38,6 +39,8 @@ async function motionEnded(page) {
         ]);
     }, MOTION_LIMIT_MS);
 }
+// An error's first line: the rest is a call log or a stack.
+const firstLine = (error) => (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
@@ -47,8 +50,7 @@ async function findingsOf(page, screen, look, options) {
         await screen.open(page);
     }
     catch (error) {
-        const why = error instanceof Error ? error.message.split('\n')[0] : String(error);
-        return [`${where}: did not open: ${why ?? ''}`];
+        return [`${where}: did not open: ${firstLine(error)}`];
     }
     await page.evaluate((px) => {
         document.documentElement.style.fontSize = `${String(px)}px`;
@@ -63,6 +65,7 @@ async function findingsOf(page, screen, look, options) {
     await motionEnded(page);
     const found = [
         ...linesOf(await probe(page, options.targetPx)),
+        ...(await floorLines(page, screen.floors ?? [], look)),
         ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
     ];
     return found
@@ -72,16 +75,37 @@ async function findingsOf(page, screen, look, options) {
 function looksOf(options) {
     return (options.sizes ?? SWEEP_SIZES).flatMap((size) => (options.fonts ?? [16, 32]).flatMap((font) => (options.themes ?? ['light', 'dark']).map((theme) => ({ size, font, theme }))));
 }
+// Every look of one screen, after its setup.
+async function screenFindings(page, screen, looks, options) {
+    try {
+        await screen.setup?.(page);
+    }
+    catch (error) {
+        return [`${screen.name}: its setup failed: ${firstLine(error)}`];
+    }
+    const findings = [];
+    for (const look of looks)
+        findings.push(...(await findingsOf(page, screen, look, options)));
+    return findings;
+}
+// A floor that no look checks would pass for ever, like a sweep with nothing to see.
+function refuseUnchecked(screens, looks) {
+    for (const screen of screens) {
+        const floor = uncheckedFloor(screen.floors ?? [], looks);
+        if (floor === undefined)
+            continue;
+        throw new Error(`${screen.name}’s floor "${floor.selector}" (${floor.decision}) is checked at no look`);
+    }
+}
 export async function sweep(page, screens, options) {
     const looks = looksOf(options);
     // Nothing to look at would pass every time.
     if (screens.length === 0 || looks.length === 0)
         throw new Error('the sweep has nothing to see');
+    refuseUnchecked(screens, looks);
     const findings = [];
     for (const screen of screens) {
-        for (const look of looks) {
-            findings.push(...(await findingsOf(page, screen, look, options)));
-        }
+        findings.push(...(await screenFindings(page, screen, looks, options)));
     }
     if (findings.length > 0) {
         throw new Error(`the sweep found ${String(findings.length)}:\n${findings.join('\n')}`);

@@ -58,7 +58,8 @@ export function runProbe(targetPx, b = BASE, r = RULES) {
 // Every function the page needs, in one place: their source is what is injected, each as a
 // constant of its own name.
 const OWN = [clipsInside, outsideOf, clippedFits, runProbe];
-export async function probe(page, targetPx = 44) {
+// One expression: define the parts in the page, then run `call` there.
+function inPage(call) {
     const parts = [...Object.entries(BASE), ...Object.entries(RULES)];
     const body = [
         ...parts.map(([name, part]) => `const ${name} = ${part.toString()};`),
@@ -66,6 +67,11 @@ export async function probe(page, targetPx = 44) {
         `const base = { ${Object.keys(BASE).join(', ')} };`,
         `const rules = { ${Object.keys(RULES).join(', ')} };`,
     ].join('\n');
-    // One expression: define the parts, then measure.
-    return page.evaluate(`(() => {\n${body}\nreturn runProbe(${String(targetPx)}, base, rules);\n})()`);
+    return `(() => {\n${body}\nreturn ${call};\n})()`;
+}
+export async function probe(page, targetPx = 44) {
+    return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules)`));
+}
+export async function wholeCount(page, selector) {
+    return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)})`));
 }

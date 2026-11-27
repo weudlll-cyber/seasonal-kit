@@ -1,6 +1,6 @@
 /**
  * @file   showcase/sweep/sweep.css
- * @brief  The layout of the sweep's screens (./main.tsx): two that fit, one broken on purpose.
+ * @brief  The layout of the sweep's screens (./main.tsx): three that fit, one broken on purpose.
  * Source: new in the kit (K66).
  */
 body {
@@ -49,4 +49,20 @@ body {
 
 .sweep-tall {
   height: 200px;
+}
+
+/* Five rows of forty are whole in the box, at every size. */
+.sweep-list {
+  height: 200px;
+  overflow-y: auto;
+}
+
+.sweep-list ol {
+  margin: 0;
+}
+
+.sweep-list li {
+  height: 40px;
+  overflow: hidden;
+  font-size: 16px;
 }

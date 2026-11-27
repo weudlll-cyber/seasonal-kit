@@ -20,6 +20,8 @@
  *                   outside its padding box, where it is cut: even at its floor it does not fit
  *                   (a root that scrolls hides nothing, since v0.36.0).
  *                 Hidden elements and text only for screen readers (a 1 px box) are left out.
+ *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
+ *                 sight, for the sweep's floors (./sweepFloors).
  *                 The in-page functions (./probeBase, ./probeRules and those below) are put into
  *                 the page as source text and call each other by name.
  * Depends on:     ./probeBase, ./probeRules; @playwright/test (types)
@@ -103,7 +105,8 @@ export function runProbe(targetPx: number, b: Base = BASE, r: Rules = RULES): Pr
 // constant of its own name.
 const OWN = [clipsInside, outsideOf, clippedFits, runProbe];
 
-export async function probe(page: Page, targetPx = 44): Promise<Probe> {
+// One expression: define the parts in the page, then run `call` there.
+function inPage(call: string): string {
   const parts = [...Object.entries(BASE), ...Object.entries(RULES)];
   const body = [
     ...parts.map(([name, part]) => `const ${name} = ${part.toString()};`),
@@ -111,8 +114,13 @@ export async function probe(page: Page, targetPx = 44): Promise<Probe> {
     `const base = { ${Object.keys(BASE).join(', ')} };`,
     `const rules = { ${Object.keys(RULES).join(', ')} };`,
   ].join('\n');
-  // One expression: define the parts, then measure.
-  return page.evaluate(
-    `(() => {\n${body}\nreturn runProbe(${String(targetPx)}, base, rules);\n})()`,
-  );
+  return `(() => {\n${body}\nreturn ${call};\n})()`;
+}
+
+export async function probe(page: Page, targetPx = 44): Promise<Probe> {
+  return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules)`));
+}
+
+export async function wholeCount(page: Page, selector: string): Promise<number> {
+  return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)})`));
 }

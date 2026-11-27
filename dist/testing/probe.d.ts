@@ -20,6 +20,8 @@
  *                   outside its padding box, where it is cut: even at its floor it does not fit
  *                   (a root that scrolls hides nothing, since v0.36.0).
  *                 Hidden elements and text only for screen readers (a 1 px box) are left out.
+ *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
+ *                 sight, for the sweep's floors (./sweepFloors).
  *                 The in-page functions (./probeBase, ./probeRules and those below) are put into
  *                 the page as source text and call each other by name.
  * Depends on:     ./probeBase, ./probeRules; @playwright/test (types)
@@ -41,3 +43,4 @@ export interface Probe {
 }
 export declare function runProbe(targetPx: number, b?: Base, r?: Rules): Probe;
 export declare function probe(page: Page, targetPx?: number): Promise<Probe>;
+export declare function wholeCount(page: Page, selector: string): Promise<number>;

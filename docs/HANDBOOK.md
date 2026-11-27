@@ -121,6 +121,16 @@ line.
 | 6. One written report: the night sheet or the branch's report file holds the fixes, exemptions, decisions and kit findings once. The final message gives only the pushed commits, the CI result, the open questions with a proposal, new kit findings and the report's path.                                                                                             | review      |
 | 7. A rehearsal covers only what the change can have altered: first list what changed in those paths (the CHANGELOG and the diff, `file:line`), then rehearse those. Nothing changed there: no rehearsal.                                                                                                                                                                 | review      |
 
+**The sweep, two things to know** (K115, K116):
+
+- **A game server's request limit is a trap of the sweep:** its many looks, one open each, pass
+  the kit's `RateLimiter` (Mini Games: 120 requests per session and minute) on a fast runner, and
+  later screens get 429 answers. The answer is the screen's `setup` hook, which runs before the
+  screen is opened (a fresh sign-in, say). The limit is not loosened for tests.
+- **An owner's floor of visible items is declared to the sweep** (`floors` on the screen: the
+  selector, the least number, the sizes and the decision's number). A walk without it does not see
+  a list that shrank.
+
 ### Every task
 
 | Rule                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Enforced by                                                                                                               |

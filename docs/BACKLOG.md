@@ -41,6 +41,11 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   renders its slot in another place on a phone, and a new theme is a new frame address, so a
   listener must press **Listen** again. Done when: one frame stays, and the view is sent `theme`.
 
+- **89. The cosign pin and the commit check wait for a real run** (v0.39.0, 2026-11-27). The
+  version and checksums in `ops/lib/image.sh` are bumped by hand (Renovate does not read them),
+  and `SK_IMAGE_COMMIT` is tested with a stand-in only; `release-image-test.yml` proves both on
+  its next throw-away tag. Done when: that run passed, and a rule or Renovate keeps the pin.
+
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no

@@ -63,6 +63,24 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-27 — before v0.39.0 (branch `fix/v0.38-findings`)
+
+| Scan                         | Tool and command                                      | Result                                          |
+| ---------------------------- | ----------------------------------------------------- | ----------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                | No leaks.                                       |
+| Dependencies                 | osv-scanner (CI)                                      | No dependency was added.                        |
+| Code                         | CodeQL (javascript-typescript)                        | Read on the pull request before the merge.      |
+| The ops paths                | `ops/test/admin.test.sh`, `image.test.sh`; ShellCheck | The new refusals and the install's checks held. |
+
+**Read by the session that wrote it.** `sk_cosign_install` runs as root: it fetches over https
+only (TLS 1.2 or later) from the release's own address, runs nothing before the SHA-256 pinned in
+the kit matches, and leaves nothing behind otherwise. The pin is the checksum the release
+publishes, read on 2026-11-27; the release's own signature of that file was not verified here. The
+commit asked of `cosign` is checked to be 40 hex digits, so nothing else reaches its command line.
+A restore now runs the game's secret writer before it compares: it writes the server's current
+keys where a restore reads them, as a backup does. The declared overlaps go into a test's page as
+a JSON literal.
+
 ### 2026-11-27 — before v0.38.0, the sweep's setup and floors (branch `feat/sweep-setup-floors`)
 
 | Scan                         | Tool and command                       | Result                                     |

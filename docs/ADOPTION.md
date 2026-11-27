@@ -254,6 +254,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **The sweep** (K115, K116): its sign-in before each screen becomes the screen's `setup`; its guess list's floor is declared as `floors` (its decisions 50 and O109). Only on the owner's word.
 
+### Since v0.39.0
+
+- **v0.39.0** (CHANGELOG, "Migration, per game"): `onlyNotVisible` and `intendedOverlaps` in place of text exemptions, `useScrollTabStop`, the chat bar's allowance goes. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where Bingo stands (master `d7d841e`, read 2026-11-26)
@@ -442,6 +446,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 
 - **The sweep** (K116): the docked result's 7 places are declared as a floor (its decision of 2026-11-24). Only on the owner's word.
 
+### Since v0.39.0
+
+- **v0.39.0** (CHANGELOG, "Migration, per game"): `restore` needs `--force-env` where keys differ; `sk_cosign_install` and `SK_IMAGE_COMMIT` in the installer; dense buttons in `.sk-dense-list`. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -579,6 +587,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **The sweep** (K115, K116): any floor its owner decided is declared; with none, nothing. Only on the owner's word.
 
+### Since v0.39.0
+
+- **v0.39.0** (CHANGELOG, "Migration, per game"): its allowance for axe `region` goes. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -647,6 +659,10 @@ adopts it.
 ### Since v0.38.0
 
 - **v0.38.0**: nothing beyond the pin. Only on the owner's word.
+
+### Since v0.39.0
+
+- **v0.39.0**: nothing beyond the pin. Only on the owner's word.
 
 ## What `.sk-dense-list` needs (every game)
 

@@ -497,3 +497,21 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   item g). The server pulls and verifies instead of building. Signing is keyless (GitHub's
   identity, no keys). Public or private images are decided later: it is the registry package's one
   setting.
+- **K110 — One working rule for checks; big moves check once** (decided 2026-11-27). For a kit
+  adoption, a migration or a task of many known changes: build all of it first, with only quick
+  checks between; then one round of the real checks, each once, and after a fix only what the fix
+  can have changed. One sweep, no walks between pieces, line counts once, one written report, a
+  rehearsal only of the paths that changed. Small tasks keep K82. The rule and its reason are in
+  [HANDBOOK.md](HANDBOOK.md#how-we-check); a game takes it into its `CLAUDE.md` with its next kit
+  move.
+- **K111 — "Signed in as" shows from 1600 px up** (decided 2026-11-26). Below, it is read out and
+  not shown; the name stays. At 1536 px a website organiser's header then stays one row.
+- **K112 — A name in a dense list may be a 24 px target** (decided 2026-11-27, Bingo Royale's
+  report). In a ranked or result list with one row per player or entry, a linked name is 24 px high
+  with space to its neighbours (WCAG 2.2 AA target size): `.sk-dense-list`, the only place the
+  probe passes it. Everywhere else a target stays 44 px (K29).
+- **K113 — Images, blocking scans and the kit's browser specs** (decided 2026-11-27). A release
+  image is public when its project's repository is public, private otherwise (ends K109's open
+  point). The scan reports only for now; before a game's first production it blocks on high and
+  critical findings, never on lower ones. The kit's own browser specs keep running on every pull
+  request (ends K106's open point).

@@ -359,7 +359,9 @@ migration step again (`up -d` where a migrate service runs first, not `start`), 
 Every project calls the kit's reusable workflow instead of its own scan jobs. It builds the image
 from the caller's checkout, runs Trivy over the image and the lockfile (HIGH and CRITICAL with a
 fix available), starts the app and runs a ZAP baseline against it. It reports into a job summary
-and one artifact and never fails the run; `blocking: true`, a later decision, makes findings and a
+and one artifact and never fails the run. It blocks before a game's first production, on high and
+critical findings only (K113; the baseline scan still fails on its warnings, BACKLOG).
+`blocking: true` makes findings and a
 scan that could not run fail it.
 
 ```yaml

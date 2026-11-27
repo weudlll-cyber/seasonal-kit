@@ -748,6 +748,14 @@ the installed files: the shared call's address and React exports, the stand-in's
 `/embed/call/shared`, and the dock's `onSharedCall`. Both passed. The scratch folders are left in
 the session's scratch directory.
 
+## v0.38.0, with pnpm and with npm (2026-11-27, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.38.0` (merge `a21ffe4`), typechecked (the type
+`VisibleFloor` included) and ran two tests on the installed files: a failing `setup` as a finding
+and a floor no look checks, and the shipped `wholeItems`. Both passed. The scratch folders are
+left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

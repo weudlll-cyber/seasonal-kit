@@ -287,5 +287,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.39.1 by the proof run 46013416967 (`release-image-test.yml`).
 - **94. `setTheme` and `settle` never returned on a held clock** (Cases, its BACKLOG 85,
   2026-11-27). Closed in v0.40.0 (`sweepMotion.ts`).
+- **95. A fade begun after the sweep's one wait was judged by axe** (Bingo, 2026-11-27). Closed
+  in v0.40.0 (`sweep.ts`).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

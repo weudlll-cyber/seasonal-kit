@@ -12,6 +12,8 @@ handbook rules.
 
 ### Fixed, test tools
 
+- **Sweep:** it waits for stillness again directly before axe, so a fade that starts after the
+  probe is no longer judged as poor contrast.
 - **The wait for motion on a held clock:** `setTheme`, `settle` and the sweep return with
   `page.clock.pauseAt` in force: the limit, the quiet moment and the steps are the test's own
   time, and the page is only read. CSS animations and transitions keep running on the browser's

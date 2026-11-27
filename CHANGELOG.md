@@ -7,6 +7,22 @@ applies it.
 
 ## [Unreleased]
 
+Follow-ups to v0.39.0, before the games adopt it.
+
+### Fixed
+
+- **`useScrollTabStop`** gives a Tab stop only to a box that scrolls: taller content and a computed
+  `overflow-y` of `auto` or `scroll` (before: any taller content, also a clipped one). It also looks
+  again when the box's class changes.
+
+### Migration, per game
+
+- **Mini Games:** the kit's hook now does all its `components/scrollTabStop.ts` does, and more
+  (the style is watched): the copy can go.
+- **Bingo Royale:** nothing for the hook.
+- **Seasonal Cases:** nothing.
+- **Seasonal Party:** nothing beyond the pin.
+
 ## [0.39.0] - 2026-11-27
 
 Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Games).

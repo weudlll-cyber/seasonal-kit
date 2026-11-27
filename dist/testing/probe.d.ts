@@ -22,9 +22,9 @@
  *                 Hidden elements and text only for screen readers (a 1 px box) are left out.
  *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
  *                 sight, for the sweep's floors (./sweepFloors).
- *                 The in-page functions (./probeBase, ./probeRules and those below) are put into
- *                 the page as source text and call each other by name.
- * Depends on:     ./probeBase, ./probeRules; @playwright/test (types)
+ *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets and those
+ *                 below) are put into the page as source text and call each other by name.
+ * Depends on:     ./probeBase, ./probeRules, ./probeTargets; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/fitProbe.ts at 8d20904 (`clipsOf`,
  *                 `readable`, the text fragments, `cutText`, `wideBoxes`, the injection).
  *                 Generalised: touch targets and fitted roots added; its text floor and card
@@ -33,6 +33,7 @@
 import type { Page } from '@playwright/test';
 import { type Base } from './probeBase.js';
 import { type Rules } from './probeRules.js';
+import { type Targets } from './probeTargets.js';
 export interface Probe {
     readonly hScroll: boolean;
     readonly outside: readonly string[];
@@ -41,6 +42,6 @@ export interface Probe {
     readonly overlaps: readonly string[];
     readonly clippedFits: readonly string[];
 }
-export declare function runProbe(targetPx: number, b?: Base, r?: Rules): Probe;
+export declare function runProbe(targetPx: number, b?: Base, r?: Rules & Targets): Probe;
 export declare function probe(page: Page, targetPx?: number): Promise<Probe>;
 export declare function wholeCount(page: Page, selector: string): Promise<number>;

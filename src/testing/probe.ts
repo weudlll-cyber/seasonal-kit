@@ -22,9 +22,9 @@
  *                 Hidden elements and text only for screen readers (a 1 px box) are left out.
  *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
  *                 sight, for the sweep's floors (./sweepFloors).
- *                 The in-page functions (./probeBase, ./probeRules and those below) are put into
- *                 the page as source text and call each other by name.
- * Depends on:     ./probeBase, ./probeRules; @playwright/test (types)
+ *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets and those
+ *                 below) are put into the page as source text and call each other by name.
+ * Depends on:     ./probeBase, ./probeRules, ./probeTargets; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/fitProbe.ts at 8d20904 (`clipsOf`,
  *                 `readable`, the text fragments, `cutText`, `wideBoxes`, the injection).
  *                 Generalised: touch targets and fitted roots added; its text floor and card
@@ -34,6 +34,7 @@ import type { Page } from '@playwright/test';
 
 import { BASE, type Base } from './probeBase.js';
 import { RULES, type Rules } from './probeRules.js';
+import { TARGETS, type Targets } from './probeTargets.js';
 
 export interface Probe {
   readonly hScroll: boolean;
@@ -83,7 +84,11 @@ function clippedFits(b: Base): string[] {
 }
 
 // The whole measurement, as the page runs it (exported for the unit tests, not from the entry).
-export function runProbe(targetPx: number, b: Base = BASE, r: Rules = RULES): Probe {
+export function runProbe(
+  targetPx: number,
+  b: Base = BASE,
+  r: Rules & Targets = { ...RULES, ...TARGETS },
+): Probe {
   const { clientWidth: width, clientHeight: height } = document.documentElement;
   const page = document.scrollingElement ?? document.documentElement;
   const cut = [...document.body.querySelectorAll('*')].flatMap((el) => {
@@ -107,12 +112,13 @@ const OWN = [clipsInside, outsideOf, clippedFits, runProbe];
 
 // One expression: define the parts in the page, then run `call` there.
 function inPage(call: string): string {
-  const parts = [...Object.entries(BASE), ...Object.entries(RULES)];
+  const rules = { ...RULES, ...TARGETS };
+  const parts = [...Object.entries(BASE), ...Object.entries(rules)];
   const body = [
     ...parts.map(([name, part]) => `const ${name} = ${part.toString()};`),
     ...OWN.map((part) => `const ${part.name} = ${part.toString()};`),
     `const base = { ${Object.keys(BASE).join(', ')} };`,
-    `const rules = { ${Object.keys(RULES).join(', ')} };`,
+    `const rules = { ${Object.keys(rules).join(', ')} };`,
   ].join('\n');
   return `(() => {\n${body}\nreturn ${call};\n})()`;
 }

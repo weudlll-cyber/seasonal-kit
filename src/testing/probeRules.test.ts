@@ -127,6 +127,19 @@ describe('a dense list', () => {
     expect(small(`<ol>${rows}</ol>`)).toBe(2);
   });
 
+  it('counts no neighbour that is scrolled out of view', () => {
+    // A box 24 px high shows the first link; the next lies 2 px under it, scrolled away.
+    const scrolled = `<div style="overflow: auto" data-box="0 0 90 24"><ol class="sk-dense-list">${link(0)}${link(26)}</ol></div>`;
+    expect(look(scrolled).smallTargets).toEqual([]);
+    // Both in sight, the same 2 px between them are too little for each.
+    expect(small(`<ol class="sk-dense-list">${link(0)}${link(26)}</ol>`)).toBe(2);
+  });
+
+  it('counts no neighbour below the window while the link is in it', () => {
+    // The window is 100 px high.
+    expect(look(`<ol class="sk-dense-list">${link(76)}${link(101)}</ol>`).smallTargets).toEqual([]);
+  });
+
   it.each([
     ['a link under 24 px', link(0, 23)],
     ['links with no room between them', `${link(0)}${link(25)}`],

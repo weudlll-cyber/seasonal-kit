@@ -9,6 +9,10 @@ applies it.
 
 Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Games).
 
+### Fixed, test tools
+
+- **Dense list:** a control hidden or scrolled out of view no longer counts as a link's neighbour.
+
 ### Added, operations
 
 - **`sk_cosign_install`** (`ops/lib/image.sh`): installs cosign 3.1.6, only where the download

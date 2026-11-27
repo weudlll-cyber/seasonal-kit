@@ -52,5 +52,37 @@ export function inText(el) {
         return false;
     return [...(el.parentElement?.childNodes ?? [])].some((n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim() !== '');
 }
+export function controls() {
+    return [
+        ...document.body.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab]'),
+    ];
+}
+// What of an element can be seen: its box inside what scrolls and clips around it.
+export function seenBox(el) {
+    const { scroll, hard } = clipsOf(el);
+    return meet(meet(el.getBoundingClientRect(), scroll), hard);
+}
+export function windowBox() {
+    const { clientWidth, clientHeight } = document.documentElement;
+    return { top: 0, left: 0, bottom: clientHeight, right: clientWidth };
+}
+export function isEmpty(box) {
+    return box.right - box.left < 1 || box.bottom - box.top < 1;
+}
+export function inSight(el) {
+    return !isEmpty(meet(seenBox(el), windowBox()));
+}
 // The helpers as one object, handed to the rules.
-export const BASE = { nameOf, meet, clipsOf, shown, textBoxes, inText };
+export const BASE = {
+    nameOf,
+    meet,
+    clipsOf,
+    shown,
+    textBoxes,
+    inText,
+    controls,
+    seenBox,
+    windowBox,
+    isEmpty,
+    inSight,
+};

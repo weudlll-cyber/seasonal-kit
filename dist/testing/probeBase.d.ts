@@ -1,15 +1,19 @@
 /**
  * @file   src/testing/probeBase.ts
- * @brief  The probe's shared in-page helpers: names, boxes, what is clipped and what is seen.
+ * @brief  The probe's shared in-page helpers: names, controls, boxes, what is clipped and seen.
  *
  * Responsibility: `nameOf` names an element for a report; `meet` is two boxes' common part;
  *                 `clipsOf` what the ancestors let be seen (the scrolling boxes, and the hard
  *                 clips: hidden or clip); `shown` whether a reader sees it (visible, and no 1 px
  *                 box for screen readers only); `textBoxes` the boxes of an element's own text;
- *                 `inText` WCAG 2.5.8's inline exception. ./probe puts these functions into the
- *                 page as source text, where they call each other by name, so they use nothing
- *                 imported; ./probeRules gets them as the object `BASE`, since a test's or
- *                 Playwright's own build renames imported names inside a function's source.
+ *                 `inText` WCAG 2.5.8's inline exception; `controls` what can be pressed or typed
+ *                 into; `seenBox` what the ancestors leave of an element's box; `windowBox` the
+ *                 window; `isEmpty` a box with nothing in it; `inSight` whether any of an element
+ *                 is in the window and unclipped. ./probe puts these functions into the page as
+ *                 source text, where they call each other by name, so they use nothing imported;
+ *                 the rules (./probeRules, ./probeTargets) get them as the object `BASE`, since a
+ *                 test's or Playwright's own build renames imported names inside a function's
+ *                 source.
  * Source:         ./probe.ts, moved here unchanged (v0.36.0); from seasonal-bingo-royale
  *                 e2e/acceptance/fitProbe.ts at 8d20904.
  */
@@ -29,6 +33,11 @@ export declare function clipsOf(el: Element): {
 export declare function shown(el: Element): boolean;
 export declare function textBoxes(el: Element): Rect[];
 export declare function inText(el: Element): boolean;
+export declare function controls(): Element[];
+export declare function seenBox(el: Element): Rect;
+export declare function windowBox(): Rect;
+export declare function isEmpty(box: Rect): boolean;
+export declare function inSight(el: Element): boolean;
 export declare const BASE: {
     nameOf: typeof nameOf;
     meet: typeof meet;
@@ -36,5 +45,10 @@ export declare const BASE: {
     shown: typeof shown;
     textBoxes: typeof textBoxes;
     inText: typeof inText;
+    controls: typeof controls;
+    seenBox: typeof seenBox;
+    windowBox: typeof windowBox;
+    isEmpty: typeof isEmpty;
+    inSight: typeof inSight;
 };
 export type Base = typeof BASE;

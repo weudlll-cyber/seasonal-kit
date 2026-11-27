@@ -1,5 +1,6 @@
 import { BASE } from './probeBase.js';
 import { RULES } from './probeRules.js';
+import { TARGETS } from './probeTargets.js';
 // True when a box between the element and the root, the root included, scrolls: its content is
 // reachable.
 function clipsInside(el, root) {
@@ -37,7 +38,7 @@ function clippedFits(b) {
     });
 }
 // The whole measurement, as the page runs it (exported for the unit tests, not from the entry).
-export function runProbe(targetPx, b = BASE, r = RULES) {
+export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }) {
     const { clientWidth: width, clientHeight: height } = document.documentElement;
     const page = document.scrollingElement ?? document.documentElement;
     const cut = [...document.body.querySelectorAll('*')].flatMap((el) => {
@@ -60,12 +61,13 @@ export function runProbe(targetPx, b = BASE, r = RULES) {
 const OWN = [clipsInside, outsideOf, clippedFits, runProbe];
 // One expression: define the parts in the page, then run `call` there.
 function inPage(call) {
-    const parts = [...Object.entries(BASE), ...Object.entries(RULES)];
+    const rules = { ...RULES, ...TARGETS };
+    const parts = [...Object.entries(BASE), ...Object.entries(rules)];
     const body = [
         ...parts.map(([name, part]) => `const ${name} = ${part.toString()};`),
         ...OWN.map((part) => `const ${part.name} = ${part.toString()};`),
         `const base = { ${Object.keys(BASE).join(', ')} };`,
-        `const rules = { ${Object.keys(RULES).join(', ')} };`,
+        `const rules = { ${Object.keys(rules).join(', ')} };`,
     ].join('\n');
     return `(() => {\n${body}\nreturn ${call};\n})()`;
 }

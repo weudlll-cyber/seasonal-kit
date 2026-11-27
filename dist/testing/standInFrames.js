@@ -8,7 +8,9 @@
  *                 that origin and window, and they keep what they received in
  *                 `window.received`. A browser test makes the frame say anything else with
  *                 `window.say(type, fields)` (an unread count, a call that ended). The messages
- *                 and their fields are `FRAME_MESSAGES`, which the contract test reads.
+ *                 and their fields are `FRAME_MESSAGES`, which the contract test reads. A frame
+ *                 shows the `room` and `theme` of its address, also as `data-sk-room` and
+ *                 `data-sk-theme` (since v0.36.0).
  * Depends on:     nothing
  * Source:         new in the kit (K74), after the games' chat stubs (seasonal-mini-games and
  *                 seasonal-cases e2e/websiteStub.ts).
@@ -54,6 +56,14 @@ export function framePage(frame, ready) {
     if (event.origin !== parentOrigin || event.source !== parent) return;
     if (!event.data || event.data.source !== ${literal(host)}) return;
     window.received.push(event.data);
+  });
+  // What the game asked the frame for, shown where a test (and a person) reads it.
+  var asked = new URLSearchParams(location.search);
+  ['room', 'theme'].forEach(function (name) {
+    var value = asked.get(name);
+    if (value === null) return;
+    document.documentElement.setAttribute('data-sk-' + name, value);
+    document.querySelector('p').textContent += ', ' + name + ' ' + value;
   });
   var ready = ${literal(ready)};
   if (parent !== window) window.say(ready.type, ready);

@@ -12,7 +12,8 @@
  *                 way with an ellipsis, beside the unread count. The open chat is a sheet above
  *                 the bar, opaque. The call's 48 px strip sits directly above the bar. Colours
  *                 come only from ./tokens.css; the sheet is never taller than the space left above
- *                 the bar (`--sk-visible-height`, v0.17.0); "3 unread" is read out by ./shell.css
+ *                 the bar (`--sk-visible-height`, v0.17.0); on a phone of 640 px and less it takes
+ *                 its own room above the bar instead (v0.36.0); "3 unread" is read out by ./shell.css
  *                 `sk-visually-hidden`, which a game imports with this file.
  * Source:         seasonal-mini-games apps/web/src/match/chatDock.css and docked.css at 866df03
  *                 (the 190/150 px strip, the bar, the sheet; the 760 px query without its 900 px
@@ -201,6 +202,19 @@
   border-radius: var(--sk-radius-card);
   background: var(--sk-color-surface);
   box-shadow: var(--sk-shadow-raised);
+}
+
+/* A short phone (640 px and less, since v0.36.0): the open sheet takes its own room above the
+   bar instead of lying over the screen, which gets shorter and scrolls, so no control is left
+   partly under the sheet and every one stays reachable. */
+@media (max-height: 640px) {
+  .sk-chat-dock[data-sk-view='phone'] .sk-chat-dock-body {
+    position: static;
+    order: -1;
+    flex: none;
+    height: min(40dvh, 20rem);
+    max-height: calc(var(--sk-visible-height, 100dvh) * 0.5);
+  }
 }
 
 .sk-chat-dock-head {

@@ -6,7 +6,7 @@
  *                 <html> before the first render (without it the early script's rule applies,
  *                 through the toggle), and renders ./Showcase, the result instead of the start
  *                 card with `?screen=result`, or one of ./Fixtures' whole screens
- *                 (`places`, `full-header`).
+ *                 (`places`, `full-header`) or ./LargeText's (`bar`, `card`, `round`, `panel`).
  * Source:         new in the kit.
  */
 import '../css/tokens.css';
@@ -20,13 +20,16 @@ import '../css/bar.css';
 import '../css/call.css';
 import '../css/header.css';
 import '../css/steps.css';
+import '../css/components.css';
+import '../css/seasons.css';
 import './showcase.css';
 
 import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { storeTheme } from '../src/theme.js';
-import { FullHeader, Places } from './Fixtures.js';
+import { CasesRoleHeader, FullHeader, Places } from './Fixtures.js';
+import { LARGE_SCREENS } from './LargeText.js';
 import { Showcase } from './Showcase.js';
 
 const params = new URLSearchParams(window.location.search);
@@ -38,6 +41,9 @@ if (theme === 'light' || theme === 'dark') storeTheme(theme);
 function page(screen: string | null): ReactElement {
   if (screen === 'places') return <Places dense={params.get('dense') === '1'} />;
   if (screen === 'full-header') return <FullHeader />;
+  if (screen === 'cases-header') return <CasesRoleHeader role={params.get('role') ?? 'player'} />;
+  const Large = screen === null ? undefined : LARGE_SCREENS[screen];
+  if (Large !== undefined) return <Large />;
   return <Showcase result={screen === 'result'} />;
 }
 

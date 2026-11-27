@@ -57,6 +57,7 @@ beforeAll(() => {
     Object.defineProperty(Element.prototype, name, {
       configurable: true,
       get(this: Element) {
+        if (this === document.documentElement && name === 'clientHeight') return 1000;
         return this === document.documentElement && name === 'clientWidth'
           ? size(this, 'clientwidth') * 4
           : size(this, name.toLowerCase());
@@ -88,12 +89,15 @@ describe('probe', () => {
   });
 
   it('finds nothing on a page that fits', () => {
-    const seen = look('<button data-box="0 0 44 44">Go</button><p>words</p>');
+    const seen = look(
+      '<button data-box="0 0 44 44">Go</button><p data-box="0 50 100 20">words</p>',
+    );
     expect(seen).toEqual({
       hScroll: false,
       outside: [],
       cut: [],
       smallTargets: [],
+      overlaps: [],
       clippedFits: [],
     });
   });
@@ -162,6 +166,7 @@ function walker(seen: Partial<Probe> = {}) {
     outside: [],
     cut: [],
     smallTargets: [],
+    overlaps: [],
     clippedFits: [],
   };
   const fake = {
@@ -171,7 +176,8 @@ function walker(seen: Partial<Probe> = {}) {
     },
     evaluate: (code: unknown, arg?: unknown) => {
       if (typeof code === 'string') return Promise.resolve({ ...clean, ...seen });
-      if (typeof arg === 'number') log.push(`${viewport} ${String(arg)}`);
+      // The root font; the animations' time limit is the other number handed to the page.
+      if (typeof arg === 'number' && arg < 100) log.push(`${viewport} ${String(arg)}`);
       const fn = code as (a?: unknown) => unknown;
       return Promise.resolve(fn(arg));
     },
@@ -227,6 +233,52 @@ describe('sweep', () => {
     });
     await expect(run).rejects.toThrow(/found 1:\n.*outside the window: div\.b$/);
   });
+});
+
+describe('sweep on a screen that does not open, or still moves', () => {
+  it('reports a screen that does not open, and sees the others', async () => {
+    const w = walker({ overlaps: ['a over b'] });
+    const broken = { name: 'broken', open: () => Promise.reject(new Error('no button\ndetail')) };
+    const run = sweep(w.page, [broken, screen], {
+      axe: false,
+      sizes: [{ width: 320, height: 568 }],
+      fonts: [16],
+      themes: ['light'],
+    });
+    await expect(run).rejects.toThrow(
+      [
+        'the sweep found 2:',
+        'broken 320x568 16px light: did not open: no button',
+        'lobby 320x568 16px light: overlapping control: a over b',
+      ].join('\n'),
+    );
+  });
+
+  it('waits for the animations that end, not for those that repeat', async () => {
+    let ended = false;
+    const animation = (endTime: number, finished: Promise<unknown>) =>
+      ({ effect: { getComputedTiming: () => ({ endTime }) }, finished }) as unknown as Animation;
+    const fade = new Promise((done) => setTimeout(done, 20)).then(() => {
+      ended = true;
+    });
+    Object.assign(document, {
+      getAnimations: () => [
+        animation(200, fade),
+        animation(Infinity, new Promise(() => undefined)),
+        animation(50, Promise.reject(new Error('cancelled'))),
+      ],
+    });
+    await sweep(walker().page, [screen], {
+      axe: () => {
+        expect(ended).toBe(true);
+        return Promise.resolve([]);
+      },
+      sizes: [{ width: 320, height: 568 }],
+      fonts: [16],
+      themes: ['light'],
+    });
+    Reflect.deleteProperty(document, 'getAnimations');
+  });
 
   it('refuses to see nothing', async () => {
     const w = walker();
@@ -238,9 +290,14 @@ describe('sweep', () => {
 describe('axeFinder', () => {
   it('runs the WCAG tags and names each rule with its targets', async () => {
     let tags: string[] = [];
+    const excluded: string[] = [];
     class Builder {
       withTags(t: string[]): this {
         tags = t;
+        return this;
+      }
+      exclude(selector: string): this {
+        excluded.push(selector);
         return this;
       }
       analyze() {
@@ -250,6 +307,9 @@ describe('axeFinder', () => {
       }
     }
     expect(await axeFinder(Builder)({} as Page)).toEqual(['label: input, #a b']);
+    expect(excluded).toEqual([]);
+    await axeFinder(Builder, { exclude: ['iframe.chat', '#ad'] })({} as Page);
+    expect(excluded).toEqual(['iframe.chat', '#ad']);
     expect(tags).toEqual(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
   });
 });

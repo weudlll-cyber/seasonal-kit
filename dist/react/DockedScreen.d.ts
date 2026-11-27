@@ -15,8 +15,8 @@
  *                 dock at all, no strip and no sheet, and the content still follows the keyboard
  *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
  *                 it may sit under other parts of the page (v0.7.0, found by the showcase). The
- *                 content's box is one Tab stop, the region "Game screen", so a keyboard can
- *                 scroll it (since v0.27.0).
+ *                 content's box is one Tab stop, the group "Game screen", so a keyboard can
+ *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0).
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).

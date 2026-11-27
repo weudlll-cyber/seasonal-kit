@@ -7,6 +7,78 @@ applies it.
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-11-27
+
+Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royale).
+
+### Added
+
+- **`.sk-dense-list`** (`components.css`, K112): a list of linked names whose links are 24 px high
+  with room between them; the probe passes them there and only there.
+- **Probe:** `overlaps` (a control over or under a part beside it), boxes past the top and bottom
+  of the window, the kit's own ellipses in one list.
+- **`axeFinder(builder, { exclude })`**, and the sweep waits for animations that end.
+- **Website stand-in:** `emailVerified: false` for a member, `keepAliveMs`, and a chat frame that
+  shows its room and theme. A login page of its own is declined: a game tests its own sign-in.
+- The type `Attempt` (`FailureBrake.reserve`) is exported from `@seasonal/kit/server`.
+
+### Fixed, operations
+
+- **Rollback** skips, with a sentence, a stack file the update did not keep, and puts files back
+  by renaming, so the running command is never written into.
+- **A failed restore** starts the stopped app again and says what state the data is in.
+- **`status` writes no secret file:** a game writes them in the new optional hook
+  `game_backup_secrets`, called before a backup alone.
+
+### Changed
+
+- **Docked screen:** its scrolling box is `role="group"`, no landmark (still a Tab stop named
+  "Game screen"); a test that looks for the region looks for the group.
+- **Probe:** its answer has the new list `overlaps`; a fitted root that scrolls clips nothing.
+- **Sweep:** a screen that does not open is a finding, and the walk goes on.
+- **Header:** "Signed in as" shows from 1600 px up (before 1441 px); below it is read out and the
+  name stays, so Cases' organiser header stays one row at 1536 x 768 (K111).
+
+### Fixed
+
+- **Large text** (at 200 %, no part cuts, hides or pushes content away):
+  - the game bar grows when its content needs more than one row, on every screen; its facts wrap
+    (before: buttons above the window on a desktop, facts ending in "…");
+  - the start card scrolls what its smallest scale cannot fit, from its top, as a Tab stop only
+    then (before: clipped);
+  - a result headline in a narrow place shows whole (before: cut after two lines);
+  - on a phone of 640 px and less the open chat sheet takes its own room above the bar, so no
+    control lies partly under it;
+  - a panel's padding and a button's sides give way before the words on a narrow screen.
+
+### Decided
+
+- **Handbook "How we check"** (K110): the working rule for checks in one place; a big move builds
+  first and checks once. Release images, blocking scans and the kit's own browser specs (K113).
+
+### Migration, per game
+
+Every game: takes the handbook's "How we check" into its own `CLAUDE.md` with this move. A test
+that finds the docked screen's content as a region finds a group (`role="group"`, "Game screen").
+The probe may report more (`overlaps`, boxes past the top or bottom): fix it, or exempt it with
+its reason (K110).
+
+- **Mini Games:** pin. Drops its own padding, bar, start card, headline and chat sheet rules
+  where the kit's fixes replace them; `Attempt` is imported, not derived; its sweep may take all
+  screens in one call; its allowance for the chat bar's newest message goes. The start hook that
+  writes the keys into the env file stays (OPERATIONS.md).
+- **Seasonal Cases:** pin. Drops the allowance for the bar's cut facts at 200 % (`e2e/
+screens.spec.ts`, BACKLOG 77) and for `landmark-main-is-top-level` (78); nothing for the header
+  at 1536 px (79); `Attempt` from the kit.
+- **Bingo Royale:** pin. Moves `secret_files` out of `game_backup_settings` into the new hook
+  `game_backup_secrets`; drops the empty `kit` folder it makes for older kept stacks (`ops/sbr`);
+  `.sk-dense-list` on its result and ranked lists in place of its 24 px allowance; `axeFinder`'s
+  `exclude` for the chat frame; `emailVerified: false`, `keepAliveMs` and the frame's room and
+  theme replace its stand-in workarounds; its own wait for animations goes; `Attempt` from the
+  kit. `ops/lib/db-roles.sql` stays as a stand-in, and the docked chat bar needs no change (the
+  last row is fully visible at the bottom).
+- **Seasonal Party:** nothing beyond the pin.
+
 ## [0.35.0] - 2026-11-26
 
 Shared parts for the way to production, and three Seasonal Cases findings.
@@ -125,8 +197,9 @@ game (K96), and seven fixes from Seasonal Mini Games' v0.32.0 adoption (K97 to K
     `select` rules of `shell/shell.css` give way to `sk-btn` (`--primary`), `sk-panel`,
     `sk-input` and `sk-select`. Looks different: bolder, larger button text, a danger button, the
     locked look of disabled controls. It has no chip or live badge of its own;
-  - back link and sign-in: its `ShellBar` is not the kit's header, so its back link keeps its
-    44 px row, and its "Sign in" stays its own button (it may take `sk-btn sk-btn--primary`).
+  - back link and sign-in: its `ShellBar` wraps the kit's `AppHeader`, so the three header looks
+    apply with the pin: the chip filled with small bold text, "Sign in" solid when signed out, a
+    lower back-link row on phones (corrected in v0.36.0).
 - **Seasonal Party:** nothing; its back link sits in its own bar and is unchanged.
 
 ## [0.33.0] - 2026-11-26
@@ -1749,7 +1822,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...HEAD
+[0.36.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...v0.33.0

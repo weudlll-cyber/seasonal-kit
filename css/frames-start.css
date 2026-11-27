@@ -1,0 +1,124 @@
+/**
+ * @file   css/frames-start.css
+ * @brief  The start card "before the round" (src/react/StartCard.tsx).
+ *
+ * Responsibility: the card fills its space under the game's bar and never scrolls the page: a
+ *                 card framed and tinted in the season's colour (`data-sk-season`, the website's
+ *                 colours from ./tokens.css), everything centred, the title in the largest type,
+ *                 the special, the facts and the seconds left, sizes following the viewport's
+ *                 smaller side and the screen's scale (`--fit`) down to the game's floors
+ *                 (./fit.css). What even then does not fit (large text) scrolls inside the card
+ *                 from its top (since v0.36.0), with the focus ring inside. ./frames.css brings
+ *                 this file along.
+ * Source:         ./frames.css, the start card's rules moved here (v0.36.0).
+ */
+/* The start card. */
+.sk-start-card {
+  --sk-start-title: clamp(3rem, 2rem + 6vw, 5.5rem);
+  --sk-season: var(--sk-color-border-strong);
+  min-height: 0;
+  /* What even the smallest scale cannot fit (large text) scrolls; ./shell.css's focus ring
+     goes with the Tab stop src/react/StartCard gives the card then (since v0.36.0). */
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* Centred only while it fits: content taller than the card starts at its top, in reach. */
+  justify-content: safe center;
+  gap: calc(var(--fit, 1) * clamp(0.5rem, 2.5vmin, 1.5rem));
+  padding: calc(var(--fit, 1) * var(--sk-space-3)) var(--sk-space-3);
+  border: 3px solid var(--sk-season);
+  border-radius: var(--sk-radius-card);
+  background: color-mix(in srgb, var(--sk-season) 16%, var(--sk-color-surface));
+  text-align: center;
+}
+
+/* The ring of the Tab stop the card is while it scrolls: inside its frame, where nothing clips
+   it. */
+.sk-start-card:focus-visible {
+  outline: 2px solid var(--sk-focus-ring);
+  outline-offset: -8px;
+}
+
+.sk-start-card[data-sk-season='spring'] {
+  --sk-season: var(--sk-color-spring);
+}
+
+.sk-start-card[data-sk-season='summer'] {
+  --sk-season: var(--sk-color-summer);
+}
+
+.sk-start-card[data-sk-season='autumn'] {
+  --sk-season: var(--sk-color-autumn);
+}
+
+.sk-start-card[data-sk-season='winter'] {
+  --sk-season: var(--sk-color-winter);
+}
+
+/* A game whose rounds show no season: the card on the surface, with a hairline. */
+.sk-start-card:not([data-sk-season]) {
+  border-width: 1px;
+  background: var(--sk-color-surface);
+}
+
+.sk-start-head {
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--fit, 1) * var(--sk-space-1));
+}
+
+/* The season's icon on a disc of the page colour. */
+.sk-start-icon {
+  display: grid;
+  place-items: center;
+  width: max(2.5rem, calc(var(--fit, 1) * clamp(4rem, 14vmin, 7.5rem)));
+  height: max(2.5rem, calc(var(--fit, 1) * clamp(4rem, 14vmin, 7.5rem)));
+  padding: calc(var(--fit, 1) * 0.6rem);
+  border: 3px solid var(--sk-season);
+  border-radius: 50%;
+  background: var(--sk-color-surface);
+}
+
+.sk-start-head h1 {
+  margin: 0;
+  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--sk-start-title)));
+  line-height: 1;
+}
+
+.sk-start-special {
+  max-width: 34rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.sk-start-special h2 {
+  margin: 0;
+  font-size: max(16px, calc(var(--fit, 1) * var(--sk-font-size-title)));
+}
+
+.sk-start-special p {
+  margin: 0;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--sk-font-size-lead)));
+}
+
+.sk-start-facts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * 1rem));
+  font-weight: var(--sk-font-weight-strong);
+}
+
+.sk-start-count {
+  margin: 0;
+  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--sk-font-size-lead)));
+}
+
+.sk-start-count strong {
+  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--sk-font-size-title)));
+  font-variant-numeric: tabular-nums;
+}

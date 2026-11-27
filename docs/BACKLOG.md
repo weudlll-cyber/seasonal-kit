@@ -28,6 +28,15 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   `OriginChatFrame` is local development only (K32). Done when: the owner takes it up, and the
   kit has it with a test and a security pass.
 
+- **72. A blocking scan would fail on any ZAP warning** (K113, 2026-11-27). `scan.yml` counts
+  ZAP's exit 1 and 2 alike as findings; the decision blocks on high and critical only (Trivy
+  already scans those two). Done when: with `blocking`, only a high or critical finding fails the
+  run, with a test, before the first game's production turns it on.
+- **73. The result's first part keeps its height in a narrow place at large text** (seen
+  2026-11-27 in Mini Games' `round/largeText.css`, which sets it to `auto`; `css/frames.css`
+  `.sk-result-first`, board layout). Not among the findings of this release. Done when: the part
+  grows with its content there, measured at 200 %, and the game's rule can go.
+
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -215,5 +224,22 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   cookie removals stay: none is redundant (each takes one pair).
 - **65. A running Vite kept the old kit after a pin move** (Seasonal Cases, 2026-11-26). Closed in
   v0.35.0 (ADOPTION.md, HANDBOOK.md).
+- **66. Large text cut, hid or pushed content away** (Cases 77, Mini Games, 2026-11-26): the game
+  bar, the start card, the result headline, the chat sheet and the panel's padding. Closed in
+  v0.36.0 (`bar.css`, `frames-start.css`, `frames.css`, `dock.css`, `components.css`,
+  `showcase/large.spec.ts`).
+- **67. A website organiser's header folded at 1536 px** (Cases 79, 2026-11-26). Closed in v0.36.0
+  (`header-account.css`, `showcase/looks.spec.ts`, K111).
+- **68. The docked screen was a landmark around the game's main** (Cases 78) **and dense lists had
+  no 24 px rule** (Bingo, 2026-11-27). Closed in v0.36.0 (`DockedScreen.tsx`, `components.css`,
+  `probeRules.ts`, K112).
+- **69. Gaps of the sweep, the probe and the stand-in** (Mini Games, Cases, Bingo, 2026-11-27):
+  open failures, edges and overlaps, the kit's ellipses, running animations, axe's exclude, three
+  stand-in options. Closed in v0.36.0 (`sweep.ts`, `probe*.ts`, `websiteStandIn.ts`). A login
+  page of the stand-in's own is declined.
+- **70. Rollback, a failed restore and a status that wrote** (Bingo, 2026-11-27). Closed in
+  v0.36.0 (`admin.sh`, `admin-update.sh`, `backup-restore.sh`, `admin.test.sh`).
+- **71. `Attempt` was not exported, and four docs were wrong or silent** (all three games,
+  2026-11-27). Closed in v0.36.0 (`server/index.ts`, ADOPTION.md, OPERATIONS.md, CHANGELOG.md).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

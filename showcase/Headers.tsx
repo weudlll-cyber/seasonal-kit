@@ -119,6 +119,29 @@ const FULL_WIDTH = { width: '100vw', marginLeft: 'calc(50% - 50vw)' } as const;
 const LONG_NAME = 'Maximilian-Alexander Ros';
 const CASES_LINKS = ['Start', 'Stage', 'Chronicle', 'My matches', 'Admin', 'Privacy'];
 
+// Seasonal Cases' header by role, in website mode with three step badges (v0.36.0): what its
+// organiser measured at 1536 px (./looks.spec.ts).
+const CASES_MEMBERS: Readonly<Record<string, { name: string; role: string }>> = {
+  player: { name: 'Pia Player', role: 'player · rank 2' },
+  organiser: { name: 'Olga Organiser', role: 'organiser' },
+  admin: { name: 'Adam Admin', role: 'admin' },
+};
+
+export function casesHeader(role: string): AppHeaderProps {
+  return {
+    ...base,
+    websiteMode: true,
+    brand: { href: '#/', emblem: EMBLEM, name: 'Seasonal Cases' },
+    links: CASES_LINKS.slice(0, 5).map((label, i) => ({
+      href: `#/${label}`,
+      label,
+      active: i === 0,
+    })),
+    account: { ...account, ...(CASES_MEMBERS[role] ?? CASES_MEMBERS['player']), steps: STEPS },
+    signIn: { href: '#/sign-in' },
+  };
+}
+
 function CasesHeader(): ReactElement {
   return (
     <>

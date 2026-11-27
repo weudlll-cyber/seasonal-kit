@@ -12,7 +12,7 @@
  * Source:         new in the kit.
  */
 export { grantAppRole, type AppRoleGrants, type RoleDatabase } from './dbRoles.js';
-export { FailureBrake } from './failureBrake.js';
+export { FailureBrake, type Attempt } from './failureBrake.js';
 export { HEALTH_PATHS, readiness, type ReadinessAnswer, type ReadinessOptions } from './health.js';
 export { isPublicAddress } from './guardedAddress.js';
 export { FetchRefused, guardedFetch, type GuardedFetchOptions } from './guardedFetch.js';

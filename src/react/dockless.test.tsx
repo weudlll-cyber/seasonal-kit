@@ -33,7 +33,7 @@ const visibleHeight = (): string =>
 describe('the docked screen’s content (v0.27.0)', () => {
   it('is one Tab stop with a name, so a keyboard can scroll it', () => {
     render(<DockedScreen withoutChat>result</DockedScreen>);
-    const main = screen.getByRole('region', { name: 'Game screen' });
+    const main = screen.getByRole('group', { name: 'Game screen' });
     expect(main.getAttribute('tabindex')).toBe('0');
     expect(main.className).toBe('sk-docked-main');
   });

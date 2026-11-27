@@ -63,6 +63,21 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-27 — before v0.36.0 (branch `fix/v0.34-findings`)
+
+| Scan                         | Tool and command                                       | Result                                                    |
+| ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                 | No leaks.                                                 |
+| Dependencies                 | osv-scanner (CI)                                       | No dependency was added.                                  |
+| Code                         | CodeQL (javascript-typescript)                         | Read on the pull request before the merge.                |
+| The admin and restore paths  | `ops/test/admin.test.sh`, `backup.test.sh`; ShellCheck | A failed restore starts the app; status writes no secret. |
+
+**Read by the session that wrote it.** A rollback now writes a file beside its place and renames
+it: the copy keeps the kept file's mode and owner, and nothing new is made readable. The failed
+restore runs the game's own start command, which a successful restore runs too. The stand-in's
+new options are test tools. The probe's functions are put into a test's page as source text, as
+before, from the kit's own modules only.
+
 ### 2026-11-26 — before v0.35.0 (branch `feat/production-parts`)
 
 | Scan                         | Tool and command                              | Result                                             |

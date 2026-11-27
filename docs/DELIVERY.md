@@ -773,6 +773,13 @@ release's commit and refused it with another ("was not built from commit …"), 
 signer and for another repository; the unsigned base image was refused; the SBOM's attestation
 verified. The run deleted the test package; the tag was deleted on origin and locally.
 
+## v0.39.1, with pnpm and with npm (2026-11-27, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.39.1` (merge `29c0f01`), typechecked and ran two tests on the
+installed files: `settle` throwing what still moves, and the shipped overflow check, one wait and
+usage words. Both passed. The scratch folders are left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

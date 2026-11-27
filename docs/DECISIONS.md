@@ -563,3 +563,6 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   owner's development database; journeys use fixed seeds and handle every outcome; website-mode
   parts are looked at in the local preview before a merge. In
   [HANDBOOK.md](HANDBOOK.md#where-a-check-may-look-and-write-k125).
+- **K124 — A local website-mode preview** (decided 2026-11-27). The kit builds one command,
+  `sk-preview`, that puts its stand-in website before a game's dev server with one test member, so
+  the owner can look at website-mode parts before a merge.

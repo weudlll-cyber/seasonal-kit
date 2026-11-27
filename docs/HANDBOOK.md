@@ -295,7 +295,9 @@ running Vite keeps serving the old pre-bundled kit.
   and keys stay in the game.
 - **Rate limiter:** `RateLimiter` with the game's own rules, for the routes other than sign-in.
 - **Website stand-in:** `startWebsiteStandIn` of the testing entry for the browser tests of sign-in,
-  chat and call in website mode (K74); no game writes its own half of the website's contract.
+  chat and call in website mode (K74); no game writes its own half of the website's contract. The
+  command `sk-preview` puts it before a game's dev server for the owner's look (K124); the real
+  shared call is only seen on the website.
 - **Load checks:** `latencies`, `inBatches` and `watchServer` of the testing entry (K73); the scenarios
   and targets stay in the game.
 - **Route file:** `ops/lib/website-route.sh` writes a website install's route file for nginx or Caddy

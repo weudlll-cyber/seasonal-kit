@@ -18,6 +18,9 @@ handbook rules.
 
 ### Added
 
+- **`sk-preview`** (K124): a game in website mode on this computer, behind the stand-in, with one
+  test member signed in and a stand-in shared call (OPERATIONS.md; ADOPTION.md per game). The
+  stand-in takes `port` and `sharedCall`, and a taken port is now an error.
 - **Declared motion:** a screen's `intendedMotion` (`selector`, `decision` with a number; the
   type `IntendedMotion`), and the same as the last argument of `settle` and `setTheme`, excuses
   the motion of that part and of what it holds. Other motion is still reported; a declaration

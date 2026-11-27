@@ -8,6 +8,7 @@
  *                 and when its content or its style does (the screen's scale, a new line).
  *                 Without a ResizeObserver (a test's DOM) it does nothing. The box names itself
  *                 and draws its focus ring.
+ *                 Exported for games since v0.39.0.
  * Source:         seasonal-mini-games apps/web/src/components/scrollTabStop.ts (feat/kit-0.22),
  *                 as a hook; the style is watched too.
  */

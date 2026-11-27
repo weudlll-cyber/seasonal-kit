@@ -62,6 +62,7 @@ export { ThemeToggle, useShownTheme, useTheme } from './theme.js';
 export { useDisclosure, type Disclosure } from './useDisclosure.js';
 export { useDockReserve } from './useDockReserve.js';
 export { useFitScale } from './useFitScale.js';
+export { useScrollTabStop } from './useScrollTabStop.js';
 export {
   OriginChatFrame,
   WebsiteChatFrame,

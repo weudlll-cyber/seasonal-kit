@@ -7,7 +7,8 @@
  *                 ./screens `SWEEP_SIZES`), the root fonts (16 and 32 px) and both themes: it sets
  *                 the window, lets the screen open itself (`open`, which navigates and waits for
  *                 what it needs), sets the root font and the theme, waits for stillness
- *                 (./sweepMotion), probes (./probe) and runs `axe`. It throws one error listing every finding with its
+ *                 (./sweepMotion), probes (./probe), counts the floors, and waits for stillness
+ *                 again (since v0.40.0) before it runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
  *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
@@ -129,6 +130,20 @@ function allows(known: Allowed, line: string): boolean {
   return line.includes(known.finding) && line.endsWith(notVisible());
 }
 
+// What still moves when the wait gives up, as a finding; nothing on a still screen.
+async function motionLines(page: Page): Promise<string[]> {
+  const moving = await motionEnded(page);
+  return typeof moving === 'string' ? [stillMoving(moving)] : [];
+}
+
+// axe's findings, on a screen that came to rest again: the probe takes its time, and a fade a
+// game's timer starts meanwhile would be judged as poor contrast.
+async function axeLines(page: Page, axe: AxeFinder | false): Promise<string[]> {
+  if (axe === false) return [];
+  const moving = await motionLines(page);
+  return [...moving, ...(await axe(page)).map((v) => `axe: ${v}`)];
+}
+
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(
   page: Page,
@@ -153,14 +168,14 @@ async function findingsOf(
   await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
   await page.setViewportSize(look.size);
   // The wait's quiet moment gives resize observers their frames to run and paint, too.
-  const moving = await motionEnded(page);
   const found = [
-    ...(typeof moving === 'string' ? [stillMoving(moving)] : []),
+    ...(await motionLines(page)),
     ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
     ...(await floorLines(page, screen.floors ?? [], look)),
-    ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
+    ...(await axeLines(page, options.axe)),
   ];
-  return found
+  // The same part may still move at both waits: said once.
+  return [...new Set(found)]
     .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
     .map((line) => `${where}: ${line}`);
 }

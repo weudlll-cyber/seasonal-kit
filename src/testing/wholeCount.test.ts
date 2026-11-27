@@ -14,6 +14,8 @@ import type { Page } from '@playwright/test';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { wholeCount } from './probe.js';
+import { BASE } from './probeBase.js';
+import { RULES } from './probeRules.js';
 
 // The page as jsdom can state it: boxes by attribute, painted in document order, and a scrolling
 // box's sticky sign (`data-sign="<height> <bottom|top>"`) as its pseudo-element's style.
@@ -75,7 +77,12 @@ describe('wholeCount', () => {
         clientTop: { configurable: true, value: 0 },
       });
     }
-    return wholeCount(page, 'li');
+    // The page's copy and the module's own rule agree.
+    const own = RULES.wholeItems(BASE, 'li');
+    return wholeCount(page, 'li').then((seen) => {
+      expect(seen).toBe(own);
+      return seen;
+    });
   };
 
   it('counts the items wholly inside the window and every box around them', async () => {

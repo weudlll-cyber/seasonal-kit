@@ -125,7 +125,7 @@ test('a sticky sign over the last row lowers the floor’s count by one', async 
     ...screenOf('list'),
     open: async (p: Page) => {
       await screenOf('list').open(p);
-      await p.addStyleTag({ content: sign });
+      if (sign !== '') await p.addStyleTag({ content: sign });
     },
     floors: [{ selector: '.sweep-list li', least, decision: 'K123' }],
   });

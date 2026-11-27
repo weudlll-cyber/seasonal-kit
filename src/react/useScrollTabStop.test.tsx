@@ -12,7 +12,7 @@
  * Source:         new in the kit.
  */
 import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import { useRef, type ReactElement } from 'react';
+import { useRef, type CSSProperties, type ReactElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useScrollTabStop } from './useScrollTabStop.js';
@@ -48,7 +48,12 @@ function Box(p: { readonly overflowY: string; readonly content: number }): React
   const box = useRef<HTMLDivElement>(null);
   useScrollTabStop(box);
   return (
-    <div ref={box} data-testid="box" data-content={p.content} style={{ overflowY: p.overflowY }} />
+    <div
+      ref={box}
+      data-testid="box"
+      data-content={p.content}
+      style={{ overflowY: p.overflowY as CSSProperties['overflowY'] }}
+    />
   );
 }
 

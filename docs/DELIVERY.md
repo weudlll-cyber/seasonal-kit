@@ -756,6 +756,14 @@ Two scratch consumers outside every repository, one with pnpm and one with npm, 
 and a floor no look checks, and the shipped `wholeItems`. Both passed. The scratch folders are
 left in the session's scratch directory.
 
+## v0.39.0, with pnpm and with npm (2026-11-27, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.39.0` (merge `cd25b4f`), typechecked (the types `Allowed` and
+`IntendedOverlap` included) and ran two tests on the installed files: the new exports and the
+refusal of an overlap without a decision number, and the shipped ops files, docked screen and dense
+list's stylesheet. Both passed. The scratch folders are left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

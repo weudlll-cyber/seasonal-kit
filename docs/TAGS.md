@@ -50,3 +50,4 @@ message. A release adds its line ([RELEASING.md](RELEASING.md)); what a version 
 | v0.36.0 | 2026-11-27 | `4f342ce` | the findings of the games' v0.34.0 moves, large text, one working rule for checks                |
 | v0.37.0 | 2026-11-27 | `f3d005a` | the one shared call's slot in the dock, and the way back to it                                   |
 | v0.38.0 | 2026-11-27 | `a21ffe4` | the sweep's per-screen setup and floors of visible items                                         |
+| v0.39.0 | 2026-11-27 | `cd25b4f` | the games' findings on v0.38.0                                                                   |

@@ -14,7 +14,8 @@
  *                 - `.sk-field` (label and control), `.sk-input` and `.sk-select`, at least 44 px;
  *                   a disabled one looks locked; `.sk-field-help--error` under it;
  *                 - `.sk-chip` and `.sk-badge-live`;
- *                 - `.sk-dense-list`, a list of linked names whose links are 24 px high (K112).
+ *                 - `.sk-dense-list`, a list whose links and buttons may be 24 px high (K112,
+ *                   K117).
  *                 Colours come from ./tokens.css only, so light and dark both work. Import it after
  *                 ./tokens.css, ./shell.css (`--sk-focus-ring`) and ./fit.css (the text floor,
  *                 `--sk-floor-text`, under which the small texts never go).
@@ -169,9 +170,10 @@
   letter-spacing: 0.06em;
 }
 
-/* A dense list of linked names, one row for each player or entry (a ranked or a result list):
-   each link at least 24 px high and wide with 4 px between the rows (WCAG 2.2 AA target size),
-   the one place where a target is under 44 px (owner decision of 2026-11-27, K112). */
+/* A dense list, one row for each player or entry (a ranked or a result list): each link, and
+   each button (K117), at least 24 px high and wide with 4 px between the rows (WCAG 2.2 AA target
+   size), the one place where a target is under 44 px (owner decisions of 2026-11-27, K112). A
+   button's size stays the game's own: no rule here shrinks one. */
 .sk-dense-list {
   display: grid;
   gap: 0.25rem;

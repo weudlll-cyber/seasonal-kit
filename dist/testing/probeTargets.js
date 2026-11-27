@@ -6,10 +6,12 @@ export function seenTogether(b, one, other) {
         return false;
     return b.inSight(one) === b.inSight(other);
 }
-// A dense list's link: 24 px high and wide, and 4 px (half a pixel of rounding) clear all round.
+// A dense list's link or button: 24 px high and wide, and 4 px (half a pixel of rounding) clear
+// all round.
 export function denseEnough(b, el, r) {
-    if (el.tagName !== 'A' || el.closest('.sk-dense-list') === null)
+    if (!el.matches('a, button, [role=button]') || el.closest('.sk-dense-list') === null) {
         return false;
+    }
     if (Math.min(r.width, r.height) < 23.5)
         return false;
     return b.controls().every((other) => {

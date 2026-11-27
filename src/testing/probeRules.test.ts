@@ -8,9 +8,9 @@
  *                 nothing scrolls to it, one wholly outside or inside a scrolling box never; a
  *                 control lying over a part in the page's flow is reported, but not over a box
  *                 placed out of it, an inline one, or one it only touches; the chat bar's newest
- *                 message may end in an ellipsis and nothing else may; a link in `.sk-dense-list`
+ *                 message may end in an ellipsis and nothing else may; a link or a button in `.sk-dense-list`
  *                 passes at 24 px with 4 px clear, not at 23, not crowded, not outside the list,
- *                 and no button does.
+ *                 and a field does not.
  * Depends on:     vitest, jsdom
  * Source:         new in the kit.
  */
@@ -127,6 +127,12 @@ describe('a dense list', () => {
     expect(small(`<ol>${rows}</ol>`)).toBe(2);
   });
 
+  it('passes a button of 24 px there, and reports it outside such a list', () => {
+    const button = '<li><button data-box="0 0 80 24">b</button></li>';
+    expect(small(`<ol class="sk-dense-list">${button}</ol>`)).toBe(0);
+    expect(look(`<ol>${button}</ol>`).smallTargets).toEqual(['button "b" 80x24']);
+  });
+
   it('counts no neighbour that is scrolled out of view', () => {
     // A box 24 px high shows the first link; the next lies 2 px under it, scrolled away.
     const scrolled = `<div style="overflow: auto" data-box="0 0 90 24"><ol class="sk-dense-list">${link(0)}${link(26)}</ol></div>`;
@@ -143,7 +149,8 @@ describe('a dense list', () => {
   it.each([
     ['a link under 24 px', link(0, 23)],
     ['links with no room between them', `${link(0)}${link(25)}`],
-    ['a button', '<button data-box="0 0 80 24">b</button>'],
+    ['a button under 24 px', '<button data-box="0 0 80 23">b</button>'],
+    ['a field', '<input data-box="0 0 80 24">'],
   ])('does not pass %s', (_what, rows) => {
     expect(small(`<ol class="sk-dense-list">${rows}</ol>`)).toBeGreaterThan(0);
   });

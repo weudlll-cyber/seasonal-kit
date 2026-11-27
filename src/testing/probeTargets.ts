@@ -4,8 +4,9 @@
  *
  * Responsibility: `smallTargets` is a control under the least size (a link in running text is
  *                 exempt; a checkbox or radio in a label is measured by the label). `denseEnough`:
- *                 a link in a dense list (`.sk-dense-list`, K112) passes at 24 px with 4 px clear
- *                 of every other control seen at the same time, and nowhere else. A control hidden
+ *                 a link or, since v0.39.0, a button in a dense list (`.sk-dense-list`, K112,
+ *                 K117) passes at 24 px with 4 px clear of every other control seen at the same
+ *                 time, and nowhere else. A control hidden
  *                 or scrolled out of view is no neighbour (since v0.39.0), nor is one past the
  *                 window's edge from it.
  *                 Like ./probeBase they are put into the page as source text.
@@ -23,9 +24,12 @@ export function seenTogether(b: Base, one: Element, other: Element): boolean {
   return b.inSight(one) === b.inSight(other);
 }
 
-// A dense list's link: 24 px high and wide, and 4 px (half a pixel of rounding) clear all round.
+// A dense list's link or button: 24 px high and wide, and 4 px (half a pixel of rounding) clear
+// all round.
 export function denseEnough(b: Base, el: Element, r: DOMRect): boolean {
-  if (el.tagName !== 'A' || el.closest('.sk-dense-list') === null) return false;
+  if (!el.matches('a, button, [role=button]') || el.closest('.sk-dense-list') === null) {
+    return false;
+  }
   if (Math.min(r.width, r.height) < 23.5) return false;
   return b.controls().every((other) => {
     if (other === el || !seenTogether(b, el, other)) return true;

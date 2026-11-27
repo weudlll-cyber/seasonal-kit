@@ -13,7 +13,7 @@
  *                 - `smallTargets`: a control (link, button, field, summary, button role) under
  *                   `targetPx` (44) in either direction. A link inside running text is exempt, as
  *                   WCAG 2.5.8 exempts it; a checkbox or radio in a label is measured by the
- *                   label; a link in a `.sk-dense-list` passes at 24 px with room around it
+ *                   label; a link or button in a `.sk-dense-list` passes at 24 px with room around it
  *                   (since v0.36.0, K112);
  *                 - `overlaps` (since v0.36.0): a control lying over or under a part beside it;
  *                 - `clippedFits`: a fitted root (`[data-sk-fit-scale]`, ../fit.ts) with a part

@@ -13,6 +13,11 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 
 - **Dense list:** a control hidden or scrolled out of view no longer counts as a link's neighbour.
 
+### Changed
+
+- **Dense list** (K117): the probe passes a button of 24 px in `.sk-dense-list`, like a link.
+  The stylesheet sizes no button: that stays the game's.
+
 ### Added, operations
 
 - **`sk_cosign_install`** (`ops/lib/image.sh`): installs cosign 3.1.6, only where the download

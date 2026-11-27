@@ -6,8 +6,9 @@
  * Responsibility: `useScrollTabStop` gives `tabindex="0"` to a box whose content is taller than
  *                 it and whose computed `overflow-y` is `auto` or `scroll`, none to a tall box
  *                 that clips or shows its overflow, none to a box its content fits, and looks
- *                 again when the style changes. Heights are stated by the test; jsdom lays
- *                 nothing out.
+ *                 again when the style changes. Used as a ref callback (without a ref) it watches
+ *                 a box rendered later and lets it go when it leaves. Heights are stated by the
+ *                 test; jsdom lays nothing out.
  * Depends on:     vitest, jsdom, @testing-library/react
  * Source:         new in the kit.
  */
@@ -17,16 +18,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useScrollTabStop } from './useScrollTabStop.js';
 
+const observers = { made: 0, dropped: 0 };
+
 // The box is 100 px high; `data-content` says how high its content is.
 beforeEach(() => {
+  Object.assign(observers, { made: 0, dropped: 0 });
   vi.stubGlobal(
     'ResizeObserver',
     class {
       observe(): void {
-        // Sizes do not change here.
+        observers.made += 1;
       }
       disconnect(): void {
-        // Nothing is held.
+        observers.dropped += 1;
       }
     },
   );
@@ -58,6 +62,38 @@ function Box(p: { readonly overflowY: string; readonly content: number }): React
 }
 
 const stop = (): string | null => screen.getByTestId('box').getAttribute('tabindex');
+
+// A component whose box comes later, as a list that is rendered once its data is there.
+function Late(p: { readonly shown: boolean; readonly content: number }): ReactElement {
+  const box = useScrollTabStop();
+  return p.shown ? (
+    <div ref={box} data-testid="box" data-content={p.content} style={{ overflowY: 'auto' }} />
+  ) : (
+    <p>waiting</p>
+  );
+}
+
+// Every observer a test's boxes made and let go of.
+const watching = (): number => observers.made - observers.dropped;
+
+describe('useScrollTabStop as a ref callback', () => {
+  it('watches a box that is rendered after the component', () => {
+    const view = render(<Late shown={false} content={300} />);
+    view.rerender(<Late shown content={300} />);
+    expect(stop()).toBe('0');
+  });
+
+  it('stops watching when the box goes, and watches the next one', () => {
+    const view = render(<Late shown content={300} />);
+    expect(watching()).toBe(1);
+    view.rerender(<Late shown={false} content={300} />);
+    expect(watching()).toBe(0);
+    view.rerender(<Late shown content={100} />);
+    expect([watching(), stop()]).toEqual([1, null]);
+    view.unmount();
+    expect(watching()).toBe(0);
+  });
+});
 
 describe('useScrollTabStop', () => {
   it.each(['auto', 'scroll'])('is a Tab stop for a tall box with overflow %s', (overflowY) => {

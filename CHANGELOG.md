@@ -10,6 +10,11 @@ applies it.
 Findings of Mini Games, Cases and Bingo on v0.39.1, a local website-mode preview and four
 handbook rules.
 
+### Added
+
+- **`useScrollTabStop()`** answers a ref callback: a box rendered after its component gets its
+  Tab stop, and is let go when it leaves. With a ref passed in, as before.
+
 ### Fixed, test tools
 
 - **Sweep:** it waits for stillness again directly before axe, so a fade that starts after the

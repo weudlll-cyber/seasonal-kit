@@ -28,6 +28,12 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 - **Dense list** (K117): the probe passes a button of 24 px in `.sk-dense-list`, like a link.
   The stylesheet sizes no button: that stays the game's.
 
+### Documented
+
+- A game's required checks, never the nightly suite; `scan.yml`'s `blocking: true`; a policy that
+  lists frame paths must name `/embed/call/shared` (this corrects v0.37.0's "the game's
+  `frame-src 'self'` allows it", true only of such a policy) (ADOPTION.md).
+
 ### Added
 
 - **`useScrollTabStop`** is exported from `@seasonal/kit/react`: a ref's element is a Tab stop

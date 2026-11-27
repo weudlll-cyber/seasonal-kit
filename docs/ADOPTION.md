@@ -656,6 +656,25 @@ make them; the probe's finding then says that the stylesheet is missing. The 24 
 `fit.css`'s `--sk-min-target`, with 24 px itself where that is not loaded (since v0.39.0). A
 button in the list keeps its own size: make it 24 px high or more.
 
+## A game's required checks (every game)
+
+Branch protection requires the jobs a pull request runs (the unit tests, the static and security
+checks, the changed browser specs), under the names its `ci.yml` gives them now; the nightly browser
+suite (`browsers.yml`) is never required, because a pull request does not run it and would wait for
+it for ever.
+
+## Blocking scans (every game)
+
+The kit's `scan.yml` has the input `blocking`; `blocking: true` turns blocking on, and the run then
+fails on a finding or a scan that could not run. Off, the default, it reports. Before a game turns it
+on: it also fails on ZAP's warnings today (BACKLOG 72).
+
+## A game that lists frame paths one by one
+
+A policy that names the website's frames path by path (`frame-src …/embed/chat …/embed/call/<id>`)
+must name `<site>/embed/call/shared` as well, or the browser blocks the shared call's view;
+`frame-src 'self'` on the website's own origin allows it without a change.
+
 ## What v0.12.0 answers
 
 Five answers, each named by Mini Games' own record. Each is opt-in: a game that changes nothing

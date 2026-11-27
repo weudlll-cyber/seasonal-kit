@@ -167,8 +167,9 @@ game (K96), and seven fixes from Seasonal Mini Games' v0.32.0 adoption (K97 to K
     `select` rules of `shell/shell.css` give way to `sk-btn` (`--primary`), `sk-panel`,
     `sk-input` and `sk-select`. Looks different: bolder, larger button text, a danger button, the
     locked look of disabled controls. It has no chip or live badge of its own;
-  - back link and sign-in: its `ShellBar` is not the kit's header, so its back link keeps its
-    44 px row, and its "Sign in" stays its own button (it may take `sk-btn sk-btn--primary`).
+  - back link and sign-in: its `ShellBar` wraps the kit's `AppHeader`, so the three header looks
+    apply with the pin: the chip filled with small bold text, "Sign in" solid when signed out, a
+    lower back-link row on phones (corrected in v0.36.0).
 - **Seasonal Party:** nothing; its back link sits in its own bar and is unchanged.
 
 ## [0.33.0] - 2026-11-26

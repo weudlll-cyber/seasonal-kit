@@ -285,10 +285,23 @@ Each step pins the newest tag; a step never mixes two tags.
 - **The backup scripts:** the kit's `ops/backup.sh` loads `lib/` beside itself, so the kit's whole
   `ops/` folder is installed as one folder (say `ops/kit/`), not file by file. Bingo's
   `sbr update` installs `lib/*.sh` and `lib/*.sql` only (`ops/lib/config.sh:186`), and the update
-  that brings a new version runs the **old** `install_files`. So: `install_files` copies
-  `ops/kit/` whole and `STACK_FILES` names it (`save_stack` skips it where it does not exist
-  yet), in an update of its own before the one that needs the folder; an install made before that
-  runs the installer again instead.
+  that brings a new version runs the **old** `install_files`. So an older install takes two
+  steps. The first version adds `ops/kit/` to `install_files` and to `STACK_FILES` (`save_stack`
+  skips a name that does not exist yet) and works without the folder: updating to it still runs
+  the old file list, so it brings the new script and list, **not yet the folder**. The second
+  update, run by that new script, installs the folder; only that version may need it. An install
+  that skips the first step runs the installer again instead.
+- **The older updater and `ops/lib/db-roles.sql`** (K90): Bingo's `sbr update` of the versions
+  before the kit's admin command (master `d7d841e`: `ops/sbr`, `cmd_update`; `ops/lib/config.sh`,
+  `apply_db_roles`) refuses, on an install with database roles, a ref without
+  `ops/lib/db-roles.sql` ("older than the database roles"), and then sends the file it has just
+  installed to the database. So the path stays, holding comments and no statement, until no such
+  install is left; the new version's own check for older refs accepts either path.
+  **The owner's `TEMPORARY` grant** (K97) is in the kit's `db-roles.sql`, which only the new
+  command runs: after an update driven by the older script it is missing until the new command's
+  first roles run (its next update or a restore), so a migration that needs a temporary table
+  waits for that. To run it at once, run the installer again, or call `sk_db_roles_apply`
+  ([OPERATIONS.md](OPERATIONS.md) "Database roles") with the environment's passwords.
 
 **Tests to run at that step:** `apps/web/src/minTextSize.test.ts`, `shell/dockedChat.test.tsx`,
 `e2e/chatEmbed.spec.ts`, the fit audit (`e2e/acceptance/fitAudit.spec.ts`), and the screens at
@@ -524,7 +537,7 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.34.0
 
 - **Base components** (K95): `shell.css`’s `.button`, `.card` and bare input rules give way to `sk-btn`, `sk-panel`, `sk-input` and `sk-select`. Visible changes: bolder, larger button text, a danger button, the locked look of disabled controls. Only on the owner's word.
-- **Header looks** (K96): its `ShellBar` is its own header, so nothing changes there; its "Sign in" may take `sk-btn sk-btn--primary`. Only on the owner's word.
+- **Header looks** (K96): its `ShellBar` wraps the kit's `AppHeader`, so the three looks apply with the pin: the account chip filled with small bold text, "Sign in" solid when signed out, a lower back-link row on phones. Only on the owner's word.
 
 ### Since v0.35.0
 

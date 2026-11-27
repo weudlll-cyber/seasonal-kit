@@ -7,6 +7,8 @@ applies it.
 
 ## [Unreleased]
 
+## [0.39.1] - 2026-11-27
+
 Follow-ups to v0.39.0, before the games adopt it.
 
 ### Fixed
@@ -23,6 +25,10 @@ Follow-ups to v0.39.0, before the games adopt it.
 
 ### Documented
 
+- **The commit check, proven on a real signature** (run
+  [46013416967](https://github.com/weudlll-cyber/seasonal-kit/actions/runs/46013416967)): the
+  release's commit passed `sk_image_verify`, another was refused, with the cosign
+  `sk_cosign_install` installs; the proof workflow now verifies with that one.
 - **Restoring onto a new server** (OPERATIONS.md): the new server's keys differ, so `restore`
   stops; `--force-env` is the expected step, after checking the backup (its name and a drill). The
   usage texts of the admin command and `ops/backup.sh` say so.
@@ -1993,7 +1999,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...HEAD
+[0.39.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...v0.37.0

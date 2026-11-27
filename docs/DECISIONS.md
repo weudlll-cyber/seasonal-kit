@@ -543,3 +543,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K118 — An intended overlap is declared with its decision** (decided 2026-11-27, Mini Games'
   report). Like a floor of visible items (K116): the screen names the control, what it lies over
   and the owner's decision, with its number; without a number the sweep refuses it.
+- **K119 — A restore stays strict** (decided 2026-11-27). Keys that differ from the backup's stop
+  it unless `--force-env`, on a new server too, where forcing is the expected step after checking
+  the backup.
+- **K120 — Four choices of v0.39.0 are kept** (decided 2026-11-27): the image's commit is compared
+  only where `SK_IMAGE_COMMIT` is set; the sweep adds only axe's two landmark rules; the stylesheet
+  does not resize buttons in dense lists; the tags are listed in [TAGS.md](TAGS.md).
+- **K121 — One throw-away test image to prove the commit check** (decided 2026-11-27, allowed
+  once): a `sk-test-image-*` tag and its image, both deleted after the run.

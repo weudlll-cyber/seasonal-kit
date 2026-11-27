@@ -764,6 +764,15 @@ Two scratch consumers outside every repository, one with pnpm and one with npm, 
 refusal of an overlap without a decision number, and the shipped ops files, docked screen and dense
 list's stylesheet. Both passed. The scratch folders are left in the session's scratch directory.
 
+## The release image's commit check (2026-11-27)
+
+The throw-away tag `sk-test-image-20261127` (commit `908afa5`) released the test image, signed
+keyless, in run [46013416967](https://github.com/weudlll-cyber/seasonal-kit/actions/runs/46013416967).
+With cosign 3.1.6 as `sk_cosign_install` installs it, `sk_image_verify` passed it with the
+release's commit and refused it with another ("was not built from commit …"), with the default
+signer and for another repository; the unsigned base image was refused; the SBOM's attestation
+verified. The run deleted the test package; the tag was deleted on origin and locally.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

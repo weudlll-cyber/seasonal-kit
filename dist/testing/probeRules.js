@@ -25,6 +25,10 @@ export function outermost(b, past) {
     const marked = new Set();
     const out = [];
     for (const el of document.body.querySelectorAll('*')) {
+        // What runs on inside one of the kit's ellipses is hidden by it: only the ellipsis box
+        // itself can lie outside.
+        if (el.parentElement !== null && el.parentElement.closest(kitEllipses()) !== null)
+            continue;
         const r = el.getBoundingClientRect();
         const where = r.width < 1 || !b.shown(el) ? null : past(el, r);
         if (where === null)

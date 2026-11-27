@@ -8,7 +8,9 @@
  *                   and past the bottom where nothing scrolls to it (a page that does not
  *                   scroll, or a fixed box);
  *                 - `isCut`: text a hard clip or an ellipsis hides, but for the kit's own
- *                   intended ellipses, listed in `kitEllipses` alone (since v0.36.0);
+ *                   intended ellipses, listed in `kitEllipses` alone (since v0.36.0), whose
+ *                   insides the two rules above leave out as well (since v0.39.0: v0.36.0 told
+ *                   only this one, so the chat bar's words were still reported outside);
  *                 - `overlaps` (since v0.36.0): a control in the page's flow lying over, or
  *                   under, a part beside it or beside one of its boxes. Boxes placed out of the
  *                   flow (menus, sheets, badges) are meant to lie over others and are left out;
@@ -48,6 +50,9 @@ export function outermost(b: Base, past: (el: Element, r: DOMRect) => string | n
   const marked = new Set<Element>();
   const out: string[] = [];
   for (const el of document.body.querySelectorAll('*')) {
+    // What runs on inside one of the kit's ellipses is hidden by it: only the ellipsis box
+    // itself can lie outside.
+    if (el.parentElement !== null && el.parentElement.closest(kitEllipses()) !== null) continue;
     const r = el.getBoundingClientRect();
     const where = r.width < 1 || !b.shown(el) ? null : past(el, r);
     if (where === null) continue;

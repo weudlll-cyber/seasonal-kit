@@ -11,6 +11,8 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 
 ### Fixed, test tools
 
+- **Probe:** the words inside the chat bar's ellipsis are no longer reported outside the window
+  (v0.36.0 told only the cut-text rule of the kit's ellipses, not the rules about boxes).
 - **Sweep:** it also waits for animations that start late (nothing moving for 250 ms), and what
   still moves after 5 s is a finding.
 - **Dense list:** a control hidden or scrolled out of view no longer counts as a link's neighbour.

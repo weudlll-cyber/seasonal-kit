@@ -116,6 +116,20 @@ describe('the kit’s own ellipsis', () => {
   });
 });
 
+describe('boxes inside the kit’s own ellipsis', () => {
+  // Mini Games' running round on a phone: the newest message ends in the chat bar's ellipsis,
+  // and the box around its words reaches far past the window (their CI at kit v0.38.0).
+  const bar = (name: string): string =>
+    '<button class="sk-chat-bar" data-box="0 0 390 44">' +
+    `<span class="${name}" style="overflow: hidden" data-box="40 10 300 20">` +
+    '<span class="sk-chat-bar-last" data-box="80 10 900 20"></span></span></button>';
+
+  it('are not outside the window, there only', () => {
+    expect(look(bar('sk-chat-bar-newest')).outside).toEqual([]);
+    expect(look(bar('mine')).outside).toEqual(['span.sk-chat-bar-last 80..980']);
+  });
+});
+
 describe('what is not visible', () => {
   // A cut name in a row on the page, and one in a row clipped away.
   const rows = (): string =>

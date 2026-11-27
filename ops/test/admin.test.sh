@@ -8,7 +8,9 @@
 #                 that record their calls, so nothing real runs. Proves: root and the environment
 #                 are required, exit codes and the game's own verbs; status healthy and not;
 #                 backup and restore through the kit's script; update with its refusals, confirm,
-#                 rollback with and without a schema change, the app started again when a restore
+#                 rollback with and without a schema change (stack files put back by renaming, one
+#                 not kept left), secret files written for a backup only, the app started again
+#                 when a restore
 #                 fails; uninstall asking for the name, refusing unknown options, keeping backups,
 #                 the other environment and the game until its last one goes. Needs Linux as root,
 #                 no Docker, no database. Run: sudo bash ops/test/admin.test.sh (CI job `ops`).
@@ -96,16 +98,19 @@ SK_ADMIN_REF_KEY=GM_REF
 SK_ADMIN_DEFAULT_ENV=prod
 SK_ADMIN_UNIT_DIR=$work/srv/units
 SK_ADMIN_COMMAND=$work/srv/bin-game
-SK_ADMIN_STACK_FILES=compose.yml
+SK_ADMIN_STACK_FILES=\${STACK_OVERRIDE:-compose.yml}
 SK_ADMIN_WAIT_TRIES=2
 game_compose() { local env=\$1; shift; docker compose -p "gm-\$env" "\$@"; }
 game_backup_settings() {
   export SK_BACKUP_PREFIX=gm SK_BACKUP_ENV=\$1 SK_BACKUP_DIR=$work/srv/backups/\$1
   export SK_BACKUP_AGE_RECIPIENT=age1standin SK_BACKUP_DB_URL=postgresql://gm@db/gm
+  export SK_BACKUP_START_CMD='echo app-started >>"\$LOG"'
   # The secret file the backup carries, and, when the test asks for it, where it is restored to.
   [[ ! -e \$W/secrets ]] || export SK_BACKUP_SECRET_FILES=\$W/secrets/seed.key
   [[ ! -e \$W/restore-secrets ]] || SK_ADMIN_SECRETS_DIR=\$W/restore-to/\$1
 }
+# Writes the backup's secret file, as a game does before a backup.
+game_backup_secrets() { echo 'made for a backup' >"\$W/made-secret"; }
 game_build() { printf 'build %s\n' "\$2" >>"\$LOG"; SK_ADMIN_NEW_IMAGE=gm-app:\$2; echo "gm-app:\$2" >>"\$W/images"; }
 game_migrations() { cat "\$W/migrations"; }
 game_install_stack() { echo "stack of \$2" >"\$SK_ADMIN_ROOT/compose.yml"; }
@@ -208,7 +213,41 @@ equals 'a differing secret stops the restore' "$status" 1
 uncalled 'before the data is touched' 'pg_restore'
 game --yes restore "$backup" --identity "$work/game" --force-env
 equals 'forced, it is replaced' "$(cat "$work/restore-to/prod/seed.key")" 'seed-test-only'
+# A restore that fails after the app was stopped starts it again and says the data's state.
+touch "$work/fail.restore"
+: >"$LOG"
+game --yes restore "$backup" --identity "$work/game" --force-env
+equals 'a failing restore ends with an error' "$status" 1
+said 'saying the data is as it was' 'it is one transaction, so the database, the volumes and the secret files are as they were'
+said 'and that it starts the app' 'backup: starting the app again'
+called 'which it does' 'app-started'
+rm "$work/fail.restore"
+
 rm -rf "$work/secrets" "$work/restore-secrets" "$work/restore-to"
+
+# Only a backup writes secret files (v0.36.0).
+fresh
+rm -f "$work/made-secret"
+game status
+gone 'status writes no secret file' "$work/made-secret"
+game backup
+there 'a backup has the game write it first' "$work/made-secret"
+
+# A stack name the update could not keep stays, and a file is put back by renaming (v0.36.0).
+fresh
+export STACK_OVERRIDE='compose.yml tool.sh'
+game update v2
+said 'a name not installed yet is said' 'tool.sh is not installed yet'
+echo 'the new tool' >"$work/srv/opt/tool.sh"
+exec 7<"$work/srv/opt/compose.yml"
+game --yes rollback
+equals 'the rollback ends well' "$status" 0
+said 'a name that was not kept is said, not failed on' 'the update kept no tool.sh: the installed one stays'
+equals 'it stays' "$(cat "$work/srv/opt/tool.sh")" 'the new tool'
+equals 'the kept file is back' "$(cat "$work/srv/opt/compose.yml")" 'stack of v1'
+equals 'by renaming: the file that was open is not written into' "$(cat <&7)" 'stack of v2'
+exec 7<&-
+unset STACK_OVERRIDE
 
 fresh
 game update
@@ -249,6 +288,7 @@ touch "$work/fail.restore"
 game --yes rollback
 equals 'a failing restore fails the rollback' "$status" 1
 said 'the app is started again' 'starting the app of prod again'
+said 'and the state of the data is said' 'the data is as it was before this rollback'
 called 'after it was stopped' 'compose -p gm-prod stop app'
 called 'and started' 'compose -p gm-prod start app'
 there 'the rollback is still possible' "$work/srv/state/prod/rollback.conf"

@@ -20,6 +20,14 @@ Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royal
   shows its room and theme. A login page of its own is declined: a game tests its own sign-in.
 - The type `Attempt` (`FailureBrake.reserve`) is exported from `@seasonal/kit/server`.
 
+### Fixed, operations
+
+- **Rollback** skips, with a sentence, a stack file the update did not keep, and puts files back
+  by renaming, so the running command is never written into.
+- **A failed restore** starts the stopped app again and says what state the data is in.
+- **`status` writes no secret file:** a game writes them in the new optional hook
+  `game_backup_secrets`, called before a backup alone.
+
 ### Changed
 
 - **Docked screen:** its scrolling box is `role="group"`, no landmark (still a Tab stop named

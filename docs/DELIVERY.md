@@ -732,6 +732,14 @@ left in the session's scratch directory.
 The release image workflow was proven on the throw-away tag `sk-test-image-1` (commit `431063f`),
 before its `build-args` input was added; the scan workflow was proven again after that change.
 
+## v0.36.0, with pnpm and with npm (2026-11-27, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.36.0` (merge `4f342ce`), typechecked (the exported `Attempt`
+type included) and ran four tests on the installed files: `axeFinder`'s `exclude`, the stand-in with
+`keepAliveMs`, and the shipped large-text styles, `.sk-dense-list` and ops files. Both passed. The
+scratch folders are left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

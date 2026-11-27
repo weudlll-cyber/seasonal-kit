@@ -7,6 +7,8 @@ applies it.
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-11-27
+
 Findings of Mini Games, Cases and Bingo on v0.39.1, a local website-mode preview and four
 handbook rules.
 
@@ -40,6 +42,21 @@ handbook rules.
   time, and the page is only read. CSS animations and transitions keep running on the browser's
   timeline while a clock is held; motion a script drives stands still. The sweep's wait for two
   frames, which a held clock never gave, is gone: the quiet moment covers it.
+
+### Migration, per game
+
+Every game: the handbook's four rules (K125) go into its own `CLAUDE.md` with this move, and
+`sk-preview` is how its owner looks at website-mode parts before a merge (ADOPTION.md "The local
+preview").
+
+- **Mini Games:** a box rendered later takes `const box = useScrollTabStop()` and `ref={box}`, so
+  its remaining reason for a copy goes; the countdown bar that steps every second is declared as
+  `intendedMotion` with its decision, and any exemption for it goes.
+- **Seasonal Cases:** the `setThemeHeld` workaround in `e2e/screens.spec.ts` can go: `setTheme`
+  returns on a held clock.
+- **Bingo Royale:** the contrast exemption for the recap card's fade can go; its own fix of the
+  7 places' floor stays valid (the kit's floor now counts no covered row either).
+- **Seasonal Party:** nothing beyond the pin.
 
 ## [0.39.1] - 2026-11-27
 
@@ -2033,7 +2050,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.40.0...HEAD
+[0.40.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...v0.40.0
 [0.39.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...v0.38.0

@@ -273,6 +273,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **v0.39.1**: its `components/scrollTabStop.ts` can give way to the kit's `useScrollTabStop`. Only on the owner's word.
 
+### Since v0.40.0
+
+- **v0.40.0** (CHANGELOG, "Migration, per game"): the hook's ref callback, `intendedMotion` for its countdown bar, the four rules, the local preview. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### The local preview
@@ -480,6 +484,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 
 - **v0.39.1**: before its server move, [OPERATIONS.md](OPERATIONS.md) "Restoring onto a new server". Only on the owner's word.
 
+### Since v0.40.0
+
+- **v0.40.0** (CHANGELOG, "Migration, per game"): its recap fade's exemption goes; the four rules; the local preview. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -636,6 +644,10 @@ pnpm exec sk-preview --slug cases --app http://127.0.0.1:<port> \
 
 - **v0.39.1**: nothing beyond the pin. Only on the owner's word.
 
+### Since v0.40.0
+
+- **v0.40.0** (CHANGELOG, "Migration, per game"): `setThemeHeld` goes; the four rules; the local preview. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -712,6 +724,10 @@ adopts it.
 ### Since v0.39.1
 
 - **v0.39.1**: nothing beyond the pin. Only on the owner's word.
+
+### Since v0.40.0
+
+- **v0.40.0**: the four rules (HANDBOOK, K125). Only on the owner's word.
 
 ## What `.sk-dense-list` needs (every game)
 

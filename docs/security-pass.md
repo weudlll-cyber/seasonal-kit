@@ -63,6 +63,22 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-27 — before v0.40.0, the local preview among the changes (branch `feat/v0.40`)
+
+| Scan                         | Tool and command                            | Result                                             |
+| ---------------------------- | ------------------------------------------- | -------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI      | No leaks.                                          |
+| Dependencies                 | osv-scanner (CI)                            | No dependency was added.                           |
+| Code                         | CodeQL (javascript-typescript)              | Read on the pull request before the merge.         |
+| The preview                  | `src/testing/preview.test.ts` on real ports | Loopback only; the secret appears in no line said. |
+
+**Read by the session that wrote it.** `sk-preview` listens on 127.0.0.1 only and accepts only an
+app on this computer, so the identity headers and the secret go to no other machine. The secret
+comes from a named environment variable, never from an argument, and is never printed. The test
+member has no e-mail address. Whoever can reach the port on this computer can be signed in as that
+member: the preview is for the owner's own computer, runs until stopped, and the game behind it
+should use a database of its own (K125). It must never run on a server.
+
 ### 2026-11-27 — before v0.39.0 (branch `fix/v0.38-findings`)
 
 | Scan                         | Tool and command                                      | Result                                          |

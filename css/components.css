@@ -8,7 +8,9 @@
  *                 - `.sk-btn`, a pill of at least 44 px, with `--primary` (the solid pill),
  *                   `--danger` and `--big`; disabled is muted text on the second surface, which
  *                   keeps its contrast where fading the button would not;
- *                 - `.sk-panel` (and `--inset`), a translucent card with the card radius;
+ *                 - `.sk-panel` (and `--inset`), a translucent card with the card radius; on a
+ *                   narrow screen with large text its padding and the buttons' sides give way
+ *                   before the words (since v0.36.0);
  *                 - `.sk-field` (label and control), `.sk-input` and `.sk-select`, at least 44 px;
  *                   a disabled one looks locked; `.sk-field-help--error` under it;
  *                 - `.sk-chip` and `.sk-badge-live`.
@@ -30,7 +32,10 @@
   justify-content: center;
   gap: var(--sk-space-1);
   min-height: var(--sk-hit-target);
-  padding: 0 1.1rem;
+  /* The sides give way before the words where large text meets a narrow screen: 1.1rem, but
+     never more than 5.5 % of the window (the same at 100 % on 320 px and wider). */
+  padding: 0 min(1.1rem, 5.5vw);
+  overflow-wrap: break-word;
   border: 1px solid var(--sk-color-border);
   border-radius: var(--sk-radius-pill);
   background: var(--sk-color-glass);
@@ -71,7 +76,7 @@
 
 .sk-btn--big {
   min-height: 4rem;
-  padding: 0 2rem;
+  padding: 0 min(2rem, 10vw);
   font-size: var(--sk-font-size-lead);
 }
 
@@ -85,7 +90,9 @@
 
 .sk-panel {
   box-sizing: border-box;
-  padding: var(--sk-space-3);
+  min-width: 0;
+  /* As the button's sides: the padding gives way before the content (since v0.36.0). */
+  padding: min(var(--sk-space-3), 7.5vw);
   border: 1px solid var(--sk-color-border);
   border-radius: var(--sk-radius-card);
   background: var(--sk-color-card);

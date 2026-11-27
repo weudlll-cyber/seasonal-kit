@@ -7,6 +7,20 @@ applies it.
 
 ## [Unreleased]
 
+Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royale).
+
+### Fixed
+
+- **Large text** (at 200 %, no part cuts, hides or pushes content away):
+  - the game bar grows when its content needs more than one row, on every screen; its facts wrap
+    (before: buttons above the window on a desktop, facts ending in "…");
+  - the start card scrolls what its smallest scale cannot fit, from its top, as a Tab stop only
+    then (before: clipped);
+  - a result headline in a narrow place shows whole (before: cut after two lines);
+  - on a phone of 640 px and less the open chat sheet takes its own room above the bar, so no
+    control lies partly under it;
+  - a panel's padding and a button's sides give way before the words on a narrow screen.
+
 ## [0.35.0] - 2026-11-26
 
 Shared parts for the way to production, and three Seasonal Cases findings.

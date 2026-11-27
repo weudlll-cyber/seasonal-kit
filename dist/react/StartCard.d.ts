@@ -3,7 +3,8 @@
  * @brief  The frame "before the round": one card in the round's season colour, filled by the
  *         game.
  *
- * Responsibility: the card fills its space and never scrolls the page: the head (the game's
+ * Responsibility: the card fills its space and never scrolls the page (what even the smallest
+ *                 scale cannot fit scrolls inside it, a Tab stop only then, since v0.36.0): the head (the game's
  *                 season icon, the title in the largest type, a badge such as "Halving round"),
  *                 the game's special block, its facts as a list, and, when the game gives `opensIn`, "Opens in N s" as
  *                 a timer that is not read out every second (without it, no countdown). Where the card has not the room (above a
@@ -16,7 +17,7 @@
  *                 server's clock (./useCountdown).
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
- *                 ./useFitScale.
+ *                 ./useFitScale and ./useScrollTabStop.
  * Spec:           Mini Games DECISIONS O36, O93, O111; kit DECISIONS K14
  */
 import { type ReactElement, type ReactNode } from 'react';

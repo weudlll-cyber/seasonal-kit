@@ -3,7 +3,8 @@
  * @brief  The frame "before the round": one card in the round's season colour, filled by the
  *         game.
  *
- * Responsibility: the card fills its space and never scrolls the page: the head (the game's
+ * Responsibility: the card fills its space and never scrolls the page (what even the smallest
+ *                 scale cannot fit scrolls inside it, a Tab stop only then, since v0.36.0): the head (the game's
  *                 season icon, the title in the largest type, a badge such as "Halving round"),
  *                 the game's special block, its facts as a list, and, when the game gives `opensIn`, "Opens in N s" as
  *                 a timer that is not read out every second (without it, no countdown). Where the card has not the room (above a
@@ -16,7 +17,7 @@
  *                 server's clock (./useCountdown).
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
- *                 ./useFitScale.
+ *                 ./useFitScale and ./useScrollTabStop.
  * Spec:           Mini Games DECISIONS O36, O93, O111; kit DECISIONS K14
  */
 import { useId, type ReactElement, type ReactNode } from 'react';
@@ -24,6 +25,7 @@ import { useId, type ReactElement, type ReactNode } from 'react';
 import type { FitGame, FitOptions } from '../fit.js';
 import { useCountdown } from './useCountdown.js';
 import { useFitScale } from './useFitScale.js';
+import { useScrollTabStop } from './useScrollTabStop.js';
 
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
 
@@ -71,6 +73,8 @@ export function StartCard(p: StartCardProps): ReactElement {
   const headingId = useId();
   // `self` stays false as before; only the game's options are added (T404, T423).
   const fit = useFitScale<HTMLElement>(p.game, p.signature, false, p.fit);
+  // Where even the smallest scale does not fit, the card scrolls and the keyboard reaches it.
+  useScrollTabStop(fit);
   const facts = p.facts ?? [];
   return (
     <section

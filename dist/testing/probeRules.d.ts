@@ -17,7 +17,11 @@
  *                   and since v0.39.0 so is what a game declares (a grid item in a free cell, a
  *                   sheet laid over a grid);
  *                 - `wholeItems` (since v0.38.0): how many of a selector's elements are wholly in
- *                   sight, in the window and in every box around them.
+ *                   sight, in the window and in every box around them, and (since v0.40.0)
+ *                   covered by nothing: no part painted over a corner or the middle, and no
+ *                   sticky `::before` or `::after` of a scrolling box over them. A part that
+ *                   takes no pointer (`pointer-events: none`) is not seen as covering, but for
+ *                   those sticky ones.
  *                 Like ./probeBase they are put into the page as source text.
  * Depends on:     ./probeBase
  * Source:         `wideBoxes` and `isCut` moved from ./probe.ts (v0.36.0); the rest new in the
@@ -39,6 +43,9 @@ export declare function crosses(b: Base, one: Rect, two: Rect): boolean;
 export declare function isMeant(meant: readonly Meant[], control: Element, other: Element): boolean;
 export declare function overlapOf(b: Base, control: Element, meant: readonly Meant[]): Element | null;
 export declare function overlaps(b: Base, meant: readonly Meant[]): string[];
+export declare function stickyStrip(b: Base, box: Element, pseudo: string): Rect | null;
+export declare function underSign(b: Base, el: Element, seen: Rect): boolean;
+export declare function paintedOver(el: Element, box: Rect): boolean;
 export declare function wholeItems(b: Base, selector: string): number;
 export declare const RULES: {
     kitEllipses: typeof kitEllipses;
@@ -51,6 +58,9 @@ export declare const RULES: {
     isMeant: typeof isMeant;
     overlapOf: typeof overlapOf;
     overlaps: typeof overlaps;
+    stickyStrip: typeof stickyStrip;
+    underSign: typeof underSign;
+    paintedOver: typeof paintedOver;
     wholeItems: typeof wholeItems;
 };
 export type Rules = typeof RULES;

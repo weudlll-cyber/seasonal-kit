@@ -118,6 +118,30 @@ test('with a held clock, setTheme and settle return, and CSS motion still ends',
   expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
 });
 
+test('a sticky sign over the last row lowers the floor’s count by one', async ({ page }) => {
+  await screenOf('list').open(page);
+  const looks = { axe: false, sizes: [{ width: 1280, height: 720 }], fonts: [16] } as const;
+  const rows = (least: number) => ({
+    ...screenOf('list'),
+    open: async (p: Page) => {
+      await screenOf('list').open(p);
+      await p.addStyleTag({ content: sign });
+    },
+    floors: [{ selector: '.sweep-list li', least, decision: 'K123' }],
+  });
+  // The sign takes no room (a negative margin) and covers the lower half of the fifth row.
+  let sign = '';
+  await expect(sweep(page, [rows(5)], looks)).resolves.toBe(2);
+  for (const side of ['bottom', 'top']) {
+    sign = `.sweep-list::${side === 'top' ? 'before' : 'after'} { content: "More below";
+      display: block; position: sticky; ${side}: 0; height: 20px; margin-block-${
+        side === 'top' ? 'end' : 'start'
+      }: -20px; background: var(--sk-color-card); pointer-events: none; }`;
+    await expect(sweep(page, [rows(4)], looks)).resolves.toBe(2);
+    await expect(sweep(page, [rows(5)], looks)).rejects.toThrow('4 of at least 5 (K123)');
+  }
+});
+
 test('captureLook writes both sizes in both themes', async ({ page }) => {
   await screenOf('header').open(page);
   await captureLook(page, SCREENS, 'sweep-header');

@@ -8,16 +8,14 @@
  *                 finding, its screen is left and the next one seen. A floor reports the look that
  *                 shows too few, with the count and the decision, holds only at its sizes and
  *                 fonts (16 px without any), may be allowed by name, and a floor that no look
- *                 checks stops the sweep. `wholeCount` counts only items wholly in the window and
- *                 inside every box around them, on a jsdom page whose boxes are given by
- *                 attributes.
+ *                 checks stops the sweep. What counts as an item in sight is
+ *                 ./wholeCount.test.ts.
  * Depends on:     vitest, jsdom
  * Source:         new in the kit.
  */
 import type { Page } from '@playwright/test';
 import { describe, expect, it } from 'vitest';
 
-import { wholeCount } from './probe.js';
 import { sweep, type SweepScreen } from './sweep.js';
 
 const CLEAN = {
@@ -105,36 +103,5 @@ describe('a floor of visible items', () => {
   it('stops the sweep where no look would check it', async () => {
     const run = sweep(walker().page, [guesses()], { ...both, sizes: [phone] });
     await expect(run).rejects.toThrow('round’s floor ".guess" (O109) is checked at no look');
-  });
-});
-
-describe('wholeCount', () => {
-  it('counts the items wholly inside the window and every box around them', async () => {
-    Element.prototype.getBoundingClientRect = function box(this: Element) {
-      const [x = 0, y = 0, w = 0, h = 0] = (this.getAttribute('data-box') ?? '')
-        .split(' ')
-        .filter(Boolean)
-        .map(Number);
-      return { left: x, top: y, right: x + w, bottom: y + h, width: w, height: h } as DOMRect;
-    };
-    Element.prototype.checkVisibility = function visible(this: Element) {
-      return !this.hasAttribute('hidden');
-    };
-    for (const [name, value] of [
-      ['clientWidth', 400],
-      ['clientHeight', 300],
-    ] as const) {
-      Object.defineProperty(document.documentElement, name, { configurable: true, value });
-    }
-    const row = (y: number, extra = '') => `<li ${extra} data-box="0 ${String(y)} 100 20"></li>`;
-    document.body.innerHTML =
-      // A scrolling box of 50 px: two rows whole, the third cut.
-      `<ul style="overflow-y: auto" data-box="0 0 100 50">${row(0)}${row(20)}${row(40)}</ul>` +
-      // Outside such a box: one whole, one across the window's bottom, one hidden.
-      `<ol>${row(100)}${row(290)}${row(120, 'hidden')}</ol>`;
-    const page = {
-      evaluate: (code: string) => Promise.resolve((0, eval)(code) as unknown),
-    } as unknown as Page;
-    expect(await wholeCount(page, 'li')).toBe(3);
   });
 });

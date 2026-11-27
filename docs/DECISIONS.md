@@ -555,3 +555,6 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   report). A part that keeps moving on purpose is named to the sweep, `settle` or `setTheme` by
   selector with the owner's decision number, as floors (K116) and overlaps (K118) are; only its
   motion is excused.
+- **K123 — A covered row is not a visible one** (decided 2026-11-27, Bingo Royale's report). An
+  item counts towards a floor (K116) only where nothing is painted over it, a scrolling box's
+  sticky sign included.

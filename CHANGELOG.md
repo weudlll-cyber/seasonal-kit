@@ -21,6 +21,9 @@ handbook rules.
 
 ### Fixed, test tools
 
+- **Floors:** a row counts as whole only where nothing is painted over it: its corners and middle
+  are hit-tested, and a scrolling box's sticky `::before` or `::after` (a "More below" sign) is
+  taken off that box's visible area. A floor that counted covered rows may now fail.
 - **Sweep:** it waits for stillness again directly before axe, so a fade that starts after the
   probe is no longer judged as poor contrast.
 - **The wait for motion on a held clock:** `setTheme`, `settle` and the sweep return with

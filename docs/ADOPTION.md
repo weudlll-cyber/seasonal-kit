@@ -648,6 +648,14 @@ adopts it.
 
 - **v0.38.0**: nothing beyond the pin. Only on the owner's word.
 
+## What `.sk-dense-list` needs (every game)
+
+The class does nothing on its own: load `@seasonal/kit/components.css` (after `tokens.css`,
+`shell.css` and `fit.css`). Without it a game gets no error, only links as small as its own styles
+make them; the probe's finding then says that the stylesheet is missing. The 24 px come from
+`fit.css`'s `--sk-min-target`, with 24 px itself where that is not loaded (since v0.39.0). A
+button in the list keeps its own size: make it 24 px high or more.
+
 ## What v0.12.0 answers
 
 Five answers, each named by Mini Games' own record. Each is opt-in: a game that changes nothing

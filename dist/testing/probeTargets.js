@@ -24,6 +24,14 @@ export function denseEnough(b, el, r) {
             r.left - o.right >= 3.5);
     });
 }
+// A game can name the class without the stylesheet and get no error: the finding says which.
+export function missingStyle(el) {
+    const list = el.closest('.sk-dense-list');
+    if (list === null || getComputedStyle(list).getPropertyValue('--sk-dense-list') !== '') {
+        return '';
+    }
+    return ' (.sk-dense-list has no style here: load @seasonal/kit/components.css)';
+}
 export function smallTargets(b, least) {
     return b.controls().flatMap((el) => {
         const boxed = el.matches('input[type=checkbox], input[type=radio]');
@@ -33,8 +41,9 @@ export function smallTargets(b, least) {
         const r = target.getBoundingClientRect();
         if (Math.min(r.width, r.height) >= least - 0.5 || denseEnough(b, target, r))
             return [];
-        return [`${b.nameOf(target)} ${String(Math.round(r.width))}x${String(Math.round(r.height))}`];
+        const size = `${String(Math.round(r.width))}x${String(Math.round(r.height))}`;
+        return [`${b.nameOf(target)} ${size}${missingStyle(target)}`];
     });
 }
 // The rules as one object, in the order the page defines them.
-export const TARGETS = { seenTogether, denseEnough, smallTargets };
+export const TARGETS = { seenTogether, denseEnough, missingStyle, smallTargets };

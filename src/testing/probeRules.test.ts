@@ -127,6 +127,15 @@ describe('a dense list', () => {
     expect(small(`<ol>${rows}</ol>`)).toBe(2);
   });
 
+  it('names the missing stylesheet where the list has none', () => {
+    const rows = link(0, 20);
+    expect(look(`<ol class="sk-dense-list">${rows}</ol>`).smallTargets).toEqual([
+      'a "p" 80x20 (.sk-dense-list has no style here: load @seasonal/kit/components.css)',
+    ]);
+    const styled = `<ol class="sk-dense-list" style="--sk-dense-list: 1">${rows}</ol>`;
+    expect(look(styled).smallTargets).toEqual(['a "p" 80x20']);
+  });
+
   it('passes a button of 24 px there, and reports it outside such a list', () => {
     const button = '<li><button data-box="0 0 80 24">b</button></li>';
     expect(small(`<ol class="sk-dense-list">${button}</ol>`)).toBe(0);

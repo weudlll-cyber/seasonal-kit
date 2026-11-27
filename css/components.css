@@ -175,6 +175,9 @@
    size), the one place where a target is under 44 px (owner decisions of 2026-11-27, K112). A
    button's size stays the game's own: no rule here shrinks one. */
 .sk-dense-list {
+  /* Says this file is loaded: the testing entry's probe names it where it is not. */
+  --sk-dense-list: 1;
+
   display: grid;
   gap: 0.25rem;
 }
@@ -182,8 +185,9 @@
 .sk-dense-list a {
   display: inline-flex;
   align-items: center;
-  min-width: var(--sk-min-target);
-  min-height: var(--sk-min-target);
+  /* fit.css has the token; without it the same 24 px, not nothing. */
+  min-width: var(--sk-min-target, 24px);
+  min-height: var(--sk-min-target, 24px);
 }
 
 .sk-btn:focus-visible,

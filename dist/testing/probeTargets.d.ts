@@ -8,7 +8,8 @@
  *                 K117) passes at 24 px with 4 px clear of every other control seen at the same
  *                 time, and nowhere else. A control hidden
  *                 or scrolled out of view is no neighbour (since v0.39.0), nor is one past the
- *                 window's edge from it.
+ *                 window's edge from it. A small control in a dense list whose stylesheet is not
+ *                 loaded says so (`missingStyle`).
  *                 Like ./probeBase they are put into the page as source text.
  * Depends on:     ./probeBase
  * Source:         ./probeRules, moved here (v0.39.0); the neighbours' fix from Bingo Royale's
@@ -17,10 +18,12 @@
 import type { Base } from './probeBase.js';
 export declare function seenTogether(b: Base, one: Element, other: Element): boolean;
 export declare function denseEnough(b: Base, el: Element, r: DOMRect): boolean;
+export declare function missingStyle(el: Element): string;
 export declare function smallTargets(b: Base, least: number): string[];
 export declare const TARGETS: {
     seenTogether: typeof seenTogether;
     denseEnough: typeof denseEnough;
+    missingStyle: typeof missingStyle;
     smallTargets: typeof smallTargets;
 };
 export type Targets = typeof TARGETS;

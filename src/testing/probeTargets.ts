@@ -8,7 +8,8 @@
  *                 K117) passes at 24 px with 4 px clear of every other control seen at the same
  *                 time, and nowhere else. A control hidden
  *                 or scrolled out of view is no neighbour (since v0.39.0), nor is one past the
- *                 window's edge from it.
+ *                 window's edge from it. A small control in a dense list whose stylesheet is not
+ *                 loaded says so (`missingStyle`).
  *                 Like ./probeBase they are put into the page as source text.
  * Depends on:     ./probeBase
  * Source:         ./probeRules, moved here (v0.39.0); the neighbours' fix from Bingo Royale's
@@ -43,6 +44,15 @@ export function denseEnough(b: Base, el: Element, r: DOMRect): boolean {
   });
 }
 
+// A game can name the class without the stylesheet and get no error: the finding says which.
+export function missingStyle(el: Element): string {
+  const list = el.closest('.sk-dense-list');
+  if (list === null || getComputedStyle(list).getPropertyValue('--sk-dense-list') !== '') {
+    return '';
+  }
+  return ' (.sk-dense-list has no style here: load @seasonal/kit/components.css)';
+}
+
 export function smallTargets(b: Base, least: number): string[] {
   return b.controls().flatMap((el) => {
     const boxed = el.matches('input[type=checkbox], input[type=radio]');
@@ -50,10 +60,11 @@ export function smallTargets(b: Base, least: number): string[] {
     if (!b.shown(target) || b.inText(el)) return [];
     const r = target.getBoundingClientRect();
     if (Math.min(r.width, r.height) >= least - 0.5 || denseEnough(b, target, r)) return [];
-    return [`${b.nameOf(target)} ${String(Math.round(r.width))}x${String(Math.round(r.height))}`];
+    const size = `${String(Math.round(r.width))}x${String(Math.round(r.height))}`;
+    return [`${b.nameOf(target)} ${size}${missingStyle(target)}`];
   });
 }
 
 // The rules as one object, in the order the page defines them.
-export const TARGETS = { seenTogether, denseEnough, smallTargets };
+export const TARGETS = { seenTogether, denseEnough, missingStyle, smallTargets };
 export type Targets = typeof TARGETS;

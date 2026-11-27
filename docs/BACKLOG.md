@@ -255,5 +255,7 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.39.0 (`probeTargets.ts`).
 - **79. The dense list had no rule for a button** (Bingo, 2026-11-27). Closed in v0.39.0 (K117,
   `probeTargets.ts`, `components.css`).
+- **80. `.sk-dense-list` did nothing, silently, without its stylesheets** (Bingo, 2026-11-27).
+  Closed in v0.39.0 (`components.css`, `probeTargets.ts`, ADOPTION.md).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

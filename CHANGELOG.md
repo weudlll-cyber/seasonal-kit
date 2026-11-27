@@ -7,6 +7,8 @@ applies it.
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-11-27
+
 Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royale).
 
 ### Added
@@ -48,6 +50,34 @@ Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royal
   - on a phone of 640 px and less the open chat sheet takes its own room above the bar, so no
     control lies partly under it;
   - a panel's padding and a button's sides give way before the words on a narrow screen.
+
+### Decided
+
+- **Handbook "How we check"** (K110): the working rule for checks in one place; a big move builds
+  first and checks once. Release images, blocking scans and the kit's own browser specs (K113).
+
+### Migration, per game
+
+Every game: takes the handbook's "How we check" into its own `CLAUDE.md` with this move. A test
+that finds the docked screen's content as a region finds a group (`role="group"`, "Game screen").
+The probe may report more (`overlaps`, boxes past the top or bottom): fix it, or exempt it with
+its reason (K110).
+
+- **Mini Games:** pin. Drops its own padding, bar, start card, headline and chat sheet rules
+  where the kit's fixes replace them; `Attempt` is imported, not derived; its sweep may take all
+  screens in one call; its allowance for the chat bar's newest message goes. The start hook that
+  writes the keys into the env file stays (OPERATIONS.md).
+- **Seasonal Cases:** pin. Drops the allowance for the bar's cut facts at 200 % (`e2e/
+screens.spec.ts`, BACKLOG 77) and for `landmark-main-is-top-level` (78); nothing for the header
+  at 1536 px (79); `Attempt` from the kit.
+- **Bingo Royale:** pin. Moves `secret_files` out of `game_backup_settings` into the new hook
+  `game_backup_secrets`; drops the empty `kit` folder it makes for older kept stacks (`ops/sbr`);
+  `.sk-dense-list` on its result and ranked lists in place of its 24 px allowance; `axeFinder`'s
+  `exclude` for the chat frame; `emailVerified: false`, `keepAliveMs` and the frame's room and
+  theme replace its stand-in workarounds; its own wait for animations goes; `Attempt` from the
+  kit. `ops/lib/db-roles.sql` stays as a stand-in, and the docked chat bar needs no change (the
+  last row is fully visible at the bottom).
+- **Seasonal Party:** nothing beyond the pin.
 
 ## [0.35.0] - 2026-11-26
 
@@ -1792,7 +1822,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...HEAD
+[0.36.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.32.0...v0.33.0

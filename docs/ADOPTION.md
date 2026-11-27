@@ -242,6 +242,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **The way to production** (K106 to K109; CHANGELOG, "Migration, per project"): the privacy list and its test, the scan call in place of its Trivy step, the signed release and `sk_image_verify`; `browsers.yml` stays, no full browser suite on pull requests. Only on the owner's word.
 
+### Since v0.36.0
+
+- **v0.36.0** (CHANGELOG, "Migration, per game"): its own large-text rules for kit parts go; `Attempt` from `@seasonal/kit/server`; the handbook's "How we check" into its `CLAUDE.md`. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where Bingo stands (master `d7d841e`, read 2026-11-26)
@@ -418,6 +422,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 
 - **The way to production** (K106 to K109; CHANGELOG, "Migration, per project"): its privacy list on the template's columns with the test, the scan and release calls in place of its own steps, `sk_image_verify` in the installer, a nightly browser workflow. Only on the owner's word.
 
+### Since v0.36.0
+
+- **v0.36.0** (CHANGELOG, "Migration, per game"): `game_backup_secrets`, `.sk-dense-list`, the sweep's and the stand-in's new options; the handbook's "How we check" into its `CLAUDE.md`. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -542,6 +550,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 ### Since v0.35.0
 
 - **The way to production** (K106 to K109; CHANGELOG, "Migration, per project"): the privacy list and its test, the scan call in place of its Trivy step, one signed image per mode and `sk_image_verify`. Only on the owner's word.
+
+### Since v0.36.0
+
+- **v0.36.0** (CHANGELOG, "Migration, per game"): its allowances for BACKLOG 77 and 78 go; the handbook's "How we check" into its `CLAUDE.md`. Only on the owner's word.
 
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 

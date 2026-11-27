@@ -28,7 +28,7 @@ import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { storeTheme } from '../src/theme.js';
-import { FullHeader, Places } from './Fixtures.js';
+import { CasesRoleHeader, FullHeader, Places } from './Fixtures.js';
 import { LARGE_SCREENS } from './LargeText.js';
 import { Showcase } from './Showcase.js';
 
@@ -41,6 +41,7 @@ if (theme === 'light' || theme === 'dark') storeTheme(theme);
 function page(screen: string | null): ReactElement {
   if (screen === 'places') return <Places dense={params.get('dense') === '1'} />;
   if (screen === 'full-header') return <FullHeader />;
+  if (screen === 'cases-header') return <CasesRoleHeader role={params.get('role') ?? 'player'} />;
   const Large = screen === null ? undefined : LARGE_SCREENS[screen];
   if (Large !== undefined) return <Large />;
   return <Showcase result={screen === 'result'} />;

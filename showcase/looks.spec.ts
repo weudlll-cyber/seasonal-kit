@@ -229,3 +229,25 @@ for (const width of [390, 360, 320]) {
     });
   }
 }
+
+// "Signed in as" from 1600 px up (K111): Cases' header by role at its sizes.
+for (const width of [1280, 1366, 1536, 1920]) {
+  for (const role of ['player', 'organiser', 'admin']) {
+    test(`Cases' ${role} at ${String(width)} px: the prefix only from 1600 px`, async ({
+      page,
+    }) => {
+      await open(page, width, width === 1920 ? 1080 : 768, `screen=cases-header&role=${role}`);
+      const seen = await barOf(page);
+      const prefix = await page.locator('.sk-header-chip-prefix').boundingBox();
+      expect((prefix?.width ?? 0) > 2).toBe(width >= 1600 && seen.state !== 'folded');
+      await expect(page.getByTestId('signed-in-as')).toHaveAccessibleName(/^Signed in as /);
+      // The finding: an organiser's bar at 1536 px stays one row.
+      if (width >= 1536) expect(seen.state).not.toBe('folded');
+      if (process.env['SK_MEASURE'] === '1') {
+        process.stdout.write(
+          `MEASURE header ${String(width)} ${role}: ${String(seen.state)}, ${String(seen.shown)} badges\n`,
+        );
+      }
+    });
+  }
+}

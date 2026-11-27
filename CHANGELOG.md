@@ -9,6 +9,11 @@ applies it.
 
 Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royale).
 
+### Changed
+
+- **Header:** "Signed in as" shows from 1600 px up (before 1441 px); below it is read out and the
+  name stays, so Cases' organiser header stays one row at 1536 x 768 (K111).
+
 ### Fixed
 
 - **Large text** (at 200 %, no part cuts, hides or pushes content away):

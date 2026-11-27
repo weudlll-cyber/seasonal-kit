@@ -11,6 +11,8 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 
 ### Fixed, test tools
 
+- **Sweep:** it also waits for animations that start late (nothing moving for 250 ms), and what
+  still moves after 5 s is a finding.
 - **Dense list:** a control hidden or scrolled out of view no longer counts as a link's neighbour.
 - **Dense list without its stylesheet:** the probe's finding names `components.css`; the list's
   least size no longer vanishes without `fit.css` (ADOPTION.md).

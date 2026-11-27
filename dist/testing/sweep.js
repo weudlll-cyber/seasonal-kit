@@ -1,6 +1,7 @@
 import { probe } from './probe.js';
 import { setTheme, SWEEP_SIZES } from './screens.js';
 import { floorLines, uncheckedFloor } from './sweepFloors.js';
+import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
 export function axeFinder(builder, options = {}) {
     return async (page) => {
         const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
@@ -21,23 +22,6 @@ function linesOf(seen) {
         ...named('overlapping control', seen.overlaps),
         ...named('clipped fitted root', seen.clippedFits),
     ];
-}
-// How long an animation may still run before the screen is judged as it is.
-const MOTION_LIMIT_MS = 5000;
-// Waits until every animation and transition that ends has ended, so a part is not judged half
-// faded in; one that repeats for ever is left running.
-async function motionEnded(page) {
-    await page.evaluate(async (limit) => {
-        if (typeof document.getAnimations !== 'function')
-            return;
-        const ending = document
-            .getAnimations()
-            .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity);
-        await Promise.race([
-            Promise.all(ending.map((a) => a.finished.catch(() => undefined))),
-            new Promise((done) => setTimeout(done, limit)),
-        ]);
-    }, MOTION_LIMIT_MS);
 }
 // An error's first line: the rest is a call log or a stack.
 const firstLine = (error) => (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
@@ -62,8 +46,11 @@ async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
     // Two frames: resize observers have run and their layout is painted.
     await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
-    await motionEnded(page);
+    const moving = await motionEnded(page);
     const found = [
+        ...(typeof moving === 'string'
+            ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
+            : []),
         ...linesOf(await probe(page, options.targetPx)),
         ...(await floorLines(page, screen.floors ?? [], look)),
         ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),

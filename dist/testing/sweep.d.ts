@@ -14,11 +14,12 @@
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
- *                 and transitions end before the screen is probed, and `axeFinder` takes
+ *                 and transitions end before the screen is probed (./sweepMotion; what still
+ *                 moves at its limit is a finding), and `axeFinder` takes
  *                 selectors to leave out. Since v0.38.0 a screen may have a `setup`, run once
  *                 before its looks (a fresh sign-in, say, where many looks would pass a server's
  *                 request limit), and `floors`: at least so many items wholly in sight.
- * Depends on:     ./probe, ./screens, ./sweepFloors; @playwright/test (types)
+ * Depends on:     ./probe, ./screens, ./sweepFloors, ./sweepMotion; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
  *                 seasonal-mini-games e2e/access.spec.ts at 9e3c6f3 (the axe tags).

@@ -176,8 +176,8 @@ function walker(seen: Partial<Probe> = {}) {
     },
     evaluate: (code: unknown, arg?: unknown) => {
       if (typeof code === 'string') return Promise.resolve({ ...clean, ...seen });
-      // The root font; the animations' time limit is the other number handed to the page.
-      if (typeof arg === 'number' && arg < 100) log.push(`${viewport} ${String(arg)}`);
+      // The root font is the one number handed to the page.
+      if (typeof arg === 'number') log.push(`${viewport} ${String(arg)}`);
       const fn = code as (a?: unknown) => unknown;
       return Promise.resolve(fn(arg));
     },
@@ -252,32 +252,6 @@ describe('sweep on a screen that does not open, or still moves', () => {
         'lobby 320x568 16px light: overlapping control: a over b',
       ].join('\n'),
     );
-  });
-
-  it('waits for the animations that end, not for those that repeat', async () => {
-    let ended = false;
-    const animation = (endTime: number, finished: Promise<unknown>) =>
-      ({ effect: { getComputedTiming: () => ({ endTime }) }, finished }) as unknown as Animation;
-    const fade = new Promise((done) => setTimeout(done, 20)).then(() => {
-      ended = true;
-    });
-    Object.assign(document, {
-      getAnimations: () => [
-        animation(200, fade),
-        animation(Infinity, new Promise(() => undefined)),
-        animation(50, Promise.reject(new Error('cancelled'))),
-      ],
-    });
-    await sweep(walker().page, [screen], {
-      axe: () => {
-        expect(ended).toBe(true);
-        return Promise.resolve([]);
-      },
-      sizes: [{ width: 320, height: 568 }],
-      fonts: [16],
-      themes: ['light'],
-    });
-    Reflect.deleteProperty(document, 'getAnimations');
   });
 
   it('refuses to see nothing', async () => {

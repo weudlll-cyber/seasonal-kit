@@ -14,11 +14,12 @@
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
- *                 and transitions end before the screen is probed, and `axeFinder` takes
+ *                 and transitions end before the screen is probed (./sweepMotion; what still
+ *                 moves at its limit is a finding), and `axeFinder` takes
  *                 selectors to leave out. Since v0.38.0 a screen may have a `setup`, run once
  *                 before its looks (a fresh sign-in, say, where many looks would pass a server's
  *                 request limit), and `floors`: at least so many items wholly in sight.
- * Depends on:     ./probe, ./screens, ./sweepFloors; @playwright/test (types)
+ * Depends on:     ./probe, ./screens, ./sweepFloors, ./sweepMotion; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
  *                 seasonal-mini-games e2e/access.spec.ts at 9e3c6f3 (the axe tags).
@@ -28,6 +29,7 @@ import type { Page } from '@playwright/test';
 import { probe, type Probe } from './probe.js';
 import { setTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
+import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 
@@ -99,24 +101,6 @@ interface Look {
   readonly theme: Theme;
 }
 
-// How long an animation may still run before the screen is judged as it is.
-const MOTION_LIMIT_MS = 5000;
-
-// Waits until every animation and transition that ends has ended, so a part is not judged half
-// faded in; one that repeats for ever is left running.
-async function motionEnded(page: Page): Promise<void> {
-  await page.evaluate(async (limit) => {
-    if (typeof document.getAnimations !== 'function') return;
-    const ending = document
-      .getAnimations()
-      .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity);
-    await Promise.race([
-      Promise.all(ending.map((a) => a.finished.catch(() => undefined))),
-      new Promise((done) => setTimeout(done, limit)),
-    ]);
-  }, MOTION_LIMIT_MS);
-}
-
 // An error's first line: the rest is a call log or a stack.
 const firstLine = (error: unknown): string =>
   (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
@@ -148,8 +132,11 @@ async function findingsOf(
   await page.evaluate(
     () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
   );
-  await motionEnded(page);
+  const moving = await motionEnded(page);
   const found = [
+    ...(typeof moving === 'string'
+      ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
+      : []),
     ...linesOf(await probe(page, options.targetPx)),
     ...(await floorLines(page, screen.floors ?? [], look)),
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),

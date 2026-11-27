@@ -15,11 +15,17 @@ Follow-ups to v0.39.0, before the games adopt it.
   `overflow-y` of `auto` or `scroll` (before: any taller content, also a clipped one). It also looks
   again when the box's class changes.
 
+### Documented
+
+- **Restoring onto a new server** (OPERATIONS.md): the new server's keys differ, so `restore`
+  stops; `--force-env` is the expected step, after checking the backup (its name and a drill). The
+  usage texts of the admin command and `ops/backup.sh` say so.
+
 ### Migration, per game
 
 - **Mini Games:** the kit's hook now does all its `components/scrollTabStop.ts` does, and more
   (the style is watched): the copy can go.
-- **Bingo Royale:** nothing for the hook.
+- **Bingo Royale:** reads OPERATIONS.md "Restoring onto a new server" before its server move.
 - **Seasonal Cases:** nothing.
 - **Seasonal Party:** nothing beyond the pin.
 

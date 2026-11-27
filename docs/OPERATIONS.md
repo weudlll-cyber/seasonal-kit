@@ -428,13 +428,22 @@ settings page). A private image needs a `docker login ghcr.io` on the server wit
 read packages. Either way the signature is entered in Sigstore's public log, which names the
 repository and the workflow.
 
-**2. The installer** verifies before it pulls (`ops/lib/image.sh`, cosign 3 or later):
+**2. The installer** installs cosign and verifies before it pulls (`ops/lib/image.sh`):
 
 ```sh
 source "$KIT/ops/lib/image.sh"
-image=$(SK_IMAGE_REPOSITORY=owner/game sk_image_verify ghcr.io/owner/game:1.2.0) || exit 1
+sk_cosign_install || exit 1
+commit=$(git -C "$SOURCE" rev-parse 'v1.2.0^{commit}')
+image=$(SK_IMAGE_REPOSITORY=owner/game SK_IMAGE_COMMIT=$commit \
+  sk_image_verify ghcr.io/owner/game:1.2.0) || exit 1
 docker pull "$image"
 ```
+
+`sk_cosign_install` (root, curl) downloads the pinned cosign from its GitHub release over https
+and installs it to `/usr/local/bin` (`SK_COSIGN_DIR`) only where it carries the release's
+published SHA-256, which the kit pins; already installed, it does nothing. With
+`SK_IMAGE_COMMIT` the signature's certificate must name that commit as the one the release ran
+from; without it the commit is not compared. Keyless throughout: no signing key exists.
 
 It prints the image by digest only when that digest carries a signature of the kit's release
 workflow, at a version tag or a full commit, run in that repository. So a project calls the

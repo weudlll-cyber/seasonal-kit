@@ -135,11 +135,11 @@ jobs:
             echo "\`$IMAGE:$VERSION\` is \`$REFERENCE\`. Who may pull it is the registry package's"
             echo "visibility setting."
             echo
-            echo 'Verify on a server (cosign 3 or later):'
+            echo 'Verify on a server (`sk_cosign_install` installs cosign):'
             echo
             echo '```sh'
             echo "source node_modules/@seasonal/kit/ops/lib/image.sh"
-            echo "SK_IMAGE_REPOSITORY=$GITHUB_REPOSITORY sk_image_verify $IMAGE:$VERSION"
+            echo "SK_IMAGE_REPOSITORY=$GITHUB_REPOSITORY SK_IMAGE_COMMIT=$GITHUB_SHA sk_image_verify $IMAGE:$VERSION"
             echo '```'
             echo
             echo 'The SBOM, from the same signer: `cosign verify-attestation --type cyclonedx` with'

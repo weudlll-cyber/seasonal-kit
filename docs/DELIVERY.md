@@ -780,6 +780,14 @@ Two scratch consumers outside every repository, one with pnpm and one with npm, 
 installed files: `settle` throwing what still moves, and the shipped overflow check, one wait and
 usage words. Both passed. The scratch folders are left in the session's scratch directory.
 
+## v0.40.0, with pnpm and with npm (2026-11-27, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.40.0` (merge `23f10b9`), typechecked and ran three tests on
+the installed files: the command `sk-preview --help` from each manager's `node_modules/.bin`,
+`settle` with declared motion, and the shipped floor and hook code. Both passed (on Windows). The
+scratch folders are left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

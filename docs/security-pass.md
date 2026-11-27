@@ -63,6 +63,18 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-27 — before v0.38.0, the sweep's setup and floors (branch `feat/sweep-setup-floors`)
+
+| Scan                         | Tool and command                       | Result                                     |
+| ---------------------------- | -------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                       | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)         | Read on the pull request before the merge. |
+
+**Read by the session that wrote it.** Test tools only, in a game's own browser tests. A floor's
+selector goes into the injected source as a JSON string literal, so it cannot add code. `setup` is
+the test's own function.
+
 ### 2026-11-27 — before v0.37.0, the shared call's slot (branch `feat/shared-call-slot`)
 
 | Scan                         | Tool and command                       | Result                                     |

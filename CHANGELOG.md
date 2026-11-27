@@ -7,6 +7,30 @@ applies it.
 
 ## [Unreleased]
 
+## [0.38.0] - 2026-11-27
+
+Two additions to the sweep, from Mini Games' move to v0.34.0.
+
+### Added
+
+- **A screen's `setup`** (K115): runs once before the screen's looks, for a fresh sign-in where
+  the looks would pass a server's request limit. A failing one is a finding, and the walk goes on.
+- **A screen's `floors`** (K116, the type `VisibleFloor`): at least so many elements of a
+  selector wholly in sight, at the named sizes (all without them) and fonts (16 px without them),
+  with the owner's decision in the finding. A floor that no look checks stops the sweep.
+
+### Migration, per game
+
+- **Mini Games:** in `e2e/sweep.spec.ts` the sign-in before each screen becomes the screen's
+  `setup` (`screens.map((s) => ({ ...s, setup: () => freshSession(p) }))`), and its own loop over
+  the screens goes (the sweep goes on since v0.36.0); declares its guess list's floor (26 rows at
+  1280 x 720, its owner decisions 50 and O109, and 20 and 16 where its games ask for them) as
+  `floors`.
+- **Bingo Royale:** declares the 7 places whole above the chat strip of the docked result at
+  1280 x 720 (its owner decision of 2026-11-24) as a floor.
+- **Seasonal Cases:** declares any floor its owner decided; with none, nothing.
+- **Seasonal Party:** nothing beyond the pin.
+
 ## [0.37.0] - 2026-11-27
 
 The kit's part of the one shared call (K77), released now that the website provides it
@@ -1862,7 +1886,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...HEAD
+[0.38.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...v0.35.0

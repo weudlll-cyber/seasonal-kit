@@ -4,7 +4,8 @@
  *         parts as whole screens, and one screen broken on purpose.
  *
  * Responsibility: `?screen=header` is an app header over a page of text and buttons, `?screen=bar`
- *                 a game bar over a start card that fills the rest and fits itself, and
+ *                 a game bar over a start card that fills the rest and fits itself, `?screen=list`
+ *                 a list of forty 40 px rows in a box 200 px high (the floors' proof), and
  *                 `?screen=broken` breaks each rule of the probe once: a box wider than the window,
  *                 text cut by its box, a 20 px button, and a fitted root too small for its
  *                 content. Never shipped.
@@ -91,9 +92,26 @@ function BrokenScreen(): ReactElement {
   );
 }
 
-const SCREENS = { header: HeaderScreen, bar: BarScreen, broken: BrokenScreen };
+function ListScreen(): ReactElement {
+  return (
+    <main>
+      {/* A Tab stop, so a keyboard can scroll it. */}
+      <div className="sweep-list" role="group" aria-label="Places" tabIndex={0}>
+        <ol>
+          {Array.from({ length: 40 }, (_, i) => (
+            <li key={i}>Place {i + 1}</li>
+          ))}
+        </ol>
+      </div>
+    </main>
+  );
+}
 
-const asked = new URLSearchParams(window.location.search).get('screen');
-const Screen = asked === 'bar' || asked === 'broken' ? SCREENS[asked] : SCREENS.header;
+const SCREENS = { header: HeaderScreen, bar: BarScreen, list: ListScreen, broken: BrokenScreen };
+
+const asked = new URLSearchParams(window.location.search).get('screen') ?? '';
+const Screen = Object.hasOwn(SCREENS, asked)
+  ? SCREENS[asked as keyof typeof SCREENS]
+  : SCREENS.header;
 const root = document.getElementById('root');
 if (root !== null) createRoot(root).render(<Screen />);

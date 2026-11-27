@@ -14,7 +14,9 @@
  *                   every other control; nowhere else;
  *                 - `overlaps` (since v0.36.0): a control in the page's flow lying over, or
  *                   under, a part beside it or beside one of its boxes. Boxes placed out of the
- *                   flow (menus, sheets, badges) are meant to lie over others and are left out.
+ *                   flow (menus, sheets, badges) are meant to lie over others and are left out;
+ *                 - `wholeItems` (since v0.38.0): how many of a selector's elements are wholly in
+ *                   sight, in the window and in every box around them.
  *                 Like ./probeBase they are put into the page as source text.
  * Depends on:     ./probeBase
  * Source:         `wideBoxes`, `isCut` and `smallTargets` moved from ./probe.ts (v0.36.0); the
@@ -162,6 +164,18 @@ export function overlaps(b: Base): string[] {
   });
 }
 
+// The elements of a selector the reader sees whole: nothing of them past the window or a box.
+export function wholeItems(b: Base, selector: string): number {
+  const { clientWidth, clientHeight } = document.documentElement;
+  const view = { top: 0, left: 0, bottom: clientHeight, right: clientWidth };
+  return [...document.querySelectorAll(selector)].filter((el) => {
+    if (!b.shown(el)) return false;
+    const box = el.getBoundingClientRect();
+    const seen = b.meet(seenBox(b, el), view);
+    return seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
+  }).length;
+}
+
 // The rules as one object, in the order the page defines them.
 export const RULES = {
   kitEllipses,
@@ -177,5 +191,6 @@ export const RULES = {
   crosses,
   overlapOf,
   overlaps,
+  wholeItems,
 };
 export type Rules = typeof RULES;

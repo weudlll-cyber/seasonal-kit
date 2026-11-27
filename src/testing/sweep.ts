@@ -15,8 +15,10 @@
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
  *                 and transitions end before the screen is probed, and `axeFinder` takes
- *                 selectors to leave out.
- * Depends on:     ./probe, ./screens; @playwright/test (types)
+ *                 selectors to leave out. Since v0.38.0 a screen may have a `setup`, run once
+ *                 before its looks (a fresh sign-in, say, where many looks would pass a server's
+ *                 request limit), and `floors`: at least so many items wholly in sight.
+ * Depends on:     ./probe, ./screens, ./sweepFloors; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
  *                 seasonal-mini-games e2e/access.spec.ts at 9e3c6f3 (the axe tags).
@@ -25,12 +27,16 @@ import type { Page } from '@playwright/test';
 
 import { probe, type Probe } from './probe.js';
 import { setTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
+import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 
 export interface SweepScreen {
   readonly name: string;
   readonly open: (page: Page) => Promise<void>;
+  // Runs once before the screen's first look. Where it fails, the screen is not looked at.
+  readonly setup?: (page: Page) => Promise<void>;
+  readonly floors?: readonly VisibleFloor[];
   // Findings this screen is known to have and accepts: parts of their text.
   readonly allow?: readonly string[];
 }
@@ -111,6 +117,10 @@ async function motionEnded(page: Page): Promise<void> {
   }, MOTION_LIMIT_MS);
 }
 
+// An error's first line: the rest is a call log or a stack.
+const firstLine = (error: unknown): string =>
+  (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
+
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(
   page: Page,
@@ -124,8 +134,7 @@ async function findingsOf(
   try {
     await screen.open(page);
   } catch (error) {
-    const why = error instanceof Error ? error.message.split('\n')[0] : String(error);
-    return [`${where}: did not open: ${why ?? ''}`];
+    return [`${where}: did not open: ${firstLine(error)}`];
   }
   await page.evaluate((px) => {
     document.documentElement.style.fontSize = `${String(px)}px`;
@@ -142,6 +151,7 @@ async function findingsOf(
   await motionEnded(page);
   const found = [
     ...linesOf(await probe(page, options.targetPx)),
+    ...(await floorLines(page, screen.floors ?? [], look)),
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
   ];
   return found
@@ -157,6 +167,34 @@ function looksOf(options: SweepOptions): Look[] {
   );
 }
 
+// Every look of one screen, after its setup.
+async function screenFindings(
+  page: Page,
+  screen: SweepScreen,
+  looks: readonly Look[],
+  options: SweepOptions,
+): Promise<string[]> {
+  try {
+    await screen.setup?.(page);
+  } catch (error) {
+    return [`${screen.name}: its setup failed: ${firstLine(error)}`];
+  }
+  const findings: string[] = [];
+  for (const look of looks) findings.push(...(await findingsOf(page, screen, look, options)));
+  return findings;
+}
+
+// A floor that no look checks would pass for ever, like a sweep with nothing to see.
+function refuseUnchecked(screens: readonly SweepScreen[], looks: readonly Look[]): void {
+  for (const screen of screens) {
+    const floor = uncheckedFloor(screen.floors ?? [], looks);
+    if (floor === undefined) continue;
+    throw new Error(
+      `${screen.name}’s floor "${floor.selector}" (${floor.decision}) is checked at no look`,
+    );
+  }
+}
+
 export async function sweep(
   page: Page,
   screens: readonly SweepScreen[],
@@ -165,11 +203,10 @@ export async function sweep(
   const looks = looksOf(options);
   // Nothing to look at would pass every time.
   if (screens.length === 0 || looks.length === 0) throw new Error('the sweep has nothing to see');
+  refuseUnchecked(screens, looks);
   const findings: string[] = [];
   for (const screen of screens) {
-    for (const look of looks) {
-      findings.push(...(await findingsOf(page, screen, look, options)));
-    }
+    findings.push(...(await screenFindings(page, screen, looks, options)));
   }
   if (findings.length > 0) {
     throw new Error(`the sweep found ${String(findings.length)}:\n${findings.join('\n')}`);

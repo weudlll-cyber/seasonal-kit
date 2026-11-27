@@ -128,6 +128,18 @@ export function overlaps(b) {
         return other === null ? [] : [`${b.nameOf(control)} over ${b.nameOf(other)}`];
     });
 }
+// The elements of a selector the reader sees whole: nothing of them past the window or a box.
+export function wholeItems(b, selector) {
+    const { clientWidth, clientHeight } = document.documentElement;
+    const view = { top: 0, left: 0, bottom: clientHeight, right: clientWidth };
+    return [...document.querySelectorAll(selector)].filter((el) => {
+        if (!b.shown(el))
+            return false;
+        const box = el.getBoundingClientRect();
+        const seen = b.meet(seenBox(b, el), view);
+        return seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
+    }).length;
+}
 // The rules as one object, in the order the page defines them.
 export const RULES = {
     kitEllipses,
@@ -143,4 +155,5 @@ export const RULES = {
     crosses,
     overlapOf,
     overlaps,
+    wholeItems,
 };

@@ -83,6 +83,24 @@ test('the sweep fails on the broken screen', async ({ page }) => {
   await expect(run).rejects.toThrow(/broken 320x568 32px light: clipped fitted root/);
 });
 
+test('the sweep counts the rows in sight and sets a screen up once', async ({ page }) => {
+  let setUp = 0;
+  const list = (least: number) => ({
+    ...screenOf('list'),
+    setup: () => {
+      setUp += 1;
+      return Promise.resolve();
+    },
+    floors: [{ selector: '.sweep-list li', least, decision: 'K116' }],
+  });
+  const looks = { axe: axeFinder(AxeBuilder), sizes: [{ width: 1280, height: 720 }], fonts: [16] };
+  await expect(sweep(page, [list(5)], looks)).resolves.toBe(2);
+  expect(setUp).toBe(1);
+  await expect(sweep(page, [list(6)], looks)).rejects.toThrow(
+    '.sweep-list li: 5 of at least 6 (K116)',
+  );
+});
+
 test('captureLook writes both sizes in both themes', async ({ page }) => {
   await screenOf('header').open(page);
   await captureLook(page, SCREENS, 'sweep-header');

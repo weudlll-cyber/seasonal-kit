@@ -9,7 +9,8 @@
  *                 round's focus mode) or absent sets `data-theme` on <html>, which is what the
  *                 tokens follow; it returns once nothing that ends is moving (`settle`, on
  *                 ./sweepMotion since v0.39.1, which also waits for a late start and gives up
- *                 after 5 s with an error), so a picture or a measurement never catches a fade. `captureLook(page, dir, name, show?)` saves
+ *                 after 5 s with an error), so a picture or a measurement never catches a fade;
+ *                 both take the motion a game declares as meant. `captureLook(page, dir, name, show?)` saves
  *                 `<name>-desktop-light.jpg` … `<name>-phone-dark.jpg` (`show` is scrolled to the
  *                 middle first) and puts the window size and theme back. Types only come from
  *                 Playwright: nothing of it is imported when this runs.
@@ -23,7 +24,7 @@ import path from 'node:path';
 
 import type { Locator, Page } from '@playwright/test';
 
-import { motionEnded, stillMoving } from './sweepMotion.js';
+import { motionEnded, stillMoving, type IntendedMotion } from './sweepMotion.js';
 
 export type Theme = 'light' | 'dark';
 
@@ -50,8 +51,8 @@ const themeNow = (page: Page): Promise<string | null> =>
 
 // Waits until no animation or transition that ends is moving (./sweepMotion); throws where that
 // does not come within its limit.
-export async function settle(page: Page): Promise<void> {
-  const moving = await motionEnded(page);
+export async function settle(page: Page, meant: readonly IntendedMotion[] = []): Promise<void> {
+  const moving = await motionEnded(page, meant);
   if (typeof moving === 'string') throw new Error(stillMoving(moving));
 }
 
@@ -69,9 +70,13 @@ export async function applyTheme(page: Page, theme: Theme): Promise<void> {
   }
 }
 
-export async function setTheme(page: Page, theme: Theme): Promise<void> {
+export async function setTheme(
+  page: Page,
+  theme: Theme,
+  meant: readonly IntendedMotion[] = [],
+): Promise<void> {
   await applyTheme(page, theme);
-  await settle(page);
+  await settle(page, meant);
 }
 
 export async function captureLook(

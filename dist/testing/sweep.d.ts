@@ -29,6 +29,7 @@ import type { Page } from '@playwright/test';
 import { type IntendedOverlap } from './probe.js';
 import { type Size, type Theme } from './screens.js';
 import { type VisibleFloor } from './sweepFloors.js';
+import { type IntendedMotion } from './sweepMotion.js';
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 export type Allowed = string | {
     readonly finding: string;
@@ -40,6 +41,7 @@ export interface SweepScreen {
     readonly setup?: (page: Page) => Promise<void>;
     readonly floors?: readonly VisibleFloor[];
     readonly intendedOverlaps?: readonly IntendedOverlap[];
+    readonly intendedMotion?: readonly IntendedMotion[];
     readonly allow?: readonly Allowed[];
 }
 export interface SweepOptions {

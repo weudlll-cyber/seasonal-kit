@@ -39,16 +39,16 @@ function allows(known, line) {
     return line.includes(known.finding) && line.endsWith(notVisible());
 }
 // What still moves when the wait gives up, as a finding; nothing on a still screen.
-async function motionLines(page) {
-    const moving = await motionEnded(page);
+async function motionLines(page, meant = []) {
+    const moving = await motionEnded(page, meant);
     return typeof moving === 'string' ? [stillMoving(moving)] : [];
 }
 // axe's findings, on a screen that came to rest again: the probe takes its time, and a fade a
 // game's timer starts meanwhile would be judged as poor contrast.
-async function axeLines(page, axe) {
+async function axeLines(page, axe, meant = []) {
     if (axe === false)
         return [];
-    const moving = await motionLines(page);
+    const moving = await motionLines(page, meant);
     return [...moving, ...(await axe(page)).map((v) => `axe: ${v}`)];
 }
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
@@ -72,10 +72,10 @@ async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
     // The wait's quiet moment gives resize observers their frames to run and paint, too.
     const found = [
-        ...(await motionLines(page)),
+        ...(await motionLines(page, screen.intendedMotion)),
         ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
         ...(await floorLines(page, screen.floors ?? [], look)),
-        ...(await axeLines(page, options.axe)),
+        ...(await axeLines(page, options.axe, screen.intendedMotion)),
     ];
     // The same part may still move at both waits: said once.
     return [...new Set(found)]

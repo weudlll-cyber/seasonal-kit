@@ -76,6 +76,37 @@ describe('motionEnded', () => {
   });
 });
 
+describe('declared motion', () => {
+  const countdown = { selector: '.card', decision: 'O161' };
+
+  it('is excused for its part and what that holds, and nothing else is', async () => {
+    const inside = document.createElement('i');
+    const part = animation(() => true);
+    const held_ = (part.effect as unknown as { target: Element }).target;
+    held_.append(inside);
+    const child = {
+      playState: 'running',
+      pending: false,
+      effect: { target: inside, getComputedTiming: () => ({ endTime: 200 }) },
+    } as unknown as Animation;
+    states(() => [part, child]);
+    await expect(motionEnded(page, [countdown])).resolves.toBeNull();
+    let clock = 0;
+    vi.spyOn(Date, 'now').mockImplementation(() => (clock += 1000));
+    const other = animation(() => true);
+    (other.effect as unknown as { target: Element }).target.className = 'toast';
+    states(() => [part, other]);
+    await expect(motionEnded(page, [countdown])).resolves.toBe('div.toast');
+  });
+
+  it('is refused without a decision number', async () => {
+    const bare = { selector: '.card', decision: 'it ticks' };
+    await expect(motionEnded(page, [bare])).rejects.toThrow(
+      'the intended motion of ".card" names no decision number',
+    );
+  });
+});
+
 // A page whose clock is held, as after `page.clock.pauseAt`: while the page's code runs, its time
 // stands still and its timers never fire.
 const held = {

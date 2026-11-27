@@ -31,7 +31,7 @@ import { probe, type IntendedOverlap, type Probe } from './probe.js';
 import { notVisible } from './probeBase.js';
 import { applyTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
-import { motionEnded, stillMoving } from './sweepMotion.js';
+import { motionEnded, stillMoving, type IntendedMotion } from './sweepMotion.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 
@@ -47,6 +47,8 @@ export interface SweepScreen {
   readonly floors?: readonly VisibleFloor[];
   // Overlaps an owner decided on, each with its decision's number.
   readonly intendedOverlaps?: readonly IntendedOverlap[];
+  // Parts an owner decided keep moving, each with its decision's number.
+  readonly intendedMotion?: readonly IntendedMotion[];
   // Findings this screen is known to have and accepts.
   readonly allow?: readonly Allowed[];
 }
@@ -131,16 +133,20 @@ function allows(known: Allowed, line: string): boolean {
 }
 
 // What still moves when the wait gives up, as a finding; nothing on a still screen.
-async function motionLines(page: Page): Promise<string[]> {
-  const moving = await motionEnded(page);
+async function motionLines(page: Page, meant: readonly IntendedMotion[] = []): Promise<string[]> {
+  const moving = await motionEnded(page, meant);
   return typeof moving === 'string' ? [stillMoving(moving)] : [];
 }
 
 // axe's findings, on a screen that came to rest again: the probe takes its time, and a fade a
 // game's timer starts meanwhile would be judged as poor contrast.
-async function axeLines(page: Page, axe: AxeFinder | false): Promise<string[]> {
+async function axeLines(
+  page: Page,
+  axe: AxeFinder | false,
+  meant: readonly IntendedMotion[] = [],
+): Promise<string[]> {
   if (axe === false) return [];
-  const moving = await motionLines(page);
+  const moving = await motionLines(page, meant);
   return [...moving, ...(await axe(page)).map((v) => `axe: ${v}`)];
 }
 
@@ -169,10 +175,10 @@ async function findingsOf(
   await page.setViewportSize(look.size);
   // The wait's quiet moment gives resize observers their frames to run and paint, too.
   const found = [
-    ...(await motionLines(page)),
+    ...(await motionLines(page, screen.intendedMotion)),
     ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
     ...(await floorLines(page, screen.floors ?? [], look)),
-    ...(await axeLines(page, options.axe)),
+    ...(await axeLines(page, options.axe, screen.intendedMotion)),
   ];
   // The same part may still move at both waits: said once.
   return [...new Set(found)]

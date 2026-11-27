@@ -9,7 +9,8 @@
  *                 round's focus mode) or absent sets `data-theme` on <html>, which is what the
  *                 tokens follow; it returns once nothing that ends is moving (`settle`, on
  *                 ./sweepMotion since v0.39.1, which also waits for a late start and gives up
- *                 after 5 s with an error), so a picture or a measurement never catches a fade. `captureLook(page, dir, name, show?)` saves
+ *                 after 5 s with an error), so a picture or a measurement never catches a fade;
+ *                 both take the motion a game declares as meant. `captureLook(page, dir, name, show?)` saves
  *                 `<name>-desktop-light.jpg` … `<name>-phone-dark.jpg` (`show` is scrolled to the
  *                 middle first) and puts the window size and theme back. Types only come from
  *                 Playwright: nothing of it is imported when this runs.
@@ -35,8 +36,8 @@ export const SWEEP_SIZES = [
 const themeNow = (page) => page.evaluate(() => document.documentElement.getAttribute('data-theme'));
 // Waits until no animation or transition that ends is moving (./sweepMotion); throws where that
 // does not come within its limit.
-export async function settle(page) {
-    const moving = await motionEnded(page);
+export async function settle(page, meant = []) {
+    const moving = await motionEnded(page, meant);
     if (typeof moving === 'string')
         throw new Error(stillMoving(moving));
 }
@@ -54,9 +55,9 @@ export async function applyTheme(page, theme) {
         }
     }
 }
-export async function setTheme(page, theme) {
+export async function setTheme(page, theme, meant = []) {
     await applyTheme(page, theme);
-    await settle(page);
+    await settle(page, meant);
 }
 export async function captureLook(page, dir, name, show) {
     const size = page.viewportSize() ?? DESKTOP;

@@ -551,3 +551,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   does not resize buttons in dense lists; the tags are listed in [TAGS.md](TAGS.md).
 - **K121 — One throw-away test image to prove the commit check** (decided 2026-11-27, allowed
   once): a `sk-test-image-*` tag and its image, both deleted after the run.
+- **K122 — Intended motion is declared with its decision** (decided 2026-11-27, Mini Games'
+  report). A part that keeps moving on purpose is named to the sweep, `settle` or `setTheme` by
+  selector with the owner's decision number, as floors (K116) and overlaps (K118) are; only its
+  motion is excused.

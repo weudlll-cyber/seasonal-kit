@@ -12,6 +12,10 @@ handbook rules.
 
 ### Added
 
+- **Declared motion:** a screen's `intendedMotion` (`selector`, `decision` with a number; the
+  type `IntendedMotion`), and the same as the last argument of `settle` and `setTheme`, excuses
+  the motion of that part and of what it holds. Other motion is still reported; a declaration
+  without a number is refused.
 - **`useScrollTabStop()`** answers a ref callback: a box rendered after its component gets its
   Tab stop, and is let go when it leaves. With a ref passed in, as before.
 

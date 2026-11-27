@@ -299,6 +299,25 @@ describe('an exemption only for what is not visible', () => {
   });
 });
 
+describe('sweep with declared motion', () => {
+  it('excuses a screen’s declared motion at both waits', async () => {
+    const bar = document.createElement('div');
+    bar.className = 'countdown';
+    const moving = { target: bar, getComputedTiming: () => ({ endTime: 900 }) };
+    Object.assign(document, {
+      getAnimations: () => [{ playState: 'running', pending: false, effect: moving }],
+    });
+    const declared = { ...screen, intendedMotion: [{ selector: '.countdown', decision: 'O161' }] };
+    await sweep(walker().page, [declared], {
+      axe: () => Promise.resolve([]),
+      sizes: [{ width: 320, height: 568 }],
+      fonts: [16],
+      themes: ['light'],
+    });
+    Reflect.deleteProperty(document, 'getAnimations');
+  });
+});
+
 describe('axeFinder', () => {
   it('runs the WCAG tags and the landmark rules, and names each rule with its targets', async () => {
     let run: unknown;

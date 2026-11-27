@@ -33,7 +33,7 @@ export {
   type Theme,
 } from './screens.js';
 export { findPrivacyGaps } from './privacyData.js';
-export { probe, type Probe } from './probe.js';
+export { probe, type IntendedOverlap, type Probe } from './probe.js';
 export type { OpenRoundsRead, StandInMember } from './standInContract.js';
 export type { StandInGame } from './standInProxy.js';
 export { startWebsiteStandIn, type StandInOptions, type WebsiteStandIn } from './websiteStandIn.js';

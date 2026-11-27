@@ -13,7 +13,9 @@
  *                   only this one, so the chat bar's words were still reported outside);
  *                 - `overlaps` (since v0.36.0): a control in the page's flow lying over, or
  *                   under, a part beside it or beside one of its boxes. Boxes placed out of the
- *                   flow (menus, sheets, badges) are meant to lie over others and are left out;
+ *                   flow (menus, sheets, badges) are meant to lie over others and are left out,
+ *                   and since v0.39.0 so is what a game declares (a grid item in a free cell, a
+ *                   sheet laid over a grid);
  *                 - `wholeItems` (since v0.38.0): how many of a selector's elements are wholly in
  *                   sight, in the window and in every box around them.
  *                 Like ./probeBase they are put into the page as source text.
@@ -23,6 +25,12 @@
  *                 ./probeTargets since v0.39.0.
  */
 import type { Base, Rect } from './probeBase.js';
+
+// Two selectors of an intended overlap (./probe `IntendedOverlap` carries the decision too).
+export interface Meant {
+  readonly control: string;
+  readonly over: string;
+}
 
 // The kit's own ellipses, meant to hide the end of a line: the chat bar's newest message.
 export function kitEllipses(): string {
@@ -99,8 +107,14 @@ export function crosses(b: Base, one: Rect, two: Rect): boolean {
   return both.right - both.left > 2 && both.bottom - both.top > 2;
 }
 
-// The part beside the control, or beside a box around it, that lies in the same place.
-export function overlapOf(b: Base, control: Element): Element | null {
+// An overlap a game's owner decided on: the control (or a box around it) over that part.
+export function isMeant(meant: readonly Meant[], control: Element, other: Element): boolean {
+  return meant.some((m) => control.closest(m.control) !== null && other.closest(m.over) !== null);
+}
+
+// The part beside the control, or beside a box around it, that lies in the same place, those a
+// game declared apart.
+export function overlapOf(b: Base, control: Element, meant: readonly Meant[]): Element | null {
   const mine = b.seenBox(control);
   let node: Element = control;
   while (node !== document.body && node.parentElement !== null && inFlow(node)) {
@@ -110,7 +124,8 @@ export function overlapOf(b: Base, control: Element): Element | null {
         b.shown(other) &&
         inFlow(other) &&
         getComputedStyle(other).display !== 'inline' &&
-        crosses(b, mine, b.seenBox(other)),
+        crosses(b, mine, b.seenBox(other)) &&
+        !isMeant(meant, control, other),
     );
     if (found !== undefined) return found;
     node = node.parentElement;
@@ -118,10 +133,10 @@ export function overlapOf(b: Base, control: Element): Element | null {
   return null;
 }
 
-export function overlaps(b: Base): string[] {
+export function overlaps(b: Base, meant: readonly Meant[]): string[] {
   return b.controls().flatMap((control) => {
     if (!b.shown(control) || b.inText(control)) return [];
-    const other = overlapOf(b, control);
+    const other = overlapOf(b, control, meant);
     return other === null
       ? []
       : [b.marked(control, `${b.nameOf(control)} over ${b.nameOf(other)}`)];
@@ -147,6 +162,7 @@ export const RULES = {
   edgeBoxes,
   inFlow,
   crosses,
+  isMeant,
   overlapOf,
   overlaps,
   wholeItems,

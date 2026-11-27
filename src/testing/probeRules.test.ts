@@ -14,9 +14,10 @@
  * Depends on:     vitest, jsdom
  * Source:         new in the kit.
  */
+import type { Page } from '@playwright/test';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { runProbe, type Probe } from './probe.js';
+import { probe, runProbe, type Probe } from './probe.js';
 
 // `data-box="left top width height"` is an element's layout; without it, off to the side.
 const boxOf = (el: Element): DOMRect => {
@@ -96,6 +97,26 @@ describe('overlapping controls', () => {
     '<p data-box="0 48 90 40"></p>',
   ])('leaves a control beside %s', (other) => {
     expect(look(`${button}${other}`).overlaps).toEqual([]);
+  });
+
+  it('leaves what a game declared, there only, and still sees what lies behind it', () => {
+    const grid =
+      '<div class="stage" data-box="0 0 90 90"><button class="log" data-box="0 0 50 50">log</button>' +
+      '<p class="board" data-box="0 0 90 90"></p><p class="note" data-box="0 40 90 40"></p></div>';
+    document.body.innerHTML = grid;
+    const meant = (over: string) => runProbe(44, undefined, undefined, [{ control: '.log', over }]);
+    expect(meant('.board').overlaps).toEqual(['button.log "log" over p.note']);
+    expect(meant('.elsewhere').overlaps).toEqual(['button.log "log" over p.board']);
+    expect(meant('.stage').overlaps).toEqual([]);
+  });
+
+  it('refuses a declared overlap without a decision number', async () => {
+    const page = { evaluate: () => Promise.resolve(null) } as unknown as Page;
+    const bare = { control: '.log', over: '.board', decision: 'the owner said so' };
+    await expect(probe(page, 44, [bare])).rejects.toThrow(
+      'the intended overlap of ".log" over ".board" names no decision number',
+    );
+    await expect(probe(page, 44, [{ ...bare, decision: 'O97' }])).resolves.toBeNull();
   });
 
   it('says nothing of a control in a menu placed over the page', () => {

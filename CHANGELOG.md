@@ -35,6 +35,9 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 
 ### Added, test tools
 
+- **Intended overlaps:** a screen's `intendedOverlaps` (`control`, `over`, `decision`; the type
+  `IntendedOverlap`, also `probe`'s third argument) leaves out an overlap the game's owner decided
+  on. One whose decision names no number is refused.
 - **Exemptions for what is not visible:** a screen's `allow` takes
   `{ finding, onlyNotVisible: true }`, which leaves the finding out only where nothing of its
   element can be seen; a probe finding about such an element ends with " (not visible)".

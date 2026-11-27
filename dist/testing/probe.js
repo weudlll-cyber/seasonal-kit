@@ -38,7 +38,7 @@ function clippedFits(b) {
     });
 }
 // The whole measurement, as the page runs it (exported for the unit tests, not from the entry).
-export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }) {
+export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }, meant = []) {
     const { clientWidth: width, clientHeight: height } = document.documentElement;
     const page = document.scrollingElement ?? document.documentElement;
     const cut = [...document.body.querySelectorAll('*')].flatMap((el) => {
@@ -52,7 +52,7 @@ export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }) {
         outside: [...r.wideBoxes(b, width), ...r.edgeBoxes(b, height)],
         cut,
         smallTargets: r.smallTargets(b, targetPx),
-        overlaps: r.overlaps(b),
+        overlaps: r.overlaps(b, meant),
         clippedFits: clippedFits(b),
     };
 }
@@ -71,8 +71,12 @@ function inPage(call) {
     ].join('\n');
     return `(() => {\n${body}\nreturn ${call};\n})()`;
 }
-export async function probe(page, targetPx = 44) {
-    return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules)`));
+export async function probe(page, targetPx = 44, meant = []) {
+    const named = meant.find((m) => !/\d/.test(m.decision));
+    if (named !== undefined) {
+        throw new Error(`the intended overlap of "${named.control}" over "${named.over}" names no decision number`);
+    }
+    return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules, ${JSON.stringify(meant)})`));
 }
 export async function wholeCount(page, selector) {
     return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)})`));

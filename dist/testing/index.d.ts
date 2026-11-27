@@ -17,7 +17,7 @@ export { inBatches, latencies, watchServer, type Latencies, type ServerLoad, typ
 export { findFixedColours, findSmallText, type GuardOptions } from './guards.js';
 export { captureLook, DESKTOP, PHONE, setTheme, settle, SWEEP_SIZES, type Size, type Theme, } from './screens.js';
 export { findPrivacyGaps } from './privacyData.js';
-export { probe, type Probe } from './probe.js';
+export { probe, type IntendedOverlap, type Probe } from './probe.js';
 export type { OpenRoundsRead, StandInMember } from './standInContract.js';
 export type { StandInGame } from './standInProxy.js';
 export { startWebsiteStandIn, type StandInOptions, type WebsiteStandIn } from './websiteStandIn.js';

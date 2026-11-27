@@ -4,7 +4,8 @@
  *         controls, a fitted root whose content does not fit it.
  *
  * Responsibility: `probe(page)` runs in the browser and returns what is wrong with the screen as
- *                 it is now:
+ *                 it is now (an overlap declared in `meant`, with a decision number, is not wrong;
+ *                 one without a number is refused, since v0.39.0):
  *                 - `hScroll`: the page scrolls sideways;
  *                 - `outside`: the outermost boxes reaching past the window's sides, and (since
  *                   v0.36.0) past its top, or past its bottom where nothing scrolls to them;
@@ -34,7 +35,7 @@
  */
 import type { Page } from '@playwright/test';
 import { type Base } from './probeBase.js';
-import { type Rules } from './probeRules.js';
+import { type Meant, type Rules } from './probeRules.js';
 import { type Targets } from './probeTargets.js';
 export interface Probe {
     readonly hScroll: boolean;
@@ -44,6 +45,9 @@ export interface Probe {
     readonly overlaps: readonly string[];
     readonly clippedFits: readonly string[];
 }
-export declare function runProbe(targetPx: number, b?: Base, r?: Rules & Targets): Probe;
-export declare function probe(page: Page, targetPx?: number): Promise<Probe>;
+export interface IntendedOverlap extends Meant {
+    readonly decision: string;
+}
+export declare function runProbe(targetPx: number, b?: Base, r?: Rules & Targets, meant?: readonly Meant[]): Probe;
+export declare function probe(page: Page, targetPx?: number, meant?: readonly IntendedOverlap[]): Promise<Probe>;
 export declare function wholeCount(page: Page, selector: string): Promise<number>;

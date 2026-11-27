@@ -4,7 +4,8 @@
  *         controls, a fitted root whose content does not fit it.
  *
  * Responsibility: `probe(page)` runs in the browser and returns what is wrong with the screen as
- *                 it is now:
+ *                 it is now (an overlap declared in `meant`, with a decision number, is not wrong;
+ *                 one without a number is refused, since v0.39.0):
  *                 - `hScroll`: the page scrolls sideways;
  *                 - `outside`: the outermost boxes reaching past the window's sides, and (since
  *                   v0.36.0) past its top, or past its bottom where nothing scrolls to them;
@@ -35,7 +36,7 @@
 import type { Page } from '@playwright/test';
 
 import { BASE, type Base } from './probeBase.js';
-import { RULES, type Rules } from './probeRules.js';
+import { RULES, type Meant, type Rules } from './probeRules.js';
 import { TARGETS, type Targets } from './probeTargets.js';
 
 export interface Probe {
@@ -45,6 +46,11 @@ export interface Probe {
   readonly smallTargets: readonly string[];
   readonly overlaps: readonly string[];
   readonly clippedFits: readonly string[];
+}
+
+// An overlap a game's owner decided on, with the decision's number.
+export interface IntendedOverlap extends Meant {
+  readonly decision: string;
 }
 
 // True when a box between the element and the root, the root included, scrolls: its content is
@@ -90,6 +96,7 @@ export function runProbe(
   targetPx: number,
   b: Base = BASE,
   r: Rules & Targets = { ...RULES, ...TARGETS },
+  meant: readonly Meant[] = [],
 ): Probe {
   const { clientWidth: width, clientHeight: height } = document.documentElement;
   const page = document.scrollingElement ?? document.documentElement;
@@ -103,7 +110,7 @@ export function runProbe(
     outside: [...r.wideBoxes(b, width), ...r.edgeBoxes(b, height)],
     cut,
     smallTargets: r.smallTargets(b, targetPx),
-    overlaps: r.overlaps(b),
+    overlaps: r.overlaps(b, meant),
     clippedFits: clippedFits(b),
   };
 }
@@ -125,8 +132,20 @@ function inPage(call: string): string {
   return `(() => {\n${body}\nreturn ${call};\n})()`;
 }
 
-export async function probe(page: Page, targetPx = 44): Promise<Probe> {
-  return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules)`));
+export async function probe(
+  page: Page,
+  targetPx = 44,
+  meant: readonly IntendedOverlap[] = [],
+): Promise<Probe> {
+  const named = meant.find((m) => !/\d/.test(m.decision));
+  if (named !== undefined) {
+    throw new Error(
+      `the intended overlap of "${named.control}" over "${named.over}" names no decision number`,
+    );
+  }
+  return page.evaluate(
+    inPage(`runProbe(${String(targetPx)}, base, rules, ${JSON.stringify(meant)})`),
+  );
 }
 
 export async function wholeCount(page: Page, selector: string): Promise<number> {

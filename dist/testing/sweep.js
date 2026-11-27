@@ -64,7 +64,7 @@ async function findingsOf(page, screen, look, options) {
         ...(typeof moving === 'string'
             ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
             : []),
-        ...linesOf(await probe(page, options.targetPx)),
+        ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
         ...(await floorLines(page, screen.floors ?? [], look)),
         ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
     ];

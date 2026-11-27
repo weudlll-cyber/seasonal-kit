@@ -25,6 +25,7 @@
  *                 seasonal-mini-games e2e/access.spec.ts at 9e3c6f3 (the axe tags).
  */
 import type { Page } from '@playwright/test';
+import { type IntendedOverlap } from './probe.js';
 import { type Size, type Theme } from './screens.js';
 import { type VisibleFloor } from './sweepFloors.js';
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
@@ -37,6 +38,7 @@ export interface SweepScreen {
     readonly open: (page: Page) => Promise<void>;
     readonly setup?: (page: Page) => Promise<void>;
     readonly floors?: readonly VisibleFloor[];
+    readonly intendedOverlaps?: readonly IntendedOverlap[];
     readonly allow?: readonly Allowed[];
 }
 export interface SweepOptions {

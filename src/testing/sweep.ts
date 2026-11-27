@@ -26,7 +26,7 @@
  */
 import type { Page } from '@playwright/test';
 
-import { probe, type Probe } from './probe.js';
+import { probe, type IntendedOverlap, type Probe } from './probe.js';
 import { notVisible } from './probeBase.js';
 import { setTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
@@ -44,6 +44,8 @@ export interface SweepScreen {
   // Runs once before the screen's first look. Where it fails, the screen is not looked at.
   readonly setup?: (page: Page) => Promise<void>;
   readonly floors?: readonly VisibleFloor[];
+  // Overlaps an owner decided on, each with its decision's number.
+  readonly intendedOverlaps?: readonly IntendedOverlap[];
   // Findings this screen is known to have and accepts.
   readonly allow?: readonly Allowed[];
 }
@@ -159,7 +161,7 @@ async function findingsOf(
     ...(typeof moving === 'string'
       ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
       : []),
-    ...linesOf(await probe(page, options.targetPx)),
+    ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
     ...(await floorLines(page, screen.floors ?? [], look)),
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
   ];

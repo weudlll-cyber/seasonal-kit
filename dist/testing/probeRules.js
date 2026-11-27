@@ -70,8 +70,13 @@ export function crosses(b, one, two) {
     const both = b.meet(one, two);
     return both.right - both.left > 2 && both.bottom - both.top > 2;
 }
-// The part beside the control, or beside a box around it, that lies in the same place.
-export function overlapOf(b, control) {
+// An overlap a game's owner decided on: the control (or a box around it) over that part.
+export function isMeant(meant, control, other) {
+    return meant.some((m) => control.closest(m.control) !== null && other.closest(m.over) !== null);
+}
+// The part beside the control, or beside a box around it, that lies in the same place, those a
+// game declared apart.
+export function overlapOf(b, control, meant) {
     const mine = b.seenBox(control);
     let node = control;
     while (node !== document.body && node.parentElement !== null && inFlow(node)) {
@@ -79,18 +84,19 @@ export function overlapOf(b, control) {
             b.shown(other) &&
             inFlow(other) &&
             getComputedStyle(other).display !== 'inline' &&
-            crosses(b, mine, b.seenBox(other)));
+            crosses(b, mine, b.seenBox(other)) &&
+            !isMeant(meant, control, other));
         if (found !== undefined)
             return found;
         node = node.parentElement;
     }
     return null;
 }
-export function overlaps(b) {
+export function overlaps(b, meant) {
     return b.controls().flatMap((control) => {
         if (!b.shown(control) || b.inText(control))
             return [];
-        const other = overlapOf(b, control);
+        const other = overlapOf(b, control, meant);
         return other === null
             ? []
             : [b.marked(control, `${b.nameOf(control)} over ${b.nameOf(other)}`)];
@@ -115,6 +121,7 @@ export const RULES = {
     edgeBoxes,
     inFlow,
     crosses,
+    isMeant,
     overlapOf,
     overlaps,
     wholeItems,

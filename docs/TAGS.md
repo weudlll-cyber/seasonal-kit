@@ -52,3 +52,4 @@ message. A release adds its line ([RELEASING.md](RELEASING.md)); what a version 
 | v0.38.0 | 2026-11-27 | `a21ffe4` | the sweep's per-screen setup and floors of visible items                                         |
 | v0.39.0 | 2026-11-27 | `cd25b4f` | the games' findings on v0.38.0                                                                   |
 | v0.39.1 | 2026-11-27 | `29c0f01` | follow-ups to v0.39.0, the commit check proven                                                   |
+| v0.40.0 | 2026-11-27 | `23f10b9` | the games' findings on v0.39.1, a local preview, four rules                                      |

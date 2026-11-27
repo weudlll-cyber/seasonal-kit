@@ -112,7 +112,8 @@ usage: $SK_ADMIN_NAME [--env <name>] [--yes] <command>
   rollback                       back to the image (and data) before the last update
   backup                         encrypted backup now
   restore <file> [--identity k]  put a backup back (k: your age key file;
-          [--force-env]          --force-env: another environment's backup or secret)
+          [--force-env]          --force-env: another environment's backup or secret, as on a
+                                 new server with keys of its own)
   restore --drill <file> [...]   restore into a throw-away database and check it
   logs [service]                 follow the logs
   uninstall [--purge-backups]    remove this environment (asks for its name); backups stay

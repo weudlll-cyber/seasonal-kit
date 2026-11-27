@@ -115,6 +115,26 @@ Windows computer, backup included, runs in a Linux container.
 - It reads **only backups made by this script**. A backup made by a game's own earlier script needs
   that game's documented rewrite, or ages out (decided 2026-11-25).
 
+## Restoring onto a new server (a server move)
+
+A new server has its own keys: the install made them. So the restore there **stops, as it should**,
+with "the backup's <name> differs from <file>" (the admin command writes the server's keys first,
+then compares). `--force-env` is the expected step, after checking that the backup is the right one:
+
+1. Install the game on the new server and copy the backup file there. The age key file stays with
+   the operator until the restore, and leaves the server afterwards.
+2. **Check the backup before forcing anything**, because `--force-env` also lifts the refusal of
+   another environment's backup: the file's name is `<prefix>-<environment>-<UTC time>.tar.age`, so
+   it must name this game, this environment and the time you mean; then
+   `<command> restore --drill <file> --identity key.txt` restores it into a throw-away database and
+   compares every table's rows.
+3. `<command> restore <file> --identity key.txt` stops and names the differing key. Nothing has
+   changed.
+4. `<command> restore <file> --identity key.txt --force-env`: the data is replaced and the backup's
+   keys take the place of the new server's. A game whose app reads its keys from its env file takes
+   them over in its start command (above).
+5. Check `<command> status`, sign in, and take a backup on the new server.
+
 ## What is never done
 
 No command prints a secret, a key, or the content of a dump: only file names, table names and
@@ -206,7 +226,7 @@ Copy the kit's whole `ops/` folder, keeping its layout.
 | `update <git ref>`              | Builds the ref, backs up, keeps a plain dump, installs the new stack files, starts, waits for `/readyz`. Refused while the last update is unconfirmed.                                                                                                           |
 | `confirm`                       | Deletes the dump and the rollback data.                                                                                                                                                                                                                          |
 | `rollback`                      | Asks, backs up, restores the dump in one transaction only if the schema migrated, puts back image, ref, settings and stack files.                                                                                                                                |
-| `backup`, `restore [--drill] f` | `ops/backup.sh` with the game's settings.                                                                                                                                                                                                                        |
+| `backup`, `restore [--drill] f` | `ops/backup.sh` with the game's settings. A backup carries the server's keys: on another server `restore` stops until `--force-env` ("Restoring onto a new server").                                                                                             |
 | `logs [service]`                | Follows the logs.                                                                                                                                                                                                                                                |
 | `uninstall [--purge-backups]`   | Removes one environment: containers, volumes, backup timer, route file, rollback data, settings. Asks for the environment's name. With the last environment also the images, units, command and folders. **The backups stay** unless `--purge-backups` is given. |
 

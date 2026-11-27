@@ -5,7 +5,8 @@
  *
  * Responsibility: `setTheme` presses a visible toggle, sets the attribute where the toggle is
  *                 hidden or does not give the theme, presses nothing when the page already has it,
- *                 and waits for running animations but not for endless ones; `captureLook` takes
+ *                 waits for running animations but not for endless ones, and throws where one
+ *                 never comes to rest; `captureLook` takes
  *                 both sizes in both themes, scrolls the named element into view, and puts the
  *                 window size and theme back. The stand-in runs the page functions in jsdom; the
  *                 real browser is the showcase's (showcase/testing.spec.ts).
@@ -34,10 +35,6 @@ function fake(toggle: { visible: boolean; gives?: () => string }): Fake {
   };
   const page = {
     evaluate: (fn: (arg?: unknown) => unknown, arg?: unknown) => Promise.resolve(fn(arg)),
-    waitForFunction: (fn: () => boolean) => {
-      expect(fn()).toBe(true);
-      return Promise.resolve();
-    },
     getByTestId: () => ({
       first: () => ({
         isVisible: () => Promise.resolve(toggle.visible),
@@ -98,18 +95,29 @@ describe('setTheme', () => {
   });
 
   it('waits for running animations but not for endless ones', async () => {
-    const endless = {
-      playState: 'running',
-      effect: { getComputedTiming: () => ({ iterations: Number.POSITIVE_INFINITY }) },
-    };
-    animations([endless, { playState: 'finished', effect: null }]);
+    const start = Date.now();
+    const running = (): boolean => Date.now() - start < 100;
+    animations([
+      { playState: 'running', effect: { getComputedTiming: () => ({ endTime: Infinity }) } },
+      {
+        get playState() {
+          return running() ? 'running' : 'finished';
+        },
+        effect: null,
+      },
+    ]);
     await setTheme(fake({ visible: false }).page, 'light');
+    expect(running()).toBe(false);
+  });
+
+  it('throws where something never comes to rest', async () => {
+    let clock = 0;
+    vi.spyOn(Date, 'now').mockImplementation(() => (clock += 1000));
     animations([{ playState: 'running', effect: null }]);
-    const f = fake({ visible: false });
-    const waiting = vi.fn((fn: () => boolean) => Promise.resolve(fn()));
-    Object.assign(f.page, { waitForFunction: waiting });
-    await setTheme(f.page, 'light');
-    expect(await waiting.mock.results[0]?.value).toBe(false);
+    await expect(setTheme(fake({ visible: false }).page, 'light')).rejects.toThrow(
+      'still moving after 5 s: an animation',
+    );
+    vi.restoreAllMocks();
   });
 });
 

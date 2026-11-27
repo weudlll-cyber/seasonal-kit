@@ -7,6 +7,40 @@ applies it.
 
 ## [Unreleased]
 
+## [0.39.1] - 2026-11-27
+
+Follow-ups to v0.39.0, before the games adopt it.
+
+### Fixed
+
+- **`useScrollTabStop`** gives a Tab stop only to a box that scrolls: taller content and a computed
+  `overflow-y` of `auto` or `scroll` (before: any taller content, also a clipped one). It also looks
+  again when the box's class changes.
+
+### Changed
+
+- **One wait for motion:** `settle` and `setTheme` use the sweep's wait: they also wait for a late
+  start (250 ms of rest) and give up after 5 s with an error (before: until the test's own time
+  limit). The sweep now waits once a look, not twice.
+
+### Documented
+
+- **The commit check, proven on a real signature** (run
+  [46013416967](https://github.com/weudlll-cyber/seasonal-kit/actions/runs/46013416967)): the
+  release's commit passed `sk_image_verify`, another was refused, with the cosign
+  `sk_cosign_install` installs; the proof workflow now verifies with that one.
+- **Restoring onto a new server** (OPERATIONS.md): the new server's keys differ, so `restore`
+  stops; `--force-env` is the expected step, after checking the backup (its name and a drill). The
+  usage texts of the admin command and `ops/backup.sh` say so.
+
+### Migration, per game
+
+- **Mini Games:** the kit's hook now does all its `components/scrollTabStop.ts` does, and more
+  (the style is watched): the copy can go.
+- **Bingo Royale:** reads OPERATIONS.md "Restoring onto a new server" before its server move.
+- **Seasonal Cases:** nothing.
+- **Seasonal Party:** nothing beyond the pin.
+
 ## [0.39.0] - 2026-11-27
 
 Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Games).
@@ -1965,7 +1999,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...HEAD
+[0.39.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...v0.37.0

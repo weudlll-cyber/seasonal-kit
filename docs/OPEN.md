@@ -10,4 +10,4 @@ The short page over [BACKLOG.md](BACKLOG.md) part one, in order.
 - 72\. A blocking scan would also fail on ZAP's warnings; to fix before a game turns it on.
 - 73\. The result's first part keeps its height in a narrow place at large text.
 - 74\. The call's view loads anew when the layout or the theme changes.
-- 89\. The cosign pin is bumped by hand, and the image's commit check waits for a real run.
+- 89\. The cosign pin is bumped by hand.

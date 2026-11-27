@@ -43,7 +43,6 @@ function walker(rows: (width: number) => number = () => 7) {
       return Promise.resolve(code.includes('return wholeItems(') ? rows(width) : CLEAN);
     },
     getByTestId: () => ({ first: () => ({ isVisible: () => Promise.resolve(false) }) }),
-    waitForFunction: () => Promise.resolve(),
   };
   return { page: fake as unknown as Page, log };
 }

@@ -41,10 +41,9 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   renders its slot in another place on a phone, and a new theme is a new frame address, so a
   listener must press **Listen** again. Done when: one frame stays, and the view is sent `theme`.
 
-- **89. The cosign pin and the commit check wait for a real run** (v0.39.0, 2026-11-27). The
-  version and checksums in `ops/lib/image.sh` are bumped by hand (Renovate does not read them),
-  and `SK_IMAGE_COMMIT` is tested with a stand-in only; `release-image-test.yml` proves both on
-  its next throw-away tag. Done when: that run passed, and a rule or Renovate keeps the pin.
+- **89. The cosign pin is bumped by hand** (v0.39.0, 2026-11-27). Renovate does not read the
+  version and checksums in `ops/lib/image.sh`. Done when: a rule or Renovate keeps the pin. (Its
+  other half, a real run of the commit check, passed with v0.39.1, item 93.)
 
 ## Part two — closed
 
@@ -278,5 +277,13 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.39.0 (`probeRules.ts`, `probe.ts`, `sweep.ts`, K118).
 - **88. Docs were silent on required checks, blocking scans and listed frame paths** (the games,
   2026-11-27). Closed in v0.39.0 (ADOPTION.md).
+- **90. `useScrollTabStop` gave a clipped box a Tab stop** (found while closing v0.39.0,
+  2026-11-27). Closed in v0.39.1 (`useScrollTabStop.ts` and its test).
+- **91. No word on restoring onto a new server, where the strict restore stops** (2026-11-27).
+  Closed in v0.39.1 (OPERATIONS.md, `admin.sh`, `backup.sh`).
+- **92. The testing entry had two waits for motion** (v0.39.0's sheet, 2026-11-27). Closed in
+  v0.39.1 (`screens.ts`, `sweepMotion.ts`).
+- **93. `SK_IMAGE_COMMIT` had met no real signature** (v0.39.0's sheet, 2026-11-27). Closed in
+  v0.39.1 by the proof run 46013416967 (`release-image-test.yml`).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

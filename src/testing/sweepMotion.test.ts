@@ -64,6 +64,7 @@ describe('motionEnded', () => {
 
   it('gives up at the limit and says what still moves', async () => {
     let clock = 0;
+    // The test side's clock: the limit is measured there.
     vi.spyOn(Date, 'now').mockImplementation(() => (clock += 1000));
     const bare = { playState: 'running', pending: false, effect: null } as unknown as Animation;
     states(() => [animation(() => true), bare]);
@@ -72,5 +73,41 @@ describe('motionEnded', () => {
 
   it('says nothing where a page cannot list its animations', async () => {
     await expect(motionEnded(page)).resolves.toBeNull();
+  });
+});
+
+// A page whose clock is held, as after `page.clock.pauseAt`: while the page's code runs, its time
+// stands still and its timers never fire.
+const held = {
+  evaluate: (fn: (arg: unknown) => unknown, arg: unknown) => {
+    const { setTimeout: timer } = globalThis;
+    const now = Date.now;
+    const frozen = now();
+    Date.now = () => frozen;
+    globalThis.setTimeout = (() => 0) as unknown as typeof setTimeout;
+    try {
+      return Promise.resolve(fn(arg));
+    } finally {
+      Date.now = now;
+      globalThis.setTimeout = timer;
+    }
+  },
+} as unknown as Page;
+
+describe('motionEnded on a held clock', () => {
+  it('returns right after the quiet moment on a still page', async () => {
+    states(() => []);
+    const start = Date.now();
+    await expect(motionEnded(held)).resolves.toBeNull();
+    const took = Date.now() - start;
+    expect(took).toBeGreaterThanOrEqual(250);
+    expect(took).toBeLessThan(1500);
+  });
+
+  it('waits out an animation, which the browser moves on its own time', async () => {
+    const start = performance.now();
+    states(() => [animation(() => performance.now() - start < 200)]);
+    await expect(motionEnded(held)).resolves.toBeNull();
+    expect(performance.now() - start).toBeGreaterThanOrEqual(200);
   });
 });

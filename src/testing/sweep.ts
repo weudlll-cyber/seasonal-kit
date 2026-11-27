@@ -6,8 +6,8 @@
  * Responsibility: `sweep(page, screens, options)` walks each named screen through the sizes (default
  *                 ./screens `SWEEP_SIZES`), the root fonts (16 and 32 px) and both themes: it sets
  *                 the window, lets the screen open itself (`open`, which navigates and waits for
- *                 what it needs), sets the root font and the theme, waits for two frames, probes
- *                 (./probe) and runs `axe`. It throws one error listing every finding with its
+ *                 what it needs), sets the root font and the theme, waits for stillness
+ *                 (./sweepMotion), probes (./probe) and runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
  *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
@@ -152,10 +152,7 @@ async function findingsOf(
   // again with the new font.
   await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
   await page.setViewportSize(look.size);
-  // Two frames: resize observers have run and their layout is painted.
-  await page.evaluate(
-    () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
-  );
+  // The wait's quiet moment gives resize observers their frames to run and paint, too.
   const moving = await motionEnded(page);
   const found = [
     ...(typeof moving === 'string' ? [stillMoving(moving)] : []),

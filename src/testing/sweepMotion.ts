@@ -8,7 +8,11 @@
  *                 first look, is waited for too). One that repeats for ever, or is paused, is
  *                 left alone. After the limit it gives up and says what still moves
  *                 (`stillMoving` words it): ./sweep reports that, ./screens `settle` throws it.
- *                 One that starts after the quiet moment is not seen.
+ *                 One that starts after the quiet moment is not seen. The time is the test's own
+ *                 (since v0.40.0), so a page whose clock is held (`page.clock.pauseAt`) is waited
+ *                 for like any other: CSS animations and transitions run on the browser's own
+ *                 timeline, which a held clock does not stop, while motion a script drives stands
+ *                 still and counts as still.
  * Depends on:     @playwright/test (types)
  * Source:         ./sweep (`motionEnded`, v0.36.0), rewritten (v0.39.0) after Bingo Royale's
  *                 report that an animation started while the screen was judged.
@@ -23,37 +27,42 @@ export const MOTION_QUIET_MS = 250;
 export const stillMoving = (moving: string): string =>
   `still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`;
 
-// Null when the screen is still; else what was moving when the limit was reached.
+// So long between two looks at the page.
+const STEP_MS = 50;
+
+// In the page: what still moves, by name; null where the page cannot list its animations. It only
+// reads: no clock and no timer of the page's own, which a test may hold.
+function stillRunning(): string[] | null {
+  if (typeof document.getAnimations !== 'function') return null;
+  const named = (a: Animation): string => {
+    const part = (a.effect as { target?: Element | null } | null)?.target;
+    if (part === null || part === undefined) return 'an animation';
+    return [part.tagName.toLowerCase(), ...[...part.classList].slice(0, 1)].join('.');
+  };
+  return document
+    .getAnimations()
+    .filter(
+      (a) =>
+        (a.playState === 'running' || a.pending) &&
+        a.effect?.getComputedTiming().endTime !== Infinity,
+    )
+    .map(named);
+}
+
+// Null when the screen is still; else what was moving when the limit was reached. The limit, the
+// quiet moment and the steps are measured here, in the test's process.
 export async function motionEnded(page: Page): Promise<string | null> {
-  return page.evaluate(
-    async ([limit, quiet]) => {
-      if (typeof document.getAnimations !== 'function') return null;
-      const moving = (): Animation[] =>
-        document
-          .getAnimations()
-          .filter(
-            (a) =>
-              (a.playState === 'running' || a.pending) &&
-              a.effect?.getComputedTiming().endTime !== Infinity,
-          );
-      const named = (a: Animation): string => {
-        const part = (a.effect as { target?: Element | null } | null)?.target;
-        if (part === null || part === undefined) return 'an animation';
-        return [part.tagName.toLowerCase(), ...[...part.classList].slice(0, 1)].join('.');
-      };
-      const start = Date.now();
-      let calmSince = start;
-      let now = moving();
-      while (now.length > 0 || Date.now() - calmSince < quiet) {
-        if (now.length > 0) calmSince = Date.now();
-        if (Date.now() - start >= limit) {
-          return now.length > 0 ? now.map(named).join(', ') : 'animations kept starting';
-        }
-        await new Promise((done) => setTimeout(done, 50));
-        now = moving();
-      }
-      return null;
-    },
-    [MOTION_LIMIT_MS, MOTION_QUIET_MS] as const,
-  );
+  const start = Date.now();
+  let calmSince = start;
+  for (;;) {
+    const moving = await page.evaluate(stillRunning);
+    if (moving === null) return null;
+    const now = Date.now();
+    if (moving.length > 0) calmSince = now;
+    else if (now - calmSince >= MOTION_QUIET_MS) return null;
+    if (now - start >= MOTION_LIMIT_MS) {
+      return moving.length > 0 ? moving.join(', ') : 'animations kept starting';
+    }
+    await new Promise((done) => setTimeout(done, STEP_MS));
+  }
 }

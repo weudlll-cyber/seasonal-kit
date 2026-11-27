@@ -8,7 +8,11 @@
  *                 first look, is waited for too). One that repeats for ever, or is paused, is
  *                 left alone. After the limit it gives up and says what still moves
  *                 (`stillMoving` words it): ./sweep reports that, ./screens `settle` throws it.
- *                 One that starts after the quiet moment is not seen.
+ *                 One that starts after the quiet moment is not seen. The time is the test's own
+ *                 (since v0.40.0), so a page whose clock is held (`page.clock.pauseAt`) is waited
+ *                 for like any other: CSS animations and transitions run on the browser's own
+ *                 timeline, which a held clock does not stop, while motion a script drives stands
+ *                 still and counts as still.
  * Depends on:     @playwright/test (types)
  * Source:         ./sweep (`motionEnded`, v0.36.0), rewritten (v0.39.0) after Bingo Royale's
  *                 report that an animation started while the screen was judged.

@@ -57,8 +57,7 @@ async function findingsOf(page, screen, look, options) {
     // again with the new font.
     await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
     await page.setViewportSize(look.size);
-    // Two frames: resize observers have run and their layout is painted.
-    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
+    // The wait's quiet moment gives resize observers their frames to run and paint, too.
     const moving = await motionEnded(page);
     const found = [
         ...(typeof moving === 'string' ? [stillMoving(moving)] : []),

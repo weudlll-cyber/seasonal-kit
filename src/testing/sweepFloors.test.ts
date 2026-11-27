@@ -39,7 +39,8 @@ function walker(rows: (width: number) => number = () => 7) {
       return Promise.resolve();
     },
     evaluate: (code: unknown) => {
-      if (typeof code !== 'string') return Promise.resolve();
+      // A page function (the root font, the motion's look) finds nothing here.
+      if (typeof code !== 'string') return Promise.resolve(null);
       return Promise.resolve(code.includes('return wholeItems(') ? rows(width) : CLEAN);
     },
     getByTestId: () => ({ first: () => ({ isVisible: () => Promise.resolve(false) }) }),

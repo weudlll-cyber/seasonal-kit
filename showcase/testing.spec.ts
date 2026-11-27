@@ -18,7 +18,7 @@ import { existsSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
-import { axeFinder, captureLook, probe, sweep } from '../src/testing/index.js';
+import { axeFinder, captureLook, probe, setTheme, settle, sweep } from '../src/testing/index.js';
 import { SCREENS, settled } from './screens.js';
 
 const screenOf = (name: string) => ({
@@ -99,6 +99,23 @@ test('the sweep counts the rows in sight and sets a screen up once', async ({ pa
   await expect(sweep(page, [list(6)], looks)).rejects.toThrow(
     '.sweep-list li: 5 of at least 6 (K116)',
   );
+});
+
+test('with a held clock, setTheme and settle return, and CSS motion still ends', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await screenOf('header').open(page);
+  await page.clock.pauseAt(Date.now() + 60_000);
+  await setTheme(page, 'dark');
+  // A fade of the browser's own runs on while the page's clock stands.
+  await page.evaluate(() => {
+    document.body.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 600 });
+  });
+  const start = Date.now();
+  await settle(page);
+  expect(Date.now() - start).toBeGreaterThanOrEqual(600);
+  expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
 });
 
 test('captureLook writes both sizes in both themes', async ({ page }) => {

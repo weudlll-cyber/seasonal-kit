@@ -7,6 +7,17 @@ applies it.
 
 ## [Unreleased]
 
+Findings of Mini Games, Cases and Bingo on v0.39.1, a local website-mode preview and four
+handbook rules.
+
+### Fixed, test tools
+
+- **The wait for motion on a held clock:** `setTheme`, `settle` and the sweep return with
+  `page.clock.pauseAt` in force: the limit, the quiet moment and the steps are the test's own
+  time, and the page is only read. CSS animations and transitions keep running on the browser's
+  timeline while a clock is held; motion a script drives stands still. The sweep's wait for two
+  frames, which a held clock never gave, is gone: the quiet moment covers it.
+
 ## [0.39.1] - 2026-11-27
 
 Follow-ups to v0.39.0, before the games adopt it.

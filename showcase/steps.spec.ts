@@ -36,7 +36,18 @@ async function openChip(page: Page, width: number, theme: string, testId: string
   if ((await header.getAttribute('data-sk-folded')) === 'true') {
     await header.getByTestId('menu-button').click();
   }
-  return header.getByTestId('signed-in-as');
+  const chip = header.getByTestId('signed-in-as');
+  // The badges drawn are measured once their files are there.
+  await expect
+    .poll(() =>
+      chip
+        .locator('img:visible')
+        .evaluateAll((all: HTMLImageElement[]) =>
+          all.every((img) => img.complete && img.naturalWidth > 0),
+        ),
+    )
+    .toBe(true);
+  return chip;
 }
 
 // The chip's box, its icons' boxes, and how wide the page is, as the browser lays them out.

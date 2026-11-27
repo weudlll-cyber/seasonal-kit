@@ -240,6 +240,8 @@ for (const width of [1280, 1366, 1536, 1920]) {
       const seen = await barOf(page);
       const prefix = await page.locator('.sk-header-chip-prefix').boundingBox();
       expect((prefix?.width ?? 0) > 2).toBe(width >= 1600 && seen.state !== 'folded');
+      // Folded, the chip sits in the menu, which opens first.
+      if (seen.state === 'folded') await page.getByTestId('menu-button').click();
       await expect(page.getByTestId('signed-in-as')).toHaveAccessibleName(/^Signed in as /);
       // The finding: an organiser's bar at 1536 px stays one row.
       if (width >= 1536) expect(seen.state).not.toBe('folded');

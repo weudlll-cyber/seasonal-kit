@@ -22,6 +22,8 @@ import { readFileSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+import { settled } from './screens.js';
+
 // At least this much, in CSS px, between the arrow and the words: a third of the small text.
 const MIN_GAP_PX = 4;
 
@@ -204,6 +206,8 @@ for (const width of [1280, 1920, 390]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/?theme=light');
+    // A header may unfold when the web fonts arrive and move all below it: measure after that.
+    await settled(page);
     const box = (testId: string, part: string) =>
       page
         .getByTestId(testId)

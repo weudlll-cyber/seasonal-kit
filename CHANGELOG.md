@@ -7,6 +7,85 @@ applies it.
 
 ## [Unreleased]
 
+## [0.39.0] - 2026-11-27
+
+Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Games).
+
+### Added
+
+- **`useScrollTabStop`** is exported from `@seasonal/kit/react`: a ref's element is a Tab stop
+  while its content is taller than it. A game's own copy can go.
+
+### Added, test tools
+
+- **Intended overlaps:** a screen's `intendedOverlaps` (`control`, `over`, `decision`; the type
+  `IntendedOverlap`, also `probe`'s third argument) leaves out an overlap the game's owner decided
+  on. One whose decision names no number is refused.
+- **Exemptions for what is not visible:** a screen's `allow` takes
+  `{ finding, onlyNotVisible: true }`, which leaves the finding out only where nothing of its
+  element can be seen; a probe finding about such an element ends with " (not visible)".
+
+### Added, operations
+
+- **`sk_cosign_install`** (`ops/lib/image.sh`): installs cosign 3.1.6, only where the download
+  carries the pinned published checksum.
+- **`SK_IMAGE_COMMIT`:** `sk_image_verify` refuses an image whose signature names another source
+  commit. Unset, as before.
+
+### Changed
+
+- **Docked screen:** its group "Game screen" is named by a hidden element in place of an
+  `aria-label`, so axe `region` passes and looks inside it. The Tab stop and the name stay.
+- **`axeFinder`** also runs axe `region` and `landmark-main-is-top-level`, so a game's content
+  outside every landmark is now a finding.
+- **Dense list** (K117): the probe passes a button of 24 px in `.sk-dense-list`, like a link.
+  The stylesheet sizes no button: that stays the game's.
+
+### Fixed, test tools
+
+- **Probe:** the words inside the chat bar's ellipsis are no longer reported outside the window
+  (v0.36.0 told only the cut-text rule of the kit's ellipses, not the rules about boxes).
+- **Sweep:** it also waits for animations that start late (nothing moving for 250 ms), and what
+  still moves after 5 s is a finding.
+- **Dense list:** a control hidden or scrolled out of view no longer counts as a link's neighbour.
+- **Dense list without its stylesheet:** the probe's finding names `components.css`; the list's
+  least size no longer vanishes without `fit.css` (ADOPTION.md).
+
+### Fixed, operations
+
+- **Restore drill:** it waits for its database over TCP (60 s at most) in place of a socket check
+  and a fixed pause, so it never starts into the set-up server's shutdown. A game's own health
+  check should do the same (OPERATIONS.md "Waiting for the database").
+- **Restore** has the game write its secret files (`game_backup_secrets`) before it compares them,
+  so the comparison never meets a stale or missing set. On a server whose keys differ from the
+  backup's, a fresh one included, `restore` now stops and asks for `--force-env`.
+
+### Documented
+
+- A game's required checks, never the nightly suite; `scan.yml`'s `blocking: true`; a policy that
+  lists frame paths must name `/embed/call/shared` (this corrects v0.37.0's "the game's
+  `frame-src 'self'` allows it", true only of such a policy) (ADOPTION.md).
+
+### Migration, per game
+
+Every game: `axeFinder` now runs axe `region`, so content outside every landmark is a finding
+(put it in the game's `main` or another landmark); a test that reads the docked screen's name
+reads it through `aria-labelledby`.
+
+- **Bingo Royale:** `restore` now writes the key files first, so a restore onto a server with other
+  keys, a fresh one included, needs `--force-env`; the key check it runs before the kit's restore
+  for that reason can go. The installer calls `sk_cosign_install` and passes `SK_IMAGE_COMMIT`;
+  its own revision-label check can go. Dense rows with buttons use `.sk-dense-list`; its allowance
+  for the own name link under the strip goes; the stylesheet is `components.css`.
+- **Seasonal Cases:** its allowance for `region` goes; its drill and health check already wait over
+  TCP, so nothing more.
+- **Mini Games:** the allowance for the chat bar's newest message goes; the guess rows' exemptions
+  that mean "not shown there" become `{ finding, onlyNotVisible: true }`; the overlaps laid on
+  purpose become `intendedOverlaps` with their decisions (O48, O97); `useScrollTabStop` may replace
+  its `scrollTabStop` (the kit's looks at heights only, not at the box's `overflow`); its website
+  policy already names `/embed/call/shared`.
+- **Seasonal Party:** nothing beyond the pin.
+
 ## [0.38.0] - 2026-11-27
 
 Two additions to the sweep, from Mini Games' move to v0.34.0.
@@ -1886,7 +1965,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...HEAD
+[0.39.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...v0.38.0
 [0.37.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...v0.36.0

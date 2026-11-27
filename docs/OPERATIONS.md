@@ -238,7 +238,7 @@ game's `game_cmd_<word> <env> …`.
 | --------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `game_compose <env> …`            | every command           | Docker Compose for the environment.                                                                                                                                                    |
 | `game_backup_settings <env>`      | every command           | Exports the `SK_BACKUP_*` settings and writes nothing: `status` calls it too. The start command of a restore must run `up -d`, not `start`, where a service re-applies database roles. |
-| `game_backup_secrets <env>`       | optional                | Writes the secret files a backup carries; called before a backup alone.                                                                                                                |
+| `game_backup_secrets <env>`       | optional                | Writes the secret files a backup carries, as they are now; called before a backup, and before a restore compares them (since v0.39.0). No other verb calls it.                         |
 | `game_build <env> <ref>`          | update                  | Builds the image and sets `SK_ADMIN_NEW_IMAGE`.                                                                                                                                        |
 | `game_migrations <env>`           | update, rollback        | Prints how many migrations the database holds.                                                                                                                                         |
 | `game_before_update <env> <ref>`  | optional                | Before the backup: wait for running rounds, or refuse.                                                                                                                                 |
@@ -274,6 +274,22 @@ through Docker bypass ufw, so a game publishes its app on loopback only.
 | ------------------ | ---------- | ----------------------------------------------- |
 | `SK_HOST_APT_CONF` | optional   | Default `/etc/apt/apt.conf.d` (for the tests).  |
 | `SK_HOST_JAIL_DIR` | optional   | Default `/etc/fail2ban/jail.d` (for the tests). |
+
+## Waiting for the database
+
+A new database's container runs a first, temporary server while it sets itself up, which answers on
+the Unix socket and then shuts down. A check that asks over the socket calls it ready too early, and
+the next step of an install fails on that shutdown. So a game's Compose health check, and any wait of
+its own, asks over TCP:
+
+```yaml
+healthcheck:
+  test: ['CMD', 'pg_isready', '-h', '127.0.0.1', '-U', 'game', '-d', 'game']
+  interval: 2s
+  retries: 60
+```
+
+The kit's drill waits the same way (since v0.39.0), 60 s at most.
 
 ## Container hardening
 
@@ -428,13 +444,22 @@ settings page). A private image needs a `docker login ghcr.io` on the server wit
 read packages. Either way the signature is entered in Sigstore's public log, which names the
 repository and the workflow.
 
-**2. The installer** verifies before it pulls (`ops/lib/image.sh`, cosign 3 or later):
+**2. The installer** installs cosign and verifies before it pulls (`ops/lib/image.sh`):
 
 ```sh
 source "$KIT/ops/lib/image.sh"
-image=$(SK_IMAGE_REPOSITORY=owner/game sk_image_verify ghcr.io/owner/game:1.2.0) || exit 1
+sk_cosign_install || exit 1
+commit=$(git -C "$SOURCE" rev-parse 'v1.2.0^{commit}')
+image=$(SK_IMAGE_REPOSITORY=owner/game SK_IMAGE_COMMIT=$commit \
+  sk_image_verify ghcr.io/owner/game:1.2.0) || exit 1
 docker pull "$image"
 ```
+
+`sk_cosign_install` (root, curl) downloads the pinned cosign from its GitHub release over https
+and installs it to `/usr/local/bin` (`SK_COSIGN_DIR`) only where it carries the release's
+published SHA-256, which the kit pins; already installed, it does nothing. With
+`SK_IMAGE_COMMIT` the signature's certificate must name that commit as the one the release ran
+from; without it the commit is not compared. Keyless throughout: no signing key exists.
 
 It prints the image by digest only when that digest carries a signature of the kit's release
 workflow, at a version tag or a full commit, run in that repository. So a project calls the

@@ -10,26 +10,33 @@
  *                 (./probe) and runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
- *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules; `false` turns it off, by
+ *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
- *                 and transitions end before the screen is probed, and `axeFinder` takes
+ *                 and transitions end before the screen is probed (./sweepMotion; what still
+ *                 moves at its limit is a finding), and `axeFinder` takes
  *                 selectors to leave out. Since v0.38.0 a screen may have a `setup`, run once
  *                 before its looks (a fresh sign-in, say, where many looks would pass a server's
  *                 request limit), and `floors`: at least so many items wholly in sight.
- * Depends on:     ./probe, ./screens, ./sweepFloors; @playwright/test (types)
+ * Depends on:     ./probe, ./screens, ./sweepFloors, ./sweepMotion; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
  *                 seasonal-mini-games e2e/access.spec.ts at 9e3c6f3 (the axe tags).
  */
 import type { Page } from '@playwright/test';
 
-import { probe, type Probe } from './probe.js';
+import { probe, type IntendedOverlap, type Probe } from './probe.js';
+import { notVisible } from './probeBase.js';
 import { setTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
+import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
+
+// A finding a screen accepts: a part of its text, or such a part only where nothing of the
+// element can be seen (since v0.39.0): the same finding on a visible one is still reported.
+export type Allowed = string | { readonly finding: string; readonly onlyNotVisible: true };
 
 export interface SweepScreen {
   readonly name: string;
@@ -37,8 +44,10 @@ export interface SweepScreen {
   // Runs once before the screen's first look. Where it fails, the screen is not looked at.
   readonly setup?: (page: Page) => Promise<void>;
   readonly floors?: readonly VisibleFloor[];
-  // Findings this screen is known to have and accepts: parts of their text.
-  readonly allow?: readonly string[];
+  // Overlaps an owner decided on, each with its decision's number.
+  readonly intendedOverlaps?: readonly IntendedOverlap[];
+  // Findings this screen is known to have and accepts.
+  readonly allow?: readonly Allowed[];
 }
 
 export interface SweepOptions {
@@ -50,9 +59,18 @@ export interface SweepOptions {
   readonly targetPx?: number;
 }
 
+// What axe checks in a sweep: the WCAG 2.0 to 2.2 A and AA rules, and the two rules about
+// landmarks that the docked screen is held to in the kit's own browser check (since v0.39.0).
+export const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+export const AXE_LANDMARK_RULES = ['region', 'landmark-main-is-top-level'];
+
 // The shape of `@axe-core/playwright`'s builder that is used here.
 interface AxeLike {
-  withTags: (tags: string[]) => AxeLike;
+  // A method, so a builder whose options are typed more narrowly fits.
+  options(run: {
+    runOnly: { type: 'tag'; values: string[] };
+    rules: Record<string, { enabled: boolean }>;
+  }): AxeLike;
   exclude: (selector: string) => AxeLike;
   analyze: () => Promise<{
     violations: { id: string; nodes: { target: unknown[] }[] }[];
@@ -69,7 +87,10 @@ export function axeFinder(
   options: AxeFinderOptions = {},
 ): AxeFinder {
   return async (page) => {
-    const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+    const tagged = new builder({ page }).options({
+      runOnly: { type: 'tag', values: AXE_TAGS },
+      rules: Object.fromEntries(AXE_LANDMARK_RULES.map((id) => [id, { enabled: true }])),
+    });
     const result = await (options.exclude ?? [])
       .reduce((axe, selector) => axe.exclude(selector), tagged)
       .analyze();
@@ -99,27 +120,14 @@ interface Look {
   readonly theme: Theme;
 }
 
-// How long an animation may still run before the screen is judged as it is.
-const MOTION_LIMIT_MS = 5000;
-
-// Waits until every animation and transition that ends has ended, so a part is not judged half
-// faded in; one that repeats for ever is left running.
-async function motionEnded(page: Page): Promise<void> {
-  await page.evaluate(async (limit) => {
-    if (typeof document.getAnimations !== 'function') return;
-    const ending = document
-      .getAnimations()
-      .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity);
-    await Promise.race([
-      Promise.all(ending.map((a) => a.finished.catch(() => undefined))),
-      new Promise((done) => setTimeout(done, limit)),
-    ]);
-  }, MOTION_LIMIT_MS);
-}
-
 // An error's first line: the rest is a call log or a stack.
 const firstLine = (error: unknown): string =>
   (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
+
+function allows(known: Allowed, line: string): boolean {
+  if (typeof known === 'string') return line.includes(known);
+  return line.includes(known.finding) && line.endsWith(notVisible());
+}
 
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(
@@ -148,14 +156,17 @@ async function findingsOf(
   await page.evaluate(
     () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
   );
-  await motionEnded(page);
+  const moving = await motionEnded(page);
   const found = [
-    ...linesOf(await probe(page, options.targetPx)),
+    ...(typeof moving === 'string'
+      ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
+      : []),
+    ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
     ...(await floorLines(page, screen.floors ?? [], look)),
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
   ];
   return found
-    .filter((line) => !(screen.allow ?? []).some((known) => line.includes(known)))
+    .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
     .map((line) => `${where}: ${line}`);
 }
 

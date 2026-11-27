@@ -8,15 +8,16 @@
  *                 nothing scrolls to it, one wholly outside or inside a scrolling box never; a
  *                 control lying over a part in the page's flow is reported, but not over a box
  *                 placed out of it, an inline one, or one it only touches; the chat bar's newest
- *                 message may end in an ellipsis and nothing else may; a link in `.sk-dense-list`
+ *                 message may end in an ellipsis and nothing else may; a link or a button in `.sk-dense-list`
  *                 passes at 24 px with 4 px clear, not at 23, not crowded, not outside the list,
- *                 and no button does.
+ *                 and a field does not.
  * Depends on:     vitest, jsdom
  * Source:         new in the kit.
  */
+import type { Page } from '@playwright/test';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { runProbe, type Probe } from './probe.js';
+import { probe, runProbe, type Probe } from './probe.js';
 
 // `data-box="left top width height"` is an element's layout; without it, off to the side.
 const boxOf = (el: Element): DOMRect => {
@@ -98,6 +99,26 @@ describe('overlapping controls', () => {
     expect(look(`${button}${other}`).overlaps).toEqual([]);
   });
 
+  it('leaves what a game declared, there only, and still sees what lies behind it', () => {
+    const grid =
+      '<div class="stage" data-box="0 0 90 90"><button class="log" data-box="0 0 50 50">log</button>' +
+      '<p class="board" data-box="0 0 90 90"></p><p class="note" data-box="0 40 90 40"></p></div>';
+    document.body.innerHTML = grid;
+    const meant = (over: string) => runProbe(44, undefined, undefined, [{ control: '.log', over }]);
+    expect(meant('.board').overlaps).toEqual(['button.log "log" over p.note']);
+    expect(meant('.elsewhere').overlaps).toEqual(['button.log "log" over p.board']);
+    expect(meant('.stage').overlaps).toEqual([]);
+  });
+
+  it('refuses a declared overlap without a decision number', async () => {
+    const page = { evaluate: () => Promise.resolve(null) } as unknown as Page;
+    const bare = { control: '.log', over: '.board', decision: 'the owner said so' };
+    await expect(probe(page, 44, [bare])).rejects.toThrow(
+      'the intended overlap of ".log" over ".board" names no decision number',
+    );
+    await expect(probe(page, 44, [{ ...bare, decision: 'O97' }])).resolves.toBeNull();
+  });
+
   it('says nothing of a control in a menu placed over the page', () => {
     const menu = `<div style="position: absolute" data-box="0 0 90 90">${button}</div>`;
     expect(look(`${menu}<p data-box="0 0 90 90"></p>`).overlaps).toEqual([]);
@@ -116,6 +137,35 @@ describe('the kit’s own ellipsis', () => {
   });
 });
 
+describe('boxes inside the kit’s own ellipsis', () => {
+  // Mini Games' running round on a phone: the newest message ends in the chat bar's ellipsis,
+  // and the box around its words reaches far past the window (their CI at kit v0.38.0).
+  const bar = (name: string): string =>
+    '<button class="sk-chat-bar" data-box="0 0 390 44">' +
+    `<span class="${name}" style="overflow: hidden" data-box="40 10 300 20">` +
+    '<span class="sk-chat-bar-last" data-box="80 10 900 20"></span></span></button>';
+
+  it('are not outside the window, there only', () => {
+    expect(look(bar('sk-chat-bar-newest')).outside).toEqual([]);
+    expect(look(bar('mine')).outside).toEqual(['span.sk-chat-bar-last 80..980']);
+  });
+});
+
+describe('what is not visible', () => {
+  // A cut name in a row on the page, and one in a row clipped away.
+  const rows = (): string =>
+    '<div style="overflow: hidden" data-box="0 0 90 30">' +
+    '<span class="seen" style="text-overflow: ellipsis" data-box="0 0 50 20" data-scrollwidth="300">a</span>' +
+    '<span class="gone" style="text-overflow: ellipsis" data-box="0 40 50 20" data-scrollwidth="300">b</span>' +
+    '</div>';
+
+  it('is said at the end of its finding, and nothing else changes', () => {
+    Range.prototype.getClientRects = () => [{ width: 20, height: 10 }] as unknown as DOMRectList;
+    expect(look(rows()).cut).toEqual(['span.seen "a"', 'span.gone "b" (not visible)']);
+    Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
+  });
+});
+
 describe('a dense list', () => {
   const link = (y: number, height = 24): string =>
     `<li><a href="#p" style="display: block" data-box="0 ${String(y)} 80 ${String(height)}">p</a></li>`;
@@ -127,10 +177,39 @@ describe('a dense list', () => {
     expect(small(`<ol>${rows}</ol>`)).toBe(2);
   });
 
+  it('names the missing stylesheet where the list has none', () => {
+    const rows = link(0, 20);
+    expect(look(`<ol class="sk-dense-list">${rows}</ol>`).smallTargets).toEqual([
+      'a "p" 80x20 (.sk-dense-list has no style here: load @seasonal/kit/components.css)',
+    ]);
+    const styled = `<ol class="sk-dense-list" style="--sk-dense-list: 1">${rows}</ol>`;
+    expect(look(styled).smallTargets).toEqual(['a "p" 80x20']);
+  });
+
+  it('passes a button of 24 px there, and reports it outside such a list', () => {
+    const button = '<li><button data-box="0 0 80 24">b</button></li>';
+    expect(small(`<ol class="sk-dense-list">${button}</ol>`)).toBe(0);
+    expect(look(`<ol>${button}</ol>`).smallTargets).toEqual(['button "b" 80x24']);
+  });
+
+  it('counts no neighbour that is scrolled out of view', () => {
+    // A box 24 px high shows the first link; the next lies 2 px under it, scrolled away.
+    const scrolled = `<div style="overflow: auto" data-box="0 0 90 24"><ol class="sk-dense-list">${link(0)}${link(26)}</ol></div>`;
+    expect(look(scrolled).smallTargets).toEqual([]);
+    // Both in sight, the same 2 px between them are too little for each.
+    expect(small(`<ol class="sk-dense-list">${link(0)}${link(26)}</ol>`)).toBe(2);
+  });
+
+  it('counts no neighbour below the window while the link is in it', () => {
+    // The window is 100 px high.
+    expect(look(`<ol class="sk-dense-list">${link(76)}${link(101)}</ol>`).smallTargets).toEqual([]);
+  });
+
   it.each([
     ['a link under 24 px', link(0, 23)],
     ['links with no room between them', `${link(0)}${link(25)}`],
-    ['a button', '<button data-box="0 0 80 24">b</button>'],
+    ['a button under 24 px', '<button data-box="0 0 80 23">b</button>'],
+    ['a field', '<input data-box="0 0 80 24">'],
   ])('does not pass %s', (_what, rows) => {
     expect(small(`<ol class="sk-dense-list">${rows}</ol>`)).toBeGreaterThan(0);
   });

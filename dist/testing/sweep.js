@@ -1,9 +1,18 @@
 import { probe } from './probe.js';
+import { notVisible } from './probeBase.js';
 import { setTheme, SWEEP_SIZES } from './screens.js';
 import { floorLines, uncheckedFloor } from './sweepFloors.js';
+import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
+// What axe checks in a sweep: the WCAG 2.0 to 2.2 A and AA rules, and the two rules about
+// landmarks that the docked screen is held to in the kit's own browser check (since v0.39.0).
+export const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+export const AXE_LANDMARK_RULES = ['region', 'landmark-main-is-top-level'];
 export function axeFinder(builder, options = {}) {
     return async (page) => {
-        const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+        const tagged = new builder({ page }).options({
+            runOnly: { type: 'tag', values: AXE_TAGS },
+            rules: Object.fromEntries(AXE_LANDMARK_RULES.map((id) => [id, { enabled: true }])),
+        });
         const result = await (options.exclude ?? [])
             .reduce((axe, selector) => axe.exclude(selector), tagged)
             .analyze();
@@ -22,25 +31,13 @@ function linesOf(seen) {
         ...named('clipped fitted root', seen.clippedFits),
     ];
 }
-// How long an animation may still run before the screen is judged as it is.
-const MOTION_LIMIT_MS = 5000;
-// Waits until every animation and transition that ends has ended, so a part is not judged half
-// faded in; one that repeats for ever is left running.
-async function motionEnded(page) {
-    await page.evaluate(async (limit) => {
-        if (typeof document.getAnimations !== 'function')
-            return;
-        const ending = document
-            .getAnimations()
-            .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity);
-        await Promise.race([
-            Promise.all(ending.map((a) => a.finished.catch(() => undefined))),
-            new Promise((done) => setTimeout(done, limit)),
-        ]);
-    }, MOTION_LIMIT_MS);
-}
 // An error's first line: the rest is a call log or a stack.
 const firstLine = (error) => (error instanceof Error ? error.message : String(error)).split('\n')[0] ?? '';
+function allows(known, line) {
+    if (typeof known === 'string')
+        return line.includes(known);
+    return line.includes(known.finding) && line.endsWith(notVisible());
+}
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
@@ -62,14 +59,17 @@ async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
     // Two frames: resize observers have run and their layout is painted.
     await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
-    await motionEnded(page);
+    const moving = await motionEnded(page);
     const found = [
-        ...linesOf(await probe(page, options.targetPx)),
+        ...(typeof moving === 'string'
+            ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
+            : []),
+        ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
         ...(await floorLines(page, screen.floors ?? [], look)),
         ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
     ];
     return found
-        .filter((line) => !(screen.allow ?? []).some((known) => line.includes(known)))
+        .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
         .map((line) => `${where}: ${line}`);
 }
 function looksOf(options) {

@@ -6,8 +6,8 @@
 #                 .github/test-image/ into the kit's own registry space as
 #                 seasonal-kit-test-image; then `sk_image_verify` must pass the image with this
 #                 run's identity and refuse it with the default one (a test tag is no release),
-#                 for another repository, and refuse an unsigned image; the SBOM's attestation
-#                 verifies. Last, whatever happened, the test package is deleted and its absence
+#                 for another repository or source commit, and refuse an unsigned image; the
+#                 pinned cosign installs by its checksum; the SBOM's attestation verifies. Last, whatever happened, the test package is deleted and its absence
 #                 checked.
 # Depends on:     .github/workflows/release-image.yml, ops/lib/image.sh, .github/test-image/
 # Source:         new in the kit.
@@ -73,6 +73,16 @@ jobs:
           SK_IMAGE_REPOSITORY=weudlll-cyber/seasonal-mini-games SK_IMAGE_SIGNER="$TEST_SIGNER" \
             refuse sk_image_verify "$REFERENCE"
           SK_IMAGE_SIGNER="$TEST_SIGNER" refuse sk_image_verify "$UNSIGNED_REFERENCE"
+          # The source commit: this run's passes, another is refused.
+          passed=$(SK_IMAGE_COMMIT="$GITHUB_SHA" SK_IMAGE_SIGNER="$TEST_SIGNER" sk_image_verify "$REFERENCE")
+          [ "$passed" = "$REFERENCE" ]
+          SK_IMAGE_COMMIT=0000000000000000000000000000000000000000 SK_IMAGE_SIGNER="$TEST_SIGNER" \
+            refuse sk_image_verify "$REFERENCE"
+      - name: The pinned cosign installs, by its checksum
+        run: |
+          source ops/lib/image.sh
+          SK_COSIGN_DIR="$RUNNER_TEMP/cosign" sk_cosign_install
+          "$RUNNER_TEMP/cosign/cosign" version
       - name: The SBOM's attestation verifies
         run: |
           cosign verify-attestation --type cyclonedx \

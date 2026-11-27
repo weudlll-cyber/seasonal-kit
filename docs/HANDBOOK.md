@@ -121,12 +121,14 @@ line.
 | 6. One written report: the night sheet or the branch's report file holds the fixes, exemptions, decisions and kit findings once. The final message gives only the pushed commits, the CI result, the open questions with a proposal, new kit findings and the report's path.                                                                                             | review      |
 | 7. A rehearsal covers only what the change can have altered: first list what changed in those paths (the CHANGELOG and the diff, `file:line`), then rehearse those. Nothing changed there: no rehearsal.                                                                                                                                                                 | review      |
 
-**The sweep, two things to know** (K115, K116):
+**The sweep, three things to know** (K115, K116, K118):
 
 - **A game server's request limit is a trap of the sweep:** its many looks, one open each, pass
   the kit's `RateLimiter` (Mini Games: 120 requests per session and minute) on a fast runner, and
   later screens get 429 answers. The answer is the screen's `setup` hook, which runs before the
   screen is opened (a fresh sign-in, say). The limit is not loosened for tests.
+- **An overlap that is meant is declared to the sweep** (`intendedOverlaps` on the screen, with
+  the decision's number; K118), not exempted by its text.
 - **An owner's floor of visible items is declared to the sweep** (`floors` on the screen: the
   selector, the least number, the sizes and the decision's number). A walk without it does not see
   a list that shrank.
@@ -214,15 +216,15 @@ The values are in [css/tokens.css](../css/tokens.css) and shown in the kit's sho
 
 ## Tests
 
-| Rule                                                                                                                                                                                                 | Enforced by                                          |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Every rule gets a test that fails without it; it is run once without the change to see it fail. No test written only for the number.                                                                 | CLAUDE.md "Hygiene"; review                          |
-| Coverage stays at 95 % or more of lines, branches and functions.                                                                                                                                     | Vitest thresholds (CI `verify` fails below)          |
-| What only a browser shows is tested in a browser: e2e (Playwright) for screens, layout measured, not read from text.                                                                                 | the kit's `showcase/layout.spec.ts`; each game's e2e |
-| Accessibility: axe with the WCAG 2.0–2.2 A and AA rules finds nothing serious, in light and dark, at desktop and phone sizes; pointer targets are 24 px or more (K33), phone touch targets 40/44 px. | CI `showcase` (required, K19); the game's e2e        |
-| Text never goes below the game's floor (K14): `FIT_FLOORS` and `fit.css`, never below what the game has today.                                                                                       | `tests/fit-floors.test.ts`; the game's size tests    |
-| Test data and screenshots are cleaned up: each run starts empty and leaves nothing committed.                                                                                                        | the showcase's global setup; `.gitignore` (K16)      |
-| Tests never wait on the clock: time is passed in.                                                                                                                                                    | review (the kit's limiter and readers take `now`)    |
+| Rule                                                                                                                                                                                                                                                                                         | Enforced by                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Every rule gets a test that fails without it; it is run once without the change to see it fail. No test written only for the number.                                                                                                                                                         | CLAUDE.md "Hygiene"; review                          |
+| Coverage stays at 95 % or more of lines, branches and functions.                                                                                                                                                                                                                             | Vitest thresholds (CI `verify` fails below)          |
+| What only a browser shows is tested in a browser: e2e (Playwright) for screens, layout measured, not read from text.                                                                                                                                                                         | the kit's `showcase/layout.spec.ts`; each game's e2e |
+| Accessibility: axe with the WCAG 2.0–2.2 A and AA rules finds nothing serious, in light and dark, at desktop and phone sizes; pointer targets are 24 px or more (K33), phone touch targets 40/44 px; in a `.sk-dense-list` a link or a button may be 24 px with room around it (K112, K117). | CI `showcase` (required, K19); the game's e2e        |
+| Text never goes below the game's floor (K14): `FIT_FLOORS` and `fit.css`, never below what the game has today.                                                                                                                                                                               | `tests/fit-floors.test.ts`; the game's size tests    |
+| Test data and screenshots are cleaned up: each run starts empty and leaves nothing committed.                                                                                                                                                                                                | the showcase's global setup; `.gitignore` (K16)      |
+| Tests never wait on the clock: time is passed in.                                                                                                                                                                                                                                            | review (the kit's limiter and readers take `now`)    |
 
 ## Docs
 

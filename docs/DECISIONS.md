@@ -537,3 +537,9 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   A screen names a selector, the least number wholly in sight and the decision's number; the sweep
   reports a look that shows fewer. At 16 px unless the floor names other fonts. A floor that no
   look would check stops the sweep.
+- **K117 — A button in a dense list may be 24 px high, like a link** (decided 2026-11-27, from
+  Bingo Royale's report). Inside `.sk-dense-list` only, with the same room to its neighbours;
+  outside a dense list a target stays 44 px (K29).
+- **K118 — An intended overlap is declared with its decision** (decided 2026-11-27, Mini Games'
+  report). Like a floor of visible items (K116): the screen names the control, what it lies over
+  and the owner's decision, with its number; without a number the sweep refuses it.

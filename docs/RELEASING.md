@@ -36,6 +36,8 @@ Before 1.0.0, minor versions may break. Each break is still named in the CHANGEL
    git push origin vX.Y.Z
    ```
 
+   Then add the tag's line to [TAGS.md](TAGS.md), with the delivery record.
+
 6. Check CI and CodeQL on the merge commit (`gh run list -R weudlll-cyber/seasonal-kit --branch
 master`). Check that `git ls-remote origin` lists only `master` and the tags (and, during an
    unattended night, its sheet branch until the sheet's PR merges).

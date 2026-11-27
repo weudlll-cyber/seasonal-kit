@@ -41,6 +41,11 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   renders its slot in another place on a phone, and a new theme is a new frame address, so a
   listener must press **Listen** again. Done when: one frame stays, and the view is sent `theme`.
 
+- **89. The cosign pin and the commit check wait for a real run** (v0.39.0, 2026-11-27). The
+  version and checksums in `ops/lib/image.sh` are bumped by hand (Renovate does not read them),
+  and `SK_IMAGE_COMMIT` is tested with a stand-in only; `release-image-test.yml` proves both on
+  its next throw-away tag. Done when: that run passed, and a rule or Renovate keeps the pin.
+
 ## Part two — closed
 
 - **Delivery proof** (2026-11-20). A git dependency on a tag works with committed `dist/` and no
@@ -247,5 +252,31 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   2026-11-27). Closed in v0.36.0 (`server/index.ts`, ADOPTION.md, OPERATIONS.md, CHANGELOG.md).
 - **75. The sweep passed a request limit and counted no rows** (Mini Games, 2026-11-27). Closed
   in v0.38.0 (`sweep.ts`, `sweepFloors.ts`, K115, K116).
+- **76. A restore compared against stale or missing secret files** (Bingo, 2026-11-27). Closed in
+  v0.39.0 (`admin.sh`, `admin.test.sh`).
+- **77. `sk_image_verify` needed a cosign nobody installed and compared no commit** (Bingo,
+  2026-11-27). Closed in v0.39.0 (`image.sh`, `image.test.sh`).
+- **78. The dense rule counted controls scrolled out of sight** (Bingo, 2026-11-27). Closed in
+  v0.39.0 (`probeTargets.ts`).
+- **79. The dense list had no rule for a button** (Bingo, 2026-11-27). Closed in v0.39.0 (K117,
+  `probeTargets.ts`, `components.css`).
+- **80. `.sk-dense-list` did nothing, silently, without its stylesheets** (Bingo, 2026-11-27).
+  Closed in v0.39.0 (`components.css`, `probeTargets.ts`, ADOPTION.md).
+- **81. The sweep missed animations that started after its first look** (Bingo, 2026-11-27).
+  Closed in v0.39.0 (`sweepMotion.ts`).
+- **82. axe `region` reported the docked screen's group, which the sweep did not check** (Cases,
+  2026-11-27). Closed in v0.39.0 (`DockedScreen.tsx`, `sweep.ts`, `layout.spec.ts`).
+- **83. The restore drill asked for its database on the socket and then waited a fixed time**
+  (Cases, 2026-11-27). Closed in v0.39.0 (`backup-restore.sh`, `admin.test.sh`, OPERATIONS.md).
+- **84. An exemption for hidden rows also hid a cut name in a visible one** (Mini Games,
+  2026-11-27). Closed in v0.39.0 (`sweep.ts`, `probeBase.ts`).
+- **85. `useScrollTabStop` was not exported** (Mini Games, 2026-11-27). Closed in v0.39.0
+  (`react/index.ts`).
+- **86. The chat bar's cut newest message was still reported outside the window** (Mini Games,
+  2026-11-27). Closed in v0.39.0 (`probeRules.ts`).
+- **87. An overlap laid on purpose could not be declared** (Mini Games, 2026-11-27). Closed in
+  v0.39.0 (`probeRules.ts`, `probe.ts`, `sweep.ts`, K118).
+- **88. Docs were silent on required checks, blocking scans and listed frame paths** (the games,
+  2026-11-27). Closed in v0.39.0 (ADOPTION.md).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

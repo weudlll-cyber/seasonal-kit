@@ -176,8 +176,8 @@ function walker(seen: Partial<Probe> = {}) {
     },
     evaluate: (code: unknown, arg?: unknown) => {
       if (typeof code === 'string') return Promise.resolve({ ...clean, ...seen });
-      // The root font; the animations' time limit is the other number handed to the page.
-      if (typeof arg === 'number' && arg < 100) log.push(`${viewport} ${String(arg)}`);
+      // The root font is the one number handed to the page.
+      if (typeof arg === 'number') log.push(`${viewport} ${String(arg)}`);
       const fn = code as (a?: unknown) => unknown;
       return Promise.resolve(fn(arg));
     },
@@ -254,32 +254,6 @@ describe('sweep on a screen that does not open, or still moves', () => {
     );
   });
 
-  it('waits for the animations that end, not for those that repeat', async () => {
-    let ended = false;
-    const animation = (endTime: number, finished: Promise<unknown>) =>
-      ({ effect: { getComputedTiming: () => ({ endTime }) }, finished }) as unknown as Animation;
-    const fade = new Promise((done) => setTimeout(done, 20)).then(() => {
-      ended = true;
-    });
-    Object.assign(document, {
-      getAnimations: () => [
-        animation(200, fade),
-        animation(Infinity, new Promise(() => undefined)),
-        animation(50, Promise.reject(new Error('cancelled'))),
-      ],
-    });
-    await sweep(walker().page, [screen], {
-      axe: () => {
-        expect(ended).toBe(true);
-        return Promise.resolve([]);
-      },
-      sizes: [{ width: 320, height: 568 }],
-      fonts: [16],
-      themes: ['light'],
-    });
-    Reflect.deleteProperty(document, 'getAnimations');
-  });
-
   it('refuses to see nothing', async () => {
     const w = walker();
     await expect(sweep(w.page, [], { axe: false })).rejects.toThrow(/nothing/);
@@ -287,13 +261,27 @@ describe('sweep on a screen that does not open, or still moves', () => {
   });
 });
 
+describe('an exemption only for what is not visible', () => {
+  it('leaves out the hidden row and still reports the visible one', async () => {
+    const w = walker({ cut: ['[list] span.name "a"', '[list] span.name "b" (not visible)'] });
+    const run = sweep(
+      w.page,
+      [{ ...screen, allow: [{ finding: 'cut text: [list]', onlyNotVisible: true }] }],
+      { axe: false, sizes: [{ width: 320, height: 568 }], fonts: [16], themes: ['light'] },
+    );
+    await expect(run).rejects.toThrow(
+      'the sweep found 1:\nlobby 320x568 16px light: cut text: [list] span.name "a"',
+    );
+  });
+});
+
 describe('axeFinder', () => {
-  it('runs the WCAG tags and names each rule with its targets', async () => {
-    let tags: string[] = [];
+  it('runs the WCAG tags and the landmark rules, and names each rule with its targets', async () => {
+    let run: unknown;
     const excluded: string[] = [];
     class Builder {
-      withTags(t: string[]): this {
-        tags = t;
+      options(given: unknown): this {
+        run = given;
         return this;
       }
       exclude(selector: string): this {
@@ -310,6 +298,9 @@ describe('axeFinder', () => {
     expect(excluded).toEqual([]);
     await axeFinder(Builder, { exclude: ['iframe.chat', '#ad'] })({} as Page);
     expect(excluded).toEqual(['iframe.chat', '#ad']);
-    expect(tags).toEqual(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+    expect(run).toEqual({
+      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] },
+      rules: { region: { enabled: true }, 'landmark-main-is-top-level': { enabled: true } },
+    });
   });
 });

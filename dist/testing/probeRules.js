@@ -2,11 +2,6 @@
 export function kitEllipses() {
     return '.sk-chat-bar-newest';
 }
-export function controls() {
-    return [
-        ...document.body.querySelectorAll('a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab]'),
-    ];
-}
 // True when a hard clip takes more than a pixel and a half off a text box that a scroll shows.
 export function isCut(b, el, boxes) {
     if (el.closest(kitEllipses()) !== null)
@@ -30,6 +25,10 @@ export function outermost(b, past) {
     const marked = new Set();
     const out = [];
     for (const el of document.body.querySelectorAll('*')) {
+        // What runs on inside one of the kit's ellipses is hidden by it: only the ellipsis box
+        // itself can lie outside.
+        if (el.parentElement !== null && el.parentElement.closest(kitEllipses()) !== null)
+            continue;
         const r = el.getBoundingClientRect();
         const where = r.width < 1 || !b.shown(el) ? null : past(el, r);
         if (where === null)
@@ -39,7 +38,7 @@ export function outermost(b, past) {
         }
         else if (!b.clipsOf(el).scrolls) {
             marked.add(el);
-            out.push(`${b.nameOf(el)} ${where}`);
+            out.push(b.marked(el, `${b.nameOf(el)} ${where}`));
         }
     }
     return out;
@@ -63,96 +62,66 @@ export function edgeBoxes(b, height) {
             : null;
     });
 }
-// A dense list's link: 24 px high and wide, and 4 px (half a pixel of rounding) clear all round.
-export function denseEnough(b, el, r) {
-    if (el.tagName !== 'A' || el.closest('.sk-dense-list') === null)
-        return false;
-    if (Math.min(r.width, r.height) < 23.5)
-        return false;
-    return controls().every((other) => {
-        if (other === el || !b.shown(other))
-            return true;
-        const o = other.getBoundingClientRect();
-        return (o.top - r.bottom >= 3.5 ||
-            r.top - o.bottom >= 3.5 ||
-            o.left - r.right >= 3.5 ||
-            r.left - o.right >= 3.5);
-    });
-}
-export function smallTargets(b, least) {
-    return controls().flatMap((el) => {
-        const boxed = el.matches('input[type=checkbox], input[type=radio]');
-        const target = (boxed ? el.closest('label') : null) ?? el;
-        if (!b.shown(target) || b.inText(el))
-            return [];
-        const r = target.getBoundingClientRect();
-        if (Math.min(r.width, r.height) >= least - 0.5 || denseEnough(b, target, r))
-            return [];
-        return [`${b.nameOf(target)} ${String(Math.round(r.width))}x${String(Math.round(r.height))}`];
-    });
-}
 export function inFlow(el) {
     return ['', 'static', 'relative'].includes(getComputedStyle(el).position);
-}
-// What of an element can be seen: its box inside what scrolls and clips around it.
-export function seenBox(b, el) {
-    const { scroll, hard } = b.clipsOf(el);
-    return b.meet(b.meet(el.getBoundingClientRect(), scroll), hard);
 }
 // More than two pixels in both directions in common: fractions and borders touching are none.
 export function crosses(b, one, two) {
     const both = b.meet(one, two);
     return both.right - both.left > 2 && both.bottom - both.top > 2;
 }
-// The part beside the control, or beside a box around it, that lies in the same place.
-export function overlapOf(b, control) {
-    const mine = seenBox(b, control);
+// An overlap a game's owner decided on: the control (or a box around it) over that part.
+export function isMeant(meant, control, other) {
+    return meant.some((m) => control.closest(m.control) !== null && other.closest(m.over) !== null);
+}
+// The part beside the control, or beside a box around it, that lies in the same place, those a
+// game declared apart.
+export function overlapOf(b, control, meant) {
+    const mine = b.seenBox(control);
     let node = control;
     while (node !== document.body && node.parentElement !== null && inFlow(node)) {
         const found = [...node.parentElement.children].find((other) => other !== node &&
             b.shown(other) &&
             inFlow(other) &&
             getComputedStyle(other).display !== 'inline' &&
-            crosses(b, mine, seenBox(b, other)));
+            crosses(b, mine, b.seenBox(other)) &&
+            !isMeant(meant, control, other));
         if (found !== undefined)
             return found;
         node = node.parentElement;
     }
     return null;
 }
-export function overlaps(b) {
-    return controls().flatMap((control) => {
+export function overlaps(b, meant) {
+    return b.controls().flatMap((control) => {
         if (!b.shown(control) || b.inText(control))
             return [];
-        const other = overlapOf(b, control);
-        return other === null ? [] : [`${b.nameOf(control)} over ${b.nameOf(other)}`];
+        const other = overlapOf(b, control, meant);
+        return other === null
+            ? []
+            : [b.marked(control, `${b.nameOf(control)} over ${b.nameOf(other)}`)];
     });
 }
 // The elements of a selector the reader sees whole: nothing of them past the window or a box.
 export function wholeItems(b, selector) {
-    const { clientWidth, clientHeight } = document.documentElement;
-    const view = { top: 0, left: 0, bottom: clientHeight, right: clientWidth };
     return [...document.querySelectorAll(selector)].filter((el) => {
         if (!b.shown(el))
             return false;
         const box = el.getBoundingClientRect();
-        const seen = b.meet(seenBox(b, el), view);
+        const seen = b.meet(b.seenBox(el), b.windowBox());
         return seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
     }).length;
 }
 // The rules as one object, in the order the page defines them.
 export const RULES = {
     kitEllipses,
-    controls,
     isCut,
     outermost,
     wideBoxes,
     edgeBoxes,
-    denseEnough,
-    smallTargets,
     inFlow,
-    seenBox,
     crosses,
+    isMeant,
     overlapOf,
     overlaps,
     wholeItems,

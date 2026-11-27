@@ -1,15 +1,20 @@
 /**
  * @file   src/testing/probeBase.ts
- * @brief  The probe's shared in-page helpers: names, boxes, what is clipped and what is seen.
+ * @brief  The probe's shared in-page helpers: names, controls, boxes, what is clipped and seen.
  *
  * Responsibility: `nameOf` names an element for a report; `meet` is two boxes' common part;
  *                 `clipsOf` what the ancestors let be seen (the scrolling boxes, and the hard
  *                 clips: hidden or clip); `shown` whether a reader sees it (visible, and no 1 px
  *                 box for screen readers only); `textBoxes` the boxes of an element's own text;
- *                 `inText` WCAG 2.5.8's inline exception. ./probe puts these functions into the
- *                 page as source text, where they call each other by name, so they use nothing
- *                 imported; ./probeRules gets them as the object `BASE`, since a test's or
- *                 Playwright's own build renames imported names inside a function's source.
+ *                 `inText` WCAG 2.5.8's inline exception; `controls` what can be pressed or typed
+ *                 into; `seenBox` what the ancestors leave of an element's box; `windowBox` the
+ *                 window; `isEmpty` a box with nothing in it; `inSight` whether any of an element
+ *                 is in the window and unclipped; `marked` adds `notVisible`'s words to a finding
+ *                 about an element that is not (since v0.39.0). ./probe puts these functions into the page as
+ *                 source text, where they call each other by name, so they use nothing imported;
+ *                 the rules (./probeRules, ./probeTargets) get them as the object `BASE`, since a
+ *                 test's or Playwright's own build renames imported names inside a function's
+ *                 source.
  * Source:         ./probe.ts, moved here unchanged (v0.36.0); from seasonal-bingo-royale
  *                 e2e/acceptance/fitProbe.ts at 8d20904.
  */
@@ -77,6 +82,57 @@ export function inText(el: Element): boolean {
   );
 }
 
+export function controls(): Element[] {
+  return [
+    ...document.body.querySelectorAll(
+      'a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=tab]',
+    ),
+  ];
+}
+
+// What of an element can be seen: its box inside what scrolls and clips around it.
+export function seenBox(el: Element): Rect {
+  const { scroll, hard } = clipsOf(el);
+  return meet(meet(el.getBoundingClientRect(), scroll), hard);
+}
+
+export function windowBox(): Rect {
+  const { clientWidth, clientHeight } = document.documentElement;
+  return { top: 0, left: 0, bottom: clientHeight, right: clientWidth };
+}
+
+export function isEmpty(box: Rect): boolean {
+  return box.right - box.left < 1 || box.bottom - box.top < 1;
+}
+
+export function inSight(el: Element): boolean {
+  return !isEmpty(meet(seenBox(el), windowBox()));
+}
+
+// What a finding ends with when nothing of its element can be seen (a function, so the page's
+// copy and the sweep's read the same words).
+export function notVisible(): string {
+  return ' (not visible)';
+}
+
+export function marked(el: Element, finding: string): string {
+  return inSight(el) ? finding : `${finding}${notVisible()}`;
+}
+
 // The helpers as one object, handed to the rules.
-export const BASE = { nameOf, meet, clipsOf, shown, textBoxes, inText };
+export const BASE = {
+  nameOf,
+  meet,
+  clipsOf,
+  shown,
+  textBoxes,
+  inText,
+  controls,
+  seenBox,
+  windowBox,
+  isEmpty,
+  inSight,
+  notVisible,
+  marked,
+};
 export type Base = typeof BASE;

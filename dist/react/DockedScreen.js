@@ -17,12 +17,15 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
  *                 it may sit under other parts of the page (v0.7.0, found by the showcase). The
  *                 content's box is one Tab stop, the group "Game screen", so a keyboard can
- *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0).
+ *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0). Its name comes
+ *                 from a hidden element (since v0.39.0): axe `region` counts an `aria-label` as
+ *                 content of the box itself, outside every landmark, but looks inside a box named
+ *                 this way and finds the game's own `main`.
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).
  */
-import { useEffect, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { ChatDock } from './ChatDock.js';
 import { DockHandOver } from './dockHandOver.js';
 import { useDockView } from './dockSight.js';
@@ -52,7 +55,8 @@ export function DockedScreen(p) {
     useVisibleHeight(view === 'phone');
     // The dock puts "open the chat" here; the game's bar calls it (./dockHandOver, v0.13.0).
     const openChat = useRef(null);
+    const name = useId();
     // Narrowed here: what is left is the dock's own props (and `withoutChat`, which it ignores).
     const dock = p.withoutChat === true ? null : _jsx(ChatDock, { ...p, phone: view === 'phone' });
-    return (_jsx(DockHandOver.Provider, { value: openChat, children: _jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", role: "group", "aria-label": "Game screen", tabIndex: 0, children: p.children }), dock] }) }));
+    return (_jsx(DockHandOver.Provider, { value: openChat, children: _jsxs("div", { className: "sk-docked", "data-sk-view": view, "data-testid": "docked-screen", children: [_jsx("div", { className: "sk-docked-main", role: "group", "aria-labelledby": name, tabIndex: 0, children: p.children }), _jsx("span", { id: name, hidden: true, children: "Game screen" }), dock] }) }));
 }

@@ -1,10 +1,10 @@
 /**
  * @file   tests/renovate.test.ts
  * @brief  Renovate sees every pinned version Renovate cannot find by itself: the scanner images
- *         in ci.yml's `env:`, and pnpm's hash in `packageManager`.
+ *         in the workflows' `env:`, and pnpm's hash in `packageManager`.
  *
  * Responsibility: the regex manager in renovate.json matches every `*_IMAGE:` line of
- *                 .github/workflows/ci.yml, each with its image, tag and sha256 digest, so a new
+ *                 .github/workflows/, each with its image, tag and sha256 digest, so a new
  *                 image cannot be added that Renovate does not update; `packageManager` names
  *                 pnpm's exact version with its sha512 hash (corepack's form), so the toolchain
  *                 is pinned to the bytes. Audit 2026-11-22 "Noted, not changed" (B6 info).
@@ -13,7 +13,7 @@
  *                 devDependencies satisfy, widened on a major and never bumped otherwise (K37).
  * Source:         new in the kit (v0.10.1); the Node and peer rules since v0.11.1.
  */
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
@@ -39,7 +39,10 @@ const config = JSON.parse(read('renovate.json')) as {
   customManagers: CustomManager[];
   packageRules: PackageRule[];
 };
-const ci = read('.github/workflows/ci.yml');
+// Every workflow's text: the scanner images may stand in any of them.
+const workflows = readdirSync(new URL('../.github/workflows/', import.meta.url))
+  .map((file) => read(`.github/workflows/${file}`))
+  .join('\n');
 const pkg = JSON.parse(read('package.json')) as {
   packageManager: string;
   engines: { node: string };
@@ -54,16 +57,21 @@ const filePattern = (pattern: string): RegExp => new RegExp(pattern.slice(1, -1)
 describe('Renovate and the scanner images', () => {
   const [images] = config.customManagers;
 
-  it('has one regex manager for ci.yml, on the docker datasource', () => {
+  it('has one regex manager for the workflows, on the docker datasource', () => {
     expect(images?.customType).toBe('regex');
     expect(images?.datasourceTemplate).toBe('docker');
     const patterns = (images?.managerFilePatterns ?? []).map(filePattern);
-    expect(patterns.some((p) => p.test('.github/workflows/ci.yml'))).toBe(true);
-    expect(patterns.some((p) => p.test('.github/workflows/codeql.yml'))).toBe(false);
+    for (const file of ['ci.yml', 'scan.yml']) {
+      expect(patterns.some((p) => p.test(`.github/workflows/${file}`))).toBe(true);
+    }
+    expect(patterns.some((p) => p.test('.github/dependabot.yml'))).toBe(false);
   });
 
-  it('matches every *_IMAGE line of ci.yml with its image, tag and digest', () => {
-    const lines = ci.split('\n').filter((l) => /^\s+[A-Z_]+_IMAGE:/.test(l));
+  it('matches every *_IMAGE line of the workflows with its image, tag and digest', () => {
+    // A pinned image, not a variable a job fills from its inputs.
+    const lines = workflows
+      .split('\n')
+      .filter((l) => /^\s+[A-Z_]+_IMAGE:/.test(l) && !l.includes('${{'));
     expect(lines.length).toBeGreaterThanOrEqual(3);
     const match = new RegExp(images?.matchStrings[0] ?? 'missing');
     for (const line of lines) {

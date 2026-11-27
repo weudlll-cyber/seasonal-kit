@@ -6,7 +6,7 @@
  * Responsibility: the account's row; its buttons keep their words (44 px targets); signed out,
  *                 "Sign in" is the solid button, the header's only primary one (K96); the chip is
  *                 filled with small bold text (K96), never under the game's text floor, holds the
- *                 step badges' size, and shows "Signed in as" only on wide screens. The folded
+ *                 step badges' size, and shows "Signed in as" only from 1600 px up (K111). The folded
  *                 menu's and the phone's rules are ./header.css's, which brings this file along.
  * Source:         ./header.css, the account's rules moved here (v0.34.0); the chip's fill and the
  *                 solid "Sign in" are seasonal-bingo-royale apps/web/src/shell/header.css at
@@ -72,8 +72,9 @@
   background: var(--sk-color-active-bg);
 }
 
-/* "Signed in as" is read out, not shown, up to wide screens (a host's bar stays one row). */
-@media (max-width: 1440px) {
+/* "Signed in as" is shown from 1600 px up (owner decision of 2026-11-26, K111); below it is read
+   out, not shown, and the name stays (a host's bar stays one row at 1536 px). */
+@media (max-width: 1599px) {
   .sk-header-chip-prefix {
     position: absolute;
     width: 1px;

@@ -137,6 +137,29 @@ describe('what the authorize route refuses', () => {
   });
 });
 
+describe('the stand-in’s options (v0.36.0)', () => {
+  it('calls a member unverified when the test says so, and keeps idle connections as long as told', async () => {
+    const member = { id: 5, name: 'Uwe', role: 'member', emailVerified: false } as const;
+    const quick = await startWebsiteStandIn({
+      games: { bingo: { app: 'http://127.0.0.1:1', secretHeader: 'X-S', secret: 's' } },
+      members: [member],
+      keepAliveMs: 1234,
+    });
+    const r = await fetch(`${quick.origin}/api/games/bingo/authorize`, {
+      headers: { 'x-original-method': 'GET', cookie: 'se.sid=5' },
+    });
+    expect(r.headers.get('x-acting-user-email-verified')).toBe('false');
+    expect(r.headers.get('keep-alive')).toBe('timeout=1');
+    await quick.close();
+  });
+
+  it('shows the room and theme its chat frame was asked for', async () => {
+    const page = await (await get('/embed/chat?room=bingo&theme=dark')).text();
+    expect(page).toContain("['room', 'theme']");
+    expect(page).toContain("setAttribute('data-sk-' + name, value)");
+  });
+});
+
 describe('the website and the proxy’s secret (v0.34.0)', () => {
   it('refuses an authorize call that carries the secret, forged or right', async () => {
     for (const secret of ['forged', 'test-secret']) {
@@ -279,7 +302,12 @@ describe('the login and the public routes', () => {
   it('serves a step icon', async () => {
     const r = await get(ICON);
     expect(r.headers.get('content-type')).toBe('image/webp');
-    expect((await r.arrayBuffer()).byteLength).toBeGreaterThan(20);
+    const bytes = Buffer.from(await r.arrayBuffer());
+    expect(bytes.subarray(8, 16).toString('latin1')).toBe('WEBPVP8L');
+    // A lossless WebP names its size after the 0x2f mark, each side minus one in 14 bits: not
+    // the single pixel that showed as a blank square.
+    const size = bytes.readUInt32LE(21);
+    expect([(size & 0x3fff) + 1, ((size >>> 14) & 0x3fff) + 1]).toEqual([64, 64]);
   });
 });
 
@@ -366,5 +394,6 @@ describe('the frames (EMBED.md and GAME-INTEGRATION.md §9)', () => {
     const callPage = await (await get('/embed/call/12')).text();
     expect(callPage).toContain('"call":12,"status":"live","signedIn":false');
     expect((await get('/embed/call/0')).status).toBe(404);
+    expect(await (await get('/embed/call/shared')).text()).toContain('var ready = null;');
   });
 });

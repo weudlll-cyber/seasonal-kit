@@ -14,12 +14,13 @@ import { jsx as _jsx } from "react/jsx-runtime";
  *                 `BackToCall`, a link to `/calls/<id>` it shows after a round's result; it keeps
  *                 the id nowhere else. There is only ever one shared call. What a member sees
  *                 inside the view (a note, not the picture, when they are in the call elsewhere)
- *                 is the website's.
+ *                 is the website's. A ./ChatDock given `onSharedCall` puts this slot in its
+ *                 place (since v0.37.0); in standalone mode a game gives none.
  * Depends on:     react, ../callSlot, ../callView, ./CallFrame (the sandbox), ./theme
  * Source:         new in the kit (K77), built on ./CallSlotBox and ./CallFrame.
- * Spec:           Seasonal Entertainment docs/concepts/shared-call.md "The games' kit" at
- *                 cc743b9 and docs/GAME-INTEGRATION.md §9 at 963be59 (branch `feat/shared-call`,
- *                 not merged on the website yet).
+ * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "The shared call" and
+ *                 client/src/embed/EmbedSharedCallPage.jsx at f8f2cdf (merged 2026-11-27);
+ *                 docs/concepts/shared-call.md "The games' kit".
  */
 import { useEffect, useRef, useState } from 'react';
 import { callSlot } from '../callSlot.js';

@@ -8,14 +8,16 @@
  *                   a docked screen whose result panel holds 40 ranked rows, 2 rem each, with the
  *                   chat strip under it (v0.33.0);
  *                 - `?screen=full-header`: the back link, a long brand, three links, an account
- *                   with its role, "Sign out", the toggle and three step badges (v0.33.0).
+ *                   with its role, "Sign out", the toggle and three step badges (v0.33.0);
+ *                 - `?screen=cases-header&role=…`: Seasonal Cases' header for a player, an
+ *                   organiser or an admin (v0.36.0).
  *                 Never shipped.
  * Source:         new in the kit.
  */
 import type { ReactElement } from 'react';
 
 import { AppHeader, DockedScreen, ResultFrame, WebsiteChatFrame } from '../src/react/index.js';
-import { FULL_HEADER, PLAIN_HEADER } from './Headers.js';
+import { casesHeader, FULL_HEADER, PLAIN_HEADER } from './Headers.js';
 
 const ROWS = Array.from({ length: 40 }, (_, i) => `Player ${String(i + 1)}`);
 
@@ -47,6 +49,14 @@ export function Places(p: { readonly dense: boolean }): ReactElement {
           />
         </DockedScreen>
       </div>
+    </div>
+  );
+}
+
+export function CasesRoleHeader(p: { readonly role: string }): ReactElement {
+  return (
+    <div data-sk-game="cases">
+      <AppHeader {...casesHeader(p.role)} />
     </div>
   );
 }

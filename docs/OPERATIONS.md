@@ -105,6 +105,13 @@ Windows computer, backup included, runs in a Linux container.
 - It runs `SK_BACKUP_STOP_CMD`, replaces the database **in one transaction** (the live data goes only
   when the restore succeeded), refills the volumes (leaving the excluded live-state files as they
   are), puts the secret files into `--secrets-to`, and runs `SK_BACKUP_START_CMD`.
+- **A restore that fails after the app was stopped starts it again** and says the data's state
+  (since v0.36.0): the database restore is one transaction, so after its failure nothing changed;
+  after a failure in the volumes the database holds the backup's data and a volume may be empty or
+  half filled, and the secret files are the earlier ones: restore again.
+- A game whose app reads its keys from its env file takes them from the restored secret file in
+  its start command, e.g.
+  `SK_BACKUP_START_CMD='sed -i "s|^SEED_KEY=.*|SEED_KEY=$(cat /etc/game/keys/seed.key)|" /etc/game/prod.env && docker compose -p game-prod up -d'`.
 - It reads **only backups made by this script**. A backup made by a game's own earlier script needs
   that game's documented rewrite, or ages out (decided 2026-11-25).
 
@@ -140,6 +147,7 @@ first, so none can add a directive; the secret is never printed.
 | `SK_ROUTE_APP`              | The app as the proxy reaches it, `host:port`.                                                                     |
 | `SK_ROUTE_WEBSITE`          | The website as the proxy reaches it, `host:port`.                                                                 |
 | `SK_ROUTE_AUTHORIZE`        | Optional: the website's authorize path, default `/api/games/<game>/authorize`.                                    |
+| `SK_ROUTE_TRUSTED`          | optional                                                                                                          | The addresses or networks the app trusts the proxy from, commas between them: written into the file as a comment, nothing else. |
 | `SK_ROUTE_IDENTITY_HEADERS` | Optional: the identity headers passed on, default the website's seven.                                            |
 | `SK_ROUTE_MODE`             | `nginx` or `caddy` (for `sk_route_install`).                                                                      |
 | `SK_ROUTE_FILE`             | The route file's absolute path, ending `.conf` or `.caddy`.                                                       |
@@ -226,20 +234,21 @@ game's `game_cmd_<word> <env> …`.
 | `SK_ADMIN_UNIT_DIR`    | optional | Default `/etc/systemd/system`.                                                                                                                                                                                                            |
 | `SK_ADMIN_COMMAND`     | optional | The command's link to remove, default `/usr/local/bin/<name>`.                                                                                                                                                                            |
 
-| Hook                              | Needed for              | What it does                                                                                                                                 |
-| --------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `game_compose <env> …`            | every command           | Docker Compose for the environment.                                                                                                          |
-| `game_backup_settings <env>`      | every command           | Exports the `SK_BACKUP_*` settings. The start command of a restore must run `up -d`, not `start`, where a service re-applies database roles. |
-| `game_build <env> <ref>`          | update                  | Builds the image and sets `SK_ADMIN_NEW_IMAGE`.                                                                                              |
-| `game_migrations <env>`           | update, rollback        | Prints how many migrations the database holds.                                                                                               |
-| `game_before_update <env> <ref>`  | optional                | Before the backup: wait for running rounds, or refuse.                                                                                       |
-| `game_install_stack <env> <ref>`  | optional                | Installs the ref's stack files and command.                                                                                                  |
-| `game_before_start <env> <ref>`   | optional                | Before the new image starts; may keep the old settings as `<state>/<env>/env.before`.                                                        |
-| `game_after_restore <env> <0\|1>` | optional                | In a rollback, before the start (1: the database was restored).                                                                              |
-| `game_status <env>`               | optional                | The game's own status lines.                                                                                                                 |
-| `game_usage`                      | optional                | The game's own usage lines.                                                                                                                  |
-| `game_route_settings <env>`       | uninstall, website mode | Sets `SK_ROUTE_MODE`, `_FILE`, `_CHECK_CMD`, `_RELOAD_CMD`; no file, no route.                                                               |
-| `game_uninstall_extra <env>`      | optional                | Removes what only the game knows.                                                                                                            |
+| Hook                              | Needed for              | What it does                                                                                                                                                                           |
+| --------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `game_compose <env> …`            | every command           | Docker Compose for the environment.                                                                                                                                                    |
+| `game_backup_settings <env>`      | every command           | Exports the `SK_BACKUP_*` settings and writes nothing: `status` calls it too. The start command of a restore must run `up -d`, not `start`, where a service re-applies database roles. |
+| `game_backup_secrets <env>`       | optional                | Writes the secret files a backup carries; called before a backup alone.                                                                                                                |
+| `game_build <env> <ref>`          | update                  | Builds the image and sets `SK_ADMIN_NEW_IMAGE`.                                                                                                                                        |
+| `game_migrations <env>`           | update, rollback        | Prints how many migrations the database holds.                                                                                                                                         |
+| `game_before_update <env> <ref>`  | optional                | Before the backup: wait for running rounds, or refuse.                                                                                                                                 |
+| `game_install_stack <env> <ref>`  | optional                | Installs the ref's stack files and command.                                                                                                                                            |
+| `game_before_start <env> <ref>`   | optional                | Before the new image starts; may keep the old settings as `<state>/<env>/env.before`.                                                                                                  |
+| `game_after_restore <env> <0\|1>` | optional                | In a rollback, before the start (1: the database was restored).                                                                                                                        |
+| `game_status <env>`               | optional                | The game's own status lines.                                                                                                                                                           |
+| `game_usage`                      | optional                | The game's own usage lines.                                                                                                                                                            |
+| `game_route_settings <env>`       | uninstall, website mode | Sets `SK_ROUTE_MODE`, `_FILE`, `_CHECK_CMD`, `_RELOAD_CMD`; no file, no route.                                                                                                         |
+| `game_uninstall_extra <env>`      | optional                | Removes what only the game knows.                                                                                                                                                      |
 
 ## The host baseline
 
@@ -344,3 +353,90 @@ migration step again (`up -d` where a migrate service runs first, not `start`), 
 | `SK_DB_SCHEMA`         | optional   | The game's schema, default the prefix.                              |
 | `SK_DB_OWNER_PASSWORD` | yes        | 16 to 128 letters, digits, `-` or `_`; sent on standard input only. |
 | `SK_DB_APP_PASSWORD`   | yes        | The same.                                                           |
+
+## Security scans (since v0.35.0, K108)
+
+Every project calls the kit's reusable workflow instead of its own scan jobs. It builds the image
+from the caller's checkout, runs Trivy over the image and the lockfile (HIGH and CRITICAL with a
+fix available), starts the app and runs a ZAP baseline against it. It reports into a job summary
+and one artifact and never fails the run. It blocks before a game's first production, on high and
+critical findings only (K113; the baseline scan still fails on its warnings, BACKLOG).
+`blocking: true` makes findings and a
+scan that could not run fail it.
+
+```yaml
+jobs:
+  scan:
+    uses: weudlll-cyber/seasonal-kit/.github/workflows/scan.yml@v0.35.0
+    permissions:
+      contents: read
+    with:
+      image: game-app:ci
+      # An app that needs its database: its own command, then where it answers.
+      start: docker compose -f ops/compose.ci.yml up -d
+      url: http://localhost:3000/games/game/
+```
+
+| Input         | Default                  | Meaning                                                         |
+| ------------- | ------------------------ | --------------------------------------------------------------- |
+| `image`       | required                 | The image's name.                                               |
+| `build`       | `true`                   | Build it from the checkout; `false` pulls it.                   |
+| `dockerfile`  | `Dockerfile`             |                                                                 |
+| `context`     | `.`                      |                                                                 |
+| `lockfile`    | `pnpm-lock.yaml`         | The lockfile Trivy reads (`package-lock.json` for the website). |
+| `build-args`  | none                     | The build's arguments, one `NAME=value` a line; never a secret. |
+| `start`       | runs the image           | The command that starts the app, on the runner's network.       |
+| `url`         | `http://localhost:3000/` | Where ZAP begins.                                               |
+| `blocking`    | `false`                  | Fail the run on findings or a scan that did not run.            |
+| `report-name` | `security-scan`          | The artifact's name, for more than one call.                    |
+
+The default `start` runs the image on the runner's network with no settings; an app that needs
+settings or a database passes `start`. Settings in that command are made up for the run: no real
+secret goes into a scan.
+
+## Signed release images (since v0.35.0, K109)
+
+Before a game goes to production its server pulls a signed release image instead of building. Two
+parts; nothing changes in a game until it takes them.
+
+**1. The release**, on a version tag, calls the kit's workflow. It builds and pushes the image to
+the GitHub container registry, writes a CycloneDX SBOM, and signs both with cosign keyless: the
+run's GitHub identity is the proof, and no key exists.
+
+```yaml
+on:
+  push:
+    tags: ['v*.*.*']
+permissions:
+  contents: read
+jobs:
+  release:
+    uses: weudlll-cyber/seasonal-kit/.github/workflows/release-image.yml@v0.35.0
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+```
+
+Inputs, all optional: `image` (default `ghcr.io/<owner>/<repository>`), `dockerfile`, `context`,
+`build-args` (one `NAME=value` a line, never a secret), `platforms` (default amd64 and arm64; the
+SBOM describes the amd64 one) and `version` (default the
+tag without its `v`). Output: `reference`, the image as `name@sha256:…`.
+
+**Public or private** is one setting, the package's visibility in the registry (the package's
+settings page). A private image needs a `docker login ghcr.io` on the server with a token that may
+read packages. Either way the signature is entered in Sigstore's public log, which names the
+repository and the workflow.
+
+**2. The installer** verifies before it pulls (`ops/lib/image.sh`, cosign 3 or later):
+
+```sh
+source "$KIT/ops/lib/image.sh"
+image=$(SK_IMAGE_REPOSITORY=owner/game sk_image_verify ghcr.io/owner/game:1.2.0) || exit 1
+docker pull "$image"
+```
+
+It prints the image by digest only when that digest carries a signature of the kit's release
+workflow, at a version tag or a full commit, run in that repository. So a project calls the
+workflow at a tag (`@v0.35.0`) or a commit, not at a branch. Anything else stops with one
+sentence.

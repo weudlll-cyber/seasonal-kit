@@ -4,7 +4,8 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * @brief  The frame "before the round": one card in the round's season colour, filled by the
  *         game.
  *
- * Responsibility: the card fills its space and never scrolls the page: the head (the game's
+ * Responsibility: the card fills its space and never scrolls the page (what even the smallest
+ *                 scale cannot fit scrolls inside it, a Tab stop only then, since v0.36.0): the head (the game's
  *                 season icon, the title in the largest type, a badge such as "Halving round"),
  *                 the game's special block, its facts as a list, and, when the game gives `opensIn`, "Opens in N s" as
  *                 a timer that is not read out every second (without it, no countdown). Where the card has not the room (above a
@@ -17,12 +18,13 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                 server's clock (./useCountdown).
  * Source:         seasonal-mini-games apps/web/src/round/RoundIntro.tsx and roundIntro.css at
  *                 866df03 (its season names, specials and facts stay in the game). Built on
- *                 ./useFitScale.
+ *                 ./useFitScale and ./useScrollTabStop.
  * Spec:           Mini Games DECISIONS O36, O93, O111; kit DECISIONS K14
  */
 import { useId } from 'react';
 import { useCountdown } from './useCountdown.js';
 import { useFitScale } from './useFitScale.js';
+import { useScrollTabStop } from './useScrollTabStop.js';
 // The countdown line: the game's seconds, or counted here to `opensAt`; nothing without either.
 function Countdown(p) {
     const counted = useCountdown(p.opensAt?.at ?? null, p.opensAt?.offsetMs ?? null);
@@ -35,6 +37,8 @@ export function StartCard(p) {
     const headingId = useId();
     // `self` stays false as before; only the game's options are added (T404, T423).
     const fit = useFitScale(p.game, p.signature, false, p.fit);
+    // Where even the smallest scale does not fit, the card scrolls and the keyboard reaches it.
+    useScrollTabStop(fit);
     const facts = p.facts ?? [];
     return (_jsxs("section", { ref: fit, className: "sk-start-card", "data-sk-season": p.season ?? undefined, "aria-labelledby": headingId, "data-testid": "start-card", children: [_jsxs("header", { className: "sk-start-head", children: [p.season === null || p.icon === undefined ? null : (_jsx("span", { className: "sk-start-icon", "aria-hidden": "true", children: p.icon })), _jsx("h1", { id: headingId, children: p.title }), p.badge] }), p.special === undefined ? null : _jsx("div", { className: "sk-start-special", children: p.special }), facts.length === 0 ? null : (_jsx("ul", { className: "sk-start-facts", children: facts.map((fact, i) => (_jsx("li", { children: fact }, String(i)))) })), _jsx(Countdown, { opensIn: p.opensIn, opensAt: p.opensAt })] }));
 }

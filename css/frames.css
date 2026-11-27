@@ -3,11 +3,8 @@
  * @brief  The frames a game fills: the start card "before the round" and the result's first
  *         part.
  *
- * Responsibility: `.sk-start-card` fills its space under the game's bar and never scrolls the
- *                 page: a card framed and tinted in the season's colour (`data-sk-season`, the
- *                 website's colours from ./tokens.css), everything centred, the title in the
- *                 largest type, the special, the facts and the seconds left, sizes following the
- *                 viewport's smaller side. `.sk-result` is the result: its first part one screen
+ * Responsibility: the start card is ./frames-start.css's, which this file brings along.
+ *                 `.sk-result` is the result: its first part one screen
  *                 high under the game's bar (`--sk-result-top`, the bar's height and gaps, the
  *                 game's), the headline at most two lines, the reveal taking the free height,
  *                 the placings beside it on a desktop and under it on a phone; a list game's
@@ -25,6 +22,8 @@
  *                 `--sk-start-title`, the same value)
  */
 
+/* The start card's rules. */
+@import './frames-start.css';
 /* The result's dense variant (since v0.33.0). */
 @import './frames-dense.css';
 
@@ -32,106 +31,6 @@
    computes it (`--result-top`), the default is its fallback. */
 :root {
   --sk-result-top: 4.5rem;
-}
-
-/* The start card. */
-.sk-start-card {
-  --sk-start-title: clamp(3rem, 2rem + 6vw, 5.5rem);
-  --sk-season: var(--sk-color-border-strong);
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: calc(var(--fit, 1) * clamp(0.5rem, 2.5vmin, 1.5rem));
-  padding: calc(var(--fit, 1) * var(--sk-space-3)) var(--sk-space-3);
-  border: 3px solid var(--sk-season);
-  border-radius: var(--sk-radius-card);
-  background: color-mix(in srgb, var(--sk-season) 16%, var(--sk-color-surface));
-  text-align: center;
-}
-
-.sk-start-card[data-sk-season='spring'] {
-  --sk-season: var(--sk-color-spring);
-}
-
-.sk-start-card[data-sk-season='summer'] {
-  --sk-season: var(--sk-color-summer);
-}
-
-.sk-start-card[data-sk-season='autumn'] {
-  --sk-season: var(--sk-color-autumn);
-}
-
-.sk-start-card[data-sk-season='winter'] {
-  --sk-season: var(--sk-color-winter);
-}
-
-/* A game whose rounds show no season: the card on the surface, with a hairline. */
-.sk-start-card:not([data-sk-season]) {
-  border-width: 1px;
-  background: var(--sk-color-surface);
-}
-
-.sk-start-head {
-  display: grid;
-  justify-items: center;
-  gap: calc(var(--fit, 1) * var(--sk-space-1));
-}
-
-/* The season's icon on a disc of the page colour. */
-.sk-start-icon {
-  display: grid;
-  place-items: center;
-  width: max(2.5rem, calc(var(--fit, 1) * clamp(4rem, 14vmin, 7.5rem)));
-  height: max(2.5rem, calc(var(--fit, 1) * clamp(4rem, 14vmin, 7.5rem)));
-  padding: calc(var(--fit, 1) * 0.6rem);
-  border: 3px solid var(--sk-season);
-  border-radius: 50%;
-  background: var(--sk-color-surface);
-}
-
-.sk-start-head h1 {
-  margin: 0;
-  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--sk-start-title)));
-  line-height: 1;
-}
-
-.sk-start-special {
-  max-width: 34rem;
-  display: grid;
-  gap: 0.25rem;
-}
-
-.sk-start-special h2 {
-  margin: 0;
-  font-size: max(16px, calc(var(--fit, 1) * var(--sk-font-size-title)));
-}
-
-.sk-start-special p {
-  margin: 0;
-  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--sk-font-size-lead)));
-}
-
-.sk-start-facts {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.15rem;
-  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * 1rem));
-  font-weight: var(--sk-font-weight-strong);
-}
-
-.sk-start-count {
-  margin: 0;
-  font-size: max(var(--sk-floor-text), calc(var(--fit, 1) * var(--sk-font-size-lead)));
-}
-
-.sk-start-count strong {
-  font-size: max(var(--sk-floor-display), calc(var(--fit, 1) * var(--sk-font-size-title)));
-  font-variant-numeric: tabular-nums;
 }
 
 /* The result. */
@@ -187,6 +86,8 @@
   grid-area: head;
   display: grid;
   gap: 0.25rem;
+  /* The headline asks how many of its own text's widths the head has (below). */
+  container-type: inline-size;
 }
 
 .sk-result-head p {
@@ -205,6 +106,16 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Large text in a narrow head (200 % on a phone; never at 100 % on a 320 px one): the headline
+   shows whole, as two lines would cut its sentence (since v0.36.0, Mini Games). */
+@container (max-width: 16rem) {
+  .sk-result-head > :is(h1, h2, h3, h4, h5, h6):first-child {
+    display: block;
+    -webkit-line-clamp: none;
+    overflow: visible;
+  }
 }
 
 .sk-result-reveal {

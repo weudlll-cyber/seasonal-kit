@@ -13,7 +13,9 @@
  *                 entry proved on the kit's own screens, v0.23.0) and showcase/standin.spec.ts (the website's
  *                 stand-in in a browser, v0.26.0), showcase/looks.spec.ts (the dense result, the
  *                 badges that give way and the chat bar's text, v0.33.0) and
- *                 showcase/components.spec.ts (the base components' review page, K78).
+ *                 showcase/components.spec.ts (the base components' review page, K78) and
+ *                 showcase/large.spec.ts (200 % text on the kit's parts, v0.36.0) and
+ *                 showcase/shared.spec.ts (the shared call's slot in the dock, v0.37.0).
  *                 ./showcase/global-setup.ts deletes the
  *                 previous run's screens first, so they never pile up (DECISIONS K16); the
  *                 folder is git-ignored and never committed. CI runs it on every PR (job

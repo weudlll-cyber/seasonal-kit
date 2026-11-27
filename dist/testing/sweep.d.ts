@@ -12,7 +12,10 @@
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
  *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules; `false` turns it off, by
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
- *                 the finding), which the report then leaves out.
+ *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
+ *                 `open` fails is reported as a finding and the walk goes on, finite animations
+ *                 and transitions end before the screen is probed, and `axeFinder` takes
+ *                 selectors to leave out.
  * Depends on:     ./probe, ./screens; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
@@ -35,6 +38,7 @@ export interface SweepOptions {
 }
 interface AxeLike {
     withTags: (tags: string[]) => AxeLike;
+    exclude: (selector: string) => AxeLike;
     analyze: () => Promise<{
         violations: {
             id: string;
@@ -44,8 +48,11 @@ interface AxeLike {
         }[];
     }>;
 }
+export interface AxeFinderOptions {
+    readonly exclude?: readonly string[];
+}
 export declare function axeFinder(builder: new (input: {
     page: Page;
-}) => AxeLike): AxeFinder;
+}) => AxeLike, options?: AxeFinderOptions): AxeFinder;
 export declare function sweep(page: Page, screens: readonly SweepScreen[], options: SweepOptions): Promise<number>;
 export {};

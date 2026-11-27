@@ -13,10 +13,14 @@
  *                 - `/login?next=` sets that cookie for the member the test chose (`signInAs`) and
  *                   returns to a local `next` under `/games/`;
  *                 - `/api/public/season`, `/media/step-icons/<32 hex>.webp`;
- *                 - `/embed/chat?room=` and `/embed/call/<id>` (./standInFrames);
+ *                 - `/embed/chat?room=`, `/embed/call/<id>` and `/embed/call/shared`
+ *                   (./standInFrames);
  *                 - every other path under a game's base goes to its app, WebSockets too.
  *                 `openRounds(slug)` reads the game's open rounds as the website does. A game not
  *                 named answers 404, as a switched-off game does. `close()` ends every connection.
+ *                 Since v0.36.0 a member may be unverified (`emailVerified: false`), the chat's
+ *                 frame shows its room and theme, and `keepAliveMs` sets how long an idle
+ *                 connection is kept. A login page of its own is the game's to test.
  *                 Test code only; it holds no real session and signs in whoever the test names.
  * Depends on:     node:http, ./standInContract, ./standInFrames, ./standInProxy
  * Source:         new in the kit (K74), the contract half of seasonal-mini-games
@@ -50,6 +54,8 @@ export interface StandInOptions {
   // By slug: the games switched on at the stand-in.
   readonly games: Readonly<Record<string, StandInGame>>;
   readonly members?: readonly StandInMember[];
+  // How long an idle connection is kept open, in ms (since v0.36.0). Default: Node's 5000.
+  readonly keepAliveMs?: number;
 }
 
 export interface WebsiteStandIn {
@@ -64,8 +70,12 @@ export interface WebsiteStandIn {
   readonly close: () => Promise<void>;
 }
 
-// A 1x1 WebP, the shape of a step icon.
-const ICON = Buffer.from('UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAwA0JaQAA3AA/vuUAAA=', 'base64');
+// Every step icon: the stand-in's own plain shape, a blue-grey diamond on 64 x 64 (the website's
+// size), so a header and a board show something. No Seasonal Tokens drawing.
+const ICON = Buffer.from(
+  'UklGRsAAAABXRUJQVlA4TLMAAAAvP8APEA8wiqM3qvMf8HBU27bT0Bki4UtBGkhDChIYpt+Uc7KQENF/Rm7bONKctsopr6jOnLUmW0v2kRwTuRTymMlrIQmlSQ1p0kKajJAmE6RJgTSZIU0WShNKkxpSBN9/jJAi+OVHgRTBXz8WShNKk3oj7U7Gg0wXUh5kNr7wK/6R87se1ed6Xb/74f64X+6f+6n+ut/uv+fh+Xhenp/nqfl63p6/98H74X3x/vzZpxOnAgA=',
+  'base64',
+);
 
 // The one folder a login may return to.
 const GAMES = '/games/';
@@ -154,11 +164,13 @@ function frames(
   response: ServerResponse,
 ): boolean {
   const signedIn = memberOf(state, request) !== null;
-  const call = /^\/embed\/call\/([1-9]\d{0,9})$/.exec(url.pathname)?.[1];
+  const call = /^\/embed\/call\/([1-9]\d{0,9}|shared)$/.exec(url.pathname)?.[1];
   let page: string;
   if (url.pathname === '/embed/chat') {
     const room = url.searchParams.get('room');
     page = framePage('chat', { ...FRAME_MESSAGES.chat.ready, room, signedIn });
+  } else if (call === 'shared') {
+    page = framePage('call', null);
   } else if (call !== undefined) {
     page = framePage('call', { ...FRAME_MESSAGES.call.ready, call: Number(call), signedIn });
   } else {
@@ -237,6 +249,7 @@ export async function startWebsiteStandIn(options: StandInOptions): Promise<Webs
   const server = http.createServer((request, response) => {
     handle(state, request, response);
   });
+  server.keepAliveTimeout = options.keepAliveMs ?? server.keepAliveTimeout;
   // Upgraded sockets are no longer the server's own, so they are kept to be closed.
   const upgraded = new Set<Duplex>();
   server.on('upgrade', (request: IncomingMessage, socket: Duplex) => {

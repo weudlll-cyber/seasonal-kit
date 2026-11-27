@@ -63,6 +63,51 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-27 — before v0.37.0, the shared call's slot (branch `feat/shared-call-slot`)
+
+| Scan                         | Tool and command                       | Result                                     |
+| ---------------------------- | -------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                       | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)         | Read on the pull request before the merge. |
+
+**Read by the session that wrote it,** against the website's sender at `f8f2cdf`. The frame is a
+path on the game's own origin (a path elsewhere throws), sandboxed as the linked call's, allowing
+`autoplay; fullscreen` only. Its messages are checked for origin, window and `source`; a call id is
+a positive safe integer before it goes into the "Back to the call" link. The game sends the view a
+flag and nothing else.
+
+### 2026-11-27 — before v0.36.0 (branch `fix/v0.34-findings`)
+
+| Scan                         | Tool and command                                       | Result                                                    |
+| ---------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI                 | No leaks.                                                 |
+| Dependencies                 | osv-scanner (CI)                                       | No dependency was added.                                  |
+| Code                         | CodeQL (javascript-typescript)                         | Read on the pull request before the merge.                |
+| The admin and restore paths  | `ops/test/admin.test.sh`, `backup.test.sh`; ShellCheck | A failed restore starts the app; status writes no secret. |
+
+**Read by the session that wrote it.** A rollback now writes a file beside its place and renames
+it: the copy keeps the kept file's mode and owner, and nothing new is made readable. The failed
+restore runs the game's own start command, which a successful restore runs too. The stand-in's
+new options are test tools. The probe's functions are put into a test's page as source text, as
+before, from the kit's own modules only.
+
+### 2026-11-26 — before v0.35.0 (branch `feat/production-parts`)
+
+| Scan                         | Tool and command                              | Result                                             |
+| ---------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI        | No leaks.                                          |
+| Dependencies                 | osv-scanner (CI)                              | No dependency was added.                           |
+| Code                         | CodeQL (javascript-typescript)                | Read on the pull request before the merge.         |
+| The new workflows            | tests/workflows.test.ts; proof runs on GitHub | Pinned actions and images; no input in a run line. |
+
+**Read by the session that wrote it.** The scan takes a caller's `start` command and runs it on
+the runner: the caller's own workflow, with a read-only token and no secret. Inputs reach scripts
+as variables. The release workflow writes packages and takes the signing identity, only on a tag;
+it holds no key. A signature proves which workflow ran in which repository, not that the code is
+good: who may push a tag in a project may release its image. Keyless signatures are public in
+Sigstore's log, also for a private image. `sk_image_verify` checks the exact digest it prints.
+
 ### 2026-11-26 — before v0.34.0, the base components and header looks (branch `feat/base-components`)
 
 | Scan                         | Tool and command                                           | Result                                     |

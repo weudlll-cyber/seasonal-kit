@@ -12,7 +12,9 @@
  *                 back. In the bar's form `field` the game's
  *                 own writing field sits under it. The call slot is the 48 px strip directly
  *                 above the bar. The slot is hidden while no call id is set (../callSlot); with one
- *                 it frames the website's call view (./CallSlotBox, since v0.13.0).
+ *                 it frames the website's call view (./CallSlotBox, since v0.13.0). With
+ *                 `onSharedCall` the slot holds the view of the one call shared with the games
+ *                 instead (./SharedCall, since v0.37.0), in the same places.
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the
@@ -24,7 +26,8 @@
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
  *                 (apps/web/src/shell/ChatDock.tsx at a43209a). Built on ../chatArrivals
- *                 (createChatArrivals, chatBarText), ./CallSlotBox and ./useDisclosure.
+ *                 (createChatArrivals, chatBarText), ./CallSlotBox, ./SharedCall and
+ *                 ./useDisclosure.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §5 and §9 (at e7b995c)
  */
 import {
@@ -42,6 +45,7 @@ import { chatBarText, createChatArrivals, type ChatArrivalsState } from '../chat
 import { CallSlotBox } from './CallSlotBox.js';
 import { DockHandOver } from './dockHandOver.js';
 import { DockSight, type DockSightValue } from './dockSight.js';
+import { SharedCallSlot, type SharedCallSlotProps } from './SharedCall.js';
 import { useDisclosure, type Disclosure } from './useDisclosure.js';
 
 export interface ChatDockProps {
@@ -60,6 +64,10 @@ export interface ChatDockProps {
   // The game's configured call embed path, without the id; the website's `/embed/call` by
   // default (since v0.13.0).
   readonly callPath?: string;
+  // Website mode only (since v0.37.0, K77): the slot holds the shared call's view and `callId`
+  // is not read. It hears the live call's id, or null, and must be stable between renders. Unset
+  // or undefined (standalone: there is no website) shows nothing of it.
+  readonly onSharedCall?: SharedCallSlotProps['onCall'] | undefined;
 }
 
 // The arrivals while the chat is out of sight, as React state.
@@ -193,11 +201,21 @@ function useHandOver(
   }, [slot, phone, show, body]);
 }
 
+// The slot's content: the shared call's view where the game asks for it, else the linked call's.
+function DockCall(p: { readonly phone: boolean; readonly dock: ChatDockProps }): ReactElement {
+  const { callId, callPath, onSharedCall } = p.dock;
+  const path = callPath === undefined ? {} : { callPath };
+  return onSharedCall === undefined ? (
+    <CallSlotBox callId={callId} phone={p.phone} {...path} />
+  ) : (
+    <SharedCallSlot phone={p.phone} onCall={onSharedCall} {...path} />
+  );
+}
+
 export function ChatDock(p: ChatDockProps): ReactElement {
   const sheet = useDisclosure();
   const body = useRef<HTMLDivElement>(null);
   useHandOver(p.phone, sheet, body);
-  const callPath = p.callPath === undefined ? {} : { callPath: p.callPath };
   const sight = useArrivals(!p.phone || sheet.open);
   const announced = useUnreadAnnouncement(sight.state.unread);
   const { onUnread } = p;
@@ -229,7 +247,7 @@ export function ChatDock(p: ChatDockProps): ReactElement {
         >
           {announced}
         </p>
-        {p.phone ? <CallSlotBox callId={p.callId} phone {...callPath} /> : null}
+        {p.phone ? <DockCall phone dock={p} /> : null}
         <div className="sk-chat-dock-row">
           {p.phone ? (
             <PhoneBar
@@ -241,7 +259,7 @@ export function ChatDock(p: ChatDockProps): ReactElement {
           <Body sheet={sheet} phone={p.phone} element={body}>
             {p.chat}
           </Body>
-          {p.phone ? null : <CallSlotBox callId={p.callId} phone={false} {...callPath} />}
+          {p.phone ? null : <DockCall phone={false} dock={p} />}
         </div>
       </section>
     </DockSight.Provider>

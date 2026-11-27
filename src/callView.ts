@@ -23,8 +23,7 @@
  *                 seasonal-mini-games apps/web/src/chat/useHostChatFrame.ts at 91b23bc); no game
  *                 has a call view yet (Mini Games 91b23bc, Bingo c3b76c1).
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Call view inside a game"
- *                 (at e7b995c); its shared view and the reason `unshared` at 963be59, branch
- *                 `feat/shared-call`, not merged on the website yet
+ *                 (at e7b995c); its shared view and the reason `unshared` as merged at f8f2cdf
  */
 import type { EmbedTheme } from './chatEmbed.js';
 import { isLocalPath } from './localPath.js';

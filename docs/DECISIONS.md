@@ -384,7 +384,7 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
   paths. Cases moves to Docker first, then takes the kit's backup unchanged.
 - **K77 — The kit's part of the one shared call** (owner, decided 2026-11-25; built 2026-11-26 on
-  branch `feat/shared-call-slot`, not merged: it waits for the website's part). From the website's
+  branch `feat/shared-call-slot`; released in v0.37.0, K114). From the website's
   [concepts/shared-call.md](https://github.com/weudlll-cyber/seasonal-entertainment/blob/master/docs/concepts/shared-call.md)
   at `cc743b9`: a member already in the call sees in the game only a note that they are in the call
   (no picture), there is only ever one shared call, and every organiser and admin may share one.
@@ -489,3 +489,44 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   what it cannot work out is a finding, and a pair naming a missing token still throws.
 - **K103 — The stand-in website refuses the proxy's secret** (2026-11-26): its `authorize` answers
   500 to a request carrying it, as a game's own stub did; the proxy half still clears it.
+- **K104 — Games load-test with the kit's helpers** (decided 2026-11-26, item i). `latencies`,
+  `inBatches` and `watchServer` (K73); the kit builds nothing further.
+- **K105 — The outage e-mail for games is the website's job** (decided 2026-11-26, item f). No kit
+  part.
+- **K106 — Full browser suites run nightly** (decided 2026-11-26, item k): on a schedule and on
+  demand, not on every pull request, which runs the unit tests, the static checks and the browser
+  specs of what it changed. The kit's own showcase stays a required check of its pull requests
+  (K19) until a decision says otherwise.
+- **K107 — A privacy data list is required for every game before production** (decided
+  2026-11-26, item j). `docs/PRIVACY-DATA.md` in each game, from the kit's template, answered for
+  every piece of personal data; the game's test holds it with `findPrivacyGaps`.
+- **K108 — Security scans for every project, reporting first** (decided 2026-11-26, item h). The
+  website included. The kit's reusable workflow runs them and does not block; blocking is one
+  input, turned on by a later decision.
+- **K109 — Signed release images before the first game goes to production** (decided 2026-11-26,
+  item g). The server pulls and verifies instead of building. Signing is keyless (GitHub's
+  identity, no keys). Public or private images are decided later: it is the registry package's one
+  setting.
+- **K110 — One working rule for checks; big moves check once** (decided 2026-11-27). For a kit
+  adoption, a migration or a task of many known changes: build all of it first, with only quick
+  checks between; then one round of the real checks, each once, and after a fix only what the fix
+  can have changed. One sweep, no walks between pieces, line counts once, one written report, a
+  rehearsal only of the paths that changed. Small tasks keep K82. The rule and its reason are in
+  [HANDBOOK.md](HANDBOOK.md#how-we-check); a game takes it into its `CLAUDE.md` with its next kit
+  move.
+- **K111 — "Signed in as" shows from 1600 px up** (decided 2026-11-26). Below, it is read out and
+  not shown; the name stays. At 1536 px a website organiser's header then stays one row.
+- **K112 — A name in a dense list may be a 24 px target** (decided 2026-11-27, Bingo Royale's
+  report). In a ranked or result list with one row per player or entry, a linked name is 24 px high
+  with space to its neighbours (WCAG 2.2 AA target size): `.sk-dense-list`, the only place the
+  probe passes it. Everywhere else a target stays 44 px (K29).
+- **K113 — Images, blocking scans and the kit's browser specs** (decided 2026-11-27). A release
+  image is public when its project's repository is public, private otherwise (ends K109's open
+  point). The scan reports only for now; before a game's first production it blocks on high and
+  critical findings, never on lower ones. The kit's own browser specs keep running on every pull
+  request (ends K106's open point).
+- **K114 — The shared call's slot is released, in the dock** (2026-11-27). The website merged its
+  part on 2026-11-27 (`f8f2cdf`). A `DockedScreen` or `ChatDock` given `onSharedCall` holds the
+  shared view where a linked call's view sits (GAME-INTEGRATION.md §9, "the same slot"), because
+  every game uses the docked screen. The slot shows only while the shared call is live (K77), also
+  where the website's `ready` says `scheduled`. Standalone, a game passes nothing.

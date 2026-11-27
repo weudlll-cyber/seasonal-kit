@@ -8,7 +8,8 @@
  *                 (also with the reason `unshared`) and a later share shows it again; `resize` changes the form; the view is told
  *                 whether it is in sight; messages from another window or origin are ignored; a
  *                 theme change loads the view anew; and "Back to the call" links to the live call
- *                 only. The view is a stub: the messages are dispatched as the contract's.
+ *                 only; a dock given `onSharedCall` holds this slot, in both layouts, and the
+ *                 linked call's otherwise. The view is a stub: the messages are the contract's.
  * Depends on:     vitest, @testing-library/react
  * Source:         new in the kit (K77).
  */
@@ -16,6 +17,7 @@ import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { sharedCallEmbedUrl } from '../callView.js';
+import { ChatDock } from './ChatDock.js';
 import { BackToCall, SharedCallSlot } from './SharedCall.js';
 
 afterEach(cleanup);
@@ -129,6 +131,26 @@ describe('SharedCallSlot’s forms, strangers and path', () => {
 
   it('refuses a path that is not on this site', () => {
     expect(() => sharedCallEmbedUrl('dark', 'https://evil.example')).toThrow(TypeError);
+  });
+});
+
+describe('the docked chat’s slot', () => {
+  it.each([false, true])('holds the shared view when asked, phone: %s', (phone) => {
+    const onCall = vi.fn();
+    render(<ChatDock chat={null} bar="line" callId={null} phone={phone} onSharedCall={onCall} />);
+    expect(screen.queryByTestId('call-slot')).toBeNull();
+    says(ready(9));
+    expect(box().getAttribute('data-sk-form')).toBe(phone ? 'strip' : 'picture');
+    expect(onCall).toHaveBeenLastCalledWith(9);
+  });
+
+  it('frames nothing of the shared call without it, as in standalone mode', () => {
+    render(
+      <ChatDock chat={null} bar="line" callId={null} phone={false} onSharedCall={undefined} />,
+    );
+    expect(screen.queryByTestId('shared-call-slot')).toBeNull();
+    expect(screen.getByTestId('call-slot').hidden).toBe(true);
+    expect(screen.queryByTitle('Call')).toBeNull();
   });
 });
 

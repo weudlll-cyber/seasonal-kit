@@ -721,6 +721,25 @@ one-colour season icon; the client's `retry`, a local frame path and a token mix
 guard; the website stand-in's refusal of the proxy secret. Both passed. The scratch folders are
 left in the session's scratch directory.
 
+## v0.35.0, with pnpm and with npm (2026-11-26, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.35.0` (merge `8324170`), typechecked and ran three tests on
+the installed files: `findPrivacyGaps` on a filled and an unfilled list, the stand-in's 64 px step
+icon, and the shipped `ops/lib/image.sh` and route comments. Both passed. The scratch folders are
+left in the session's scratch directory.
+
+The release image workflow was proven on the throw-away tag `sk-test-image-1` (commit `431063f`),
+before its `build-args` input was added; the scan workflow was proven again after that change.
+
+## v0.36.0, with pnpm and with npm (2026-11-27, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.36.0` (merge `4f342ce`), typechecked (the exported `Attempt`
+type included) and ran four tests on the installed files: `axeFinder`'s `exclude`, the stand-in with
+`keepAliveMs`, and the shipped large-text styles, `.sk-dense-list` and ops files. Both passed. The
+scratch folders are left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

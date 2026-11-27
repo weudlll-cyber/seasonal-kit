@@ -9,9 +9,8 @@
 #                 are required, exit codes and the game's own verbs; status healthy and not;
 #                 backup and restore through the kit's script; update with its refusals, confirm,
 #                 rollback with and without a schema change (stack files put back by renaming, one
-#                 not kept left), secret files written for a backup only, the app started again
-#                 when a restore
-#                 fails; uninstall asking for the name, refusing unknown options, keeping backups,
+#                 not kept left), secret files written for a backup and before a restore compares
+#                 them, the app started again when a restore fails; uninstall asking for the name, refusing unknown options, keeping backups,
 #                 the other environment and the game until its last one goes. Needs Linux as root,
 #                 no Docker, no database. Run: sudo bash ops/test/admin.test.sh (CI job `ops`).
 #                 The folder is removed.
@@ -109,8 +108,11 @@ game_backup_settings() {
   [[ ! -e \$W/secrets ]] || export SK_BACKUP_SECRET_FILES=\$W/secrets/seed.key
   [[ ! -e \$W/restore-secrets ]] || SK_ADMIN_SECRETS_DIR=\$W/restore-to/\$1
 }
-# Writes the backup's secret file, as a game does before a backup.
-game_backup_secrets() { echo 'made for a backup' >"\$W/made-secret"; }
+# Writes the secret files as a game does: its current key where a restore compares, when asked.
+game_backup_secrets() {
+  echo 'made for a backup' >"\$W/made-secret"
+  [[ ! -e \$W/current-key ]] || install -D -m 0600 "\$W/current-key" "\$SK_ADMIN_SECRETS_DIR/seed.key"
+}
 game_build() { printf 'build %s\n' "\$2" >>"\$LOG"; SK_ADMIN_NEW_IMAGE=gm-app:\$2; echo "gm-app:\$2" >>"\$W/images"; }
 game_migrations() { cat "\$W/migrations"; }
 game_install_stack() { echo "stack of \$2" >"\$SK_ADMIN_ROOT/compose.yml"; }
@@ -223,9 +225,22 @@ said 'and that it starts the app' 'backup: starting the app again'
 called 'which it does' 'app-started'
 rm "$work/fail.restore"
 
-rm -rf "$work/secrets" "$work/restore-secrets" "$work/restore-to"
+# The game writes its secret files before a restore compares them (v0.39.0): with none written
+# yet, or an old one, the server's key of now must meet the backup's.
+rm -rf "$work/restore-to"
+echo 'the key of now' >"$work/current-key"
+: >"$LOG"
+game --yes restore "$backup" --identity "$work/game"
+equals 'a restore compares against the keys of now' "$status" 1
+said 'saying which differs' 'the backup'\''s seed.key differs from'
+uncalled 'before the data is touched' 'pg_restore'
+echo 'seed-test-only' >"$work/current-key"
+echo 'a key left from before' >"$work/restore-to/prod/seed.key"
+game --yes restore "$backup" --identity "$work/game"
+equals 'and not against a file left from before' "$status" 0
+rm -rf "$work/secrets" "$work/restore-secrets" "$work/restore-to" "$work/current-key"
 
-# Only a backup writes secret files (v0.36.0).
+# Only a backup and a restore write secret files.
 fresh
 rm -f "$work/made-secret"
 game status

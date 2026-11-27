@@ -7,6 +7,14 @@ applies it.
 
 ## [Unreleased]
 
+Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Games).
+
+### Fixed, operations
+
+- **Restore** has the game write its secret files (`game_backup_secrets`) before it compares them,
+  so the comparison never meets a stale or missing set. On a server whose keys differ from the
+  backup's, a fresh one included, `restore` now stops and asks for `--force-env`.
+
 ## [0.38.0] - 2026-11-27
 
 Two additions to the sweep, from Mini Games' move to v0.34.0.

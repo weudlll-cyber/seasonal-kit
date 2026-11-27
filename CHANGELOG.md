@@ -9,8 +9,23 @@ applies it.
 
 Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royale).
 
+### Added
+
+- **`.sk-dense-list`** (`components.css`, K112): a list of linked names whose links are 24 px high
+  with room between them; the probe passes them there and only there.
+- **Probe:** `overlaps` (a control over or under a part beside it), boxes past the top and bottom
+  of the window, the kit's own ellipses in one list.
+- **`axeFinder(builder, { exclude })`**, and the sweep waits for animations that end.
+- **Website stand-in:** `emailVerified: false` for a member, `keepAliveMs`, and a chat frame that
+  shows its room and theme. A login page of its own is declined: a game tests its own sign-in.
+- The type `Attempt` (`FailureBrake.reserve`) is exported from `@seasonal/kit/server`.
+
 ### Changed
 
+- **Docked screen:** its scrolling box is `role="group"`, no landmark (still a Tab stop named
+  "Game screen"); a test that looks for the region looks for the group.
+- **Probe:** its answer has the new list `overlaps`; a fitted root that scrolls clips nothing.
+- **Sweep:** a screen that does not open is a finding, and the walk goes on.
 - **Header:** "Signed in as" shows from 1600 px up (before 1441 px); below it is read out and the
   name stays, so Cases' organiser header stays one row at 1536 x 768 (K111).
 

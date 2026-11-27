@@ -116,7 +116,7 @@ for (const [width, height] of [
         .analyze();
       expect(found.passes.map((rule) => rule.id)).toEqual(['scrollable-region-focusable']);
       expect(found.violations).toEqual([]);
-      await expect(page.getByRole('region', { name: 'Game screen' }).first()).toHaveAttribute(
+      await expect(page.getByRole('group', { name: 'Game screen' }).first()).toHaveAttribute(
         'tabindex',
         '0',
       );

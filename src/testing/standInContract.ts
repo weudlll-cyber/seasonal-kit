@@ -30,6 +30,8 @@ export interface StandInMember {
   readonly role: 'member' | 'organiser' | 'admin';
   // Whether this member may host the game; an admin always may.
   readonly canHost?: boolean;
+  // Whether the website verified their e-mail (since v0.36.0); left out: verified.
+  readonly emailVerified?: boolean;
   readonly steps?: readonly Step[];
 }
 
@@ -70,7 +72,7 @@ export function authorize(
       'x-acting-user-id': String(member.id),
       'x-acting-user': member.name,
       'x-acting-user-roles': member.role,
-      'x-acting-user-email-verified': 'true',
+      'x-acting-user-email-verified': String(member.emailVerified !== false),
       'x-acting-user-can-host': String(member.role === 'admin' || member.canHost === true),
       'x-acting-user-steps': Buffer.from(JSON.stringify(member.steps ?? [])).toString('base64url'),
     },

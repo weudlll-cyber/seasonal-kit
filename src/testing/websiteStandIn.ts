@@ -17,6 +17,9 @@
  *                 - every other path under a game's base goes to its app, WebSockets too.
  *                 `openRounds(slug)` reads the game's open rounds as the website does. A game not
  *                 named answers 404, as a switched-off game does. `close()` ends every connection.
+ *                 Since v0.36.0 a member may be unverified (`emailVerified: false`), the chat's
+ *                 frame shows its room and theme, and `keepAliveMs` sets how long an idle
+ *                 connection is kept. A login page of its own is the game's to test.
  *                 Test code only; it holds no real session and signs in whoever the test names.
  * Depends on:     node:http, ./standInContract, ./standInFrames, ./standInProxy
  * Source:         new in the kit (K74), the contract half of seasonal-mini-games
@@ -50,6 +53,8 @@ export interface StandInOptions {
   // By slug: the games switched on at the stand-in.
   readonly games: Readonly<Record<string, StandInGame>>;
   readonly members?: readonly StandInMember[];
+  // How long an idle connection is kept open, in ms (since v0.36.0). Default: Node's 5000.
+  readonly keepAliveMs?: number;
 }
 
 export interface WebsiteStandIn {
@@ -241,6 +246,7 @@ export async function startWebsiteStandIn(options: StandInOptions): Promise<Webs
   const server = http.createServer((request, response) => {
     handle(state, request, response);
   });
+  server.keepAliveTimeout = options.keepAliveMs ?? server.keepAliveTimeout;
   // Upgraded sockets are no longer the server's own, so they are kept to be closed.
   const upgraded = new Set<Duplex>();
   server.on('upgrade', (request: IncomingMessage, socket: Duplex) => {

@@ -17,6 +17,9 @@
  *                 - every other path under a game's base goes to its app, WebSockets too.
  *                 `openRounds(slug)` reads the game's open rounds as the website does. A game not
  *                 named answers 404, as a switched-off game does. `close()` ends every connection.
+ *                 Since v0.36.0 a member may be unverified (`emailVerified: false`), the chat's
+ *                 frame shows its room and theme, and `keepAliveMs` sets how long an idle
+ *                 connection is kept. A login page of its own is the game's to test.
  *                 Test code only; it holds no real session and signs in whoever the test names.
  * Depends on:     node:http, ./standInContract, ./standInFrames, ./standInProxy
  * Source:         new in the kit (K74), the contract half of seasonal-mini-games
@@ -169,6 +172,7 @@ export async function startWebsiteStandIn(options) {
     const server = http.createServer((request, response) => {
         handle(state, request, response);
     });
+    server.keepAliveTimeout = options.keepAliveMs ?? server.keepAliveTimeout;
     // Upgraded sockets are no longer the server's own, so they are kept to be closed.
     const upgraded = new Set();
     server.on('upgrade', (request, socket) => {

@@ -27,6 +27,7 @@ export interface StandInMember {
     readonly name: string;
     readonly role: 'member' | 'organiser' | 'admin';
     readonly canHost?: boolean;
+    readonly emailVerified?: boolean;
     readonly steps?: readonly Step[];
 }
 export interface AuthorizeRequest {

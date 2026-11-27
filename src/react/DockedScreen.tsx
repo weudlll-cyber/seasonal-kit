@@ -15,8 +15,8 @@
  *                 dock at all, no strip and no sheet, and the content still follows the keyboard
  *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
  *                 it may sit under other parts of the page (v0.7.0, found by the showcase). The
- *                 content's box is one Tab stop, the region "Game screen", so a keyboard can
- *                 scroll it (since v0.27.0).
+ *                 content's box is one Tab stop, the group "Game screen", so a keyboard can
+ *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0).
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).
@@ -67,8 +67,9 @@ export function DockedScreen(p: DockedScreenProps): ReactElement {
     <DockHandOver.Provider value={openChat}>
       <div className="sk-docked" data-sk-view={view} data-testid="docked-screen">
         {/* It scrolls when the content is taller than the screen, so the keyboard must reach it
-            (axe scrollable-region-focusable); a name needs a role. */}
-        <div className="sk-docked-main" role="region" aria-label="Game screen" tabIndex={0}>
+            (axe scrollable-region-focusable); a name needs a role, and a group is no landmark
+            around the game's own `main` (axe landmark-main-is-top-level, since v0.36.0). */}
+        <div className="sk-docked-main" role="group" aria-label="Game screen" tabIndex={0}>
           {p.children}
         </div>
         {dock}

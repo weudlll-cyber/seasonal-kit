@@ -12,7 +12,10 @@
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
  *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules; `false` turns it off, by
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
- *                 the finding), which the report then leaves out.
+ *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
+ *                 `open` fails is reported as a finding and the walk goes on, finite animations
+ *                 and transitions end before the screen is probed, and `axeFinder` takes
+ *                 selectors to leave out.
  * Depends on:     ./probe, ./screens; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/websiteSweep.ts and the size x font loop
  *                 pasted into its e2e specs, at 8d20904 (e.g. adminAccounts.spec.ts `expectFits`);
@@ -44,15 +47,25 @@ export interface SweepOptions {
 // The shape of `@axe-core/playwright`'s builder that is used here.
 interface AxeLike {
   withTags: (tags: string[]) => AxeLike;
+  exclude: (selector: string) => AxeLike;
   analyze: () => Promise<{
     violations: { id: string; nodes: { target: unknown[] }[] }[];
   }>;
 }
 
-export function axeFinder(builder: new (input: { page: Page }) => AxeLike): AxeFinder {
+export interface AxeFinderOptions {
+  // Selectors axe does not look into, e.g. the website's chat frame (since v0.36.0).
+  readonly exclude?: readonly string[];
+}
+
+export function axeFinder(
+  builder: new (input: { page: Page }) => AxeLike,
+  options: AxeFinderOptions = {},
+): AxeFinder {
   return async (page) => {
-    const result = await new builder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'])
+    const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+    const result = await (options.exclude ?? [])
+      .reduce((axe, selector) => axe.exclude(selector), tagged)
       .analyze();
     return result.violations.map(
       (v) => `${v.id}: ${v.nodes.map((n) => n.target.map(String).join(' ')).join(', ')}`,
@@ -69,6 +82,7 @@ function linesOf(seen: Probe): string[] {
     ...named('outside the window', seen.outside),
     ...named('cut text', seen.cut),
     ...named('small control', seen.smallTargets),
+    ...named('overlapping control', seen.overlaps),
     ...named('clipped fitted root', seen.clippedFits),
   ];
 }
@@ -79,6 +93,24 @@ interface Look {
   readonly theme: Theme;
 }
 
+// How long an animation may still run before the screen is judged as it is.
+const MOTION_LIMIT_MS = 5000;
+
+// Waits until every animation and transition that ends has ended, so a part is not judged half
+// faded in; one that repeats for ever is left running.
+async function motionEnded(page: Page): Promise<void> {
+  await page.evaluate(async (limit) => {
+    if (typeof document.getAnimations !== 'function') return;
+    const ending = document
+      .getAnimations()
+      .filter((a) => a.effect?.getComputedTiming().endTime !== Infinity);
+    await Promise.race([
+      Promise.all(ending.map((a) => a.finished.catch(() => undefined))),
+      new Promise((done) => setTimeout(done, limit)),
+    ]);
+  }, MOTION_LIMIT_MS);
+}
+
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(
   page: Page,
@@ -87,7 +119,14 @@ async function findingsOf(
   options: SweepOptions,
 ): Promise<string[]> {
   await page.setViewportSize(look.size);
-  await screen.open(page);
+  const where = `${screen.name} ${String(look.size.width)}x${String(look.size.height)} ${String(look.font)}px ${look.theme}`;
+  // A screen that does not open is a finding of its own; the others are still seen.
+  try {
+    await screen.open(page);
+  } catch (error) {
+    const why = error instanceof Error ? error.message.split('\n')[0] : String(error);
+    return [`${where}: did not open: ${why ?? ''}`];
+  }
   await page.evaluate((px) => {
     document.documentElement.style.fontSize = `${String(px)}px`;
   }, look.font);
@@ -100,11 +139,11 @@ async function findingsOf(
   await page.evaluate(
     () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
   );
+  await motionEnded(page);
   const found = [
     ...linesOf(await probe(page, options.targetPx)),
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
   ];
-  const where = `${screen.name} ${String(look.size.width)}x${String(look.size.height)} ${String(look.font)}px ${look.theme}`;
   return found
     .filter((line) => !(screen.allow ?? []).some((known) => line.includes(known)))
     .map((line) => `${where}: ${line}`);

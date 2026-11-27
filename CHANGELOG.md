@@ -19,6 +19,10 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 
 ### Changed
 
+- **Docked screen:** its group "Game screen" is named by a hidden element in place of an
+  `aria-label`, so axe `region` passes and looks inside it. The Tab stop and the name stay.
+- **`axeFinder`** also runs axe `region` and `landmark-main-is-top-level`, so a game's content
+  outside every landmark is now a finding.
 - **Dense list** (K117): the probe passes a button of 24 px in `.sk-dense-list`, like a link.
   The stylesheet sizes no button: that stays the game's.
 

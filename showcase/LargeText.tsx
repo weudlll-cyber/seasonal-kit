@@ -91,13 +91,15 @@ function Card(): ReactElement {
 function Round(): ReactElement {
   return (
     <Docked>
-      <div className="showcase-round">
+      {/* The game's own landmark, inside the docked screen's group. */}
+      <main className="showcase-round">
+        <h1 className="sk-visually-hidden">The round</h1>
         {Array.from({ length: 16 }, (_, i) => (
           <button key={i} type="button" className="sk-btn">
             Case {i + 1}
           </button>
         ))}
-      </div>
+      </main>
     </Docked>
   );
 }

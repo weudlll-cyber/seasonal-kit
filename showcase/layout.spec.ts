@@ -13,7 +13,8 @@
  *                 and with a middle card keeps it between the first part and "more" (v0.15.0). The
  *                 header's Menu button shows only when folded, whichever of header.css and bar.css
  *                 comes last (v0.27.0). A docked screen whose content scrolls passes axe's
- *                 scrollable-region-focusable (v0.27.0).
+ *                 scrollable-region-focusable (v0.27.0), and the sweep's landmark rules with a
+ *                 game's `main` inside (v0.39.0).
  * Depends on:     @playwright/test, @axe-core/playwright
  * Source:         new in the kit.
  */
@@ -22,6 +23,7 @@ import { readFileSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+import { AXE_LANDMARK_RULES } from '../src/testing/sweep.js';
 import { settled } from './screens.js';
 
 // At least this much, in CSS px, between the arrow and the words: a third of the small text.
@@ -87,6 +89,23 @@ for (const [width, unset] of [
     await page.addStyleTag({ content: ':root { --sk-bar-gutter: 0px; }' });
     await expect(bar).toHaveCSS('padding-left', '0px');
     await expect(bar).toHaveCSS('padding-right', '0px');
+  });
+}
+
+// The docked screen and the sweep agree: the rules the sweep runs about it find nothing on it.
+for (const [width, height] of [
+  [1536, 768],
+  [390, 844],
+] as const) {
+  test(`the docked screen passes the landmark rules at ${String(width)} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto('/?theme=light&screen=round');
+    await settled(page);
+    const found = await new AxeBuilder({ page })
+      .withRules([...AXE_LANDMARK_RULES, 'scrollable-region-focusable'])
+      .analyze();
+    expect(found.violations).toEqual([]);
+    expect(found.passes.map((rule) => rule.id)).toContain('region');
   });
 }
 

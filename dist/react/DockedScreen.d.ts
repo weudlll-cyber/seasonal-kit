@@ -16,7 +16,10 @@
  *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
  *                 it may sit under other parts of the page (v0.7.0, found by the showcase). The
  *                 content's box is one Tab stop, the group "Game screen", so a keyboard can
- *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0).
+ *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0). Its name comes
+ *                 from a hidden element (since v0.39.0): axe `region` counts an `aria-label` as
+ *                 content of the box itself, outside every landmark, but looks inside a box named
+ *                 this way and finds the game's own `main`.
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).

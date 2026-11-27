@@ -2,9 +2,16 @@ import { probe } from './probe.js';
 import { setTheme, SWEEP_SIZES } from './screens.js';
 import { floorLines, uncheckedFloor } from './sweepFloors.js';
 import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
+// What axe checks in a sweep: the WCAG 2.0 to 2.2 A and AA rules, and the two rules about
+// landmarks that the docked screen is held to in the kit's own browser check (since v0.39.0).
+export const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+export const AXE_LANDMARK_RULES = ['region', 'landmark-main-is-top-level'];
 export function axeFinder(builder, options = {}) {
     return async (page) => {
-        const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+        const tagged = new builder({ page }).options({
+            runOnly: { type: 'tag', values: AXE_TAGS },
+            rules: Object.fromEntries(AXE_LANDMARK_RULES.map((id) => [id, { enabled: true }])),
+        });
         const result = await (options.exclude ?? [])
             .reduce((axe, selector) => axe.exclude(selector), tagged)
             .analyze();

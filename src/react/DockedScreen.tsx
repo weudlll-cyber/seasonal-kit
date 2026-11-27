@@ -16,12 +16,15 @@
  *                 the same way (Mini Games T416). The box itself never takes the viewport's height:
  *                 it may sit under other parts of the page (v0.7.0, found by the showcase). The
  *                 content's box is one Tab stop, the group "Game screen", so a keyboard can
- *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0).
+ *                 scroll it (since v0.27.0; a group, no landmark, since v0.36.0). Its name comes
+ *                 from a hidden element (since v0.39.0): axe `region` counts an `aria-label` as
+ *                 content of the box itself, outside every landmark, but looks inside a box named
+ *                 this way and finds the game's own `main`.
  * Source:         seasonal-mini-games apps/web/src/match/DockedMatch.tsx and docked.css at 866df03
  *                 (`useVisibleHeight` set the app's #root height; here a custom property the
  *                 game's root reads).
  */
-import { useEffect, useRef, type ReactElement, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactElement, type ReactNode } from 'react';
 
 import { ChatDock, type ChatDockProps } from './ChatDock.js';
 import { DockHandOver, type OpenChat } from './dockHandOver.js';
@@ -61,6 +64,7 @@ export function DockedScreen(p: DockedScreenProps): ReactElement {
   useVisibleHeight(view === 'phone');
   // The dock puts "open the chat" here; the game's bar calls it (./dockHandOver, v0.13.0).
   const openChat = useRef<OpenChat>(null);
+  const name = useId();
   // Narrowed here: what is left is the dock's own props (and `withoutChat`, which it ignores).
   const dock = p.withoutChat === true ? null : <ChatDock {...p} phone={view === 'phone'} />;
   return (
@@ -69,9 +73,13 @@ export function DockedScreen(p: DockedScreenProps): ReactElement {
         {/* It scrolls when the content is taller than the screen, so the keyboard must reach it
             (axe scrollable-region-focusable); a name needs a role, and a group is no landmark
             around the game's own `main` (axe landmark-main-is-top-level, since v0.36.0). */}
-        <div className="sk-docked-main" role="group" aria-label="Game screen" tabIndex={0}>
+        <div className="sk-docked-main" role="group" aria-labelledby={name} tabIndex={0}>
           {p.children}
         </div>
+        {/* Hidden: a name's source may be, and nothing of it is read or drawn on its own. */}
+        <span id={name} hidden>
+          Game screen
+        </span>
         {dock}
       </div>
     </DockHandOver.Provider>

@@ -262,12 +262,12 @@ describe('sweep on a screen that does not open, or still moves', () => {
 });
 
 describe('axeFinder', () => {
-  it('runs the WCAG tags and names each rule with its targets', async () => {
-    let tags: string[] = [];
+  it('runs the WCAG tags and the landmark rules, and names each rule with its targets', async () => {
+    let run: unknown;
     const excluded: string[] = [];
     class Builder {
-      withTags(t: string[]): this {
-        tags = t;
+      options(given: unknown): this {
+        run = given;
         return this;
       }
       exclude(selector: string): this {
@@ -284,6 +284,9 @@ describe('axeFinder', () => {
     expect(excluded).toEqual([]);
     await axeFinder(Builder, { exclude: ['iframe.chat', '#ad'] })({} as Page);
     expect(excluded).toEqual(['iframe.chat', '#ad']);
-    expect(tags).toEqual(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+    expect(run).toEqual({
+      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] },
+      rules: { region: { enabled: true }, 'landmark-main-is-top-level': { enabled: true } },
+    });
   });
 });

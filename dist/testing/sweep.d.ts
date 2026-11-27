@@ -10,7 +10,7 @@
  *                 (./probe) and runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
- *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules; `false` turns it off, by
+ *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
@@ -42,8 +42,18 @@ export interface SweepOptions {
     readonly themes?: readonly Theme[];
     readonly targetPx?: number;
 }
+export declare const AXE_TAGS: string[];
+export declare const AXE_LANDMARK_RULES: string[];
 interface AxeLike {
-    withTags: (tags: string[]) => AxeLike;
+    options(run: {
+        runOnly: {
+            type: 'tag';
+            values: string[];
+        };
+        rules: Record<string, {
+            enabled: boolean;
+        }>;
+    }): AxeLike;
     exclude: (selector: string) => AxeLike;
     analyze: () => Promise<{
         violations: {

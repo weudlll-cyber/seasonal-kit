@@ -36,6 +36,14 @@ describe('the docked screen’s content (v0.27.0)', () => {
     const main = screen.getByRole('group', { name: 'Game screen' });
     expect(main.getAttribute('tabindex')).toBe('0');
     expect(main.className).toBe('sk-docked-main');
+    // Named from outside, by a hidden element: an own label would be content for axe `region`.
+    expect(main.hasAttribute('aria-label')).toBe(false);
+    const source = document.getElementById(main.getAttribute('aria-labelledby') ?? '');
+    expect([source?.textContent, source?.hidden, main.contains(source)]).toEqual([
+      'Game screen',
+      true,
+      false,
+    ]);
   });
 });
 

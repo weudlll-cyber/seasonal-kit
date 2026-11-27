@@ -10,7 +10,7 @@
  *                 (./probe) and runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
- *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules; `false` turns it off, by
+ *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
  *                 name. A screen may exempt a finding it knows with `allow` (a text that is part of
  *                 the finding), which the report then leaves out. Since v0.36.0 a screen whose
  *                 `open` fails is reported as a finding and the walk goes on, finite animations
@@ -52,9 +52,18 @@ export interface SweepOptions {
   readonly targetPx?: number;
 }
 
+// What axe checks in a sweep: the WCAG 2.0 to 2.2 A and AA rules, and the two rules about
+// landmarks that the docked screen is held to in the kit's own browser check (since v0.39.0).
+export const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+export const AXE_LANDMARK_RULES = ['region', 'landmark-main-is-top-level'];
+
 // The shape of `@axe-core/playwright`'s builder that is used here.
 interface AxeLike {
-  withTags: (tags: string[]) => AxeLike;
+  // A method, so a builder whose options are typed more narrowly fits.
+  options(run: {
+    runOnly: { type: 'tag'; values: string[] };
+    rules: Record<string, { enabled: boolean }>;
+  }): AxeLike;
   exclude: (selector: string) => AxeLike;
   analyze: () => Promise<{
     violations: { id: string; nodes: { target: unknown[] }[] }[];
@@ -71,7 +80,10 @@ export function axeFinder(
   options: AxeFinderOptions = {},
 ): AxeFinder {
   return async (page) => {
-    const tagged = new builder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']);
+    const tagged = new builder({ page }).options({
+      runOnly: { type: 'tag', values: AXE_TAGS },
+      rules: Object.fromEntries(AXE_LANDMARK_RULES.map((id) => [id, { enabled: true }])),
+    });
     const result = await (options.exclude ?? [])
       .reduce((axe, selector) => axe.exclude(selector), tagged)
       .analyze();

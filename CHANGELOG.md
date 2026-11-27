@@ -10,6 +10,12 @@ applies it.
 Findings of Mini Games, Cases and Bingo on v0.39.1, a local website-mode preview and four
 handbook rules.
 
+### Decided
+
+- **Four rules** (K125, HANDBOOK "Where a check may look and write"): server-only changes with the
+  way to the server; no test writes the owner's development database; fixed seeds, every outcome;
+  website-mode parts in the local preview before a merge.
+
 ### Added
 
 - **Declared motion:** a screen's `intendedMotion` (`selector`, `decision` with a number; the

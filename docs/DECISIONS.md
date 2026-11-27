@@ -558,3 +558,8 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K123 — A covered row is not a visible one** (decided 2026-11-27, Bingo Royale's report). An
   item counts towards a floor (K116) only where nothing is painted over it, a scrolling box's
   sticky sign included.
+- **K125 — Four rules on where a check looks and writes** (decided 2026-11-27). Server-only
+  changes go with the game's way to the server and are rehearsed there; tests never write the
+  owner's development database; journeys use fixed seeds and handle every outcome; website-mode
+  parts are looked at in the local preview before a merge. In
+  [HANDBOOK.md](HANDBOOK.md#where-a-check-may-look-and-write-k125).

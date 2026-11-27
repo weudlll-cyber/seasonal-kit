@@ -94,9 +94,9 @@ echo "backup, drill, restore into a fresh database"
 docker run -d --name "$src" -e POSTGRES_USER=app -e POSTGRES_PASSWORD=x -e POSTGRES_DB=app "$PG_IMAGE" >/dev/null
 docker run -d --name "$dst" -e POSTGRES_USER=app -e POSTGRES_PASSWORD=x -e POSTGRES_DB=app "$PG_IMAGE" >/dev/null
 for c in "$src" "$dst"; do
-  for _ in $(seq 1 60); do docker exec "$c" pg_isready -U app -d app >/dev/null 2>&1 && break; sleep 1; done
+  # Over TCP: the set-up server of a new database answers on the socket only.
+  for _ in $(seq 1 60); do docker exec "$c" pg_isready -h 127.0.0.1 -U app -d app >/dev/null 2>&1 && break; sleep 1; done
 done
-sleep 2
 sql "$src" "CREATE SCHEMA app; CREATE TABLE app.accounts(id int primary key, name text); CREATE TABLE app.events(id serial primary key, body text); CREATE TABLE app.empty_one(x int); CREATE TABLE public.plain(v text); INSERT INTO app.accounts VALUES (1,'ann'),(2,'bob'),(3,'cy'); INSERT INTO app.events(body) SELECT 'event ' || g FROM generate_series(1,5) g; INSERT INTO public.plain VALUES ('one'),('two');" >/dev/null
 docker volume create "$vol" >/dev/null
 docker run --rm -v "$vol:/data" "$PG_IMAGE" sh -c 'mkdir -p /data/sub && echo alpha > /data/a.txt && echo beta > /data/sub/b.txt && echo live > /data/maintenance' >/dev/null

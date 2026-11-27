@@ -35,6 +35,9 @@ Findings of the games' moves to v0.38.0 (Bingo Royale, Seasonal Cases, Mini Game
 
 ### Fixed, operations
 
+- **Restore drill:** it waits for its database over TCP (60 s at most) in place of a socket check
+  and a fixed pause, so it never starts into the set-up server's shutdown. A game's own health
+  check should do the same (OPERATIONS.md "Waiting for the database").
 - **Restore** has the game write its secret files (`game_backup_secrets`) before it compares them,
   so the comparison never meets a stale or missing set. On a server whose keys differ from the
   backup's, a fresh one included, `restore` now stops and asks for `--force-env`.

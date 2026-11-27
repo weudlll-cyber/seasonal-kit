@@ -53,6 +53,7 @@ case "$*" in
   'image rm '*) sed -i "\|^${3}\$|d" "$W/images" ;;
   *' ps --format'*) printf 'SERVICE STATUS\napp Up\n' ;;
   *' exec -T app wget '*) [[ ! -e $W/fail.ready ]] ;;
+  'exec '*' pg_isready '*) [[ ! -e $W/fail.pg ]] ;;
 esac
 EOF
 stub systemctl <<'EOF'
@@ -103,6 +104,7 @@ game_compose() { local env=\$1; shift; docker compose -p "gm-\$env" "\$@"; }
 game_backup_settings() {
   export SK_BACKUP_PREFIX=gm SK_BACKUP_ENV=\$1 SK_BACKUP_DIR=$work/srv/backups/\$1
   export SK_BACKUP_AGE_RECIPIENT=age1standin SK_BACKUP_DB_URL=postgresql://gm@db/gm
+  export SK_BACKUP_PG_IMAGE=pg-stand-in
   export SK_BACKUP_START_CMD='echo app-started >>"\$LOG"'
   # The secret file the backup carries, and, when the test asks for it, where it is restored to.
   [[ ! -e \$W/secrets ]] || export SK_BACKUP_SECRET_FILES=\$W/secrets/seed.key
@@ -194,6 +196,17 @@ equals 'restore refuses an unknown option' "$status" 1
 backup=$(find "$work/srv/backups/prod" -name '*.tar.age' -size +0 | head -n 1)
 game --yes restore "$backup" --identity "$work/game"
 said 'restore goes through the kit' "restored $(basename "$backup")"
+# The drill's throw-away database is ready only over TCP: while a new one is being set up, its
+# first server answers on the socket alone (v0.39.0). The stand-ins restore no table.
+: >"$LOG"
+game restore --drill "$backup" --identity "$work/game"
+called 'the drill asks over TCP' 'pg_isready -h 127.0.0.1 -U drill -d drill'
+touch "$work/fail.pg"
+: >"$LOG"
+game restore --drill "$backup" --identity "$work/game"
+said 'a database that never answers ends the drill' 'the throw-away database did not start within 60 s'
+uncalled 'before anything is restored into it' 'pg_restore -U drill'
+rm "$work/fail.pg"
 
 # The backup's secret files: only named without the setting, put there with it (v0.34.0).
 fresh

@@ -275,6 +275,22 @@ through Docker bypass ufw, so a game publishes its app on loopback only.
 | `SK_HOST_APT_CONF` | optional   | Default `/etc/apt/apt.conf.d` (for the tests).  |
 | `SK_HOST_JAIL_DIR` | optional   | Default `/etc/fail2ban/jail.d` (for the tests). |
 
+## Waiting for the database
+
+A new database's container runs a first, temporary server while it sets itself up, which answers on
+the Unix socket and then shuts down. A check that asks over the socket calls it ready too early, and
+the next step of an install fails on that shutdown. So a game's Compose health check, and any wait of
+its own, asks over TCP:
+
+```yaml
+healthcheck:
+  test: ['CMD', 'pg_isready', '-h', '127.0.0.1', '-U', 'game', '-d', 'game']
+  interval: 2s
+  retries: 60
+```
+
+The kit's drill waits the same way (since v0.39.0), 60 s at most.
+
 ## Container hardening
 
 Every game's app and database containers carry these settings (K89). The app's are Bingo Royale's

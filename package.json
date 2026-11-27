@@ -1,6 +1,6 @@
 {
   "name": "@seasonal/kit",
-  "version": "0.39.1",
+  "version": "0.40.0",
   "description": "Shared shell, UI and platform parts of the Seasonal games.",
   "private": true,
   "license": "AGPL-3.0-or-later",
@@ -109,6 +109,9 @@
     "typescript-eslint": "8.73.0",
     "vite": "8.3.8",
     "vitest": "5.1.1"
+  },
+  "bin": {
+    "sk-preview": "./dist/testing/previewCli.js"
   },
   "files": [
     "browser",

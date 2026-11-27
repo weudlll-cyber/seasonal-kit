@@ -46,3 +46,4 @@ export {
   type SweepScreen,
 } from './sweep.js';
 export type { VisibleFloor } from './sweepFloors.js';
+export type { IntendedMotion } from './sweepMotion.js';

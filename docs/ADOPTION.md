@@ -46,6 +46,17 @@ choices that would change something are listed in "Needs the owner's word" at th
 
 The primary source of most of the kit, so most of it replaces code that came from here.
 
+### The local preview
+
+The game in website mode, on a database of its own: `SMG_AUTH_MODE=website`, `SMG_BASE_PATH=/games/mini-games/`, `SMG_PUBLIC_URL=http://127.0.0.1:4400/games/mini-games/`, `SMG_TRUSTED_PROXIES=127.0.0.1`, `SMG_WEBSITE_LOCAL_URL` and `SMG_WEBSITE_SYNC_TOKEN` as its `e2e/websiteStack.ts` sets them (the stand-in serves no account feed), `SMG_WEBSITE_PROXY_SECRET` set to a preview secret. Then, with the same variable:
+
+```sh
+pnpm exec sk-preview --slug mini-games --app http://127.0.0.1:<port> \
+  --secret-header X-Smg-Proxy-Secret --secret-env SMG_WEBSITE_PROXY_SECRET
+```
+
+[OPERATIONS.md](OPERATIONS.md) "The local website-mode preview".
+
 ### What each export replaces
 
 | Kit export                                                                                      | Replaces in Mini Games (lines)                                                                                                                                 | Stays in the game                                                                                                                                 |
@@ -262,7 +273,22 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **v0.39.1**: its `components/scrollTabStop.ts` can give way to the kit's `useScrollTabStop`. Only on the owner's word.
 
+### Since v0.40.0
+
+- **v0.40.0** (CHANGELOG, "Migration, per game"): the hook's ref callback, `intendedMotion` for its countdown bar, the four rules, the local preview. Only on the owner's word.
+
 ## Seasonal Bingo Royale
+
+### The local preview
+
+The game in website mode, on a database of its own: `SBR_AUTH_MODE=website`, `SBR_BASE_PATH=/games/bingo/`, `SBR_PUBLIC_URL=http://127.0.0.1:4400/games/bingo/`, `SBR_TRUSTED_PROXIES=127.0.0.1`, a `SBR_DATA_DIR` of its own, `SBR_WEBSITE_PROXY_SECRET` set to a preview secret. Then, with the same variable:
+
+```sh
+pnpm exec sk-preview --slug bingo --app http://127.0.0.1:<port> \
+  --secret-header X-Sbr-Proxy-Secret --secret-env SBR_WEBSITE_PROXY_SECRET
+```
+
+[OPERATIONS.md](OPERATIONS.md) "The local website-mode preview".
 
 ### Where Bingo stands (master `d7d841e`, read 2026-11-26)
 
@@ -458,6 +484,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 
 - **v0.39.1**: before its server move, [OPERATIONS.md](OPERATIONS.md) "Restoring onto a new server". Only on the owner's word.
 
+### Since v0.40.0
+
+- **v0.40.0** (CHANGELOG, "Migration, per game"): its recap fade's exemption goes; the four rules; the local preview. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -491,6 +521,17 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
   (K17).
 - **Tests to run:** its e2e screens and its fit tests at 320–375 px. The bar's lead may show
   again where it now fits.
+
+### The local preview
+
+The game in website mode, on a database of its own: `SC_MODE=website` (server and web), `SC_WEBSITE_ORIGIN=http://127.0.0.1:4400`, `SC_TRUSTED_PROXIES=127.0.0.1`, `SC_PROXY_SECRET` set to a preview secret. Then, with the same variable:
+
+```sh
+pnpm exec sk-preview --slug cases --app http://127.0.0.1:<port> \
+  --secret-header X-Sc-Proxy-Secret --secret-env SC_PROXY_SECRET
+```
+
+[OPERATIONS.md](OPERATIONS.md) "The local website-mode preview".
 
 ### Since v0.15.0
 
@@ -603,6 +644,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **v0.39.1**: nothing beyond the pin. Only on the owner's word.
 
+### Since v0.40.0
+
+- **v0.40.0** (CHANGELOG, "Migration, per game"): `setThemeHeld` goes; the four rules; the local preview. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -679,6 +724,10 @@ adopts it.
 ### Since v0.39.1
 
 - **v0.39.1**: nothing beyond the pin. Only on the owner's word.
+
+### Since v0.40.0
+
+- **v0.40.0**: the four rules (HANDBOOK, K125). Only on the owner's word.
 
 ## What `.sk-dense-list` needs (every game)
 

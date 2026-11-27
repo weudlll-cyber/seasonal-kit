@@ -6,8 +6,9 @@
  * Responsibility: `sweep(page, screens, options)` walks each named screen through the sizes (default
  *                 ./screens `SWEEP_SIZES`), the root fonts (16 and 32 px) and both themes: it sets
  *                 the window, lets the screen open itself (`open`, which navigates and waits for
- *                 what it needs), sets the root font and the theme, waits for two frames, probes
- *                 (./probe) and runs `axe`. It throws one error listing every finding with its
+ *                 what it needs), sets the root font and the theme, waits for stillness
+ *                 (./sweepMotion), probes (./probe), counts the floors, and waits for stillness
+ *                 again (since v0.40.0) before it runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
  *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
@@ -30,7 +31,7 @@ import { probe, type IntendedOverlap, type Probe } from './probe.js';
 import { notVisible } from './probeBase.js';
 import { applyTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
-import { motionEnded, stillMoving } from './sweepMotion.js';
+import { motionEnded, stillMoving, type IntendedMotion } from './sweepMotion.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 
@@ -46,6 +47,8 @@ export interface SweepScreen {
   readonly floors?: readonly VisibleFloor[];
   // Overlaps an owner decided on, each with its decision's number.
   readonly intendedOverlaps?: readonly IntendedOverlap[];
+  // Parts an owner decided keep moving, each with its decision's number.
+  readonly intendedMotion?: readonly IntendedMotion[];
   // Findings this screen is known to have and accepts.
   readonly allow?: readonly Allowed[];
 }
@@ -129,6 +132,24 @@ function allows(known: Allowed, line: string): boolean {
   return line.includes(known.finding) && line.endsWith(notVisible());
 }
 
+// What still moves when the wait gives up, as a finding; nothing on a still screen.
+async function motionLines(page: Page, meant: readonly IntendedMotion[] = []): Promise<string[]> {
+  const moving = await motionEnded(page, meant);
+  return typeof moving === 'string' ? [stillMoving(moving)] : [];
+}
+
+// axe's findings, on a screen that came to rest again: the probe takes its time, and a fade a
+// game's timer starts meanwhile would be judged as poor contrast.
+async function axeLines(
+  page: Page,
+  axe: AxeFinder | false,
+  meant: readonly IntendedMotion[] = [],
+): Promise<string[]> {
+  if (axe === false) return [];
+  const moving = await motionLines(page, meant);
+  return [...moving, ...(await axe(page)).map((v) => `axe: ${v}`)];
+}
+
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(
   page: Page,
@@ -152,18 +173,15 @@ async function findingsOf(
   // again with the new font.
   await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
   await page.setViewportSize(look.size);
-  // Two frames: resize observers have run and their layout is painted.
-  await page.evaluate(
-    () => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
-  );
-  const moving = await motionEnded(page);
+  // The wait's quiet moment gives resize observers their frames to run and paint, too.
   const found = [
-    ...(typeof moving === 'string' ? [stillMoving(moving)] : []),
+    ...(await motionLines(page, screen.intendedMotion)),
     ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
     ...(await floorLines(page, screen.floors ?? [], look)),
-    ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
+    ...(await axeLines(page, options.axe, screen.intendedMotion)),
   ];
-  return found
+  // The same part may still move at both waits: said once.
+  return [...new Set(found)]
     .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
     .map((line) => `${where}: ${line}`);
 }

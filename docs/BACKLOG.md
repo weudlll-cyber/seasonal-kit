@@ -285,5 +285,19 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   v0.39.1 (`screens.ts`, `sweepMotion.ts`).
 - **93. `SK_IMAGE_COMMIT` had met no real signature** (v0.39.0's sheet, 2026-11-27). Closed in
   v0.39.1 by the proof run 46013416967 (`release-image-test.yml`).
+- **94. `setTheme` and `settle` never returned on a held clock** (Cases, its BACKLOG 85,
+  2026-11-27). Closed in v0.40.0 (`sweepMotion.ts`).
+- **95. A fade begun after the sweep's one wait was judged by axe** (Bingo, 2026-11-27). Closed
+  in v0.40.0 (`sweep.ts`).
+- **96. `useScrollTabStop` never watched a box that mounted later** (Mini Games, 2026-11-27).
+  Closed in v0.40.0 (`useScrollTabStop.ts`).
+- **97. Motion that is meant could not be declared** (Mini Games, 2026-11-27). Closed in v0.40.0
+  (`sweepMotion.ts`, `screens.ts`, `sweep.ts`, K122).
+- **98. A floor counted a row a sticky sign covered** (Bingo, 2026-11-27). Closed in v0.40.0
+  (`probeRules.ts`, K123).
+- **99. Four rules the games' nights showed were missing** (2026-11-27). Closed in v0.40.0
+  (HANDBOOK.md, K125).
+- **100. No way to look at a game's website-mode parts before a merge** (the owner, 2026-11-27).
+  Closed in v0.40.0 (`preview.ts`, `previewCli.ts`, K124).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

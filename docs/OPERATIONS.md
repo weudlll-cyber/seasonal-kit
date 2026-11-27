@@ -485,3 +485,28 @@ It prints the image by digest only when that digest carries a signature of the k
 workflow, at a version tag or a full commit, run in that repository. So a project calls the
 workflow at a tag (`@v0.35.0`) or a commit, not at a branch. Anything else stops with one
 sentence.
+
+## The local website-mode preview (since v0.40.0, K124)
+
+Website-mode parts (the back link, the step badges, the header, the shared call's slot) show only
+behind the website. `sk-preview` puts the kit's stand-in website in front of a game's running dev
+server, on this computer only, with one test member signed in, so the owner can look before a merge.
+
+1. Choose a secret for the preview (any 32 letters or more, never the server's) and set it in the
+   shell's variable the game reads it from.
+2. Start the game in website mode with that secret and the preview's address as its public address
+   (each game's variables: [ADOPTION.md](ADOPTION.md), "The local preview").
+3. In a second shell with the same variable:
+
+   ```sh
+   pnpm exec sk-preview --slug <game> --app http://127.0.0.1:<the game's port> \
+     --secret-header <the game's proxy header> --secret-env <that variable>
+   ```
+
+4. It prints one address; open it. It signs the test member in and opens the game.
+   `--role organiser` or `admin`, and `--can-host`, look as another member. Ctrl+C stops it.
+
+The preview writes nothing: the game's database changes only as it does for any signed-in member,
+so run the game against a database of its own, not the owner's development one (HANDBOOK, K125).
+Its call is a stand-in page that says a live call; **the real shared call is seen only on the
+website.**

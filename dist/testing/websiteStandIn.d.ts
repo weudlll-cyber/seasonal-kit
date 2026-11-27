@@ -4,6 +4,8 @@ export interface StandInOptions {
     readonly games: Readonly<Record<string, StandInGame>>;
     readonly members?: readonly StandInMember[];
     readonly keepAliveMs?: number;
+    readonly port?: number;
+    readonly sharedCall?: number;
 }
 export interface WebsiteStandIn {
     readonly origin: string;

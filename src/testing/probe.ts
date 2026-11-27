@@ -27,7 +27,8 @@
  *                 sight, for the sweep's floors (./sweepFloors).
  *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets and those
  *                 below) are put into the page as source text and call each other by name.
- * Depends on:     ./probeBase, ./probeRules, ./probeTargets; @playwright/test (types)
+ * Depends on:     ./decision, ./probeBase, ./probeRules, ./probeTargets;
+ *                 @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/fitProbe.ts at 8d20904 (`clipsOf`,
  *                 `readable`, the text fragments, `cutText`, `wideBoxes`, the injection).
  *                 Generalised: touch targets and fitted roots added; its text floor and card
@@ -35,6 +36,7 @@
  */
 import type { Page } from '@playwright/test';
 
+import { needsNumber } from './decision.js';
 import { BASE, type Base } from './probeBase.js';
 import { RULES, type Meant, type Rules } from './probeRules.js';
 import { TARGETS, type Targets } from './probeTargets.js';
@@ -137,11 +139,8 @@ export async function probe(
   targetPx = 44,
   meant: readonly IntendedOverlap[] = [],
 ): Promise<Probe> {
-  const named = meant.find((m) => !/\d/.test(m.decision));
-  if (named !== undefined) {
-    throw new Error(
-      `the intended overlap of "${named.control}" over "${named.over}" names no decision number`,
-    );
+  for (const m of meant) {
+    needsNumber(`the intended overlap of "${m.control}" over "${m.over}"`, m.decision);
   }
   return page.evaluate(
     inPage(`runProbe(${String(targetPx)}, base, rules, ${JSON.stringify(meant)})`),

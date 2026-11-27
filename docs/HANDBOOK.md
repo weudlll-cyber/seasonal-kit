@@ -121,17 +121,30 @@ line.
 | 6. One written report: the night sheet or the branch's report file holds the fixes, exemptions, decisions and kit findings once. The final message gives only the pushed commits, the CI result, the open questions with a proposal, new kit findings and the report's path.                                                                                             | review      |
 | 7. A rehearsal covers only what the change can have altered: first list what changed in those paths (the CHANGELOG and the diff, `file:line`), then rehearse those. Nothing changed there: no rehearsal.                                                                                                                                                                 | review      |
 
-**The sweep, three things to know** (K115, K116, K118):
+**The sweep, five things to know** (K115, K116, K118, K122):
 
 - **A game server's request limit is a trap of the sweep:** its many looks, one open each, pass
   the kit's `RateLimiter` (Mini Games: 120 requests per session and minute) on a fast runner, and
   later screens get 429 answers. The answer is the screen's `setup` hook, which runs before the
   screen is opened (a fresh sign-in, say). The limit is not loosened for tests.
+- **A held clock** (`page.clock.pauseAt`) stops a script's motion, not the browser's: CSS
+  animations and transitions run on and the kit's wait still waits them out (v0.40.0).
+- **Motion that is meant is declared** (`intendedMotion` on the screen, or `settle`'s and
+  `setTheme`'s last argument, with the decision's number; K122).
 - **An overlap that is meant is declared to the sweep** (`intendedOverlaps` on the screen, with
   the decision's number; K118), not exempted by its text.
 - **An owner's floor of visible items is declared to the sweep** (`floors` on the screen: the
   selector, the least number, the sizes and the decision's number). A walk without it does not see
   a list that shrank.
+
+### Where a check may look and write (K125)
+
+| Rule                                                                                                                                                                                                     | Why                                                                                                                                                  | Enforced by |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| A change that matters only on a server (a database health check over TCP, say) is made with the game's way to the server and rehearsed there with a fresh install, not as a change of its own before it. | Where it matters is the only place it can be seen to work; a change made apart is checked by nothing and found wrong during the move to the server.  | review      |
+| Browser tests, sweeps and measurements never write the owner's development database: they use their own database or schema, created fresh and thrown away.                                               | The owner looks at the game in that database; test accounts and matches left there cannot be told from the owner's own, and some tables only append. | review      |
+| Browser journeys use fixed seeds and handle every outcome chance can give. A test that fails on a lucky outcome is a test defect, not a flaky run to repeat.                                             | A run repeated until it passes hides the defect and costs a run each time; the same seed shows the same screen to whoever reads the failure.         | review      |
+| A website-mode part is looked at in the local preview before a merge (OPERATIONS.md "The local website-mode preview"); the real shared call only on the website.                                         | The back link, the step badges, the header and the call's slot appear in website mode only, and the preview's call is a stand-in.                    | review      |
 
 ### Every task
 
@@ -224,6 +237,7 @@ The values are in [css/tokens.css](../css/tokens.css) and shown in the kit's sho
 | Accessibility: axe with the WCAG 2.0–2.2 A and AA rules finds nothing serious, in light and dark, at desktop and phone sizes; pointer targets are 24 px or more (K33), phone touch targets 40/44 px; in a `.sk-dense-list` a link or a button may be 24 px with room around it (K112, K117). | CI `showcase` (required, K19); the game's e2e        |
 | Text never goes below the game's floor (K14): `FIT_FLOORS` and `fit.css`, never below what the game has today.                                                                                                                                                                               | `tests/fit-floors.test.ts`; the game's size tests    |
 | Test data and screenshots are cleaned up: each run starts empty and leaves nothing committed.                                                                                                                                                                                                | the showcase's global setup; `.gitignore` (K16)      |
+| Tests write their own database, use fixed seeds, and leave server-only changes to the server's rehearsal: [Where a check may look and write](#where-a-check-may-look-and-write-k125) (K125).                                                                                                 | review                                               |
 | Tests never wait on the clock: time is passed in.                                                                                                                                                                                                                                            | review (the kit's limiter and readers take `now`)    |
 
 ## Docs
@@ -281,7 +295,9 @@ running Vite keeps serving the old pre-bundled kit.
   and keys stay in the game.
 - **Rate limiter:** `RateLimiter` with the game's own rules, for the routes other than sign-in.
 - **Website stand-in:** `startWebsiteStandIn` of the testing entry for the browser tests of sign-in,
-  chat and call in website mode (K74); no game writes its own half of the website's contract.
+  chat and call in website mode (K74); no game writes its own half of the website's contract. The
+  command `sk-preview` puts it before a game's dev server for the owner's look (K124); the real
+  shared call is only seen on the website.
 - **Load checks:** `latencies`, `inBatches` and `watchServer` of the testing entry (K73); the scenarios
   and targets stay in the game.
 - **Route file:** `ops/lib/website-route.sh` writes a website install's route file for nginx or Caddy

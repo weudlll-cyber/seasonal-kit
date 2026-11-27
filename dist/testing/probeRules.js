@@ -102,14 +102,66 @@ export function overlaps(b, meant) {
             : [b.marked(control, `${b.nameOf(control)} over ${b.nameOf(other)}`)];
     });
 }
-// The elements of a selector the reader sees whole: nothing of them past the window or a box.
+// What a scrolling box's sticky ::before or ::after takes of its visible area: a strip at the
+// box's top or bottom, over whatever scrolls there. Null where there is none.
+export function stickyStrip(b, box, pseudo) {
+    const style = getComputedStyle(box, pseudo);
+    const none = ['', 'none', 'normal'].includes(style.content) || style.display === 'none';
+    if (none || style.visibility === 'hidden' || style.position !== 'sticky')
+        return null;
+    const px = (value) => Number.parseFloat(value) || 0;
+    const high = px(style.height) +
+        (style.boxSizing === 'border-box'
+            ? 0
+            : px(style.paddingTop) +
+                px(style.paddingBottom) +
+                px(style.borderTopWidth) +
+                px(style.borderBottomWidth));
+    const outer = box.getBoundingClientRect();
+    const top = outer.top + box.clientTop;
+    const atBottom = style.bottom !== 'auto';
+    const from = atBottom ? top + box.clientHeight - px(style.bottom) - high : top + px(style.top);
+    const strip = { top: from, bottom: from + high, left: outer.left, right: outer.right };
+    return b.isEmpty(strip) ? null : strip;
+}
+// True where a sticky sign of a scrolling box around the element lies over part of it.
+export function underSign(b, el, seen) {
+    for (let a = el.parentElement; a !== null && a !== document.body; a = a.parentElement) {
+        if (!/auto|scroll/.test(getComputedStyle(a).overflowY))
+            continue;
+        const strips = [stickyStrip(b, a, '::before'), stickyStrip(b, a, '::after')];
+        if (strips.some((strip) => strip !== null && crosses(b, seen, strip)))
+            return true;
+    }
+    return false;
+}
+// True where another part is painted over a corner or the middle of the element.
+export function paintedOver(el, box) {
+    const [left, right] = [box.left + 1, box.right - 1];
+    const [top, bottom] = [box.top + 1, box.bottom - 1];
+    const points = [
+        [left, top],
+        [right, top],
+        [left, bottom],
+        [right, bottom],
+        [(left + right) / 2, (top + bottom) / 2],
+    ];
+    return points.some(([x, y]) => {
+        const hit = document.elementFromPoint(x, y);
+        // The element itself, what it holds, and what holds it (a rounded corner) cover nothing.
+        return hit !== null && !el.contains(hit) && !hit.contains(el);
+    });
+}
+// The elements of a selector the reader sees whole: nothing of them past the window or a box,
+// and nothing painted over them.
 export function wholeItems(b, selector) {
     return [...document.querySelectorAll(selector)].filter((el) => {
         if (!b.shown(el))
             return false;
         const box = el.getBoundingClientRect();
         const seen = b.meet(b.seenBox(el), b.windowBox());
-        return seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
+        const inside = seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
+        return inside && !underSign(b, el, seen) && !paintedOver(el, seen);
     }).length;
 }
 // The rules as one object, in the order the page defines them.
@@ -124,5 +176,8 @@ export const RULES = {
     isMeant,
     overlapOf,
     overlaps,
+    stickyStrip,
+    underSign,
+    paintedOver,
     wholeItems,
 };

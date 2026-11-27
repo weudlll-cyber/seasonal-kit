@@ -1,3 +1,4 @@
+import { needsNumber } from './decision.js';
 import { BASE } from './probeBase.js';
 import { RULES } from './probeRules.js';
 import { TARGETS } from './probeTargets.js';
@@ -72,9 +73,8 @@ function inPage(call) {
     return `(() => {\n${body}\nreturn ${call};\n})()`;
 }
 export async function probe(page, targetPx = 44, meant = []) {
-    const named = meant.find((m) => !/\d/.test(m.decision));
-    if (named !== undefined) {
-        throw new Error(`the intended overlap of "${named.control}" over "${named.over}" names no decision number`);
+    for (const m of meant) {
+        needsNumber(`the intended overlap of "${m.control}" over "${m.over}"`, m.decision);
     }
     return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules, ${JSON.stringify(meant)})`));
 }

@@ -38,6 +38,19 @@ function allows(known, line) {
         return line.includes(known);
     return line.includes(known.finding) && line.endsWith(notVisible());
 }
+// What still moves when the wait gives up, as a finding; nothing on a still screen.
+async function motionLines(page, meant = []) {
+    const moving = await motionEnded(page, meant);
+    return typeof moving === 'string' ? [stillMoving(moving)] : [];
+}
+// axe's findings, on a screen that came to rest again: the probe takes its time, and a fade a
+// game's timer starts meanwhile would be judged as poor contrast.
+async function axeLines(page, axe, meant = []) {
+    if (axe === false)
+        return [];
+    const moving = await motionLines(page, meant);
+    return [...moving, ...(await axe(page)).map((v) => `axe: ${v}`)];
+}
 // One screen in one look: opened afresh, so a layout that measures on load sees the real size.
 async function findingsOf(page, screen, look, options) {
     await page.setViewportSize(look.size);
@@ -57,16 +70,15 @@ async function findingsOf(page, screen, look, options) {
     // again with the new font.
     await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
     await page.setViewportSize(look.size);
-    // Two frames: resize observers have run and their layout is painted.
-    await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
-    const moving = await motionEnded(page);
+    // The wait's quiet moment gives resize observers their frames to run and paint, too.
     const found = [
-        ...(typeof moving === 'string' ? [stillMoving(moving)] : []),
+        ...(await motionLines(page, screen.intendedMotion)),
         ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
         ...(await floorLines(page, screen.floors ?? [], look)),
-        ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),
+        ...(await axeLines(page, options.axe, screen.intendedMotion)),
     ];
-    return found
+    // The same part may still move at both waits: said once.
+    return [...new Set(found)]
         .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
         .map((line) => `${where}: ${line}`);
 }

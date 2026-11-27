@@ -3,7 +3,7 @@
  * @brief  A stand-in of the Seasonal Entertainment website for a game's browser tests: one local
  *         server that is the website and its proxy.
  *
- * Responsibility: `startWebsiteStandIn(options)` listens on a free port of 127.0.0.1 and answers
+ * Responsibility: `startWebsiteStandIn(options)` listens on 127.0.0.1 (a free port, or `port`) and answers
  *                 as the website and its proxy do for the named games:
  *                 - the sign-in: `<base>/auth/website` through the proxy (./standInProxy) with the
  *                   website's authorize decision (./standInContract) for the member whose `se.sid`
@@ -21,6 +21,7 @@
  *                 Since v0.36.0 a member may be unverified (`emailVerified: false`), the chat's
  *                 frame shows its room and theme, and `keepAliveMs` sets how long an idle
  *                 connection is kept. A login page of its own is the game's to test.
+ *                 ./preview (since v0.40.0) puts it before a game's dev server.
  *                 Test code only; it holds no real session and signs in whoever the test names.
  * Depends on:     node:http, ./standInContract, ./standInFrames, ./standInProxy
  * Source:         new in the kit (K74), the contract half of seasonal-mini-games
@@ -100,7 +101,8 @@ function frames(state, request, url, response) {
         page = framePage('chat', { ...FRAME_MESSAGES.chat.ready, room, signedIn });
     }
     else if (call === 'shared') {
-        page = framePage('call', null);
+        const live = state.options.sharedCall;
+        page = framePage('call', live === undefined ? null : { ...FRAME_MESSAGES.call.ready, call: live, signedIn });
     }
     else if (call !== undefined) {
         page = framePage('call', { ...FRAME_MESSAGES.call.ready, call: Number(call), signedIn });
@@ -183,7 +185,11 @@ export async function startWebsiteStandIn(options) {
         upgraded.add(socket);
         upgrade(state, request, socket);
     });
-    await new Promise((done) => server.listen(0, '127.0.0.1', done));
+    // A port that is taken is the caller's to hear of.
+    await new Promise((done, failed) => {
+        server.once('error', failed);
+        server.listen(options.port ?? 0, '127.0.0.1', done);
+    });
     state.origin = `http://127.0.0.1:${String(server.address().port)}`;
     return {
         origin: state.origin,

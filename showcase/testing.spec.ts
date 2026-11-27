@@ -18,7 +18,7 @@ import { existsSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
-import { axeFinder, captureLook, probe, sweep } from '../src/testing/index.js';
+import { axeFinder, captureLook, probe, setTheme, settle, sweep } from '../src/testing/index.js';
 import { SCREENS, settled } from './screens.js';
 
 const screenOf = (name: string) => ({
@@ -99,6 +99,47 @@ test('the sweep counts the rows in sight and sets a screen up once', async ({ pa
   await expect(sweep(page, [list(6)], looks)).rejects.toThrow(
     '.sweep-list li: 5 of at least 6 (K116)',
   );
+});
+
+test('with a held clock, setTheme and settle return, and CSS motion still ends', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await screenOf('header').open(page);
+  await page.clock.pauseAt(Date.now() + 60_000);
+  await setTheme(page, 'dark');
+  // A fade of the browser's own runs on while the page's clock stands.
+  await page.evaluate(() => {
+    document.body.animate([{ opacity: 0.2 }, { opacity: 1 }], { duration: 600 });
+  });
+  const start = Date.now();
+  await settle(page);
+  expect(Date.now() - start).toBeGreaterThanOrEqual(600);
+  expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+});
+
+test('a sticky sign over the last row lowers the floor’s count by one', async ({ page }) => {
+  await screenOf('list').open(page);
+  const looks = { axe: false, sizes: [{ width: 1280, height: 720 }], fonts: [16] } as const;
+  const rows = (least: number) => ({
+    ...screenOf('list'),
+    open: async (p: Page) => {
+      await screenOf('list').open(p);
+      if (sign !== '') await p.addStyleTag({ content: sign });
+    },
+    floors: [{ selector: '.sweep-list li', least, decision: 'K123' }],
+  });
+  // The sign takes no room (a negative margin) and covers the lower half of the fifth row.
+  let sign = '';
+  await expect(sweep(page, [rows(5)], looks)).resolves.toBe(2);
+  for (const side of ['bottom', 'top']) {
+    sign = `.sweep-list::${side === 'top' ? 'before' : 'after'} { content: "More below";
+      display: block; position: sticky; ${side}: 0; height: 20px; margin-block-${
+        side === 'top' ? 'end' : 'start'
+      }: -20px; background: var(--sk-color-card); pointer-events: none; }`;
+    await expect(sweep(page, [rows(4)], looks)).resolves.toBe(2);
+    await expect(sweep(page, [rows(5)], looks)).rejects.toThrow('4 of at least 5 (K123)');
+  }
 });
 
 test('captureLook writes both sizes in both themes', async ({ page }) => {

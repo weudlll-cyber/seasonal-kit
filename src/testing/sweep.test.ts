@@ -253,6 +253,31 @@ describe('sweep on a screen that does not open, or still moves', () => {
     );
   });
 
+  it('waits again before axe, so a fade begun after the probe is not judged', async () => {
+    const w = walker();
+    // A card starts fading in while the probe runs, as one on a game's timer does.
+    let fadeFrom = -Infinity;
+    const fading = (): boolean => Date.now() - fadeFrom < 150;
+    Object.assign(document, {
+      getAnimations: () =>
+        fading() ? [{ playState: 'running', pending: false, effect: null }] : [],
+    });
+    const { evaluate } = w.page as unknown as { evaluate: (c: unknown, a?: unknown) => unknown };
+    Object.assign(w.page, {
+      evaluate: (code: unknown, arg?: unknown) => {
+        if (typeof code === 'string') fadeFrom = Date.now();
+        return evaluate(code, arg);
+      },
+    });
+    await sweep(w.page, [screen], {
+      axe: () => Promise.resolve(fading() ? ['color-contrast: .card'] : []),
+      sizes: [{ width: 320, height: 568 }],
+      fonts: [16],
+      themes: ['light'],
+    });
+    Reflect.deleteProperty(document, 'getAnimations');
+  });
+
   it('refuses to see nothing', async () => {
     const w = walker();
     await expect(sweep(w.page, [], { axe: false })).rejects.toThrow(/nothing/);
@@ -271,6 +296,25 @@ describe('an exemption only for what is not visible', () => {
     await expect(run).rejects.toThrow(
       'the sweep found 1:\nlobby 320x568 16px light: cut text: [list] span.name "a"',
     );
+  });
+});
+
+describe('sweep with declared motion', () => {
+  it('excuses a screen’s declared motion at both waits', async () => {
+    const bar = document.createElement('div');
+    bar.className = 'countdown';
+    const moving = { target: bar, getComputedTiming: () => ({ endTime: 900 }) };
+    Object.assign(document, {
+      getAnimations: () => [{ playState: 'running', pending: false, effect: moving }],
+    });
+    const declared = { ...screen, intendedMotion: [{ selector: '.countdown', decision: 'O161' }] };
+    await sweep(walker().page, [declared], {
+      axe: () => Promise.resolve([]),
+      sizes: [{ width: 320, height: 568 }],
+      fonts: [16],
+      themes: ['light'],
+    });
+    Reflect.deleteProperty(document, 'getAnimations');
   });
 });
 

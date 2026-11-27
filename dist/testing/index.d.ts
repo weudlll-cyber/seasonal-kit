@@ -23,3 +23,4 @@ export type { StandInGame } from './standInProxy.js';
 export { startWebsiteStandIn, type StandInOptions, type WebsiteStandIn } from './websiteStandIn.js';
 export { axeFinder, sweep, type Allowed, type AxeFinder, type SweepOptions, type SweepScreen, } from './sweep.js';
 export type { VisibleFloor } from './sweepFloors.js';
+export type { IntendedMotion } from './sweepMotion.js';

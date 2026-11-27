@@ -7,6 +7,57 @@ applies it.
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-11-27
+
+Findings of Mini Games, Cases and Bingo on v0.39.1, a local website-mode preview and four
+handbook rules.
+
+### Decided
+
+- **Four rules** (K125, HANDBOOK "Where a check may look and write"): server-only changes with the
+  way to the server; no test writes the owner's development database; fixed seeds, every outcome;
+  website-mode parts in the local preview before a merge.
+
+### Added
+
+- **`sk-preview`** (K124): a game in website mode on this computer, behind the stand-in, with one
+  test member signed in and a stand-in shared call (OPERATIONS.md; ADOPTION.md per game). The
+  stand-in takes `port` and `sharedCall`, and a taken port is now an error.
+- **Declared motion:** a screen's `intendedMotion` (`selector`, `decision` with a number; the
+  type `IntendedMotion`), and the same as the last argument of `settle` and `setTheme`, excuses
+  the motion of that part and of what it holds. Other motion is still reported; a declaration
+  without a number is refused.
+- **`useScrollTabStop()`** answers a ref callback: a box rendered after its component gets its
+  Tab stop, and is let go when it leaves. With a ref passed in, as before.
+
+### Fixed, test tools
+
+- **Floors:** a row counts as whole only where nothing is painted over it: its corners and middle
+  are hit-tested, and a scrolling box's sticky `::before` or `::after` (a "More below" sign) is
+  taken off that box's visible area. A floor that counted covered rows may now fail.
+- **Sweep:** it waits for stillness again directly before axe, so a fade that starts after the
+  probe is no longer judged as poor contrast.
+- **The wait for motion on a held clock:** `setTheme`, `settle` and the sweep return with
+  `page.clock.pauseAt` in force: the limit, the quiet moment and the steps are the test's own
+  time, and the page is only read. CSS animations and transitions keep running on the browser's
+  timeline while a clock is held; motion a script drives stands still. The sweep's wait for two
+  frames, which a held clock never gave, is gone: the quiet moment covers it.
+
+### Migration, per game
+
+Every game: the handbook's four rules (K125) go into its own `CLAUDE.md` with this move, and
+`sk-preview` is how its owner looks at website-mode parts before a merge (ADOPTION.md "The local
+preview").
+
+- **Mini Games:** a box rendered later takes `const box = useScrollTabStop()` and `ref={box}`, so
+  its remaining reason for a copy goes; the countdown bar that steps every second is declared as
+  `intendedMotion` with its decision, and any exemption for it goes.
+- **Seasonal Cases:** the `setThemeHeld` workaround in `e2e/screens.spec.ts` can go: `setTheme`
+  returns on a held clock.
+- **Bingo Royale:** the contrast exemption for the recap card's fade can go; its own fix of the
+  7 places' floor stays valid (the kit's floor now counts no covered row either).
+- **Seasonal Party:** nothing beyond the pin.
+
 ## [0.39.1] - 2026-11-27
 
 Follow-ups to v0.39.0, before the games adopt it.
@@ -1999,7 +2050,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.40.0...HEAD
+[0.40.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...v0.40.0
 [0.39.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...v0.39.0
 [0.38.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...v0.38.0

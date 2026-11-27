@@ -6,8 +6,9 @@
  * Responsibility: `sweep(page, screens, options)` walks each named screen through the sizes (default
  *                 ./screens `SWEEP_SIZES`), the root fonts (16 and 32 px) and both themes: it sets
  *                 the window, lets the screen open itself (`open`, which navigates and waits for
- *                 what it needs), sets the root font and the theme, waits for two frames, probes
- *                 (./probe) and runs `axe`. It throws one error listing every finding with its
+ *                 what it needs), sets the root font and the theme, waits for stillness
+ *                 (./sweepMotion), probes (./probe), counts the floors, and waits for stillness
+ *                 again (since v0.40.0) before it runs `axe`. It throws one error listing every finding with its
  *                 screen, size, font and theme, and returns how many combinations it saw. `axe` is
  *                 the game's own (so the kit depends on nothing): `axeFinder(AxeBuilder)` from
  *                 `@axe-core/playwright` runs the WCAG 2 A and AA rules and the landmark rules; `false` turns it off, by
@@ -28,6 +29,7 @@ import type { Page } from '@playwright/test';
 import { type IntendedOverlap } from './probe.js';
 import { type Size, type Theme } from './screens.js';
 import { type VisibleFloor } from './sweepFloors.js';
+import { type IntendedMotion } from './sweepMotion.js';
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 export type Allowed = string | {
     readonly finding: string;
@@ -39,6 +41,7 @@ export interface SweepScreen {
     readonly setup?: (page: Page) => Promise<void>;
     readonly floors?: readonly VisibleFloor[];
     readonly intendedOverlaps?: readonly IntendedOverlap[];
+    readonly intendedMotion?: readonly IntendedMotion[];
     readonly allow?: readonly Allowed[];
 }
 export interface SweepOptions {

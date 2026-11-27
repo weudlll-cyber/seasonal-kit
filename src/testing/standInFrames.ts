@@ -10,12 +10,13 @@
  *                 `window.say(type, fields)` (an unread count, a call that ended). The messages
  *                 and their fields are `FRAME_MESSAGES`, which the contract test reads. A frame
  *                 shows the `room` and `theme` of its address, also as `data-sk-room` and
- *                 `data-sk-theme` (since v0.36.0).
+ *                 `data-sk-theme` (since v0.36.0). `/embed/call/shared` is the shared call's view
+ *                 with nothing shared (since v0.37.0): it says no `ready` until the test does.
  * Depends on:     nothing
  * Source:         new in the kit (K74), after the games' chat stubs (seasonal-mini-games and
  *                 seasonal-cases e2e/websiteStub.ts).
  * Spec:           website docs/EMBED.md "The postMessage API" and docs/GAME-INTEGRATION.md §9 at
- *                 cc743b9
+ *                 cc743b9; "The shared call" at f8f2cdf
  */
 export const FRAME_MESSAGES = {
   chat: {
@@ -44,7 +45,8 @@ type Frame = keyof typeof FRAME_MESSAGES;
 // A string safe inside a <script>: JSON, with "<" written as its escape.
 const literal = (value: unknown): string => JSON.stringify(value).replaceAll('<', '\\u003c');
 
-export function framePage(frame: Frame, ready: Readonly<Record<string, unknown>>): string {
+// `ready` null: the page says nothing on load.
+export function framePage(frame: Frame, ready: Readonly<Record<string, unknown>> | null): string {
   const { source, host } = FRAME_MESSAGES[frame];
   return `<!doctype html><meta charset="utf-8"><title>${frame} (stand-in)</title>
 <p>${frame} (stand-in)</p>
@@ -70,6 +72,6 @@ export function framePage(frame: Frame, ready: Readonly<Record<string, unknown>>
     document.querySelector('p').textContent += ', ' + name + ' ' + value;
   });
   var ready = ${literal(ready)};
-  if (parent !== window) window.say(ready.type, ready);
+  if (ready && parent !== window) window.say(ready.type, ready);
 </script>`;
 }

@@ -383,6 +383,16 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   backup stays as it is for the server side: the units `print-units` writes keep requiring
   `docker.service`, with no mode for a PostgreSQL installed as a system service and no extra choice of
   paths. Cases moves to Docker first, then takes the kit's backup unchanged.
+- **K77 — The kit's part of the one shared call** (owner, decided 2026-11-25; built 2026-11-26 on
+  branch `feat/shared-call-slot`; released in v0.37.0, K114). From the website's
+  [concepts/shared-call.md](https://github.com/weudlll-cyber/seasonal-entertainment/blob/master/docs/concepts/shared-call.md)
+  at `cc743b9`: a member already in the call sees in the game only a note that they are in the call
+  (no picture), there is only ever one shared call, and every organiser and admin may share one.
+  `SharedCallSlot` frames `/embed/call/shared` with no call number and shows only while a call is
+  live; `BackToCall` links to it. The note and who may share are the website's. The website's
+  contract for the shared view (GAME-INTEGRATION.md §9 at `963be59`) ends it with the reason
+  `unshared` when its call stops being shared, then posts `ready` for the next one: the kit accepts
+  that reason, without which the message was dropped and the slot stayed visible.
 - **K78 — Base components are opt-in classes, held for the owner's look review** (2026-11-26, built,
   not merged). `components.css` draws buttons, panels, fields and chips as `sk-` classes only, so a
   game that imports it changes nothing until it uses one. Where the games differ, Mini Games' version
@@ -515,3 +525,8 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   point). The scan reports only for now; before a game's first production it blocks on high and
   critical findings, never on lower ones. The kit's own browser specs keep running on every pull
   request (ends K106's open point).
+- **K114 — The shared call's slot is released, in the dock** (2026-11-27). The website merged its
+  part on 2026-11-27 (`f8f2cdf`). A `DockedScreen` or `ChatDock` given `onSharedCall` holds the
+  shared view where a linked call's view sits (GAME-INTEGRATION.md §9, "the same slot"), because
+  every game uses the docked screen. The slot shows only while the shared call is live (K77), also
+  where the website's `ready` says `scheduled`. Standalone, a game passes nothing.

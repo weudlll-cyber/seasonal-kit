@@ -13,7 +13,8 @@
  *                 - `/login?next=` sets that cookie for the member the test chose (`signInAs`) and
  *                   returns to a local `next` under `/games/`;
  *                 - `/api/public/season`, `/media/step-icons/<32 hex>.webp`;
- *                 - `/embed/chat?room=` and `/embed/call/<id>` (./standInFrames);
+ *                 - `/embed/chat?room=`, `/embed/call/<id>` and `/embed/call/shared`
+ *                   (./standInFrames);
  *                 - every other path under a game's base goes to its app, WebSockets too.
  *                 `openRounds(slug)` reads the game's open rounds as the website does. A game not
  *                 named answers 404, as a switched-off game does. `close()` ends every connection.
@@ -163,11 +164,13 @@ function frames(
   response: ServerResponse,
 ): boolean {
   const signedIn = memberOf(state, request) !== null;
-  const call = /^\/embed\/call\/([1-9]\d{0,9})$/.exec(url.pathname)?.[1];
+  const call = /^\/embed\/call\/([1-9]\d{0,9}|shared)$/.exec(url.pathname)?.[1];
   let page: string;
   if (url.pathname === '/embed/chat') {
     const room = url.searchParams.get('room');
     page = framePage('chat', { ...FRAME_MESSAGES.chat.ready, room, signedIn });
+  } else if (call === 'shared') {
+    page = framePage('call', null);
   } else if (call !== undefined) {
     page = framePage('call', { ...FRAME_MESSAGES.call.ready, call: Number(call), signedIn });
   } else {

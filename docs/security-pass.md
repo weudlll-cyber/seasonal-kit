@@ -63,6 +63,20 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-27 — before v0.37.0, the shared call's slot (branch `feat/shared-call-slot`)
+
+| Scan                         | Tool and command                       | Result                                     |
+| ---------------------------- | -------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                       | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)         | Read on the pull request before the merge. |
+
+**Read by the session that wrote it,** against the website's sender at `f8f2cdf`. The frame is a
+path on the game's own origin (a path elsewhere throws), sandboxed as the linked call's, allowing
+`autoplay; fullscreen` only. Its messages are checked for origin, window and `source`; a call id is
+a positive safe integer before it goes into the "Back to the call" link. The game sends the view a
+flag and nothing else.
+
 ### 2026-11-27 — before v0.36.0 (branch `fix/v0.34-findings`)
 
 | Scan                         | Tool and command                                       | Result                                                    |

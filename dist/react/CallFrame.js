@@ -24,7 +24,7 @@ import { callEmbedUrl, connectCall } from '../callView.js';
 import { useShownTheme } from './theme.js';
 // The chat's sandbox (scripts, the site's own cookie, forms, popups), and popups that leave it:
 // the call page must work as a page of its own (K44).
-const SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox';
+export const SANDBOX = 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox';
 export function CallFrame(p) {
     const theme = useShownTheme();
     const frame = useRef(null);

@@ -13,7 +13,9 @@
  *                 callView.js: the sources, the six messages and their fields, and the error
  *                 codes of server/src/calls/joinRoutes.js, which all fit `isCode`). Anything
  *                 malformed or unknown is ignored, and so is a `ready` that names another call
- *                 than the one linked. It needs a call id, so nothing links while a game has
+ *                 than the one linked. The view of the shared call (K77) also ends with the
+ *                 reason `unshared` when the call stops being shared (unshared or replaced);
+ *                 only that view sends it. It needs a call id, so nothing links while a game has
  *                 none (./callSlot hides the slot then). It frames nothing itself:
  *                 ./react/CallFrame does, in ./react/CallSlotBox, only with a call id. Nothing
  *                 the page sends is secret: flags and a theme name.
@@ -21,7 +23,7 @@
  *                 seasonal-mini-games apps/web/src/chat/useHostChatFrame.ts at 91b23bc); no game
  *                 has a call view yet (Mini Games 91b23bc, Bingo c3b76c1).
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Call view inside a game"
- *                 (at e7b995c)
+ *                 (at e7b995c); its shared view and the reason `unshared` as merged at f8f2cdf
  */
 import type { EmbedTheme } from './chatEmbed.js';
 import { type Fields, type FrameLink } from './frameMessages.js';
@@ -36,7 +38,7 @@ export type FromCall = {
     readonly listening: boolean;
 } | {
     readonly type: 'ended';
-    readonly reason: 'ended' | 'gone';
+    readonly reason: 'ended' | 'gone' | 'unshared';
 } | {
     readonly type: 'speaking';
     readonly active: boolean;
@@ -63,6 +65,7 @@ export type ToCall = {
     readonly visible: boolean;
 };
 export declare const isCallId: (value: unknown) => value is number;
+export declare function sharedCallEmbedUrl(theme: EmbedTheme, path?: string): string;
 export declare function callEmbedUrl(callId: number, theme: EmbedTheme, path?: string): string;
 export declare function parseCall(data: Fields): FromCall | null;
 export interface CallLinkOptions {
@@ -72,3 +75,4 @@ export interface CallLinkOptions {
     readonly origin?: string;
 }
 export declare function connectCall(options: CallLinkOptions): FrameLink<ToCall>;
+export declare function connectSharedCall(options: Omit<CallLinkOptions, 'callId'>): FrameLink<ToCall>;

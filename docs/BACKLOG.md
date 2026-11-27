@@ -16,7 +16,8 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   (checked 2026-11-25 on each `master`): Mini Games `1988346` pins v0.18.0 (PRs #53 to #55) and is
   adopted; Bingo Royale `2380ea7` and Seasonal Cases `073f9ad` pin v0.11.1; Seasonal Party
   `a09f803` pins none.
-- **9. React wrappers.** What is left of it: `ChatDock` and the call slot. In the kit since v0.4.0
+- **9. React wrappers.** What is left of it: `ChatDock` and the call slot, the shared call's
+  included (`onSharedCall`, v0.37.0: no game uses it yet). In the kit since v0.4.0
   with tests. Done when: a game uses them. Checked 2026-11-25: Mini Games `1988346` uses
   `DockedScreen` with `withoutChat` (`apps/web/src/match/DockedMatch.tsx` line 54), so no dock and
   no call slot; Seasonal Cases `073f9ad` uses `useDockReserve` and `useFitScale` only; Bingo's
@@ -36,6 +37,9 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   2026-11-27 in Mini Games' `round/largeText.css`, which sets it to `auto`; `css/frames.css`
   `.sk-result-first`, board layout). Not among the findings of this release. Done when: the part
   grows with its content there, measured at 200 %, and the game's rule can go.
+- **74. The call's view loads anew when the layout or the theme changes** (2026-11-27). The dock
+  renders its slot in another place on a phone, and a new theme is a new frame address, so a
+  listener must press **Listen** again. Done when: one frame stays, and the view is sent `theme`.
 
 ## Part two — closed
 

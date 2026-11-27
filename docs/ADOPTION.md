@@ -246,6 +246,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **v0.36.0** (CHANGELOG, "Migration, per game"): its own large-text rules for kit parts go; `Attempt` from `@seasonal/kit/server`; the handbook's "How we check" into its `CLAUDE.md`. Only on the owner's word.
 
+### Since v0.37.0
+
+- **Shared call** (K77, K114): `onSharedCall` on its `DockedScreen` with chat (`match/DockedMatch.tsx`) in website mode, `BackToCall` on the result, `call.css`; no call-id field. CHANGELOG "Migration, per game" has the standalone rule and the one browser check. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### Where Bingo stands (master `d7d841e`, read 2026-11-26)
@@ -426,6 +430,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 
 - **v0.36.0** (CHANGELOG, "Migration, per game"): `game_backup_secrets`, `.sk-dense-list`, the sweep's and the stand-in's new options; the handbook's "How we check" into its `CLAUDE.md`. Only on the owner's word.
 
+### Since v0.37.0
+
+- **Shared call** (K77, K114): `onSharedCall` on its `DockedScreen` (`shell/DockedChat.tsx`) in website mode, `BackToCall` on the result, `call.css`. CHANGELOG "Migration, per game" has the standalone rule and the one browser check. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -555,6 +563,10 @@ also checks what its own schema does not: ISO times, an https `joinUrl` on its o
 
 - **v0.36.0** (CHANGELOG, "Migration, per game"): its allowances for BACKLOG 77 and 78 go; the handbook's "How we check" into its `CLAUDE.md`. Only on the owner's word.
 
+### Since v0.37.0
+
+- **Shared call** (K77, K114): `onSharedCall` on its `DockedScreen` with chat (`App.tsx`) in website mode, `BackToCall` on the result. CHANGELOG "Migration, per game" has the standalone rule and the one browser check. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -615,6 +627,10 @@ adopts it.
 ### Since v0.33.0
 
 - **v0.33.0:** nothing to do.
+
+### Since v0.37.0
+
+- **Shared call** (K77, K114): nothing until it embeds in the website with a docked chat; then `onSharedCall` as the CHANGELOG says. Only on the owner's word.
 
 ## What v0.12.0 answers
 

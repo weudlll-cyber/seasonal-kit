@@ -7,6 +7,46 @@ applies it.
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-11-27
+
+The kit's part of the one shared call (K77), released now that the website provides it
+(seasonal-entertainment `f8f2cdf`).
+
+### Added
+
+- **`SharedCallSlot`, `BackToCall`, `connectSharedCall` and `sharedCallEmbedUrl`** (K77): the view
+  `/embed/call/shared` of whichever call is shared, shown only while it is live (`ended` may say
+  `unshared`), and the link back to `/calls/<id>`.
+- **`onSharedCall`** on `DockedScreen` and `ChatDock` (K114): the dock's slot holds the shared
+  call's view, in the places a linked call has. Unset or undefined, as before.
+- **Website stand-in:** `/embed/call/shared`, which says nothing until the test makes it.
+
+### Migration, per game
+
+Website mode only: the view is the website's own page on the game's origin
+(`/embed/call/shared`, under `/games/<slug>/`), so there is no address to set, and the game's
+`frame-src 'self'` allows it; the game sets no `Permissions-Policy` that turns off `autoplay` or
+`fullscreen`. **Standalone there is no website: pass nothing, and nothing is framed** (never render
+the slot there: a game that answers every path with its own page would frame itself). A screen
+`withoutChat` has no slot. The way: keep the id in state, pass the setter to the dock only in
+website mode (`onSharedCall={website ? setCall : undefined}`), and put
+`<BackToCall callId={call} />` where a round's result shows. Import `@seasonal/kit/call.css`.
+
+**The one browser check:** behind `startWebsiteStandIn`, open a docked screen; in the frame
+`shared-call-frame` call `window.say('ready', { call: 7, status: 'live', signedIn: true })`:
+`shared-call-slot` shows and `back-to-call` links to `/calls/7`. Then
+`window.say('ended', { reason: 'unshared' })`: both go. Standalone, `shared-call-slot` is not on
+the page.
+
+- **Bingo Royale:** `onSharedCall` in `apps/web/src/shell/DockedChat.tsx`, `BackToCall` on the
+  result; add `call.css`.
+- **Mini Games:** `onSharedCall` on the `DockedScreen` with chat in
+  `apps/web/src/match/DockedMatch.tsx`, `BackToCall` on the result; add `call.css`.
+- **Seasonal Cases:** `onSharedCall` on the `DockedScreen` with chat in `apps/web/src/App.tsx`
+  (`mode.mode === 'website'`), `BackToCall` on the result; it has `call.css`.
+- **Seasonal Party:** nothing beyond the pin until it embeds in the website with a docked chat;
+  then as above.
+
 ## [0.36.0] - 2026-11-27
 
 Findings of the games' moves to v0.34.0 (Seasonal Cases, Mini Games, Bingo Royale).
@@ -1822,7 +1862,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.37.0...HEAD
+[0.37.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.36.0...v0.37.0
 [0.36.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.35.0...v0.36.0
 [0.35.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.34.0...v0.35.0
 [0.34.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.33.0...v0.34.0

@@ -40,6 +40,7 @@ const VALID: FromCall[] = [
   { type: 'ready', call: 42, status: 'scheduled', signedIn: true },
   { type: 'live', listening: true },
   { type: 'ended', reason: 'gone' },
+  { type: 'ended', reason: 'unshared' },
   { type: 'speaking', active: false },
   { type: 'resize', mode: 'collapsed', width: 48, height: 190 },
   { type: 'error', code: 'call_full' },

@@ -101,7 +101,7 @@ const rightMessage = fc
       signedIn: flag,
     }),
     fc.record({ type: fc.constant('live'), listening: flag }),
-    fc.record({ type: fc.constant('ended'), reason: fc.constantFrom('ended', 'gone') }),
+    fc.record({ type: fc.constant('ended'), reason: fc.constantFrom('ended', 'gone', 'unshared') }),
     fc.record({ type: fc.constant('speaking'), active: flag }),
     fc.record({
       type: fc.constant('resize'),

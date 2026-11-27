@@ -19,6 +19,7 @@
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Framing"
  */
 import { type ReactElement } from 'react';
+export declare const SANDBOX = "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox";
 export interface CallFrameProps {
     readonly callId: number;
     readonly path?: string;

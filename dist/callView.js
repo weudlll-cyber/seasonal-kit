@@ -3,17 +3,24 @@ import { isFlag, isSize, linkFrame } from './frameMessages.js';
 // The site's numeric call id.
 export const isCallId = (value) => typeof value === 'number' && Number.isSafeInteger(value) && value > 0;
 const EMBED_PATH = '/embed/call';
+const themed = (path, call, theme) => {
+    if (!isLocalPath(path))
+        throw new TypeError(`Not a path on this site: ${path}`);
+    return `${path.replace(/\/$/, '')}/${call}?${new URLSearchParams({ theme }).toString()}`;
+};
+// "/embed/call/shared?theme=dark": the view of whichever call is shared with the games now.
+export function sharedCallEmbedUrl(theme, path = EMBED_PATH) {
+    return themed(path, 'shared', theme);
+}
 // "/embed/call/7?theme=dark"; `path` is the game's configured embed path (without the id).
 export function callEmbedUrl(callId, theme, path = EMBED_PATH) {
     if (!isCallId(callId))
         throw new TypeError(`Not a call id: ${String(callId)}`);
-    if (!isLocalPath(path))
-        throw new TypeError(`Not a path on this site: ${path}`);
-    return `${path.replace(/\/$/, '')}/${String(callId)}?${new URLSearchParams({ theme }).toString()}`;
+    return themed(path, String(callId), theme);
 }
 const oneOf = (...values) => (value) => values.some((v) => v === value);
 const isStatus = oneOf('scheduled', 'live', 'ended');
-const isReason = oneOf('ended', 'gone');
+const isReason = oneOf('ended', 'gone', 'unshared');
 const isMode = oneOf('picture', 'collapsed');
 // An error code such as `call_full`: short, lower case, never text to show as it is.
 const isCode = (value) => typeof value === 'string' && /^[a-z][a-z0-9_]{0,63}$/.test(value);
@@ -49,10 +56,8 @@ function encodeCall(message) {
             return { type: 'visible', visible: message.visible };
     }
 }
-export function connectCall(options) {
-    const { callId } = options;
-    if (!isCallId(callId))
-        throw new TypeError(`Not a call id: ${String(callId)}`);
+// One link to a call view; `ours` drops the messages of a view that is not the one asked for.
+function connectView(options, ours) {
     return linkFrame({
         frame: options.frame,
         origin: options.origin ?? window.location.origin,
@@ -61,9 +66,18 @@ export function connectCall(options) {
         parse: parseCall,
         encode: encodeCall,
         onMessage(message) {
-            if (message.type === 'ready' && message.call !== callId)
-                return;
-            options.onMessage(message);
+            if (ours(message))
+                options.onMessage(message);
         },
     });
+}
+export function connectCall(options) {
+    const { callId } = options;
+    if (!isCallId(callId))
+        throw new TypeError(`Not a call id: ${String(callId)}`);
+    return connectView(options, (m) => m.type !== 'ready' || m.call === callId);
+}
+// The view of the one call shared with the games: its `ready` names whichever call that is.
+export function connectSharedCall(options) {
+    return connectView(options, () => true);
 }

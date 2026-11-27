@@ -394,5 +394,6 @@ describe('the frames (EMBED.md and GAME-INTEGRATION.md §9)', () => {
     const callPage = await (await get('/embed/call/12')).text();
     expect(callPage).toContain('"call":12,"status":"live","signedIn":false');
     expect((await get('/embed/call/0')).status).toBe(404);
+    expect(await (await get('/embed/call/shared')).text()).toContain('var ready = null;');
   });
 });

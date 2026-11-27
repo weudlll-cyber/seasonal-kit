@@ -277,6 +277,9 @@ running Vite keeps serving the old pre-bundled kit.
 - **Backups:** `ops/backup.sh` (backup, restore, drill, the nightly timer's units) and the pull scripts,
   shipped in the package and set by `SK_BACKUP_*` variables (K61, [OPERATIONS.md](OPERATIONS.md)); the
   game wires them and keeps its own compose files and key checks.
+- **Shared call** (K77, K114): `onSharedCall` on the docked screen (website mode only) puts
+  `SharedCallSlot` in the dock's slot; `BackToCall` links to the live call. No game polls, stores
+  an id or asks its host for one.
 - **Database roles** (K90): the app connects as a role that only reads and writes rows
   (`ops/lib/db-roles.sh`, `grantAppRole` after every migration); only the migration step connects as
   the owner ([OPERATIONS.md](OPERATIONS.md)).

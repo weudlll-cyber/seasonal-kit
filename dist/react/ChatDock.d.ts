@@ -12,7 +12,9 @@
  *                 back. In the bar's form `field` the game's
  *                 own writing field sits under it. The call slot is the 48 px strip directly
  *                 above the bar. The slot is hidden while no call id is set (../callSlot); with one
- *                 it frames the website's call view (./CallSlotBox, since v0.13.0).
+ *                 it frames the website's call view (./CallSlotBox, since v0.13.0). With
+ *                 `onSharedCall` the slot holds the view of the one call shared with the games
+ *                 instead (./SharedCall, since v0.37.0), in the same places.
  *                 Unread counts only while the chat is out of sight (../chatArrivals); the dock
  *                 provides its arrivals to the chat inside (./dockSight). A changed count is
  *                 announced in a polite live region (role status, since v0.10.1), never on the
@@ -24,10 +26,12 @@
  * Source:         seasonal-mini-games apps/web/src/match/ChatDock.tsx and chatDock.css at 866df03
  *                 (`useArrivals`, `PhoneBar`, `Body`); Bingo's chat is a side panel instead
  *                 (apps/web/src/shell/ChatDock.tsx at a43209a). Built on ../chatArrivals
- *                 (createChatArrivals, chatBarText), ./CallSlotBox and ./useDisclosure.
+ *                 (createChatArrivals, chatBarText), ./CallSlotBox, ./SharedCall and
+ *                 ./useDisclosure.
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §5 and §9 (at e7b995c)
  */
 import { type ReactElement, type ReactNode } from 'react';
+import { type SharedCallSlotProps } from './SharedCall.js';
 export interface ChatDockProps {
     readonly chat: ReactNode;
     readonly phone: boolean;
@@ -36,5 +40,6 @@ export interface ChatDockProps {
     readonly callId: number | null;
     readonly onUnread?: (count: number) => void;
     readonly callPath?: string;
+    readonly onSharedCall?: SharedCallSlotProps['onCall'] | undefined;
 }
 export declare function ChatDock(p: ChatDockProps): ReactElement;

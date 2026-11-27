@@ -25,6 +25,7 @@ export { GameBar, type BarAction, type BarFact, type BarIconName, type BarPress,
 export { PhaseStrip, type PhasePart, type PhaseStripProps } from './PhaseStrip.js';
 export { useFocusMode } from './useFocusMode.js';
 export { useFullscreen, type Fullscreen } from './useFullscreen.js';
+export { BackToCall, SharedCallSlot, type BackToCallProps, type SharedCallSlotProps, } from './SharedCall.js';
 export { StepBadges, type StepBadgesProps } from './StepBadges.js';
 export { useApiGet, type Loaded } from './useApiGet.js';
 export { useCountdown } from './useCountdown.js';

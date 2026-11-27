@@ -19,7 +19,7 @@ export { clockOffset } from './serverClock.js';
 export { signInAgain, signInAgainAfter, websiteLoginHref, websiteSignInHref, } from './websiteSignIn.js';
 export { chatEmbedUrl, connectChat, } from './chatEmbed.js';
 export { chatBarText, createChatArrivals, } from './chatArrivals.js';
-export { callEmbedUrl, connectCall, } from './callView.js';
+export { callEmbedUrl, connectCall, connectSharedCall, sharedCallEmbedUrl, } from './callView.js';
 export { CALL_SLOT, callSlot, } from './callSlot.js';
 export { MIN_POINTER_TARGET } from './fit.js';
 export { clockText } from './clock.js';

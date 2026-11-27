@@ -1,8 +1,8 @@
 import { probe } from './probe.js';
 import { notVisible } from './probeBase.js';
-import { setTheme, SWEEP_SIZES } from './screens.js';
+import { applyTheme, SWEEP_SIZES } from './screens.js';
 import { floorLines, uncheckedFloor } from './sweepFloors.js';
-import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
+import { motionEnded, stillMoving } from './sweepMotion.js';
 // What axe checks in a sweep: the WCAG 2.0 to 2.2 A and AA rules, and the two rules about
 // landmarks that the docked screen is held to in the kit's own browser check (since v0.39.0).
 export const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
@@ -52,7 +52,7 @@ async function findingsOf(page, screen, look, options) {
     await page.evaluate((px) => {
         document.documentElement.style.fontSize = `${String(px)}px`;
     }, look.font);
-    await setTheme(page, look.theme);
+    await applyTheme(page, look.theme);
     // A pixel off the height and back: parts that measure on a resize (the fitted screens) measure
     // again with the new font.
     await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
@@ -61,9 +61,7 @@ async function findingsOf(page, screen, look, options) {
     await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
     const moving = await motionEnded(page);
     const found = [
-        ...(typeof moving === 'string'
-            ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
-            : []),
+        ...(typeof moving === 'string' ? [stillMoving(moving)] : []),
         ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
         ...(await floorLines(page, screen.floors ?? [], look)),
         ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),

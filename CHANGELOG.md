@@ -15,6 +15,12 @@ Follow-ups to v0.39.0, before the games adopt it.
   `overflow-y` of `auto` or `scroll` (before: any taller content, also a clipped one). It also looks
   again when the box's class changes.
 
+### Changed
+
+- **One wait for motion:** `settle` and `setTheme` use the sweep's wait: they also wait for a late
+  start (250 ms of rest) and give up after 5 s with an error (before: until the test's own time
+  limit). The sweep now waits once a look, not twice.
+
 ### Documented
 
 - **Restoring onto a new server** (OPERATIONS.md): the new server's keys differ, so `restore`

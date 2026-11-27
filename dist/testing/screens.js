@@ -7,18 +7,20 @@
  *                 smallest 320x568). `setTheme(page, theme)` puts the page in a theme the way a
  *                 person does, by the header's `theme-toggle`, and where that is hidden (a
  *                 round's focus mode) or absent sets `data-theme` on <html>, which is what the
- *                 tokens follow; it returns once no animation is running, so a picture or a
- *                 measurement never catches a fade. `captureLook(page, dir, name, show?)` saves
+ *                 tokens follow; it returns once nothing that ends is moving (`settle`, on
+ *                 ./sweepMotion since v0.39.1, which also waits for a late start and gives up
+ *                 after 5 s with an error), so a picture or a measurement never catches a fade. `captureLook(page, dir, name, show?)` saves
  *                 `<name>-desktop-light.jpg` … `<name>-phone-dark.jpg` (`show` is scrolled to the
  *                 middle first) and puts the window size and theme back. Types only come from
  *                 Playwright: nothing of it is imported when this runs.
- * Depends on:     node:path; @playwright/test (types)
+ * Depends on:     node:path, ./sweepMotion; @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/screens.ts at 8d20904 (`DESKTOP`, `PHONE`,
  *                 `captureLook`, the wait for running animations) and seasonal-mini-games
  *                 e2e/screens.ts at 9e3c6f3 (the toggle-hidden fallback). Generalised: the
  *                 folder is a parameter.
  */
 import path from 'node:path';
+import { motionEnded, stillMoving } from './sweepMotion.js';
 export const DESKTOP = { width: 1280, height: 800 };
 export const PHONE = { width: 390, height: 844 };
 export const SWEEP_SIZES = [
@@ -31,13 +33,15 @@ export const SWEEP_SIZES = [
     { width: 320, height: 568 },
 ];
 const themeNow = (page) => page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-// Waits until no animation or transition is running (a loop that never ends is not waited for).
+// Waits until no animation or transition that ends is moving (./sweepMotion); throws where that
+// does not come within its limit.
 export async function settle(page) {
-    await page.waitForFunction(() => document
-        .getAnimations()
-        .every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity));
+    const moving = await motionEnded(page);
+    if (typeof moving === 'string')
+        throw new Error(stillMoving(moving));
 }
-export async function setTheme(page, theme) {
+// The theme alone, without a wait: ./sweep waits once, after it has set up the whole look.
+export async function applyTheme(page, theme) {
     if ((await themeNow(page)) !== theme) {
         const toggle = page.getByTestId('theme-toggle').first();
         if (await toggle.isVisible())
@@ -49,6 +53,9 @@ export async function setTheme(page, theme) {
             }, theme);
         }
     }
+}
+export async function setTheme(page, theme) {
+    await applyTheme(page, theme);
     await settle(page);
 }
 export async function captureLook(page, dir, name, show) {

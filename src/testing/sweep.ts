@@ -28,9 +28,9 @@ import type { Page } from '@playwright/test';
 
 import { probe, type IntendedOverlap, type Probe } from './probe.js';
 import { notVisible } from './probeBase.js';
-import { setTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
+import { applyTheme, SWEEP_SIZES, type Size, type Theme } from './screens.js';
 import { floorLines, uncheckedFloor, type VisibleFloor } from './sweepFloors.js';
-import { MOTION_LIMIT_MS, motionEnded } from './sweepMotion.js';
+import { motionEnded, stillMoving } from './sweepMotion.js';
 
 export type AxeFinder = (page: Page) => Promise<readonly string[]>;
 
@@ -147,7 +147,7 @@ async function findingsOf(
   await page.evaluate((px) => {
     document.documentElement.style.fontSize = `${String(px)}px`;
   }, look.font);
-  await setTheme(page, look.theme);
+  await applyTheme(page, look.theme);
   // A pixel off the height and back: parts that measure on a resize (the fitted screens) measure
   // again with the new font.
   await page.setViewportSize({ ...look.size, height: look.size.height - 1 });
@@ -158,9 +158,7 @@ async function findingsOf(
   );
   const moving = await motionEnded(page);
   const found = [
-    ...(typeof moving === 'string'
-      ? [`still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`]
-      : []),
+    ...(typeof moving === 'string' ? [stillMoving(moving)] : []),
     ...linesOf(await probe(page, options.targetPx, screen.intendedOverlaps)),
     ...(await floorLines(page, screen.floors ?? [], look)),
     ...(options.axe === false ? [] : (await options.axe(page)).map((v) => `axe: ${v}`)),

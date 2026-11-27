@@ -182,7 +182,6 @@ function walker(seen: Partial<Probe> = {}) {
       return Promise.resolve(fn(arg));
     },
     getByTestId: () => ({ first: () => ({ isVisible: () => Promise.resolve(false) }) }),
-    waitForFunction: () => Promise.resolve(),
   };
   return { page: fake as unknown as Page, log };
 }

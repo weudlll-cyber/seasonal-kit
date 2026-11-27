@@ -1,6 +1,8 @@
 export const MOTION_LIMIT_MS = 5000;
 // So long must nothing move before the screen counts as still.
 export const MOTION_QUIET_MS = 250;
+// The words for a screen that did not come to rest, in the sweep's finding and settle's error.
+export const stillMoving = (moving) => `still moving after ${String(MOTION_LIMIT_MS / 1000)} s: ${moving}`;
 // Null when the screen is still; else what was moving when the limit was reached.
 export async function motionEnded(page) {
     return page.evaluate(async ([limit, quiet]) => {

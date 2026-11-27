@@ -37,6 +37,9 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   2026-11-27 in Mini Games' `round/largeText.css`, which sets it to `auto`; `css/frames.css`
   `.sk-result-first`, board layout). Not among the findings of this release. Done when: the part
   grows with its content there, measured at 200 %, and the game's rule can go.
+- **74. The call's view loads anew when the layout or the theme changes** (2026-11-27). The dock
+  renders its slot in another place on a phone, and a new theme is a new frame address, so a
+  listener must press **Listen** again. Done when: one frame stays, and the view is sent `theme`.
 
 ## Part two — closed
 

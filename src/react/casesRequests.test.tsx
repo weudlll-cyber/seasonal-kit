@@ -4,7 +4,7 @@
  * @brief  Seasonal Cases' requests of the kit (v0.11.0): the dock reserve without a chat, the
  *         unread count for the bar, a bar toggle, and a chat frame from this PC's dev server.
  *
- * Responsibility: `useDockReserve` is the strip's 190 px on a desktop, 150 px in a window under
+ * Responsibility: `useDockReserve` is the strip's 190 px on a desktop, 100 px in a window under
  *                 760 px high, nothing on a phone, and follows a resize (20). `ChatDock`'s
  *                 `onUnread` hears each new count (24). A `GameBar` toggle says whether it is on
  *                 with `aria-pressed`, shows it in its icon, keeps its words, and switches on a
@@ -52,7 +52,7 @@ describe('the dock reserve without a chat (Cases 20)', () => {
       size(1280, 700);
       window.dispatchEvent(new Event('resize'));
     });
-    expect(result.current).toBe(150);
+    expect(result.current).toBe(100);
     act(() => {
       size(390, 844);
       window.dispatchEvent(new Event('resize'));

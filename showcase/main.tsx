@@ -6,7 +6,7 @@
  *                 <html> before the first render (without it the early script's rule applies,
  *                 through the toggle), and renders ./Showcase, the result instead of the start
  *                 card with `?screen=result`, or one of ./Fixtures' whole screens
- *                 (`places`, `full-header`), ./LargeText's (`bar`, `card`, `round`, `panel`) or
+ *                 (`places`, `full-header`, `strip`), ./LargeText's (`bar`, `card`, `round`, `panel`) or
  *                 ./SharedScreen (`shared`, `standalone=1`).
  * Source:         new in the kit.
  */
@@ -29,7 +29,7 @@ import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { storeTheme } from '../src/theme.js';
-import { CasesRoleHeader, FullHeader, Places } from './Fixtures.js';
+import { CasesRoleHeader, FullHeader, LowStrip, Places } from './Fixtures.js';
 import { LARGE_SCREENS } from './LargeText.js';
 import { SharedScreen } from './SharedScreen.js';
 import { Showcase } from './Showcase.js';
@@ -43,6 +43,7 @@ if (theme === 'light' || theme === 'dark') storeTheme(theme);
 function page(screen: string | null): ReactElement {
   if (screen === 'places') return <Places dense={params.get('dense') === '1'} />;
   if (screen === 'full-header') return <FullHeader />;
+  if (screen === 'strip') return <LowStrip />;
   if (screen === 'cases-header') return <CasesRoleHeader role={params.get('role') ?? 'player'} />;
   if (screen === 'shared') return <SharedScreen website={params.get('standalone') !== '1'} />;
   const Large = screen === null ? undefined : LARGE_SCREENS[screen];

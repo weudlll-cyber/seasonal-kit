@@ -46,19 +46,32 @@ describe('call.css', () => {
     });
   });
 
-  it('is 267 × 150 in a window under 760 px high', () => {
+  it('is 267 × 100 in a window under 760 px high, its frame in the view’s one-row form', () => {
     const at = css.indexOf(query);
     expect(at).toBeGreaterThan(-1);
-    expect(rule('.sk-call-slot', at)).toEqual({
+    const low = rule('.sk-call-slot', at);
+    expect(low).toMatchObject({
       width: px(CALL_SLOT.lowWidth),
       height: px(CALL_SLOT.lowHeight),
     });
+    // The website's view draws its strip only in a frame under two bars high.
+    const frame = CALL_SLOT.lowHeight - 2 * Number.parseInt(low['padding-block'] ?? '0', 10);
+    expect(frame).toBeLessThan(2 * CALL_SLOT.bar);
+    expect(frame).toBeLessThan(CALL_SLOT.lowWidth);
   });
 
   it('collapses to the 48 px column and the 48 px phone strip, after the query', () => {
     expect(rule('.sk-call-slot--collapsed')).toEqual({ width: px(CALL_SLOT.bar) });
-    expect(rule('.sk-call-slot--strip')).toEqual({ width: '100%', height: px(CALL_SLOT.bar) });
-    expect(rule('.sk-call-slot--phone')).toMatchObject({ width: '100%', 'aspect-ratio': '16 / 9' });
+    expect(rule('.sk-call-slot--strip')).toEqual({
+      width: '100%',
+      height: px(CALL_SLOT.bar),
+      'padding-block': '0',
+    });
+    expect(rule('.sk-call-slot--phone')).toMatchObject({
+      width: '100%',
+      'aspect-ratio': '16 / 9',
+      'padding-block': '0',
+    });
     for (const modifier of ['--collapsed', '--strip', '--phone']) {
       expect(css.indexOf(`.sk-call-slot${modifier} {`)).toBeGreaterThan(css.indexOf(query));
     }

@@ -3,7 +3,7 @@
  * @brief  The docked chat: a strip under the game on a desktop, a bar with a sheet on a phone,
  *         and the reserved call slot beside or above it.
  *
- * Responsibility: on a desktop a full-width strip of fixed height (190 px, 150 px in a window
+ * Responsibility: on a desktop a full-width strip of fixed height (190 px, 100 px in a window
  *                 under 760 px high, ../../css/dock.css), always in sight, with the chat on the
  *                 left and the call slot at its right end at the strip's full height. On a phone
  *                 the bar at the bottom of the screen, in the layout: "Chat · <newest message>"

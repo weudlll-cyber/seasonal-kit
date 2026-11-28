@@ -276,6 +276,10 @@ running Vite keeps serving the old pre-bundled kit.
   chat; `onUnread` for the bar's count. On a phone the open sheet is never taller than the
   space visibly left above the bar (K50): the game's root is `var(--sk-visible-height, 100dvh)`
   high, and the head and the bar stay visible.
+- **The low strip** (K126): in a desktop window under 760 px high the strip is 100 px and the chat
+  inside has 90 px. A game's own chat puts its messages beside its field there, so the field keeps
+  its target size and two or three messages show whole at both fonts (`showcase/Fixtures.tsx`
+  `OwnChat`, measured by `showcase/strip.spec.ts`). The website's chat frame lays itself out.
 - **Call slot:** `callSlot`, `CALL_SLOT` (`call.css`). With a call id the dock's slot frames the
   website's call view (`CallFrame`, `callEmbedUrl`; K44) and follows its size; with none it takes
   no room.

@@ -9,8 +9,9 @@
  *                 contract's numbers (`CALL_SLOT`):
  *                 - desktop: 338 × 190, the docked chat strip's height at 16:9, at the strip's
  *                   right end;
- *                 - desktop in a window under 760 px high: 267 × 150, the low strip and the
- *                   smallest picture;
+ *                 - desktop in a window under 760 px high: 267 × 100, the low strip (K126);
+ *                   under the website's smallest picture, so its view shows one row, and the
+ *                   slot has this one form there, collapsed or not;
  *                 - collapsed on a desktop: 48 × the strip's height, the audio-only column;
  *                 - phone collapsed: full width × 48, the audio strip above the chat bar;
  *                 - phone expanded: full width at 16:9.
@@ -28,7 +29,7 @@ export const CALL_SLOT = {
     width: 338,
     height: 190,
     lowWidth: 267,
-    lowHeight: 150,
+    lowHeight: 100,
     // A window lower than this many px gets the low strip.
     lowBelow: 760,
     // The collapsed column's width on a desktop and the audio strip's height on a phone.
@@ -46,15 +47,17 @@ export function callSlot(input) {
     if (input.phone)
         return phoneSlot(input.collapsed);
     const low = input.windowHeight < CALL_SLOT.lowBelow;
-    const height = low ? CALL_SLOT.lowHeight : CALL_SLOT.height;
+    // The low strip has one form: a 48 px column would not hold the view's two buttons (K126).
+    if (low) {
+        return { form: 'low', className: BASE, width: CALL_SLOT.lowWidth, height: CALL_SLOT.lowHeight };
+    }
     if (input.collapsed) {
         return {
             form: 'collapsed',
             className: `${BASE} ${BASE}--collapsed`,
             width: CALL_SLOT.bar,
-            height,
+            height: CALL_SLOT.height,
         };
     }
-    const width = low ? CALL_SLOT.lowWidth : CALL_SLOT.width;
-    return { form: low ? 'low' : 'picture', className: BASE, width, height };
+    return { form: 'picture', className: BASE, width: CALL_SLOT.width, height: CALL_SLOT.height };
 }

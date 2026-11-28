@@ -558,6 +558,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K123 — A covered row is not a visible one** (decided 2026-11-27, Bingo Royale's report). An
   item counts towards a floor (K116) only where nothing is painted over it, a scrolling box's
   sticky sign included.
+- **K126 — The docked chat strip of a low window is 100 px** (decided 2026-11-28, for every game,
+  no game-specific exceptions). Under 760 px window height the strip may go down to 100 px (150 px
+  before). It stays visible, never folded; the field keeps its target size, and the field and the
+  last two or three messages show whole at both fonts. The shared-call slot has the same height.
+  A change to [css/dock.css](../css/dock.css), [css/call.css](../css/call.css) and `CALL_SLOT`.
 - **K125 — Four rules on where a check looks and writes** (decided 2026-11-27). Server-only
   changes go with the game's way to the server and are rehearsed there; tests never write the
   owner's development database; journeys use fixed seeds and handle every outcome; website-mode

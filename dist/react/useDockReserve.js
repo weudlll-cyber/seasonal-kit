@@ -4,7 +4,7 @@
  *         while it has no chat yet.
  *
  * Responsibility: on the dock's desktop view (./dockSight `useDockView`) the docked chat's strip
- *                 height: `CALL_SLOT.height` (190 px), or `CALL_SLOT.lowHeight` (150 px) in a
+ *                 height: `CALL_SLOT.height` (190 px), or `CALL_SLOT.lowHeight` (100 px) in a
  *                 window under `CALL_SLOT.lowBelow` (760 px) high (../callSlot, ../../css/dock.css);
  *                 on the phone view nothing (the chat bar comes in the layout). It follows the
  *                 window. A game without a chat sets it as its own bottom space, so the dock fits

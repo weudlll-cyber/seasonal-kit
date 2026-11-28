@@ -7,6 +7,15 @@ applies it.
 
 ## [Unreleased]
 
+### Changed
+
+- The docked chat strip of a desktop window under 760 px high is 100 px, 150 px before (K126);
+  its body keeps 4 px above and below. The game's main area gains the 50 px. `useDockReserve`
+  answers 100 there.
+- The call slot of that window is 267 × 100, `CALL_SLOT.lowHeight` 100: its frame is 94 px high,
+  so the website's view shows its one-row form (its picture needs 150 px, and its column would
+  not fit). The slot has this one form there, also where the view had been collapsed.
+
 ## [0.40.0] - 2026-11-27
 
 Findings of Mini Games, Cases and Bingo on v0.39.1, a local website-mode preview and four

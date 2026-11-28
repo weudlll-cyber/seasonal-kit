@@ -2,7 +2,7 @@ export declare const CALL_SLOT: {
     readonly width: 338;
     readonly height: 190;
     readonly lowWidth: 267;
-    readonly lowHeight: 150;
+    readonly lowHeight: 100;
     readonly lowBelow: 760;
     readonly bar: 48;
 };

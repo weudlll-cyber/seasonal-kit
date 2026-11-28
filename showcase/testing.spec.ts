@@ -18,6 +18,7 @@ import { existsSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
+import { wholeCount } from '../src/testing/probe.js';
 import { axeFinder, captureLook, probe, setTheme, settle, sweep } from '../src/testing/index.js';
 import { SCREENS, settled } from './screens.js';
 
@@ -140,6 +141,26 @@ test('a sticky sign over the last row lowers the floor’s count by one', async 
     await expect(sweep(page, [rows(4)], looks)).resolves.toBe(2);
     await expect(sweep(page, [rows(5)], looks)).rejects.toThrow('4 of at least 5 (K123)');
   }
+});
+
+test('a cover that takes no pointer covers, and a floor may ask for the first rows', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await screenOf('list').open(page);
+  // A layer over the second row that lets every click through.
+  await page.evaluate(() => {
+    const row = document.querySelectorAll('.sweep-list li')[1]?.getBoundingClientRect();
+    const cover = document.createElement('div');
+    cover.style.cssText = 'position: fixed; pointer-events: none; background: red';
+    cover.style.top = `${String(row?.top)}px`;
+    cover.style.left = `${String(row?.left)}px`;
+    cover.style.width = `${String(row?.width)}px`;
+    cover.style.height = `${String(row?.height)}px`;
+    document.body.append(cover);
+  });
+  expect(await wholeCount(page, '.sweep-list li')).toBe(4);
+  expect(await wholeCount(page, '.sweep-list li', true)).toBe(1);
 });
 
 test('captureLook writes both sizes in both themes', async ({ page }) => {

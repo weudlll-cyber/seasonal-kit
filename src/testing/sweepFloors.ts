@@ -1,11 +1,14 @@
 /**
  * @file   src/testing/sweepFloors.ts
- * @brief  The sweep's floors: at least so many items of a list wholly in sight.
+ * @brief  The sweep's floors: at least so many items of a list wholly in sight, or its first so
+ *         many.
  *
  * Responsibility: an owner's decision that a screen shows at least N rows is declared on the
  *                 sweep's screen (`floors`), with the decision's number. A floor holds at the
  *                 sizes it names (all of the sweep's without them) and at the root fonts it names
- *                 (16 px without them: such a decision speaks of normal text). `floorLines` is
+ *                 (16 px without them: such a decision speaks of normal text). With `first` (since
+ *                 v0.41.0) the floor asks for the list's first items, not any: a top three, say,
+ *                 that a list scrolled past its start does not show. `floorLines` is
  *                 one look's findings; `uncheckedFloor` names a floor no look of the sweep would
  *                 ever check, which would pass for ever.
  * Depends on:     ./probe (`wholeCount`), ./screens (types); @playwright/test (types)
@@ -22,6 +25,8 @@ export interface VisibleFloor {
   // The list's items, one match each (a CSS selector).
   readonly selector: string;
   readonly least: number;
+  // The first `least` items are whole, in the page's order, not any `least` of them.
+  readonly first?: boolean;
   // The decision that asks for it, as the game numbers it: it stands in the finding.
   readonly decision: string;
   readonly sizes?: readonly Size[];
@@ -45,10 +50,11 @@ export async function floorLines(
 ): Promise<string[]> {
   const lines: string[] = [];
   for (const floor of floors.filter((f) => holds(f, at))) {
-    const seen = await wholeCount(page, floor.selector);
+    const seen = await wholeCount(page, floor.selector, floor.first);
     if (seen < floor.least) {
+      const what = floor.first === true ? 'of the first ' : 'of at least ';
       lines.push(
-        `too few in sight: ${floor.selector}: ${String(seen)} of at least ${String(floor.least)} (${floor.decision})`,
+        `too few in sight: ${floor.selector}: ${String(seen)} ${what}${String(floor.least)} (${floor.decision})`,
       );
     }
   }

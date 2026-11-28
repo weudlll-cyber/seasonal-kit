@@ -20,8 +20,10 @@
  *                   sight, in the window and in every box around them, and (since v0.40.0)
  *                   covered by nothing: no part painted over a corner or the middle, and no
  *                   sticky `::before` or `::after` of a scrolling box over them. A part that
- *                   takes no pointer (`pointer-events: none`) is not seen as covering, but for
- *                   those sticky ones.
+ *                   takes no pointer (`pointer-events: none`) covers like any other (since
+ *                   v0.41.0): it takes one while the count is made (`takeAllPointers`). With
+ *                   `leading` (since v0.41.0) the answer is how many of the first items are
+ *                   whole, up to the first that is not.
  *                 Like ./probeBase they are put into the page as source text.
  * Depends on:     ./probeBase
  * Source:         `wideBoxes` and `isCut` moved from ./probe.ts (v0.36.0); the rest new in the
@@ -46,7 +48,9 @@ export declare function overlaps(b: Base, meant: readonly Meant[]): string[];
 export declare function stickyStrip(b: Base, box: Element, pseudo: string): Rect | null;
 export declare function underSign(b: Base, el: Element, seen: Rect): boolean;
 export declare function paintedOver(el: Element, box: Rect): boolean;
-export declare function wholeItems(b: Base, selector: string): number;
+export declare function takeAllPointers(): () => void;
+export declare function isWhole(b: Base, el: Element): boolean;
+export declare function wholeItems(b: Base, selector: string, leading?: boolean): number;
 export declare const RULES: {
     kitEllipses: typeof kitEllipses;
     isCut: typeof isCut;
@@ -61,6 +65,8 @@ export declare const RULES: {
     stickyStrip: typeof stickyStrip;
     underSign: typeof underSign;
     paintedOver: typeof paintedOver;
+    takeAllPointers: typeof takeAllPointers;
+    isWhole: typeof isWhole;
     wholeItems: typeof wholeItems;
 };
 export type Rules = typeof RULES;

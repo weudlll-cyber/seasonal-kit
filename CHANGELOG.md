@@ -7,6 +7,12 @@ applies it.
 
 ## [Unreleased]
 
+### Fixed, test tools
+
+- The floors count a part with `pointer-events: none` as covering: a hit test passes through it,
+  so a layer that lets clicks through could hide rows unseen. Such a layer that paints nothing
+  counts too, as any empty box over a list does.
+
 ### Added
 
 - The probe and the sweep report visible text in none of `--sk-font-size-small`, `-body`, `-lead`
@@ -15,6 +21,8 @@ applies it.
   pass. The kit's start title, result headline and bar count have sizes of their own and are left
   out; a page that does not set the four tokens is not judged. A size a game's owner decided is
   exempted with the screen's `allow`.
+- A floor may ask for a list's first items (`first: true`): the first `least` shown items are
+  whole, not any `least`.
 
 ### Decided
 

@@ -1,11 +1,14 @@
 /**
  * @file   src/testing/sweepFloors.ts
- * @brief  The sweep's floors: at least so many items of a list wholly in sight.
+ * @brief  The sweep's floors: at least so many items of a list wholly in sight, or its first so
+ *         many.
  *
  * Responsibility: an owner's decision that a screen shows at least N rows is declared on the
  *                 sweep's screen (`floors`), with the decision's number. A floor holds at the
  *                 sizes it names (all of the sweep's without them) and at the root fonts it names
- *                 (16 px without them: such a decision speaks of normal text). `floorLines` is
+ *                 (16 px without them: such a decision speaks of normal text). With `first` (since
+ *                 v0.41.0) the floor asks for the list's first items, not any: a top three, say,
+ *                 that a list scrolled past its start does not show. `floorLines` is
  *                 one look's findings; `uncheckedFloor` names a floor no look of the sweep would
  *                 ever check, which would pass for ever.
  * Depends on:     ./probe (`wholeCount`), ./screens (types); @playwright/test (types)
@@ -18,6 +21,7 @@ import type { Size } from './screens.js';
 export interface VisibleFloor {
     readonly selector: string;
     readonly least: number;
+    readonly first?: boolean;
     readonly decision: string;
     readonly sizes?: readonly Size[];
     readonly fonts?: readonly number[];

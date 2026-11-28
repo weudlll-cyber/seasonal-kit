@@ -134,8 +134,9 @@ line.
 - **An overlap that is meant is declared to the sweep** (`intendedOverlaps` on the screen, with
   the decision's number; K118), not exempted by its text.
 - **An owner's floor of visible items is declared to the sweep** (`floors` on the screen: the
-  selector, the least number, the sizes and the decision's number). A walk without it does not see
-  a list that shrank.
+  selector, the least number, the sizes and the decision's number; `first: true` where the
+  decision means the list's first items). A walk without it does not see a list that shrank. A part
+  that takes no pointer (`pointer-events: none`) counts as covering since v0.41.0.
 
 ### Where a check may look and write (K125)
 

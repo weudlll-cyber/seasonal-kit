@@ -6,7 +6,8 @@
  *
  * Responsibility: the setup runs once per screen, before the first open; a failing one is one
  *                 finding, its screen is left and the next one seen. A floor reports the look that
- *                 shows too few, with the count and the decision, holds only at its sizes and
+ *                 shows too few, with the count and the decision (the first items where it says
+ *                 `first`), holds only at its sizes and
  *                 fonts (16 px without any), may be allowed by name, and a floor that no look
  *                 checks stops the sweep. What counts as an item in sight is
  *                 ./wholeCount.test.ts.
@@ -99,6 +100,24 @@ describe('a floor of visible items', () => {
     await expect(sweep(walker(() => 8).page, [every], both)).rejects.toThrow(/found 4:/);
     const allowed = { ...guesses(), allow: ['too few in sight: .guess'] };
     await expect(sweep(walker(() => 8).page, [allowed], both)).resolves.toBe(4);
+  });
+
+  it('asks the page for the first items where the floor says so', async () => {
+    // The page answers 3 only to a count of the first items.
+    const w = walker();
+    const page = {
+      ...w.page,
+      evaluate: (code: unknown) =>
+        Promise.resolve(
+          typeof code !== 'string'
+            ? null
+            : code.includes('return wholeItems(base, ".guess", true)')
+              ? 3
+              : CLEAN,
+        ),
+    } as unknown as Page;
+    const run = sweep(page, [guesses({ least: 5, first: true })], { ...both, sizes: [desktop] });
+    await expect(run).rejects.toThrow('too few in sight: .guess: 3 of the first 5 (O109)');
   });
 
   it('stops the sweep where no look would check it', async () => {

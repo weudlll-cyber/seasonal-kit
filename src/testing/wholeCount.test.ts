@@ -5,7 +5,9 @@
  *
  * Responsibility: `wholeCount` counts only items wholly in the window and inside every box around
  *                 them, with nothing painted over a corner or the middle and no sticky sign of a
- *                 scrolling box over them, on a jsdom page whose boxes are given by attributes.
+ *                 scrolling box over them, a part that takes no pointer too, on a jsdom page whose
+ *                 boxes are given by attributes; with `leading`, only the first items up to one
+ *                 that is not whole.
  *                 The same in a real browser is showcase/testing.spec.ts.
  * Depends on:     vitest, jsdom
  * Source:         ./sweepFloors.test.ts, moved here (v0.40.0).
@@ -30,8 +32,10 @@ beforeAll(() => {
   Element.prototype.checkVisibility = function visible(this: Element) {
     return !this.hasAttribute('hidden');
   };
+  // As a browser's, the hit test passes through a part that takes no pointer.
   document.elementFromPoint = (x, y) =>
-    [...document.querySelectorAll('[data-box]:not([hidden])')]
+    [...document.querySelectorAll<HTMLElement>('[data-box]:not([hidden])')]
+      .filter((el) => getComputedStyle(el).pointerEvents !== 'none')
       .filter((el) => {
         const r = el.getBoundingClientRect();
         return x >= r.left && x < r.right && y >= r.top && y < r.bottom;
@@ -61,30 +65,30 @@ beforeAll(() => {
   }
 });
 
-describe('wholeCount', () => {
-  const page = {
-    evaluate: (code: string) => Promise.resolve((0, eval)(code) as unknown),
-  } as unknown as Page;
-  const row = (y: number, extra = '') => `<li ${extra} data-box="0 ${String(y)} 100 20"></li>`;
-  // A scrolling box 60 px high with three whole rows; `sign` is its sticky sign.
-  const list = (sign = ''): string =>
-    `<ul style="overflow-y: auto" ${sign} data-box="0 0 100 60">${row(0)}${row(20)}${row(40)}</ul>`;
-  const count = (html: string): Promise<number> => {
-    document.body.innerHTML = html;
-    for (const box of document.querySelectorAll('ul')) {
-      Object.defineProperties(box, {
-        clientHeight: { configurable: true, value: 60 },
-        clientTop: { configurable: true, value: 0 },
-      });
-    }
-    // The page's copy and the module's own rule agree.
-    const own = RULES.wholeItems(BASE, 'li');
-    return wholeCount(page, 'li').then((seen) => {
-      expect(seen).toBe(own);
-      return seen;
+const page = {
+  evaluate: (code: string) => Promise.resolve((0, eval)(code) as unknown),
+} as unknown as Page;
+const row = (y: number, extra = '') => `<li ${extra} data-box="0 ${String(y)} 100 20"></li>`;
+// A scrolling box 60 px high with three whole rows; `sign` is its sticky sign.
+const list = (sign = ''): string =>
+  `<ul style="overflow-y: auto" ${sign} data-box="0 0 100 60">${row(0)}${row(20)}${row(40)}</ul>`;
+const count = (html: string): Promise<number> => {
+  document.body.innerHTML = html;
+  for (const box of document.querySelectorAll('ul')) {
+    Object.defineProperties(box, {
+      clientHeight: { configurable: true, value: 60 },
+      clientTop: { configurable: true, value: 0 },
     });
-  };
+  }
+  // The page's copy and the module's own rule agree.
+  const own = RULES.wholeItems(BASE, 'li');
+  return wholeCount(page, 'li').then((seen) => {
+    expect(seen).toBe(own);
+    return seen;
+  });
+};
 
+describe('wholeCount', () => {
   it('counts the items wholly inside the window and every box around them', async () => {
     const cut = `<ul style="overflow-y: auto" data-box="0 0 100 50">${row(0)}${row(20)}${row(40)}</ul>`;
     // Outside such a box: one whole, one across the window's bottom, one hidden.
@@ -99,6 +103,27 @@ describe('wholeCount', () => {
     // A part inside the row covers nothing of it.
     const inside = '<li data-box="0 80 100 20"><b data-box="0 80 100 20"></b></li>';
     await expect(count(inside)).resolves.toBe(1);
+  });
+
+  it('counts a cover that takes no pointer, and leaves its style as it was', async () => {
+    const cover = '<div style="pointer-events: none; color: red" data-box="0 50 100 10"></div>';
+    await expect(count(`${list()}${cover}`)).resolves.toBe(2);
+    const left = document.querySelector('div')?.style;
+    expect([left?.pointerEvents, left?.color]).toEqual(['none', 'red']);
+    // One that only inherits it is given back none of its own.
+    await count(`<div style="pointer-events: none"><p data-box="0 80 100 20"></p></div>${list()}`);
+    expect(document.querySelector('p')?.style.pointerEvents).toBe('');
+  });
+
+  it('counts the first items up to one that is not whole, with `leading`', async () => {
+    const covered = `${list()}<div data-box="0 25 100 10"></div>`;
+    await expect(count(covered)).resolves.toBe(2);
+    // The second row is covered: of the first rows only one is whole.
+    await expect(wholeCount(page, 'li', true)).resolves.toBe(1);
+    expect(RULES.wholeItems(BASE, 'li', true)).toBe(1);
+    await count(`<ol>${row(0)}${row(20, 'hidden')}${row(40)}</ol>`);
+    // A hidden row is not one of the list's items.
+    await expect(wholeCount(page, 'li', true)).resolves.toBe(2);
   });
 
   it('takes a sticky sign off its scrolling box, at the bottom or the top', async () => {

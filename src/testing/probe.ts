@@ -26,7 +26,8 @@
  *                 finding about an element of which nothing is in the window and unclipped ends
  *                 with " (not visible)" (since v0.39.0).
  *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
- *                 sight, for the sweep's floors (./sweepFloors).
+ *                 sight, for the sweep's floors (./sweepFloors); with `leading` (since v0.41.0)
+ *                 only the first ones, up to the first that is not.
  *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets, ./probeText
  *                 and those below) are put into the page as source text and call each other by name.
  * Depends on:     ./decision, ./probeBase, ./probeRules, ./probeTargets, ./probeText;
@@ -152,6 +153,6 @@ export async function probe(
   );
 }
 
-export async function wholeCount(page: Page, selector: string): Promise<number> {
-  return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)})`));
+export async function wholeCount(page: Page, selector: string, leading = false): Promise<number> {
+  return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)}, ${String(leading)})`));
 }

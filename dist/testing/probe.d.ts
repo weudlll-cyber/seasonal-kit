@@ -26,7 +26,8 @@
  *                 finding about an element of which nothing is in the window and unclipped ends
  *                 with " (not visible)" (since v0.39.0).
  *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
- *                 sight, for the sweep's floors (./sweepFloors).
+ *                 sight, for the sweep's floors (./sweepFloors); with `leading` (since v0.41.0)
+ *                 only the first ones, up to the first that is not.
  *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets, ./probeText
  *                 and those below) are put into the page as source text and call each other by name.
  * Depends on:     ./decision, ./probeBase, ./probeRules, ./probeTargets, ./probeText;
@@ -55,4 +56,4 @@ export interface IntendedOverlap extends Meant {
 }
 export declare function runProbe(targetPx: number, b?: Base, r?: Rules & Targets & Text, meant?: readonly Meant[]): Probe;
 export declare function probe(page: Page, targetPx?: number, meant?: readonly IntendedOverlap[]): Promise<Probe>;
-export declare function wholeCount(page: Page, selector: string): Promise<number>;
+export declare function wholeCount(page: Page, selector: string, leading?: boolean): Promise<number>;

@@ -80,6 +80,6 @@ export async function probe(page, targetPx = 44, meant = []) {
     }
     return page.evaluate(inPage(`runProbe(${String(targetPx)}, base, rules, ${JSON.stringify(meant)})`));
 }
-export async function wholeCount(page, selector) {
-    return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)})`));
+export async function wholeCount(page, selector, leading = false) {
+    return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)}, ${String(leading)})`));
 }

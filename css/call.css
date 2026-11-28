@@ -41,6 +41,14 @@
   width: 48px;
 }
 
+/* A low window has one form: a slot left collapsed when the window was made lower takes the low
+   strip's width, since its column would not hold the view's buttons (K126). */
+@media (max-height: 759px) {
+  .sk-call-slot--collapsed {
+    width: 267px;
+  }
+}
+
 /* Phone, collapsed: the 48 px audio strip, full width, above the chat bar. */
 .sk-call-slot--strip {
   width: 100%;

@@ -30,7 +30,7 @@ beforeAll(() => {
     return { left: x, top: y, right: x + w, bottom: y + h, width: w, height: h } as DOMRect;
   };
   Element.prototype.checkVisibility = function visible(this: Element) {
-    return !this.hasAttribute('hidden');
+    return !this.hasAttribute('hidden') && (this as HTMLElement).style.opacity !== '0';
   };
   // As a browser's, the hit test passes through a part that takes no pointer.
   document.elementFromPoint = (x, y) =>
@@ -110,6 +110,8 @@ describe('wholeCount', () => {
     await expect(count(`${list()}${cover}`)).resolves.toBe(2);
     const left = document.querySelector('div')?.style;
     expect([left?.pointerEvents, left?.color]).toEqual(['none', 'red']);
+    // A faded-out layer is not seen, so it covers nothing.
+    await expect(count(`${list()}${cover.replace('color: red', 'opacity: 0')}`)).resolves.toBe(3);
     // One that only inherits it is given back none of its own.
     await count(`<div style="pointer-events: none"><p data-box="0 80 100 20"></p></div>${list()}`);
     expect(document.querySelector('p')?.style.pointerEvents).toBe('');

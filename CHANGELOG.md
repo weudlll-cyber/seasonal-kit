@@ -7,11 +7,16 @@ applies it.
 
 ## [Unreleased]
 
-### Fixed, test tools
+## [0.41.0] - 2026-11-28
 
-- The floors count a part with `pointer-events: none` as covering: a hit test passes through it,
-  so a layer that lets clicks through could hide rows unseen. Such a layer that paints nothing
-  counts too, as any empty box over a list does.
+Owner decisions of 2026-11-28 for every game (a 100 px docked strip, one scale floor, the sweep's
+window sizes, screens that fit) and two additions to the probe.
+
+### Decided
+
+- Screens meant to fit do not scroll at any desktop size (K127). The handbook's "How we check" has
+  the rules, each with its reason: which screens fit, where a list scrolls, the kit's fit instead
+  of fixed sizes, the sweep at the edges, and what a re-check after a fix runs.
 
 ### Added
 
@@ -23,12 +28,6 @@ applies it.
   exempted with the screen's `allow`.
 - A floor may ask for a list's first items (`first: true`): the first `least` shown items are
   whole, not any `least`.
-
-### Decided
-
-- Screens meant to fit do not scroll at any desktop size (K127). The handbook's "How we check" has
-  the rules, each with its reason: which screens fit, where a list scrolls, the kit's fit instead
-  of fixed sizes, the sweep at the edges, and what a re-check after a fix runs.
 
 ### Changed
 
@@ -45,7 +44,35 @@ applies it.
   answers 100 there.
 - The call slot of that window is 267 × 100, `CALL_SLOT.lowHeight` 100: its frame is 94 px high,
   so the website's view shows its one-row form (its picture needs 150 px, and its column would
-  not fit). The slot has this one form there, also where the view had been collapsed.
+  not fit). The slot has this one form there, also where the view had been collapsed, in a window
+  made lower since too.
+
+### Fixed, test tools
+
+- The floors count a part with `pointer-events: none` as covering: a hit test passes through it,
+  so a layer that lets clicks through could hide rows unseen. Such a layer that paints nothing
+  counts too, as any empty box over a list does; a faded-out or hidden one does not.
+
+### Migration, per game
+
+The numbers: 1 the 100 px strip, 2 the scale floor, 3 the window sizes, 4 the fit rule, 5 the text
+sizes, 6 the floors.
+
+- **Seasonal Bingo Royale** takes all six in one move. 1: look at its chat in a window under 760 px
+  high: a chat of its own puts the messages beside the field (HANDBOOK "The low strip");
+  `useDockReserve` answers 100. 2: its screens under `useFitScale('bingo')` may now shrink to 0.6,
+  with every text, row and target floor as before. 3: its own size lists give way to the default
+  walk, with `edges` for the widths and heights where its layout switches. 4: "How we check" into its
+  `CLAUDE.md`; each screen meant to fit is looked at, at 1024x600 first. 5: each "text size outside
+  the tokens" finding gets a token size, or an `allow` with the owner's decision. 6: `first: true`
+  where a decision means the first items; a floor under a layer that takes no click may now fail.
+- **Seasonal Mini Games** and **Seasonal Cases** take 1 and 3 to 6 with their next task, as above;
+  2 changes nothing for them.
+- **Seasonal Party** takes 1 and 2: its chat in the low strip; its scale floor was 0.6 already.
+- **Website mode, every game:** the website's chat frame lays itself out. By its stylesheets
+  (read at `f8f2cdf`, not rendered) a signed-in member's tabs, padding and field need about 136 px,
+  so they do not fit the 90 px the low strip gives, as they did not fit 124 px before. That is the
+  website's to change.
 
 ## [0.40.0] - 2026-11-27
 
@@ -2090,7 +2117,8 @@ The game side of the website integration, framework-free (React wrappers: docs/B
 - The delivery probe: the four season colours (`css/tokens.css`) and the theme resolution
   (`resolveTheme`), with `dist/` committed ([docs/DELIVERY.md](docs/DELIVERY.md)).
 
-[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.40.0...HEAD
+[Unreleased]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.41.0...HEAD
+[0.41.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.40.0...v0.41.0
 [0.40.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.1...v0.40.0
 [0.39.1]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.39.0...v0.39.1
 [0.39.0]: https://github.com/weudlll-cyber/seasonal-kit/compare/v0.38.0...v0.39.0

@@ -300,6 +300,10 @@ Each step pins the newest tag; a step never mixes two tags.
 
 - **v0.40.0** (CHANGELOG, "Migration, per game"): the hook's ref callback, `intendedMotion` for its countdown bar, the four rules, the local preview. Only on the owner's word.
 
+### Since v0.41.0
+
+- **v0.41.0** (CHANGELOG, "Migration, per game"): with its next task, the 100 px strip, the window sizes, the fit rule, the text sizes and the floors. Only on the owner's word.
+
 ## Seasonal Bingo Royale
 
 ### The local preview
@@ -512,6 +516,10 @@ scrolling at every desktop size, and the chat bar must stay reachable on every p
 
 - **v0.40.0** (CHANGELOG, "Migration, per game"): its recap fade's exemption goes; the four rules; the local preview. Only on the owner's word.
 
+### Since v0.41.0
+
+- **v0.41.0** (CHANGELOG, "Migration, per game"): all six in one move: the 100 px strip, the 0.6 scale floor, the window sizes with its `edges`, the fit rule, the text sizes, the floors. Only on the owner's word.
+
 ## Seasonal Cases (`seasonal-cases`, branch `proto/cases-v1`)
 
 Cases uses the kit since its start (pinned `#v0.8.0`, `cc75504`):
@@ -672,6 +680,10 @@ pnpm exec sk-preview --slug cases --app http://127.0.0.1:<port> \
 
 - **v0.40.0** (CHANGELOG, "Migration, per game"): `setThemeHeld` goes; the four rules; the local preview. Only on the owner's word.
 
+### Since v0.41.0
+
+- **v0.41.0** (CHANGELOG, "Migration, per game"): with its next task, the 100 px strip, the window sizes, the fit rule, the text sizes and the floors. Only on the owner's word.
+
 ## Seasonal Party (`seasonal-spirits`, branch `proto/sumo`)
 
 A canvas game in plain TypeScript, without React. Its client styles are one `<style>` of 586
@@ -752,6 +764,10 @@ adopts it.
 ### Since v0.40.0
 
 - **v0.40.0**: the four rules (HANDBOOK, K125). Only on the owner's word.
+
+### Since v0.41.0
+
+- **v0.41.0**: the 100 px strip and the 0.6 scale floor, which it had. Only on the owner's word.
 
 ## What `.sk-dense-list` needs (every game)
 

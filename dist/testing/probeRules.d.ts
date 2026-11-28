@@ -48,7 +48,7 @@ export declare function overlaps(b: Base, meant: readonly Meant[]): string[];
 export declare function stickyStrip(b: Base, box: Element, pseudo: string): Rect | null;
 export declare function underSign(b: Base, el: Element, seen: Rect): boolean;
 export declare function paintedOver(el: Element, box: Rect): boolean;
-export declare function takeAllPointers(): () => void;
+export declare function takeAllPointers(b: Base): () => void;
 export declare function isWhole(b: Base, el: Element): boolean;
 export declare function wholeItems(b: Base, selector: string, leading?: boolean): number;
 export declare const RULES: {

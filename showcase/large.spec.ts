@@ -3,8 +3,8 @@
  * @brief  At 100 % and 200 % text no kit part cuts, hides or pushes text or a control out of the
  *         window or over other content (v0.36.0).
  *
- * Responsibility: on ./LargeText's screens, at 1920x1080, 1536x768, 1280x720, 390x844, 360x780 and
- *                 320x568 with a 16 and a 32 px root font:
+ * Responsibility: on ./LargeText's screens, at the sweep's window sizes (`SWEEP_SIZES`, K128)
+ *                 with a 16 and a 32 px root font:
  *                 - the game bar holds all its controls and facts, whole, above what follows it;
  *                 - the start card hides nothing: what does not fit can be scrolled to, by
  *                   keyboard too;
@@ -14,24 +14,18 @@
  *                   sideways;
  *                 - the last row of a long screen ends above the phone's chat bar.
  *                 `SK_MEASURE=1` prints what it measured, for a before and after.
- * Depends on:     @playwright/test, ./screens, ./LargeText.tsx
+ * Depends on:     @playwright/test, ../src/testing/screens, ./screens, ./LargeText.tsx
  * Source:         new in the kit (the findings of Seasonal Cases, Mini Games and Bingo Royale at
  *                 v0.34.0).
  */
 import { expect, test, type Page } from '@playwright/test';
 
+import { SWEEP_SIZES } from '../src/testing/screens.js';
 import { settled } from './screens.js';
 
-const SIZES = [
-  [1920, 1080],
-  [1536, 768],
-  [1280, 720],
-  [390, 844],
-  [360, 780],
-  [320, 568],
-] as const;
+const SIZES = SWEEP_SIZES.map(({ width, height }) => [width, height] as const);
 const FONTS = [16, 32] as const;
-type Size = readonly [number, number];
+type Size = (typeof SIZES)[number];
 
 async function open(page: Page, screen: string, [width, height]: Size, font: number) {
   await page.setViewportSize({ width, height });

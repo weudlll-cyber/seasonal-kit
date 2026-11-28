@@ -201,11 +201,11 @@ export function paintedOver(el: Element, box: Rect): boolean {
 }
 
 // A hit test passes through a part that takes no pointer, which covers all the same. Each such
-// part takes one until the returned call puts it back (set on the element itself, which a page's
+// part the reader can see (not faded out or hidden) takes one until the returned call puts it back (set on the element itself, which a page's
 // content security policy allows).
-export function takeAllPointers(): () => void {
+export function takeAllPointers(b: Base): () => void {
   const changed = [...document.querySelectorAll<HTMLElement>('body *')]
-    .filter((el) => getComputedStyle(el).pointerEvents === 'none')
+    .filter((el) => getComputedStyle(el).pointerEvents === 'none' && b.shown(el))
     .map((el) => {
       const name = 'pointer-events';
       const own = [el.style.getPropertyValue(name), el.style.getPropertyPriority(name)] as const;
@@ -232,7 +232,7 @@ export function isWhole(b: Base, el: Element): boolean {
 // that is not.
 export function wholeItems(b: Base, selector: string, leading = false): number {
   const items = [...document.querySelectorAll(selector)].filter((el) => b.shown(el));
-  const back = takeAllPointers();
+  const back = takeAllPointers(b);
   const whole = items.map((el) => isWhole(b, el));
   back();
   if (!leading) return whole.filter(Boolean).length;

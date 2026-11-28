@@ -77,6 +77,13 @@ describe('call.css', () => {
     }
   });
 
+  it('gives a slot left collapsed in a low window the low width', () => {
+    const base = css.indexOf('.sk-call-slot--collapsed {');
+    const low = css.indexOf(query, base);
+    expect(low).toBeGreaterThan(base);
+    expect(rule('.sk-call-slot--collapsed', low)).toEqual({ width: px(CALL_SLOT.lowWidth) });
+  });
+
   it('takes no room while hidden', () => {
     expect(rule('.sk-call-slot[hidden]')).toEqual({ display: 'none' });
   });

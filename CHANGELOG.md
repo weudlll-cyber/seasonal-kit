@@ -7,6 +7,12 @@ applies it.
 
 ## [Unreleased]
 
+### Decided
+
+- Screens meant to fit do not scroll at any desktop size (K127). The handbook's "How we check" has
+  the rules, each with its reason: which screens fit, where a list scrolls, the kit's fit instead
+  of fixed sizes, the sweep at the edges, and what a re-check after a fix runs.
+
 ### Changed
 
 - The sweep's default walk (K128): `SWEEP_SIZES` is five windows, 1920x950, 1280x720, 1024x600,

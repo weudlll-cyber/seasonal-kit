@@ -566,6 +566,9 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
   1024x600, 390x844 and 320x568. The default walk looks at the layout in light and, for contrast,
   in dark once at 1280x720 and 390x844 with the 16 px font; the walk through every theme stays an
   option.
+- **K127 — Screens meant to fit do not scroll at any desktop size** (decided 2026-11-28, for every
+  game, no game-specific exceptions). In
+  [HANDBOOK.md](HANDBOOK.md#a-screen-meant-to-fit-k127).
 - **K126 — The docked chat strip of a low window is 100 px** (decided 2026-11-28, for every game,
   no game-specific exceptions). Under 760 px window height the strip may go down to 100 px (150 px
   before). It stays visible, never folded; the field keeps its target size, and the field and the

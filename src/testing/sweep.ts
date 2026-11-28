@@ -122,6 +122,7 @@ function linesOf(seen: Probe): string[] {
     ...named('small control', seen.smallTargets),
     ...named('overlapping control', seen.overlaps),
     ...named('clipped fitted root', seen.clippedFits),
+    ...named('text size outside the tokens', seen.textSizes),
   ];
 }
 

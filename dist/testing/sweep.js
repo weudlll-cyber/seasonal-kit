@@ -29,6 +29,7 @@ function linesOf(seen) {
         ...named('small control', seen.smallTargets),
         ...named('overlapping control', seen.overlaps),
         ...named('clipped fitted root', seen.clippedFits),
+        ...named('text size outside the tokens', seen.textSizes),
     ];
 }
 // An error's first line: the rest is a call log or a stack.

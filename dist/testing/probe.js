@@ -2,6 +2,7 @@ import { needsNumber } from './decision.js';
 import { BASE } from './probeBase.js';
 import { RULES } from './probeRules.js';
 import { TARGETS } from './probeTargets.js';
+import { TEXT } from './probeText.js';
 // True when a box between the element and the root, the root included, scrolls: its content is
 // reachable.
 function clipsInside(el, root) {
@@ -39,7 +40,7 @@ function clippedFits(b) {
     });
 }
 // The whole measurement, as the page runs it (exported for the unit tests, not from the entry).
-export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }, meant = []) {
+export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS, ...TEXT }, meant = []) {
     const { clientWidth: width, clientHeight: height } = document.documentElement;
     const page = document.scrollingElement ?? document.documentElement;
     const cut = [...document.body.querySelectorAll('*')].flatMap((el) => {
@@ -55,6 +56,7 @@ export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }, meant
         smallTargets: r.smallTargets(b, targetPx),
         overlaps: r.overlaps(b, meant),
         clippedFits: clippedFits(b),
+        textSizes: r.offScaleText(b),
     };
 }
 // Every function the page needs, in one place: their source is what is injected, each as a
@@ -62,7 +64,7 @@ export function runProbe(targetPx, b = BASE, r = { ...RULES, ...TARGETS }, meant
 const OWN = [clipsInside, outsideOf, clippedFits, runProbe];
 // One expression: define the parts in the page, then run `call` there.
 function inPage(call) {
-    const rules = { ...RULES, ...TARGETS };
+    const rules = { ...RULES, ...TARGETS, ...TEXT };
     const parts = [...Object.entries(BASE), ...Object.entries(rules)];
     const body = [
         ...parts.map(([name, part]) => `const ${name} = ${part.toString()};`),

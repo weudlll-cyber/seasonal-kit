@@ -25,6 +25,7 @@ const CLEAN = {
   smallTargets: [],
   overlaps: [],
   clippedFits: [],
+  textSizes: [],
 };
 
 // A page that logs what happens in order and shows `rows(width)` items of any list.

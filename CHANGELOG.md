@@ -7,6 +7,15 @@ applies it.
 
 ## [Unreleased]
 
+### Added
+
+- The probe and the sweep report visible text in none of `--sk-font-size-small`, `-body`, `-lead`
+  and `-title` at that window width and root font (`textSizes`, "text size outside the tokens"): a
+  heading at the browser's default 24 px, say. Under a fit's scale the scaled and floored sizes
+  pass. The kit's start title, result headline and bar count have sizes of their own and are left
+  out; a page that does not set the four tokens is not judged. A size a game's owner decided is
+  exempted with the screen's `allow`.
+
 ### Decided
 
 - Screens meant to fit do not scroll at any desktop size (K127). The handbook's "How we check" has

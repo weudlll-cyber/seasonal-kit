@@ -99,6 +99,7 @@ describe('probe', () => {
       smallTargets: [],
       overlaps: [],
       clippedFits: [],
+      textSizes: [],
     });
   });
 
@@ -168,6 +169,7 @@ function walker(seen: Partial<Probe> = {}) {
     smallTargets: [],
     overlaps: [],
     clippedFits: [],
+    textSizes: [],
   };
   const fake = {
     setViewportSize: (s: { width: number }) => {
@@ -201,7 +203,7 @@ describe('sweep', () => {
   });
 
   it('throws with every finding and its place, axe included', async () => {
-    const w = walker({ hScroll: true, cut: ['p "x"'] });
+    const w = walker({ hScroll: true, cut: ['p "x"'], textSizes: ['h2 24px'] });
     const run = sweep(w.page, [screen], {
       axe: () => Promise.resolve(['color-contrast: .a']),
       sizes: [{ width: 320, height: 568 }],
@@ -210,9 +212,10 @@ describe('sweep', () => {
     });
     await expect(run).rejects.toThrow(
       [
-        'the sweep found 3:',
+        'the sweep found 4:',
         'lobby 320x568 32px dark: the page scrolls sideways',
         'lobby 320x568 32px dark: cut text: p "x"',
+        'lobby 320x568 32px dark: text size outside the tokens: h2 24px',
         'lobby 320x568 32px dark: axe: color-contrast: .a',
       ].join('\n'),
     );

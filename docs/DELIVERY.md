@@ -788,6 +788,14 @@ the installed files: the command `sk-preview --help` from each manager's `node_m
 `settle` with declared motion, and the shipped floor and hook code. Both passed (on Windows). The
 scratch folders are left in the session's scratch directory.
 
+## v0.41.0, with pnpm and with npm (2026-11-28, the tag itself)
+
+Two scratch consumers outside every repository, one with pnpm and one with npm, with
+`ignore-scripts=true`, installed `#v0.41.0` (merge `a360957`), typechecked and ran three tests on
+the installed files: the 100 px call slot and strip, the four scale floors of 0.6, the five window
+sizes with `edges` and `first`, and the shipped probe code. Both passed (on Windows). The scratch
+folders are left in the session's scratch directory.
+
 ## What this means for the kit
 
 - `dist/` is committed and must equal a fresh `pnpm build`; CI fails otherwise

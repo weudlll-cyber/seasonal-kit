@@ -9,7 +9,8 @@
  *                 Without it the strictest floor of all games applies, so no screen gets smaller
  *                 than any game allows.
  *                 The values are `FIT_FLOORS` in src/fit.ts; tests/fit-floors.test.ts keeps both
- *                 equal and never below what each game has today (DECISIONS K14).
+ *                 equal and never below what each game has today unless the owner says so
+ *                 (DECISIONS K14). The scale floor, 0.6 for every game, is src/fit.ts's alone.
  *                 `--sk-min-target` is the 24 px every pointer target keeps (WCAG 2.5.8, K33).
  * Source:         seasonal-mini-games apps/web/src/round/roundIntro.css, closest.css,
  *                 resultClosest.css at 866df03 (O111's floors); seasonal-bingo-royale

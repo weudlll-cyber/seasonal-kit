@@ -12,9 +12,10 @@
  *                 `watchFit` fits again when the box's size or the visual viewport changes, and,
  *                 when asked (`afterFonts`, since v0.12.0), once web fonts have loaded, in the
  *                 next frame, never inside the observer's own delivery, so nothing loops.
- *                 `FIT_FLOORS` holds each game's floors. They never go below what the game has
- *                 today (DECISIONS K14), and tests/fit-floors.test.ts enforces that and keeps
- *                 ../css/fit.css equal to them. `MIN_POINTER_TARGET` is the 24 px every pointer
+ *                 `FIT_FLOORS` holds each game's floors: one scale floor, 0.6, for all (the
+ *                 owner, 2026-11-28), and each game's own sizes. They never go below what the
+ *                 game has today unless the owner says so (DECISIONS K14), and
+ *                 tests/fit-floors.test.ts enforces that and keeps ../css/fit.css equal to them. `MIN_POINTER_TARGET` is the 24 px every pointer
  *                 target keeps in every game (WCAG 2.5.8, K33).
  * Source:         seasonal-mini-games apps/web/src/round/useFit.ts at 866df03 (O111: `nextScale`,
  *                 `settle`, the measuring, the effect's watching, without React); the Bingo

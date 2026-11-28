@@ -9,6 +9,8 @@ applies it.
 
 ### Changed
 
+- `FIT_FLOORS.scale` is 0.6 for every game (K14, 2026-11-28): Seasonal Bingo Royale's was 1, so
+  `useFitScale('bingo')` now shrinks a screen whose fixed parts do not fit. No other floor changed.
 - The docked chat strip of a desktop window under 760 px high is 100 px, 150 px before (K126);
   its body keeps 4 px above and below. The game's main area gains the 50 px. `useDockReserve`
   answers 100 there.

@@ -82,8 +82,19 @@ async function findingsOf(page, screen, look, options) {
         .filter((line) => !(screen.allow ?? []).some((known) => allows(known, line)))
         .map((line) => `${where}: ${line}`);
 }
+// The default walk's looks in dark, for contrast: layout is the same in both themes (K128).
+const DARK_LOOKS = [
+    { width: 1280, height: 720 },
+    { width: 390, height: 844 },
+].map((size) => ({ size, font: 16, theme: 'dark' }));
 function looksOf(options) {
-    return (options.sizes ?? SWEEP_SIZES).flatMap((size) => (options.fonts ?? [16, 32]).flatMap((font) => (options.themes ?? ['light', 'dark']).map((theme) => ({ size, font, theme }))));
+    // A game that names its sizes or themes gets every combination, as before K128.
+    const own = options.sizes !== undefined || options.themes !== undefined;
+    const themes = options.themes ?? (own ? ['light', 'dark'] : ['light']);
+    const sizes = [...(options.sizes ?? SWEEP_SIZES), ...(options.edges ?? [])];
+    const fonts = options.fonts ?? [16, 32];
+    const walked = sizes.flatMap((size) => fonts.flatMap((font) => themes.map((theme) => ({ size, font, theme }))));
+    return own ? walked : [...walked, ...DARK_LOOKS.filter((dark) => fonts.includes(dark.font))];
 }
 // Every look of one screen, after its setup.
 async function screenFindings(page, screen, looks, options) {

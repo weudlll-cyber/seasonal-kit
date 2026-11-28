@@ -1,11 +1,13 @@
 /**
  * @file   src/testing/sweep.ts
- * @brief  A game's screens at every size, in light and dark, at 100 % and 200 % root font: one
- *         call that fails with everything it found.
+ * @brief  A game's screens at every size, at 100 % and 200 % root font, in light and, for
+ *         contrast, in dark: one call that fails with everything it found.
  *
  * Responsibility: `sweep(page, screens, options)` walks each named screen through the sizes (default
- *                 ./screens `SWEEP_SIZES`), the root fonts (16 and 32 px) and both themes: it sets
- *                 the window, lets the screen open itself (`open`, which navigates and waits for
+ *                 ./screens `SWEEP_SIZES`, plus the game's `edges`) and the root fonts (16 and
+ *                 32 px) in light, and once in dark at 1280x720 and 390x844 with 16 px (K128). With
+ *                 `sizes` or `themes` of its own, every size and font in every theme (both unless
+ *                 named). In each look it sets the window, lets the screen open itself (`open`, which navigates and waits for
  *                 what it needs), sets the root font and the theme, waits for stillness
  *                 (./sweepMotion), probes (./probe), counts the floors, and waits for stillness
  *                 again (since v0.40.0) before it runs `axe`. It throws one error listing every finding with its
@@ -55,8 +57,14 @@ export interface SweepScreen {
 
 export interface SweepOptions {
   readonly axe: AxeFinder | false;
+  // The game's own list instead of `SWEEP_SIZES`; every look is then walked in both themes
+  // unless `themes` says otherwise.
   readonly sizes?: readonly Size[];
+  // Sizes walked besides the list: the two either side of each width or height where the game's
+  // own layout switches.
+  readonly edges?: readonly Size[];
   readonly fonts?: readonly number[];
+  // `['light', 'dark']` with nothing else set is the walk through every theme at every size.
   readonly themes?: readonly Theme[];
   // The least width and height of a control, in px. Default 44.
   readonly targetPx?: number;
@@ -186,12 +194,22 @@ async function findingsOf(
     .map((line) => `${where}: ${line}`);
 }
 
+// The default walk's looks in dark, for contrast: layout is the same in both themes (K128).
+const DARK_LOOKS: readonly Look[] = [
+  { width: 1280, height: 720 },
+  { width: 390, height: 844 },
+].map((size) => ({ size, font: 16, theme: 'dark' }));
+
 function looksOf(options: SweepOptions): Look[] {
-  return (options.sizes ?? SWEEP_SIZES).flatMap((size) =>
-    (options.fonts ?? [16, 32]).flatMap((font) =>
-      (options.themes ?? (['light', 'dark'] as const)).map((theme) => ({ size, font, theme })),
-    ),
+  // A game that names its sizes or themes gets every combination, as before K128.
+  const own = options.sizes !== undefined || options.themes !== undefined;
+  const themes: readonly Theme[] = options.themes ?? (own ? ['light', 'dark'] : ['light']);
+  const sizes = [...(options.sizes ?? SWEEP_SIZES), ...(options.edges ?? [])];
+  const fonts = options.fonts ?? [16, 32];
+  const walked = sizes.flatMap((size) =>
+    fonts.flatMap((font) => themes.map((theme) => ({ size, font, theme }))),
   );
+  return own ? walked : [...walked, ...DARK_LOOKS.filter((dark) => fonts.includes(dark.font))];
 }
 
 // Every look of one screen, after its setup.

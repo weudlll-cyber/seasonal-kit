@@ -42,6 +42,29 @@ are in the [CHANGELOG](../CHANGELOG.md) under "Migration, per game".
 difference between the games is a per-game option whose default keeps the game as it is. The
 choices that would change something are listed in "Needs the owner's word" at the end.
 
+## The sweep's window sizes (K128)
+
+The sizes of `SWEEP_SIZES` are windows, the inside of the browser, not screens:
+
+| Window   | Stands for                                                                                             |
+| -------- | ------------------------------------------------------------------------------------------------------ |
+| 1920x950 | the largest window: a full HD screen under the browser's own bars                                      |
+| 1280x720 | the size owner decisions name                                                                          |
+| 1024x600 | the tightest desktop corner, below the owner's laptop window of 1278x629 with room for a bookmarks bar |
+| 390x844  | a common phone                                                                                         |
+| 320x568  | the smallest phone                                                                                     |
+
+By default each screen is seen at all five with a 16 and a 32 px root font in light, and in dark at
+1280x720 and 390x844 with 16 px, for contrast: 12 looks.
+
+- **A game's own switches.** Add the two sizes either side of each width or height where the game's
+  own layout switches, with `edges`: a layout that turns at 900 px wide gets
+  `edges: [{ width: 899, height: 700 }, { width: 900, height: 700 }]`. The dock turns at 760 px
+  high and the desktop view at 900 px wide (`useDockView`).
+- **Every theme at every size**, as before v0.41.0: `themes: ['light', 'dark']`.
+- **A re-check** (HANDBOOK "A screen meant to fit"): `sizes`, `themes: ['light']` and
+  `axe: false`.
+
 ## Seasonal Mini Games
 
 The primary source of most of the kit, so most of it replaces code that came from here.
@@ -364,7 +387,8 @@ focus mode. The steps, each a game PR:
    panels.
 
 **The condition:** before the owner tests it, every screen of the match must fit and pass axe
-at the sweep sizes, in light and in dark:
+at the sweep sizes of that decision, in light and in dark (the sweep's own default sizes are
+K128's, "The sweep's window sizes"):
 
 - desktop: 1280×720, 1366×768, 1536×768, 1440×900, 1900×860, 1920×1080;
 - phone: 375×667, 360×780, 390×844, 430×932.

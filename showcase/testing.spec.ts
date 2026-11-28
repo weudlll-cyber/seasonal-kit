@@ -4,8 +4,8 @@
  *         each kind of fault on a broken one (v0.23.0, K66).
  *
  * Responsibility: `sweep` runs the kit's header screen and its bar-and-start-card screen
- *                 (./sweep/main.tsx) through the seven default sizes, 100 % and 200 % root font,
- *                 light and dark, with axe, and finds nothing, the header's brand link among its
+ *                 (./sweep/main.tsx) through the default walk (five window sizes at 100 % and 200 %
+ *                 root font in light, two looks in dark), with axe, and finds nothing, the header's brand link among its
  *                 44 px targets (v0.28.0), which also leaves the header's height alone; on the
  *                 broken screen the probe names
  *                 the wide box, the cut text, the small button and the clipped fitted root, and
@@ -31,10 +31,10 @@ const screenOf = (name: string) => ({
 
 for (const name of ['header', 'bar']) {
   test(`the sweep finds nothing on the kit's ${name} screen`, async ({ page }) => {
-    // 7 sizes x 2 fonts x 2 themes, each probed and checked by axe.
+    // 5 sizes x 2 fonts in light and 2 looks in dark, each probed and checked by axe.
     test.setTimeout(180_000);
     const seen = await sweep(page, [screenOf(name)], { axe: axeFinder(AxeBuilder) });
-    expect(seen).toBe(28);
+    expect(seen).toBe(12);
   });
 }
 

@@ -561,6 +561,11 @@ extra })` gives 200 `{ status: 'ready' }` or 503 `{ status: 'unavailable', reaso
 - **K123 — A covered row is not a visible one** (decided 2026-11-27, Bingo Royale's report). An
   item counts towards a floor (K116) only where nothing is painted over it, a scrolling box's
   sticky sign included.
+- **K128 — The sweep's sizes are windows, and 1024x600 is the tightest desktop corner** (decided
+  2026-11-28, for every game, no game-specific exceptions). `SWEEP_SIZES` is 1920x950, 1280x720,
+  1024x600, 390x844 and 320x568. The default walk looks at the layout in light and, for contrast,
+  in dark once at 1280x720 and 390x844 with the 16 px font; the walk through every theme stays an
+  option.
 - **K126 — The docked chat strip of a low window is 100 px** (decided 2026-11-28, for every game,
   no game-specific exceptions). Under 760 px window height the strip may go down to 100 px (150 px
   before). It stays visible, never folded; the field keeps its target size, and the field and the

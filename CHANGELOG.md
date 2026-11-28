@@ -9,6 +9,12 @@ applies it.
 
 ### Changed
 
+- The sweep's default walk (K128): `SWEEP_SIZES` is five windows, 1920x950, 1280x720, 1024x600,
+  390x844 and 320x568 (seven before), walked at both fonts in light, and in dark at 1280x720 and
+  390x844 with 16 px: 12 looks a screen, 28 before. A sweep with `sizes` or `themes` of its own
+  walks every combination as before; `themes: ['light', 'dark']` alone walks both themes at every
+  default size. New option `edges`: sizes walked besides the list, for the two sizes either side of
+  each width or height where a game's own layout switches.
 - `FIT_FLOORS.scale` is 0.6 for every game (K14, 2026-11-28): Seasonal Bingo Royale's was 1, so
   `useFitScale('bingo')` now shrinks a screen whose fixed parts do not fit. No other floor changed.
 - The docked chat strip of a desktop window under 760 px high is 100 px, 150 px before (K126);

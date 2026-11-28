@@ -152,7 +152,12 @@ describe('captureLook', () => {
   });
 
   it('names the sizes of the sweep, the smallest 320x568', () => {
-    expect(SWEEP_SIZES).toHaveLength(7);
-    expect(SWEEP_SIZES.at(-1)).toEqual({ width: 320, height: 568 });
+    expect(SWEEP_SIZES.map((s) => `${String(s.width)}x${String(s.height)}`)).toEqual([
+      '1920x950',
+      '1280x720',
+      '1024x600',
+      '390x844',
+      '320x568',
+    ]);
   });
 });

@@ -7,12 +7,14 @@
  *                 (desktop) or directly above its chat bar (phone), in the layout and never over
  *                 the content. The game sets `hidden` on it while no call is linked (the
  *                 helper `callSlot` in src/callSlot.ts answers null then), and the slot then
- *                 takes no room. The numbers are the website's contract, kept equal to
- *                 `CALL_SLOT` in src/callSlot.ts by tests/call-css.test.ts. The low window's
- *                 query is Mini Games' own (its strip, the reference layout); the modifier
- *                 classes come after it so that they win.
+ *                 takes no room. The numbers are kept equal to `CALL_SLOT` in src/callSlot.ts by
+ *                 tests/call-css.test.ts. In a low window the slot follows the strip's 100 px
+ *                 (K126) and keeps 3 px above and below its frame: the website's view shows its
+ *                 one-row strip in a frame under 96 px high, and its column would not fit. The
+ *                 low window's query is Mini Games' own (its strip, the reference layout); the
+ *                 modifier classes come after it so that they win.
  * Source:         seasonal-mini-games apps/web/src/match/chatDock.css at 91b23bc (the strip's
- *                 190 and 150 px, `max-height: 759px`)
+ *                 190 px, `max-height: 759px`)
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Placement and sizes"
  */
 
@@ -24,11 +26,13 @@
   height: 190px;
 }
 
-/* Desktop, a window under 760 px high: 267 × 150, the smallest picture. */
+/* Desktop, a window under 760 px high: 267 × 100, the strip's height; the frame 94 px high, the
+   website's one-row view. */
 @media (max-height: 759px) {
   .sk-call-slot {
     width: 267px;
-    height: 150px;
+    height: 100px;
+    padding-block: 3px;
   }
 }
 
@@ -37,16 +41,26 @@
   width: 48px;
 }
 
+/* A low window has one form: a slot left collapsed when the window was made lower takes the low
+   strip's width, since its column would not hold the view's buttons (K126). */
+@media (max-height: 759px) {
+  .sk-call-slot--collapsed {
+    width: 267px;
+  }
+}
+
 /* Phone, collapsed: the 48 px audio strip, full width, above the chat bar. */
 .sk-call-slot--strip {
   width: 100%;
   height: 48px;
+  padding-block: 0;
 }
 
 /* Phone, expanded: the picture at full width, 16:9. */
 .sk-call-slot--phone {
   width: 100%;
   height: auto;
+  padding-block: 0;
   aspect-ratio: 16 / 9;
 }
 

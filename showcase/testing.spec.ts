@@ -4,8 +4,8 @@
  *         each kind of fault on a broken one (v0.23.0, K66).
  *
  * Responsibility: `sweep` runs the kit's header screen and its bar-and-start-card screen
- *                 (./sweep/main.tsx) through the seven default sizes, 100 % and 200 % root font,
- *                 light and dark, with axe, and finds nothing, the header's brand link among its
+ *                 (./sweep/main.tsx) through the default walk (five window sizes at 100 % and 200 %
+ *                 root font in light, two looks in dark), with axe, and finds nothing, the header's brand link among its
  *                 44 px targets (v0.28.0), which also leaves the header's height alone; on the
  *                 broken screen the probe names
  *                 the wide box, the cut text, the small button and the clipped fitted root, and
@@ -18,6 +18,7 @@ import { existsSync } from 'node:fs';
 import { AxeBuilder } from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
+import { wholeCount } from '../src/testing/probe.js';
 import { axeFinder, captureLook, probe, setTheme, settle, sweep } from '../src/testing/index.js';
 import { SCREENS, settled } from './screens.js';
 
@@ -31,10 +32,10 @@ const screenOf = (name: string) => ({
 
 for (const name of ['header', 'bar']) {
   test(`the sweep finds nothing on the kit's ${name} screen`, async ({ page }) => {
-    // 7 sizes x 2 fonts x 2 themes, each probed and checked by axe.
+    // 5 sizes x 2 fonts in light and 2 looks in dark, each probed and checked by axe.
     test.setTimeout(180_000);
     const seen = await sweep(page, [screenOf(name)], { axe: axeFinder(AxeBuilder) });
-    expect(seen).toBe(28);
+    expect(seen).toBe(12);
   });
 }
 
@@ -140,6 +141,26 @@ test('a sticky sign over the last row lowers the floor’s count by one', async 
     await expect(sweep(page, [rows(4)], looks)).resolves.toBe(2);
     await expect(sweep(page, [rows(5)], looks)).rejects.toThrow('4 of at least 5 (K123)');
   }
+});
+
+test('a cover that takes no pointer covers, and a floor may ask for the first rows', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await screenOf('list').open(page);
+  // A layer over the second row that lets every click through.
+  await page.evaluate(() => {
+    const row = document.querySelectorAll('.sweep-list li')[1]?.getBoundingClientRect();
+    const cover = document.createElement('div');
+    cover.style.cssText = 'position: fixed; pointer-events: none; background: red';
+    cover.style.top = `${String(row?.top)}px`;
+    cover.style.left = `${String(row?.left)}px`;
+    cover.style.width = `${String(row?.width)}px`;
+    cover.style.height = `${String(row?.height)}px`;
+    document.body.append(cover);
+  });
+  expect(await wholeCount(page, '.sweep-list li')).toBe(4);
+  expect(await wholeCount(page, '.sweep-list li', true)).toBe(1);
 });
 
 test('captureLook writes both sizes in both themes', async ({ page }) => {

@@ -4,8 +4,8 @@
  *         form.
  *
  * Responsibility: no call id, or an invalid one, means no slot. With one: 338 × 190 on a
- *                 desktop, 267 × 150 in a window under 760 px high (759 is low, 760 is not),
- *                 48 × the strip's height collapsed, and on a phone the 48 px strip or the full
+ *                 desktop, 267 × 100 in a window under 760 px high (759 is low, 760 is not),
+ *                 collapsed or not, 48 × 190 collapsed in a taller one, and on a phone the 48 px strip or the full
  *                 width at 16:9.
  * Depends on:     vitest
  */
@@ -31,12 +31,12 @@ describe('the call slot', () => {
     expect(callSlot({ ...desktop, windowHeight: 760 })?.form).toBe('picture');
   });
 
-  it('is 267 × 150 in a window under 760 px high', () => {
+  it('is 267 × 100 in a window under 760 px high', () => {
     expect(callSlot({ ...desktop, windowHeight: 759 })).toEqual({
       form: 'low',
       className: 'sk-call-slot',
       width: 267,
-      height: 150,
+      height: 100,
     });
   });
 
@@ -48,7 +48,10 @@ describe('the call slot', () => {
       width: 48,
       height: 190,
     });
-    expect(callSlot({ ...collapsed, windowHeight: 700 })?.height).toBe(150);
+    // The low strip has one form (K126).
+    expect(callSlot({ ...collapsed, windowHeight: 700 })).toEqual(
+      callSlot({ ...desktop, windowHeight: 700 }),
+    );
   });
 
   it('is the 48 px strip on a phone, or the full width at 16:9 expanded', () => {

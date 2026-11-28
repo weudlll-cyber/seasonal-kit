@@ -1,7 +1,7 @@
 /**
  * @file   showcase/Fixtures.tsx
- * @brief  Two whole screens only a browser can judge: a docked result with a long placing list,
- *         and a full header with a member's step badges.
+ * @brief  Whole screens only a browser can judge: a docked result with a long placing list, a
+ *         full header with a member's step badges, and a game's own chat in the low strip.
  *
  * Responsibility: each fills the window, so ./looks.spec.ts measures it at a viewport's own size:
  *                 - `?screen=places` (with `&dense=1` for the dense variant): the app header over
@@ -10,7 +10,10 @@
  *                 - `?screen=full-header`: the back link, a long brand, three links, an account
  *                   with its role, "Sign out", the toggle and three step badges (v0.33.0);
  *                 - `?screen=cases-header&role=…`: Seasonal Cases' header for a player, an
- *                   organiser or an admin (v0.36.0).
+ *                   organiser or an admin (v0.36.0);
+ *                 - `?screen=strip`: a game's own chat in the docked strip, the messages beside
+ *                   the field, as docs/ADOPTION.md asks for the 100 px strip (K126;
+ *                   ./strip.spec.ts).
  *                 Never shipped.
  * Source:         new in the kit.
  */
@@ -47,6 +50,36 @@ export function Places(p: { readonly dense: boolean }): ReactElement {
             more={<p>The drawn numbers follow here.</p>}
             signature="places"
           />
+        </DockedScreen>
+      </div>
+    </div>
+  );
+}
+
+const LINES = Array.from({ length: 8 }, (_, i) => `Ada: message ${String(i + 1)}, good luck all`);
+
+// A game's own chat: the messages, the newest at the bottom, beside the field.
+function OwnChat(): ReactElement {
+  return (
+    <div className="showcase-strip-chat">
+      <ul className="showcase-strip-lines" aria-label="Messages">
+        {LINES.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <form className="showcase-strip-form">
+        <input className="sk-input" aria-label="Message" />
+      </form>
+    </div>
+  );
+}
+
+export function LowStrip(): ReactElement {
+  return (
+    <div className="showcase-screen" data-sk-game="cases">
+      <div className="showcase-fill">
+        <DockedScreen chat={<OwnChat />} bar="line" callId={null}>
+          <p>The round.</p>
         </DockedScreen>
       </div>
     </div>

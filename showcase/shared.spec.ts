@@ -59,7 +59,7 @@ const box = async (page: Page, selector: string) => {
 
 const SIZES = [
   { width: 1536, height: 864, slot: [338, 190] },
-  { width: 1280, height: 720, slot: [267, 150] },
+  { width: 1280, height: 720, slot: [267, 100] },
   // A phone's strip takes the dock's width.
   { width: 390, height: 844, slot: [370, 48] },
 ] as const;
@@ -79,6 +79,11 @@ for (const { width, height, slot } of SIZES) {
     await expect.poll(async () => (await sight(page)).at(-1)).toBe(true);
     const drawn = await box(page, '[data-testid="shared-call-slot"]');
     expect([Math.round(drawn.width), Math.round(drawn.height)]).toEqual(slot);
+    if (height < 760 && width >= 900) {
+      // The low strip's frame is under two bars high: the view's one-row form (K126).
+      const frame = await box(page, '[data-testid="shared-call-frame"]');
+      expect(Math.round(frame.height)).toBe(94);
+    }
     if (width >= 900) {
       // At the strip's right end, the chat beside it.
       const chat = await box(page, '.sk-chat-dock-body');

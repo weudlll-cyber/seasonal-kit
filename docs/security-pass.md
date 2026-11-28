@@ -63,6 +63,24 @@ fails if it breaks:
 
 ## Passes
 
+### 2026-11-28 — before v0.41.0 (branch `feat/v0.41`)
+
+| Scan                         | Tool and command                                | Result                                     |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Secrets in the whole history | gitleaks in the pre-commit hook and CI          | No leaks.                                  |
+| Dependencies                 | osv-scanner (CI)                                | No dependency was added.                   |
+| Code                         | CodeQL (javascript-typescript)                  | Read on the pull request before the merge. |
+| The changes                  | a fresh, independent reviewer, reading the diff | No security finding.                       |
+
+**Read by an independent reviewer** (`git diff 01b77f4..HEAD` of `src`, `css`, `showcase` and
+`tests`; no test or browser run). Selectors and declared overlaps still reach the injected source as
+JSON literals; the new in-page functions use nothing imported; the count's `pointer-events` change is
+set on the elements and put back in the same run; no sandbox, referrer or frame-message rule
+changed. Two defects, both fixed before the merge: a call slot left collapsed in a window then made
+lower kept the 48 px column (`css/call.css`), and a faded-out layer that takes no pointer counted as
+covering (`probeRules.ts`). Noted: a sweep with `fonts` of its own without 16 px has no dark look,
+as the default walk's dark looks are at 16 px (K128).
+
 ### 2026-11-27 — before v0.40.0, the local preview among the changes (branch `feat/v0.40`)
 
 | Scan                         | Tool and command                            | Result                                             |

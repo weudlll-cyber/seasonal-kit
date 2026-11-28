@@ -5,9 +5,10 @@ const holds = (floor, at) => (floor.fonts ?? [16]).includes(at.font) &&
 export async function floorLines(page, floors, at) {
     const lines = [];
     for (const floor of floors.filter((f) => holds(f, at))) {
-        const seen = await wholeCount(page, floor.selector);
+        const seen = await wholeCount(page, floor.selector, floor.first);
         if (seen < floor.least) {
-            lines.push(`too few in sight: ${floor.selector}: ${String(seen)} of at least ${String(floor.least)} (${floor.decision})`);
+            const what = floor.first === true ? 'of the first ' : 'of at least ';
+            lines.push(`too few in sight: ${floor.selector}: ${String(seen)} ${what}${String(floor.least)} (${floor.decision})`);
         }
     }
     return lines;

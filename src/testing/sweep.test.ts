@@ -19,7 +19,7 @@ import type { Page } from '@playwright/test';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { probe, runProbe, type Probe } from './probe.js';
-import { axeFinder, sweep } from './sweep.js';
+import { axeFinder, sweep, type SweepOptions } from './sweep.js';
 
 // `data-box="left top width height"` is an element's layout; without it, 100x50 at the origin.
 const boxOf = (el: Element): DOMRect => {
@@ -99,6 +99,7 @@ describe('probe', () => {
       smallTargets: [],
       overlaps: [],
       clippedFits: [],
+      textSizes: [],
     });
   });
 
@@ -168,6 +169,7 @@ function walker(seen: Partial<Probe> = {}) {
     smallTargets: [],
     overlaps: [],
     clippedFits: [],
+    textSizes: [],
   };
   const fake = {
     setViewportSize: (s: { width: number }) => {
@@ -201,7 +203,7 @@ describe('sweep', () => {
   });
 
   it('throws with every finding and its place, axe included', async () => {
-    const w = walker({ hScroll: true, cut: ['p "x"'] });
+    const w = walker({ hScroll: true, cut: ['p "x"'], textSizes: ['h2 24px'] });
     const run = sweep(w.page, [screen], {
       axe: () => Promise.resolve(['color-contrast: .a']),
       sizes: [{ width: 320, height: 568 }],
@@ -210,9 +212,10 @@ describe('sweep', () => {
     });
     await expect(run).rejects.toThrow(
       [
-        'the sweep found 3:',
+        'the sweep found 4:',
         'lobby 320x568 32px dark: the page scrolls sideways',
         'lobby 320x568 32px dark: cut text: p "x"',
+        'lobby 320x568 32px dark: text size outside the tokens: h2 24px',
         'lobby 320x568 32px dark: axe: color-contrast: .a',
       ].join('\n'),
     );
@@ -231,6 +234,43 @@ describe('sweep', () => {
       themes: ['light'],
     });
     await expect(run).rejects.toThrow(/found 1:\n.*outside the window: div\.b$/);
+  });
+});
+
+describe('the looks of a walk', () => {
+  // The looks a walk takes, as axe meets them: width, font and theme.
+  const walked = async (options: Partial<SweepOptions> = {}): Promise<string[]> => {
+    const w = walker();
+    const looks: string[] = [];
+    await sweep(w.page, [screen], {
+      ...options,
+      axe: () => {
+        looks.push(`${w.log.at(-1) ?? ''} ${document.documentElement.dataset['theme'] ?? ''}`);
+        return Promise.resolve([]);
+      },
+    });
+    return looks;
+  };
+
+  it('walks light at every size by default, and dark once at 1280x720 and 390x844', async () => {
+    const looks = await walked();
+    expect(looks).toHaveLength(12);
+    expect(looks.filter((l) => l.endsWith('light'))).toHaveLength(10);
+    expect(looks.slice(10)).toEqual(['1280 16 dark', '390 16 dark']);
+    // Without the 16 px font there is no dark look.
+    expect((await walked({ fonts: [32] })).filter((l) => l.endsWith('dark'))).toEqual([]);
+  });
+
+  it('adds a game’s edges in light, and walks every theme where asked', async () => {
+    const edges = [
+      { width: 899, height: 700 },
+      { width: 900, height: 700 },
+    ];
+    const looks = await walked({ edges });
+    expect(looks).toHaveLength(16);
+    expect(looks).toContain('899 32 light');
+    expect(looks).not.toContain('899 16 dark');
+    expect(await walked({ themes: ['light', 'dark'] })).toHaveLength(20);
   });
 });
 

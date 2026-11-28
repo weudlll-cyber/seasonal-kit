@@ -152,17 +152,44 @@ export function paintedOver(el, box) {
         return hit !== null && !el.contains(hit) && !hit.contains(el);
     });
 }
-// The elements of a selector the reader sees whole: nothing of them past the window or a box,
-// and nothing painted over them.
-export function wholeItems(b, selector) {
-    return [...document.querySelectorAll(selector)].filter((el) => {
-        if (!b.shown(el))
-            return false;
-        const box = el.getBoundingClientRect();
-        const seen = b.meet(b.seenBox(el), b.windowBox());
-        const inside = seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
-        return inside && !underSign(b, el, seen) && !paintedOver(el, seen);
-    }).length;
+// A hit test passes through a part that takes no pointer, which covers all the same. Each such
+// part the reader can see (not faded out or hidden) takes one until the returned call puts it back (set on the element itself, which a page's
+// content security policy allows).
+export function takeAllPointers(b) {
+    const changed = [...document.querySelectorAll('body *')]
+        .filter((el) => getComputedStyle(el).pointerEvents === 'none' && b.shown(el))
+        .map((el) => {
+        const name = 'pointer-events';
+        const own = [el.style.getPropertyValue(name), el.style.getPropertyPriority(name)];
+        return { el, own };
+    });
+    for (const { el } of changed)
+        el.style.setProperty('pointer-events', 'auto', 'important');
+    return () => {
+        // An empty value takes the property off again.
+        for (const { el, own } of changed)
+            el.style.setProperty('pointer-events', ...own);
+    };
+}
+// Whether the reader sees an element whole: nothing of it past the window or a box, and nothing
+// painted over it.
+export function isWhole(b, el) {
+    const box = el.getBoundingClientRect();
+    const seen = b.meet(b.seenBox(el), b.windowBox());
+    const inside = seen.right - seen.left >= box.width - 1 && seen.bottom - seen.top >= box.height - 1;
+    return inside && !underSign(b, el, seen) && !paintedOver(el, seen);
+}
+// How many of a selector's shown elements are whole; with `leading`, how many before the first
+// that is not.
+export function wholeItems(b, selector, leading = false) {
+    const items = [...document.querySelectorAll(selector)].filter((el) => b.shown(el));
+    const back = takeAllPointers(b);
+    const whole = items.map((el) => isWhole(b, el));
+    back();
+    if (!leading)
+        return whole.filter(Boolean).length;
+    const first = whole.indexOf(false);
+    return first < 0 ? whole.length : first;
 }
 // The rules as one object, in the order the page defines them.
 export const RULES = {
@@ -179,5 +206,7 @@ export const RULES = {
     stickyStrip,
     underSign,
     paintedOver,
+    takeAllPointers,
+    isWhole,
     wholeItems,
 };

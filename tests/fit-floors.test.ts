@@ -1,13 +1,14 @@
 /**
  * @file   tests/fit-floors.test.ts
- * @brief  The floor guard: no game's floor below what that game has today, and css/fit.css
- *         equal to `FIT_FLOORS` (DECISIONS K14).
+ * @brief  The floor guard: no game's floor below what that game has today or the owner has set,
+ *         one scale floor for all, and css/fit.css equal to `FIT_FLOORS` (DECISIONS K14).
  *
  * Responsibility: `TODAY` is each game's floor as its own repository has it. Mini Games: O111,
- *                 13 px text, 24 px display values, 22 px rows, 40 px phone touch targets and the
- *                 scale floor 0.6. Bingo: 14 px text, no screen scale, 44 px targets. Its 24/22 px
- *                 have no rule of their own there, so they take Mini Games'. Seasonal Party and
- *                 Seasonal Cases (since v0.11.0): 14 px text, the strictest set otherwise, 0.6.
+ *                 13 px text, 24 px display values, 22 px rows and 40 px phone touch targets.
+ *                 Bingo: 14 px text, 44 px targets. Its 24/22 px have no rule of their own there,
+ *                 so they take Mini Games'. Seasonal Party and Seasonal Cases (since v0.11.0):
+ *                 14 px text, the strictest set otherwise. The scale floor is 0.6 for every game
+ *                 (the owner, 2026-11-28; Bingo's was 1).
  *                 Every target floor and `--sk-min-target` keep WCAG 2.5.8's 24 px (K33). A kit floor lower
  *                 than today, a CSS value differing from `FIT_FLOORS`, or a default (no game
  *                 named) below any game fails here. Every scaled `font-size` of the kit's
@@ -24,13 +25,14 @@ import { describe, expect, it } from 'vitest';
 import { FIT_FLOORS, MIN_POINTER_TARGET, type FitFloors, type FitGame } from '../src/fit.js';
 
 // Mini Games' badge: its round bar's unread count, 0.75rem (apps/web/src/round/focus.css).
+// The scale floors are the owner's one floor of 2026-11-28, which lowered Bingo's on purpose.
 const TODAY: Readonly<Record<FitGame, FitFloors>> = {
   'mini-games': { scale: 0.6, text: 13, display: 24, row: 22, target: 40, badge: 12 },
-  bingo: { scale: 1, text: 14, display: 24, row: 22, target: 44, badge: 14 },
-  // Seasonal Party: 14 px (owner, 2026-11-21), Mini Games' 0.6 on its result frame, the
-  // strictest set otherwise (spirits ResultCard.tsx at e907de9).
+  bingo: { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
+  // Seasonal Party: 14 px (owner, 2026-11-21), the strictest set otherwise (spirits
+  // ResultCard.tsx at e907de9).
   'seasonal-party': { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
-  // Cases: pending/fit-cases.css 14/24/22/44, useFitScale('mini-games') 0.6 (cc75504).
+  // Cases: pending/fit-cases.css 14/24/22/44 (cc75504).
   cases: { scale: 0.6, text: 14, display: 24, row: 22, target: 44, badge: 14 },
 };
 
@@ -56,6 +58,10 @@ describe('the floor guard', () => {
     const today = TODAY[game];
     expect(kit.scale).toBeGreaterThanOrEqual(today.scale);
     for (const kind of KINDS) expect(kit[kind]).toBeGreaterThanOrEqual(today[kind]);
+  });
+
+  it('has one scale floor for every game, 0.6', () => {
+    expect(Object.values(FIT_FLOORS).map((f) => f.scale)).toEqual([0.6, 0.6, 0.6, 0.6]);
   });
 
   it.each(Object.keys(FIT_FLOORS) as FitGame[])('writes the floors of %s into fit.css', (game) => {

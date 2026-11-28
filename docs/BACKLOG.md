@@ -299,5 +299,11 @@ numbered Markdown list would be renumbered by the formatter once an item closes.
   (HANDBOOK.md, K125).
 - **100. No way to look at a game's website-mode parts before a merge** (the owner, 2026-11-27).
   Closed in v0.40.0 (`preview.ts`, `previewCli.ts`, K124).
+- **101. The owner's decisions on the chat strip, the scale floor, the window sizes and the fit
+  rule** (the owner, 2026-11-28). Closed in v0.41.0 (`dock.css`, `call.css`, `callSlot.ts`,
+  `fit.ts`, `screens.ts`, `sweep.ts`, HANDBOOK.md, K14, K126 to K128).
+- **102. No check held the four text sizes** (2026-11-28). Closed in v0.41.0 (`probeText.ts`).
+- **103. A floor counted a row under a layer that takes no click, and could not ask for the first
+  items** (2026-11-28). Closed in v0.41.0 (`probeRules.ts`, `sweepFloors.ts`).
 - **49. Shared ops parts for every game** (owner, 2026-11-26). a to e released in v0.29.0 to
   v0.32.0; g, h and j in v0.35.0 (K109, K108, K107); i, k and f decided (K104 to K106).

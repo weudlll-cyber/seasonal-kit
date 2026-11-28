@@ -4,9 +4,10 @@
  *         sheet on a phone, the call slot beside or above it.
  *
  * Responsibility: `.sk-docked` is one box: the game's content on top (`.sk-docked-main`), the
- *                 dock under it. Desktop: a strip 190 px high, 150 px in a window under 760 px
- *                 high, as wide as the box. The chat is a card on the left; the call slot
- *                 (./call.css) sits at the strip's right end at its full height. Phone: the
+ *                 dock under it. Desktop: a strip 190 px high, 100 px in a window under 760 px
+ *                 high (K126), as wide as the box, never folded. The chat is a card on the left,
+ *                 4 px padded above and below in the low strip, so 90 px are the chat's; the call
+ *                 slot (./call.css) sits at the strip's right end at its full height. Phone: the
  *                 content scrolls alone, and the bar (52 px with its padding) is the bottom part,
  *                 in the layout, never over the page. Its line "Chat · <newest message>" gives
  *                 way with an ellipsis, beside the unread count. The open chat is a sheet above
@@ -16,8 +17,8 @@
  *                 its own room above the bar instead (v0.36.0); "3 unread" is read out by ./shell.css
  *                 `sk-visually-hidden`, which a game imports with this file.
  * Source:         seasonal-mini-games apps/web/src/match/chatDock.css and docked.css at 866df03
- *                 (the 190/150 px strip, the bar, the sheet; the 760 px query without its 900 px
- *                 width, which `data-sk-view` carries here)
+ *                 (the 190 px strip, 150 px then in a low window, the bar, the sheet; the 760 px
+ *                 query without its 900 px width, which `data-sk-view` carries here)
  * Spec:           Seasonal Entertainment docs/GAME-INTEGRATION.md §9 "Placement and sizes"
  */
 
@@ -28,13 +29,6 @@
   gap: 16px;
   min-height: 0;
   height: 100%;
-}
-
-/* A short desktop window (1280 × 720): 150 px, the least the owner allows. */
-@media (max-height: 759px) {
-  .sk-docked {
-    --sk-dock-height: 150px;
-  }
 }
 
 .sk-docked-main {
@@ -73,6 +67,19 @@
 
 .sk-chat-dock[data-sk-view='desktop'] .sk-call-slot {
   height: var(--sk-dock-height);
+}
+
+/* A short desktop window (1280 × 720, 1024 × 600): 100 px, the least the owner allows (K126).
+   The strip's body keeps 4 px above and below, so a field and two messages show whole. After the
+   rules above, which it overrides. */
+@media (max-height: 759px) {
+  .sk-docked {
+    --sk-dock-height: 100px;
+  }
+
+  .sk-chat-dock[data-sk-view='desktop'] .sk-chat-dock-body {
+    padding-block: 4px;
+  }
 }
 
 .sk-chat-dock-body {

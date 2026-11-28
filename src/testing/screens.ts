@@ -3,8 +3,9 @@
  * @brief  The sizes the games' screens are seen at, the theme switch and the screenshots of a look
  *         in a browser test.
  *
- * Responsibility: `SWEEP_SIZES` is the default list of ./sweep (three desktops, four phones, the
- *                 smallest 320x568). `setTheme(page, theme)` puts the page in a theme the way a
+ * Responsibility: `SWEEP_SIZES` is the default list of ./sweep (K128): windows, three desktop
+ *                 and two phone, from the largest 1920x950 over the tightest desktop corner
+ *                 1024x600 to the smallest phone 320x568. `setTheme(page, theme)` puts the page in a theme the way a
  *                 person does, by the header's `theme-toggle`, and where that is hidden (a
  *                 round's focus mode) or absent sets `data-theme` on <html>, which is what the
  *                 tokens follow; it returns once nothing that ends is moving (`settle`, on
@@ -36,13 +37,13 @@ export interface Size {
 export const DESKTOP: Size = { width: 1280, height: 800 };
 export const PHONE: Size = { width: 390, height: 844 };
 
+// Window sizes, not screen sizes (K128): the largest window, the size owner decisions name, the
+// tightest desktop corner, a common phone and the smallest phone.
 export const SWEEP_SIZES: readonly Size[] = [
-  { width: 1920, height: 1080 },
-  { width: 1536, height: 768 },
+  { width: 1920, height: 950 },
   { width: 1280, height: 720 },
+  { width: 1024, height: 600 },
   { width: 390, height: 844 },
-  { width: 375, height: 667 },
-  { width: 360, height: 780 },
   { width: 320, height: 568 },
 ];
 

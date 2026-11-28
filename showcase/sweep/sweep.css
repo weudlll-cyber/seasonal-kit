@@ -15,6 +15,11 @@ body {
   overflow-wrap: anywhere;
 }
 
+/* A page's title in one of the four text sizes, as the probe asks of every screen. */
+.sweep-page h1 {
+  font-size: var(--sk-font-size-title);
+}
+
 .sweep-button {
   min-height: var(--sk-hit-target);
 }

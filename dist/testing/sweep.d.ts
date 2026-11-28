@@ -1,11 +1,13 @@
 /**
  * @file   src/testing/sweep.ts
- * @brief  A game's screens at every size, in light and dark, at 100 % and 200 % root font: one
- *         call that fails with everything it found.
+ * @brief  A game's screens at every size, at 100 % and 200 % root font, in light and, for
+ *         contrast, in dark: one call that fails with everything it found.
  *
  * Responsibility: `sweep(page, screens, options)` walks each named screen through the sizes (default
- *                 ./screens `SWEEP_SIZES`), the root fonts (16 and 32 px) and both themes: it sets
- *                 the window, lets the screen open itself (`open`, which navigates and waits for
+ *                 ./screens `SWEEP_SIZES`, plus the game's `edges`) and the root fonts (16 and
+ *                 32 px) in light, and once in dark at 1280x720 and 390x844 with 16 px (K128). With
+ *                 `sizes` or `themes` of its own, every size and font in every theme (both unless
+ *                 named). In each look it sets the window, lets the screen open itself (`open`, which navigates and waits for
  *                 what it needs), sets the root font and the theme, waits for stillness
  *                 (./sweepMotion), probes (./probe), counts the floors, and waits for stillness
  *                 again (since v0.40.0) before it runs `axe`. It throws one error listing every finding with its
@@ -47,6 +49,7 @@ export interface SweepScreen {
 export interface SweepOptions {
     readonly axe: AxeFinder | false;
     readonly sizes?: readonly Size[];
+    readonly edges?: readonly Size[];
     readonly fonts?: readonly number[];
     readonly themes?: readonly Theme[];
     readonly targetPx?: number;

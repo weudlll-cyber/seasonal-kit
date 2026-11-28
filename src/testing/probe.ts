@@ -1,7 +1,7 @@
 /**
  * @file   src/testing/probe.ts
  * @brief  One in-page measurement of a screen: overflow, cut text, small and overlapping
- *         controls, a fitted root whose content does not fit it.
+ *         controls, a fitted root whose content does not fit it, text of a size of its own.
  *
  * Responsibility: `probe(page)` runs in the browser and returns what is wrong with the screen as
  *                 it is now (an overlap declared in `meant`, with a decision number, is not wrong;
@@ -19,15 +19,18 @@
  *                 - `overlaps` (since v0.36.0): a control lying over or under a part beside it;
  *                 - `clippedFits`: a fitted root (`[data-sk-fit-scale]`, ../fit.ts) with a part
  *                   outside its padding box, where it is cut: even at its floor it does not fit
- *                   (a root that scrolls hides nothing, since v0.36.0).
+ *                   (a root that scrolls hides nothing, since v0.36.0);
+ *                 - `textSizes` (since v0.41.0): visible text in none of the four `--sk-font-size-`
+ *                   tokens (./probeText).
  *                 Hidden elements and text only for screen readers (a 1 px box) are left out. A
  *                 finding about an element of which nothing is in the window and unclipped ends
  *                 with " (not visible)" (since v0.39.0).
  *                 `wholeCount(page, selector)` (since v0.38.0) counts the elements wholly in
- *                 sight, for the sweep's floors (./sweepFloors).
- *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets and those
- *                 below) are put into the page as source text and call each other by name.
- * Depends on:     ./decision, ./probeBase, ./probeRules, ./probeTargets;
+ *                 sight, for the sweep's floors (./sweepFloors); with `leading` (since v0.41.0)
+ *                 only the first ones, up to the first that is not.
+ *                 The in-page functions (./probeBase, ./probeRules, ./probeTargets, ./probeText
+ *                 and those below) are put into the page as source text and call each other by name.
+ * Depends on:     ./decision, ./probeBase, ./probeRules, ./probeTargets, ./probeText;
  *                 @playwright/test (types)
  * Source:         seasonal-bingo-royale e2e/acceptance/fitProbe.ts at 8d20904 (`clipsOf`,
  *                 `readable`, the text fragments, `cutText`, `wideBoxes`, the injection).
@@ -40,6 +43,7 @@ import { needsNumber } from './decision.js';
 import { BASE, type Base } from './probeBase.js';
 import { RULES, type Meant, type Rules } from './probeRules.js';
 import { TARGETS, type Targets } from './probeTargets.js';
+import { TEXT, type Text } from './probeText.js';
 
 export interface Probe {
   readonly hScroll: boolean;
@@ -48,6 +52,7 @@ export interface Probe {
   readonly smallTargets: readonly string[];
   readonly overlaps: readonly string[];
   readonly clippedFits: readonly string[];
+  readonly textSizes: readonly string[];
 }
 
 // An overlap a game's owner decided on, with the decision's number.
@@ -97,7 +102,7 @@ function clippedFits(b: Base): string[] {
 export function runProbe(
   targetPx: number,
   b: Base = BASE,
-  r: Rules & Targets = { ...RULES, ...TARGETS },
+  r: Rules & Targets & Text = { ...RULES, ...TARGETS, ...TEXT },
   meant: readonly Meant[] = [],
 ): Probe {
   const { clientWidth: width, clientHeight: height } = document.documentElement;
@@ -114,6 +119,7 @@ export function runProbe(
     smallTargets: r.smallTargets(b, targetPx),
     overlaps: r.overlaps(b, meant),
     clippedFits: clippedFits(b),
+    textSizes: r.offScaleText(b),
   };
 }
 
@@ -123,7 +129,7 @@ const OWN = [clipsInside, outsideOf, clippedFits, runProbe];
 
 // One expression: define the parts in the page, then run `call` there.
 function inPage(call: string): string {
-  const rules = { ...RULES, ...TARGETS };
+  const rules = { ...RULES, ...TARGETS, ...TEXT };
   const parts = [...Object.entries(BASE), ...Object.entries(rules)];
   const body = [
     ...parts.map(([name, part]) => `const ${name} = ${part.toString()};`),
@@ -147,6 +153,6 @@ export async function probe(
   );
 }
 
-export async function wholeCount(page: Page, selector: string): Promise<number> {
-  return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)})`));
+export async function wholeCount(page: Page, selector: string, leading = false): Promise<number> {
+  return page.evaluate(inPage(`wholeItems(base, ${JSON.stringify(selector)}, ${String(leading)})`));
 }

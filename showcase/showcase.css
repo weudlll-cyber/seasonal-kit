@@ -97,3 +97,40 @@ main {
   margin: 0;
   font-size: var(--sk-font-size-title);
 }
+
+/* A game's own chat in the low strip: the messages beside the field, so both have the strip's
+   whole height (K126). */
+.showcase-strip-chat {
+  display: flex;
+  gap: var(--sk-space-1);
+}
+
+/* The newest line at the bottom; older ones leave at the top. */
+.showcase-strip-lines {
+  display: flex;
+  flex: 2;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  font-size: var(--sk-font-size-small);
+  line-height: 1.35;
+}
+
+.showcase-strip-lines li {
+  flex: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.showcase-strip-form {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}

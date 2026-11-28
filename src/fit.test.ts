@@ -8,7 +8,7 @@
  *                 per game: `nextScale` keeps a fitting scale, shrinks in proportion, never above
  *                 1 or below the floor. `settle` starts from 1, sets `--fit` and `data-sk-fit-scale`,
  *                 finds the largest fitting scale in at most nine measurements, stops at the
- *                 floor, and never shrinks a game whose floor is 1 (Bingo). Added: the box is the
+ *                 floor, and a floor of 1 never shrinks. Added: the box is the
  *                 nearest one that clips or scrolls; a part's hidden overflow counts; `watchFit`
  *                 fits again in the next frame only when the size changed, and stops cleanly.
  *                 With `afterFonts` (v0.12.0) it also fits again after `loadingdone` and
@@ -108,9 +108,9 @@ describe('settle', () => {
     expect(settle(s.root, s.box, MG)).toBe(MG);
   });
 
-  it('never shrinks a game whose floor is 1, and measures nothing for it', () => {
+  it('never shrinks at a floor of 1, and measures nothing for it', () => {
     const s = screenOf(2_000, 0, 400);
-    expect(settle(s.root, s.box, FIT_FLOORS.bingo.scale)).toBe(1);
+    expect(settle(s.root, s.box, 1)).toBe(1);
     expect(s.reads()).toBe(0);
   });
 
